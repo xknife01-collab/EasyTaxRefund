@@ -24,16 +24,18 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>('ko');
   const [translationMap, setTranslationMap] = useState<Record<string, string>>({});
   const [isReady, setIsReady] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const router = useRouter();
 
   const fetchTranslations = useCallback(async (lang: Language) => {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 5000);
+    const timeoutId = setTimeout(() => controller.abort(), 8000); // 8 seconds
 
     try {
-      const res = await fetch(`/api/translations/${lang}`, {
+      const res = await fetch(`/api/translations/${lang}?v=${Date.now()}`, {
         signal: controller.signal
       });
+
       clearTimeout(timeoutId);
       
       if (res.ok) {
@@ -50,28 +52,44 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, []);
 
   useEffect(() => {
-    const initLanguage = async () => {
-      const savedLang = localStorage.getItem('app_lang') as Language;
-      const lang = savedLang || 'ko';
-      setLanguageState(lang);
-
-      const success = await fetchTranslations(lang);
-      
-      // If server hangs or fails, fallback to 'ko' instead of infinite redirect loop
-      if (!success && lang !== 'ko') {
-        setLanguageState('ko');
-        localStorage.setItem('app_lang', 'ko');
-      }
-      
+    // Safety fallback: ensure loading screen is hidden after 500ms even if API hangs
+    const safetyTimeout = setTimeout(() => {
+      console.warn('Translation initialization timed out. Forcing isReady=true.');
       setIsReady(true);
+    }, 2000);
+
+    const initLanguage = async () => {
+      try {
+        let lang: Language = 'ko';
+        try {
+          const savedLang = localStorage.getItem('app_lang') as Language;
+          if (savedLang) lang = savedLang;
+        } catch (storageError) {
+          console.error('LocalStorage access blocked:', storageError);
+        }
+        
+        setLanguageState(lang);
+        const success = await fetchTranslations(lang);
+        
+        if (!success && lang !== 'ko') {
+          setLanguageState('ko');
+          try {
+            localStorage.setItem('app_lang', 'ko');
+          } catch (e) {}
+        }
+      } catch (error) {
+        console.error('Failed to initialize language:', error);
+      } finally {
+        setIsReady(true);
+        setMounted(true);
+        clearTimeout(safetyTimeout);
+      }
     };
 
     initLanguage();
-  }, []);
+    return () => clearTimeout(safetyTimeout);
+  }, [fetchTranslations]);
 
-  useEffect(() => {
-    document.documentElement.lang = language;
-  }, [language]);
 
   const setLanguage = useCallback(async (lang: Language, shouldRedirect = true) => {
     setLanguageState(lang);
@@ -95,6 +113,14 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     
     return text;
   }, [translationMap]);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.title = t('app_title');
+    // Also update meta description if possible (via DOM)
+    const metaDesc = document.querySelector('meta[name="description"]');
+    if (metaDesc) metaDesc.setAttribute('content', t('app_description'));
+  }, [language, t]);
 
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t, isReady }}>

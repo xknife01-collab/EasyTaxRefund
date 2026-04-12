@@ -40,7 +40,7 @@ export function Navbar() {
   const navLinks = [
     { href: "/estimate", label: t('환급금 확인'), icon: <Calculator className="h-4 w-4" /> },
     { href: "/pricing", label: t('가격 정책'), icon: <CreditCard className="h-4 w-4" /> },
-    { href: "/faq", label: t('FAQ'), icon: <HelpCircle className="h-4 w-4" /> },
+    { href: "/faq", label: t('자주 묻는 질문'), icon: <HelpCircle className="h-4 w-4" /> },
   ];
 
   return (

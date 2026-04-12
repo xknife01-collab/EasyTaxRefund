@@ -104,7 +104,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     });
 
     console.log("Requesting Applications Snapshot...");
-    const q = query(collection(db, 'applications'), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, 'applications'), orderBy('updatedAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       console.log("Snapshot Received! Count:", snapshot.size);
       const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
@@ -132,7 +132,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     }
     if (searchPhone.trim()) {
       const low = searchPhone.toLowerCase();
-      result = result.filter(app => (app.phoneNo || "").includes(low));
+      result = result.filter(app => (app.phone || app.phoneNo || "").includes(low));
     }
     return result;
   }, [apps, searchId, searchName, searchPhone]);
@@ -548,10 +548,10 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       app.resAttrYear || "N/A",
       app.estimatedRefundAmount || 0,
       app.bankName || "N/A",
-      app.bankAccount || "N/A",
+      app.bankAccount || app.accountNumber || "N/A",
       app.status || "InquiryCompleted",
-      app.phoneNo || "N/A",
-      app.createdAt?.toDate ? app.createdAt.toDate().toLocaleString('ko-KR') : String(app.createdAt || "")
+      app.phone || app.phoneNo || "N/A",
+      app.updatedAt?.toDate ? app.updatedAt.toDate().toLocaleString('ko-KR') : String(app.updatedAt || app.createdAt || "")
     ]);
 
     const csvContent = [
@@ -912,7 +912,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                   <div className="p-6 bg-emerald-50/30 rounded-3xl border border-emerald-100/50 flex justify-between items-center">
                     <div className="space-y-1">
                       <p className="text-[10px] font-bold text-emerald-400 uppercase">지급 은행 / 계좌번호</p>
-                      <p className="text-xl font-black text-slate-900">{selectedApp.bankName || "미정"} | {selectedApp.bankAccount || "계좌정보 없음"}</p>
+                      <p className="text-xl font-black text-slate-900">{selectedApp.bankName || "미정"} | {selectedApp.bankAccount || selectedApp.accountNumber || "계좌정보 없음"}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-[10px] font-bold text-emerald-400 uppercase">예상 환급액 (90% 적용)</p>

@@ -79,7 +79,7 @@
 }
 
 .glass-nav {
-  @apply bg-white/70 backdrop-blur-2xl border-b border-white/20 sticky top-0 z-50;
+  @apply bg-white/70 backdrop-blur-2xl border-b border-white/20;
 }
 
 .text-gradient {

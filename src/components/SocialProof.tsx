@@ -5,8 +5,8 @@ import { useTranslation } from "@/components/LanguageContext";
 import { cn } from "@/lib/utils";
 import { User, CheckCircle2, Globe, Sparkles } from "lucide-react";
 
-const COUNTRIES = ["Vietnam", "China", "Nepal", "Cambodia", "Thailand", "Uzbekistan", "Philippines", "Mongolia", "Myanmar"];
-const ACTIONS = ["Just checked refund amount", "Applied for refund", "Completed document upload", "Verified identity"];
+const COUNTRIES = ["베트남", "중국", "네팔", "캄보디아", "태국", "우즈베키스탄", "필리핀", "몽골", "미얀마"];
+const ACTIONS = ["방금 환급액 확인", "환급 신청 완료", "서류 업로드 완료", "본인 인증 완료"];
 
 interface Notification {
   id: number;
@@ -45,7 +45,7 @@ export function SocialProof() {
       id: Date.now(),
       country: t(country),
       action: t(action),
-      timeAgo: t("Just now"),
+      timeAgo: t("방금 전"),
       iconType
     };
   }, [t]);
@@ -112,7 +112,7 @@ export function SocialProof() {
           </p>
           <div className="flex items-center gap-1">
             <div className="h-1 w-1 rounded-full bg-green-500 animate-pulse" />
-            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">{t("Real-time Update")}</span>
+            <span className="text-[9px] font-bold text-slate-400 uppercase tracking-tighter">{t("실시간 업데이트")}</span>
           </div>
         </div>
         

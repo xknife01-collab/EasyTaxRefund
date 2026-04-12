@@ -49,6 +49,7 @@ export default function WelcomePage() {
                     alt={lang.name}
                     fill
                     className="object-cover"
+                    unoptimized={true}
                     priority={index < 5}
                   />
                 </div>

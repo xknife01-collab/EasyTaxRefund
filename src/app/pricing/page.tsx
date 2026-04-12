@@ -29,7 +29,7 @@ export default function PricingPage() {
       <main className="flex-1 container mx-auto px-4 py-20 lg:py-32">
         <div className="max-w-4xl mx-auto space-y-16">
           <div className="text-center space-y-6">
-            <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-bold uppercase tracking-widest">{t('Pricing Policy')}</Badge>
+            <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-bold uppercase tracking-widest">{t('가격 정책')}</Badge>
             <h1 className="text-4xl lg:text-6xl font-black font-headline text-slate-900 tracking-tighter">
               {t('[가격 정책]')}<br />
               <span className="text-primary">{t('투명하고 안전한 20% 선임 제도')}</span>
@@ -130,8 +130,8 @@ export default function PricingPage() {
           <div className="text-center pt-10">
             <div className="inline-flex items-center gap-6 px-10 py-6 rounded-[2rem] bg-slate-900 text-white shadow-2xl">
               <div className="text-left">
-                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">{t('Guaranteed Confidence')}</p>
-                <p className="text-xl font-black italic">{t('"Professional Service, Zero Risk."')}</p>
+                <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-1">{t('신뢰 보장')}</p>
+                <p className="text-xl font-black italic">{t('\"전문적인 서비스, 리스크 제로.\"')}</p>
               </div>
               <div className="h-10 w-px bg-white/10 hidden sm:block" />
               <p className="text-sm font-medium text-slate-300 hidden sm:block max-w-[200px]">{t('전문적인 서비스,')}<br />{t('리스크는 제로.')}</p>

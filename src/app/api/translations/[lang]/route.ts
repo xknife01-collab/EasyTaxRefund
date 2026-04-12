@@ -45,9 +45,11 @@ export async function GET(
       data = {};
     }
 
-    return NextResponse.json(data, {
+    return NextResponse.json(data || {}, {
+      status: 200,
       headers: {
-        'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        'Cache-Control': 'no-store, no-cache, must-revalidate',
+        'Content-Type': 'application/json'
       },
     });
   } catch (error) {
@@ -55,3 +57,4 @@ export async function GET(
     return NextResponse.json({}, { status: 200 });
   }
 }
+

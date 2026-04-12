@@ -164,14 +164,14 @@ KAKAO_GUIDE_STEPS[7].markers = [
   {
     x: 50,
     y: 19,
-    text: "문자로 받은 인증번호를 입력해 주세요.",
+    text: "문자로 받은 인증번호 6자리를 입력해 주세요.",
     textX: 50,
     textY: 9
   },
   {
     x: 50,
     y: 32,
-    text: "인증번호 입력 후 '확인'을 눌러주세요.",
+    text: "인증번호 입력 후 '다음' 버튼을 눌러주세요.",
     textX: 50,
     textY: 42,
     position: "bottom"
@@ -585,11 +585,11 @@ KAKAO_GUIDE_STEPS[30].markers = [
 KAKAO_GUIDE_STEPS[31].markers = [
   {
     x: 50,
-    y: 89,
-    text: "인증서 발급이 완료되었습니다! '확인'을 눌러주세요.",
+    y: 35,
+    text: "🎉 축하합니다 🎉\n이제 카카오톡에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!",
+    hideBox: true,
     textX: 50,
-    textY: 80,
-    hideArrow: true
+    textY: 45
   },
 ];
 
@@ -640,11 +640,11 @@ KAKAO_GUIDE_STEPS[35].markers = [
 KAKAO_GUIDE_STEPS[36].markers = [
   {
     x: 50,
-    y: 50,
-    text: "모든 인증 절차가 마무리되었습니다. 수고하셨습니다!",
+    y: 35,
+    text: "🎉 축하합니다 🎉\n이제 카카오톡에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!",
     hideBox: true,
     textX: 50,
-    textY: 50,
+    textY: 45
   },
 ];
 
@@ -775,7 +775,7 @@ export function KakaoGuideModal({
           <button 
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
-            aria-label="가이드 닫기"
+            aria-label={t("가이드 닫기")}
           >
             <X className="h-5 w-5" />
           </button>
@@ -818,7 +818,7 @@ export function KakaoGuideModal({
                 <button
                   onClick={(e) => { e.stopPropagation(); setDismissAiCard(true); }}
                   className="absolute top-3 right-3 p-1.5 rounded-full text-amber-500 hover:bg-amber-200/50 hover:text-amber-700 transition-colors"
-                  aria-label="닫기"
+                  aria-label={t("닫기")}
                 >
                   <X className="h-4 w-4" />
                 </button>

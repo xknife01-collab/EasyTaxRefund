@@ -144,7 +144,7 @@ export default function FAQPage() {
                <button 
                  onClick={() => setIsAiVisible(false)}
                  className="absolute top-8 right-8 p-3 rounded-2xl hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-all z-20 group"
-                 title="AI 비서 숨기기"
+                 title={t("AI 비서 숨기기")}
                >
                  <Minimize2 className="h-6 w-6 group-hover:scale-110 transition-transform" />
                </button>
@@ -188,7 +188,7 @@ export default function FAQPage() {
                          <Sparkles className="h-6 w-6 text-white" />
                        </div>
                        <div className="space-y-4">
-                         <p className="font-bold text-primary tracking-widest uppercase text-xs">AI Assistant Response</p>
+                         <p className="font-bold text-primary tracking-widest uppercase text-xs">{t('AI Assistant Response')}</p>
                          <p className="text-xl text-slate-200 leading-relaxed font-medium whitespace-pre-wrap">{aiAnswer}</p>
                        </div>
                      </div>
@@ -204,7 +204,7 @@ export default function FAQPage() {
                  className="rounded-full px-8 py-6 border-primary/20 hover:bg-primary/5 text-primary font-bold gap-3 shadow-lg shadow-primary/5 group"
                >
                  <Sparkles className="h-5 w-5 group-hover:animate-pulse" />
-                 {t('Easy Tax Refund AI 비서')} 호출하기
+                 {t('Easy Tax Refund AI 비서 호출하기')}
                </Button>
              </div>
            )}

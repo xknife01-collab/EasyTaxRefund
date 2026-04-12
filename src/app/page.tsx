@@ -58,8 +58,20 @@ export default function HomePage() {
 
   // 방문 여부 확인 및 초기화
   useEffect(() => {
-    const welcomeSeen = localStorage.getItem("welcome_seen");
-    setHasSeenWelcome(!!welcomeSeen);
+    try {
+      const welcomeSeen = localStorage.getItem("welcome_seen");
+      setHasSeenWelcome(!!welcomeSeen);
+    } catch (e) {
+      console.error('LocalStorage failed:', e);
+      setHasSeenWelcome(false);
+    }
+
+    // Extremely aggressive safety fallback: force loading screen to hide after 100ms
+    const welcomeFallback = setTimeout(() => {
+      setHasSeenWelcome(prev => prev === null ? false : prev);
+    }, 100);
+
+    return () => clearTimeout(welcomeFallback);
   }, []);
 
   const handleLanguageSelect = (langCode: any) => {
@@ -139,7 +151,7 @@ export default function HomePage() {
   if (!isReady || hasSeenWelcome === null) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 relative overflow-hidden">
-        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
+        <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
         <div className="relative flex flex-col items-center gap-8 animate-fade-in">
           <div className="flex items-center gap-4 group">
             <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-primary via-primary/90 to-indigo-700 text-white shadow-[0_15px_35px_-5px_rgba(99,102,241,0.4)]">
@@ -186,6 +198,7 @@ export default function HomePage() {
                       alt={lang.name}
                       fill
                       className="object-cover"
+                      unoptimized={true}
                       priority={index < 5}
                     />
                   </div>
@@ -213,7 +226,7 @@ export default function HomePage() {
         
         {/* 디자인 섹션 1: 히어로 섹션 */}
         <section className="relative pt-32 pb-24 lg:pt-52 lg:pb-40 overflow-hidden bg-slate-50/50">
-          <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[140px]" />
+          <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-5xl mx-auto text-center space-y-10">
               <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-primary/10 shadow-[0_4px_20px_-4px_rgba(99,102,241,0.1)] animate-fade-in-up">
@@ -251,8 +264,8 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <div className="flex flex-wrap justify-center gap-12 lg:gap-24 opacity-80 text-slate-400">
               <div className="flex items-center gap-3 font-black text-2xl tracking-tighter">{t('청년 외국인 세무 지원')}</div>
-              <div className="flex items-center gap-3 font-black text-2xl tracking-tighter">{t('CERTIFIED TAX SERVICE')}</div>
-              <div className="flex items-center gap-3 font-black text-2xl tracking-tighter">{t('FINANCIAL SECURITY')}</div>
+              <div className="flex items-center gap-3 font-black text-2xl tracking-tighter">{t('공인 세무 서비스')}</div>
+              <div className="flex items-center gap-3 font-black text-2xl tracking-tighter">{t('금융 보안 보장')}</div>
             </div>
           </div>
         </section>
@@ -304,7 +317,7 @@ export default function HomePage() {
             <div className="grid lg:grid-cols-2 gap-20 items-center max-w-7xl mx-auto">
               <div className="space-y-10">
                 <div className="space-y-4">
-                  <Badge variant="outline" className="text-red-500 border-red-100 bg-red-50 px-4 py-1.5 font-bold uppercase tracking-widest">{t('REAL PROBLEM')}</Badge>
+                  <Badge variant="outline" className="text-red-500 border-red-100 bg-red-50 px-4 py-1.5 font-bold uppercase tracking-widest">{t('실제 문제')}</Badge>
                   <h2 className="text-4xl lg:text-6xl font-black font-headline text-slate-900 leading-tight whitespace-pre-line">
                     {t("Why didn't I know\nthis before?")}
                   </h2>
@@ -393,9 +406,9 @@ export default function HomePage() {
                 </Link>
               </Button>
               <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-3xl bg-white border border-slate-100 shadow-sm">
-                <div className="flex items-center gap-2 text-slate-900 font-black"><ShieldCheck className="h-6 w-6 text-primary" />{t('Professional Service')}</div>
+                <div className="flex items-center gap-2 text-slate-900 font-black"><ShieldCheck className="h-6 w-6 text-primary" />{t('전문적인 서비스')}</div>
                 <div className="hidden sm:block h-4 w-px bg-slate-200" />
-                <div className="flex items-center gap-2 text-slate-900 font-black"><RotateCcw className="h-6 w-6 text-primary" />{t('Zero Risk')}</div>
+                <div className="flex items-center gap-2 text-slate-900 font-black"><RotateCcw className="h-6 w-6 text-primary" />{t('리스크 제로')}</div>
               </div>
               <p className="text-slate-400 font-bold max-lg">{t('우리는 단순히 계산기만 돌리는 앱이 아닙니다. 전문적인 서비스, 리스크는 제로. 환급 거절 시 선임료를 100% 환불해 드립니다.')}</p>
             </div>
@@ -407,7 +420,7 @@ export default function HomePage() {
           <div className="container mx-auto px-4">
             <div className="max-w-5xl mx-auto">
               <div className="bg-slate-50 rounded-[4rem] p-10 md:p-20 relative overflow-hidden border border-slate-100 group">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/4 blur-[100px] group-hover:bg-primary/10 transition-colors duration-1000" />
+                <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/4 blur-[100px] group-hover:bg-primary/10 transition-colors duration-1000 pointer-events-none" />
                 
                 <div className="relative flex flex-col lg:flex-row items-center gap-16">
                   <div className="shrink-0 relative">
@@ -474,7 +487,7 @@ export default function HomePage() {
             <div className="grid lg:grid-cols-2 gap-20 items-center relative z-10">
               <div className="space-y-8">
                 <div className="space-y-2">
-                  <Badge className="bg-primary text-white border-none px-4 py-1.5 font-bold uppercase tracking-widest">{t('YOUR FUTURE VALUE')}</Badge>
+                  <Badge className="bg-primary text-white border-none px-4 py-1.5 font-bold uppercase tracking-widest">{t('당신의 미래 가치')}</Badge>
                   <h2 className="text-4xl lg:text-6xl font-black font-headline leading-tight">
                     {t('연간 200만 원,')}<br />{t('당신의 한국 생활이 달라집니다')}
                   </h2>
@@ -522,19 +535,19 @@ export default function HomePage() {
                 <div key={i} className="flex gap-8">
                   {[
                     { 
-                      name: "Nguyen", country: "Vietnam", flag: "🇻🇳", amount: "3,100,000", 
+                      name: "Nguyen", country: "베트남", flag: "🇻🇳", amount: "3,100,000", 
                       text: "맨 처음에는 한국어를 몰라서 인증앱을 어떻게 깔아야 하나 걱정부터 앞섰어요. 그런데 이지텍스리펀드의 자세한 안내를 하나하나 따라하다 보니 인증에 성공했구요. 결과는 대박! 제가 받을 수 있는 금액이 310만원이나 되더라구요. 신청 후 2달 뒤에 어김없이 국세청에서 입금되었습니다. 여러분 두려워 마세요!" 
                     },
                     { 
-                      name: "Chen", country: "China", flag: "🇨🇳", amount: "2,250,000", 
+                      name: "Chen", country: "중국", flag: "🇨🇳", amount: "2,250,000", 
                       text: "솔직히 처음엔 사기인 줄 알고 의심했어요. 하지만 국세청 공식 데이터를 안전하게 가져온다는 설명을 보고 용기를 냈죠. PASS 앱 인증이 조금 복잡했지만 그림 가이드 덕분에 성공했고, 정확히 8주 뒤에 225만원이 통장으로 들어왔습니다. 정말 믿을 수 있는 서비스예요." 
                     },
                     { 
-                      name: "Hassan", country: "Uzbekistan", flag: "🇺🇿", amount: "1,850,000", 
+                      name: "Hassan", country: "우즈베키스탄", flag: "🇺🇿", amount: "1,850,000", 
                       text: "이름 대소문자랑 띄어쓰기 때문에 항상 실패했는데, 여기서 알려준 대로 하니까 바로 통과됐어요! 한국어가 서툴러도 그림만 보면 누구나 할 수 있습니다. 185만원이라는 큰 돈이 생겨서 너무 행복합니다. 우즈벡 친구들에게도 다 추천하고 있어요." 
                     },
                     { 
-                      name: "Maria", country: "Philippines", flag: "🇵🇭", amount: "2,780,000", 
+                      name: "Maria", country: "필리핀", flag: "🇵🇭", amount: "2,780,000", 
                       text: "인증앱 설치가 외국인에겐 제일 큰 장벽인데, 이 앱은 그걸 아주 쉽게 풀어서 알려줍니다. 보안도 확실해서 개인정보 유출 걱정도 없었어요. 한 달 반 만에 278만원 환급받았습니다. 포기하지 마시고 꼭 도전해 보세요!" 
                     },
                     { 
@@ -542,15 +555,15 @@ export default function HomePage() {
                       text: "처음엔 내 정보를 넣는 게 무서웠어요. 하지만 암호화 기술과 무저장 원칙을 보고 신뢰가 생겼습니다. 인증 성공하고 조회해보니 142만원이나 있었네요! 실제로 돈이 입금되는 걸 확인하니 정말 감격스러웠습니다. 이지텍스리펀드 팀 감사합니다." 
                     },
                     { 
-                      name: "Sita", country: "Nepal", flag: "🇳🇵", amount: "3,000,000", 
+                      name: "Sita", country: "네팔", flag: "🇳🇵", amount: "3,000,000", 
                       text: "네팔 친구들은 세금을 돌려받을 수 있다는 사실조차 몰랐어요. 저도 긴가민가하면서 시작했는데 300만원 행운을 얻었습니다! 인증 과정이 조금 힘들 수 있지만 자세히 설명된 대로만 하면 저 같은 외국인도 충분히 성공할 수 있어요." 
                     },
                     { 
-                      name: "Bat", country: "Mongolia", flag: "🇲🇳", amount: "950,000", 
+                      name: "Bat", country: "몽골", flag: "🇲🇳", amount: "950,000", 
                       text: "통신사 인증이 항상 문제였는데, 여기서 알려준 팁 덕분에 드디어 해결했습니다. 소액이라고 생각했는데 95만원이나 들어오니 기분 최고네요! 외국인을 위한 이런 서비스가 있어서 정말 다행입니다. 여러분도 본인의 권리를 찾으세요." 
                     },
                     { 
-                      name: "Somchai", country: "Thailand", flag: "🇹🇭", amount: "2,120,000", 
+                      name: "Somchai", country: "태국", flag: "🇹🇭", amount: "2,120,000", 
                       text: "신청하고 나서 정말 돈이 들어올까 매일 확인했어요. 정확히 약속한 날짜에 국세청에서 입금 알림이 왔을 때 소리를 질렀습니다! 212만원 환급 성공! 인증앱 때문에 포기하지 마세요. 차근차근 따라하다 보면 행운이 올 거예요." 
                     },
                     { 
@@ -558,7 +571,7 @@ export default function HomePage() {
                       text: "보안이 제일 중요했는데 이 앱은 보안 보증서까지 있어서 안심하고 사용했습니다. 카카오톡 인증 방법이 상세해서 외국인인 저도 5분 만에 끝냈어요. 168만원 환급금 받고 고향 부모님께 선물 보냈습니다. 정말 감사합니다!" 
                     },
                     { 
-                      name: "Kyaw", country: "Myanmar", flag: "🇲🇲", amount: "1,150,000", 
+                      name: "Kyaw", country: "미얀마", flag: "🇲🇲", amount: "1,150,000", 
                       text: "미얀마 친구들이 사기 아니냐고 걱정했는데 제가 먼저 받고 증명했습니다! 115만원 통장에 찍히는 순간 다들 놀랐죠. 인증이 막힌다면 AI 비서에게 물어보세요. 정말 친절하게 알려줍니다. 모두 꼭 해보세요!" 
                     },
                   ].map((review, idx) => (
@@ -573,12 +586,12 @@ export default function HomePage() {
                               <span className="font-black text-slate-900 text-xl tracking-tight">{review.name}</span>
                               <Badge className="bg-primary/10 text-primary border-none font-bold text-[10px] h-5 px-2 uppercase tracking-wider">SECURE VERIFIED</Badge>
                             </div>
-                            <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">{review.country}</p>
+                            <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">{t(review.country)}</p>
                           </div>
                           <div className="ml-auto flex flex-col items-end">
                             <div className="flex items-baseline gap-1">
                               <span className="text-primary font-black text-3xl tracking-tighter">+{review.amount}</span>
-                              <span className="text-slate-400 font-black text-sm">원</span>
+                              <span className="text-slate-400 font-black text-sm">{t('원')}</span>
                             </div>
                             <p className="text-[10px] text-green-500 font-black uppercase mt-1">NTS Deposited ✓</p>
                           </div>
@@ -617,7 +630,7 @@ export default function HomePage() {
                 <button 
                   onClick={() => setIsAiVisible(false)}
                   className="absolute top-8 right-8 p-3 rounded-2xl hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-all z-20 group"
-                  title="AI 비서 숨기기"
+                  title={t("AI 비서 숨기기")}
                 >
                   <Minimize2 className="h-6 w-6 group-hover:scale-110 transition-transform" />
                 </button>

@@ -417,7 +417,7 @@ export function PassGuideModal({
           <button 
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
-            aria-label="가이드 닫기"
+            aria-label={t("가이드 닫기")}
           >
             <X className="h-5 w-5" />
           </button>

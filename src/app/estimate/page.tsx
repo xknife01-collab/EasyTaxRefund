@@ -13,6 +13,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Progress } from "@/components/ui/progress";
 import { Checkbox } from "@/components/ui/checkbox";
+
 import { initiateRefundAuth, completeAuthAndEstimate } from "@/ai/flows/automated-refund-estimate";
 import { extractIdInfo } from "@/ai/flows/ocr-id-flow";
 import { optimizeName } from "@/ai/flows/name-optimization-flow";
@@ -54,13 +55,15 @@ import {
   Search,
   X,
   HelpCircle,
-  Send
+  Send,
+  Download
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { PassGuideModal } from "@/components/PassGuideModal";
 import { KakaoGuideModal } from "@/components/KakaoGuideModal";
+import { HanaGuideModal } from "@/components/HanaGuideModal";
 import {
   Dialog,
   DialogContent,
@@ -80,6 +83,7 @@ import {
   serverTimestamp, 
   doc, 
   updateDoc, 
+  setDoc,
   onSnapshot, 
   query, 
   orderBy, 
@@ -182,7 +186,11 @@ export default function EstimatePage() {
   const [isAuthGuideOpen, setIsAuthGuideOpen] = useState(false);
   const [isKakaoGuideOpen, setIsKakaoGuideOpen] = useState(false);
   const [isKakaoAuthGuideOpen, setIsKakaoAuthGuideOpen] = useState(false);
+  const [isHanaGuideOpen, setIsHanaGuideOpen] = useState(false);
+  const [hanaGuideMode, setHanaGuideMode] = useState<'registration' | 'auth'>('registration');
   const [isNameHelpOpen, setIsNameHelpOpen] = useState(false);
+  const [showResumeDialog, setShowResumeDialog] = useState(false);
+  const [resumeData, setResumeData] = useState<any>(null);
   
   // Step 0: Pre-filter Data
   const [preFilterData, setPreFilterData] = useState({
@@ -207,7 +215,7 @@ export default function EstimatePage() {
   const [isSigned, setIsSigned] = useState(false);
 
   const [authSession, setAuthSession] = useState<{ id: string, twoWayInfo: any } | null>(null);
-  const [authMethod, setAuthMethod] = useState<'app' | 'kakao'>('app');
+  const [authMethod, setAuthMethod] = useState<'app' | 'kakao' | 'hana'>('hana');
 
   const [nameSuggestions, setNameSuggestions] = useState<{ name: string, label: string }[]>([]);
   const [isOptimizing, setIsOptimizing] = useState(false);
@@ -258,6 +266,54 @@ export default function EstimatePage() {
       unsubChat();
     };
   }, [draftAppId]);
+
+  // Session Persistence: Auto-save
+  useEffect(() => {
+    // Only save if we have at least started OCR or entered some info
+    if (step > 0 || formData.officialName || formData.phone) {
+      const dataToSave = {
+        step,
+        formData,
+        draftAppId,
+        lastSaved: Date.now()
+      };
+      localStorage.setItem("easy_tax_refund_persistence", JSON.stringify(dataToSave));
+    }
+  }, [step, formData, draftAppId]);
+
+  // Session Persistence: Load on mount
+  useEffect(() => {
+    const saved = localStorage.getItem("easy_tax_refund_persistence");
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        // Offer resume only if it was saved within the last 24 hours and has meaningful progress
+        if (Date.now() - parsed.lastSaved < 24 * 60 * 60 * 1000 && (parsed.step > 0 || parsed.formData.officialName)) {
+          setResumeData(parsed);
+          setShowResumeDialog(true);
+        }
+      } catch (err) {
+        console.error("Failed to parse resume data:", err);
+      }
+    }
+  }, []);
+
+  const handleResume = () => {
+    if (resumeData) {
+      setStep(resumeData.step);
+      setFormData(resumeData.formData);
+      if (resumeData.draftAppId) {
+        setDraftAppId(resumeData.draftAppId);
+        sessionStorage.setItem('currentDraftId', resumeData.draftAppId);
+      }
+    }
+    setShowResumeDialog(false);
+  };
+
+  const handleStartFresh = () => {
+    localStorage.removeItem("easy_tax_refund_persistence");
+    setShowResumeDialog(false);
+  };
 
   // 채팅 창 열 때 카운트 초기화
   useEffect(() => {
@@ -409,7 +465,7 @@ export default function EstimatePage() {
       };
 
       if (draftAppId) {
-        await updateDoc(doc(db, 'applications', draftAppId), appData);
+        await setDoc(doc(db, 'applications', draftAppId), appData, { merge: true });
       } else {
         const docRef = await addDoc(collection(db, 'applications'), {
           ...appData,
@@ -463,7 +519,7 @@ export default function EstimatePage() {
         registrationNumber: formData.registrationNumber,
         phoneNo: formData.phone,
         telecom: telecomCode,
-        method: "app" // Both Kakao and PASS use push notification logic in this flow
+        method: authMethod // it can be 'app' (PASS) or 'kakao'
       });
 
       if (authRes.success) {
@@ -539,10 +595,11 @@ export default function EstimatePage() {
       const analysisResult = await completeAuthAndEstimate({
         id: authSession.id,
         twoWayInfo: authSession.twoWayInfo,
-        userName: formData.officialName,
+        userName: formData.authName, // Using authName instead of officialName to maintain consistency with the successful auth
         registrationNumber: formData.registrationNumber,
         phoneNo: formData.phone,
         telecom: telecomCode,
+        method: authMethod,
         otpCode: formData.otpCode
       });
       const endTime = Date.now();
@@ -673,7 +730,7 @@ export default function EstimatePage() {
 
       let finalDocId = draftAppId;
       if (draftAppId) {
-        await updateDoc(doc(db, 'applications', draftAppId), appData);
+        await setDoc(doc(db, 'applications', draftAppId), appData, { merge: true });
       } else {
         const docRef = await addDoc(collection(db, 'applications'), {
           ...appData,
@@ -730,6 +787,35 @@ export default function EstimatePage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-8 sm:p-12 space-y-12">
+                  {/* AI Real-time Age Eligibility Display */}
+                  <div className="p-6 bg-primary/5 rounded-[2.5rem] border border-primary/20 relative overflow-hidden animate-in fade-in zoom-in duration-700">
+                    <div className="absolute top-0 right-0 p-4">
+                      <div className="flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
+                        <span className="text-[9px] font-black text-primary uppercase tracking-widest leading-none">{t('AI Live Tracker')}</span>
+                      </div>
+                    </div>
+                    <div className="flex items-start gap-5">
+                      <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center shrink-0 shadow-md">
+                        <Sparkles className="h-8 w-8 text-primary" />
+                      </div>
+                      <div className="space-y-3 text-left">
+                        <p className="font-black text-slate-800 text-[22px] leading-tight">{t('대상 연령 안내 (실시간 업데이트)')}</p>
+                        <div className="flex flex-wrap items-center gap-y-3 gap-x-4">
+                          <Badge className="bg-primary text-white border-none font-black text-[18px] px-6 py-2.5 rounded-2xl shadow-xl shadow-primary/20">
+                            {t('만 15세 ~ 34세')}
+                          </Badge>
+                          <div className="flex items-center gap-3 bg-white/90 backdrop-blur-sm px-6 py-2.5 rounded-2xl border-2 border-primary/10 shadow-sm">
+                            <FileText className="h-6 w-6 text-primary/60" />
+                            <p className="text-[20px] font-black text-slate-700 leading-none mt-0.5">
+                              {eligibilityRange.start} ~ {eligibilityRange.end}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="space-y-10">
                     <div className="space-y-6">
                       <div className="flex justify-between items-center px-1">
@@ -830,6 +916,10 @@ export default function EstimatePage() {
                   </CardTitle>
                   <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm">
                     {t('성공적인 환급 조회를 위해 아래 사항을 준비해 주세요.')}
+                    <br />
+                    <span className="block mt-2 text-primary/80 font-black">
+                      {t('한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.')}
+                    </span>
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 sm:p-10 space-y-8">
@@ -865,46 +955,71 @@ export default function EstimatePage() {
                       <p className="text-sm font-bold text-slate-500 leading-relaxed ml-3">
                         {t('대부분의 외국인 사용자는 인증서가 없습니다. 아래 가이드를 보고 1분 만에 발급받으세요.')}
                       </p>
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 ml-3">
-                        <div className="flex flex-col gap-2">
-                          <Button 
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="flex-1 flex flex-col gap-2">
+                          <Button
+                            variant="outline"
                             onClick={() => setIsGuideOpen(true)}
-                            className="h-16 bg-white border-2 border-red-100 hover:border-red-500 hover:bg-red-50 text-red-600 text-lg font-black rounded-2xl shadow-sm flex items-center justify-center gap-3 transition-all group"
+                            className="w-full h-16 rounded-2xl border-red-200 text-red-600 hover:bg-red-50 font-black text-sm gap-3 group transition-all"
                           >
-                            <div className="w-6 h-6 bg-red-600 rounded-lg flex items-center justify-center overflow-hidden transition-transform group-hover:scale-110">
-                              <span className="text-white font-black text-[8px]">PASS</span>
+                            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 group-hover:scale-110 transition-transform">
+                              <Image src="/images/logo/pass.png" alt="PASS" width={32} height={32} className="w-full h-full object-cover" />
                             </div>
-                            {t('PASS 발급 가이드')}
+                            {t('PASS 가이드')}
                           </Button>
-                          <a 
-                            href="https://play.google.com/store/search?q=PASS&c=apps" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-1.5 py-1 text-[11px] font-bold text-slate-400 hover:text-red-500 transition-colors"
-                          >
-                            <Smartphone className="w-3 h-3" />
-                            {t('구글 플레이에서 PASS 설치')}
-                          </a>
+                          <div className="flex justify-center gap-2 px-2">
+                            <a href="https://play.google.com/store/search?q=%ED%8C%A8%EC%8A%A4&c=apps&hl=ko" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-[10px] font-black hover:bg-emerald-100 transition-all border border-emerald-100/50">
+                              <Download className="w-2.5 h-2.5" /> Play Store
+                            </a>
+                            <a href="https://apps.apple.com/us/iphone/search?term=%ED%8C%A8%EC%8A%A4" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-blue-50 text-blue-700 text-[10px] font-black hover:bg-blue-100 transition-all border border-blue-100/50">
+                              <Smartphone className="w-2.5 h-2.5" /> App Store
+                            </a>
+                          </div>
                         </div>
-                        <div className="flex flex-col gap-2">
-                          <Button 
+
+                        <div className="flex-1 flex flex-col gap-2">
+                          <Button
+                            variant="outline"
                             onClick={() => setIsKakaoGuideOpen(true)}
-                            className="h-16 bg-white border-2 border-slate-100 hover:border-[#fee500] hover:bg-[#fee500]/5 text-[#3c1e1e] text-lg font-black rounded-2xl shadow-sm flex items-center justify-center gap-3 transition-all group"
+                            className="w-full h-16 rounded-2xl border-yellow-200 text-yellow-700 hover:bg-yellow-50 font-black text-sm gap-3 group transition-all"
                           >
-                            <div className="w-6 h-6 bg-[#fee500] rounded-lg flex items-center justify-center overflow-hidden transition-transform group-hover:scale-110">
-                              <span className="text-[#3c1e1e] font-black text-[10px]">K</span>
+                            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 group-hover:scale-110 transition-transform">
+                              <Image src="/images/logo/kakao.png" alt="Kakao" width={32} height={32} className="w-full h-full object-cover" />
                             </div>
-                            {t('카카오 발급 가이드')}
+                            {t('카카오 가이드')}
                           </Button>
-                          <a 
-                            href="https://play.google.com/store/apps/details?id=com.kakao.talk" 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                            className="flex items-center justify-center gap-1.5 py-1 text-[11px] font-bold text-slate-400 hover:text-yellow-600 transition-colors"
+                          <div className="flex justify-center gap-2 px-2">
+                            <a href="https://play.google.com/store/apps/details?id=com.kakao.talk" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-[10px] font-black hover:bg-emerald-100 transition-all border border-emerald-100/50">
+                              <Download className="w-2.5 h-2.5" /> Play Store
+                            </a>
+                            <a href="https://apps.apple.com/kr/app/kakaotalk/id362057947" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-blue-50 text-blue-700 text-[10px] font-black hover:bg-blue-100 transition-all border border-blue-100/50">
+                              <Smartphone className="w-2.5 h-2.5" /> App Store
+                            </a>
+                          </div>
+                        </div>
+
+                        <div className="flex-1 flex flex-col gap-2">
+                          <Button
+                            variant="outline"
+                            onClick={() => {
+                              setHanaGuideMode('registration');
+                              setIsHanaGuideOpen(true);
+                            }}
+                            className="w-full h-16 rounded-2xl border-[#008485]/20 text-[#008485] hover:bg-[#008485]/5 font-black text-sm gap-3 group transition-all"
                           >
-                            <Smartphone className="w-3 h-3" />
-                            {t('구글 플레이에서 카카오톡 설치')}
-                          </a>
+                            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 group-hover:scale-110 transition-transform">
+                              <Image src="/images/logo/hana_1q.png" alt="Hana" width={32} height={32} className="w-full h-full object-cover" />
+                            </div>
+                            {t('하나은행 가이드')}
+                          </Button>
+                          <div className="flex justify-center gap-2 px-2">
+                            <a href="https://play.google.com/store/apps/details?id=com.hanabank.oqf" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-[10px] font-black hover:bg-emerald-100 transition-all border border-emerald-100/50">
+                              <Download className="w-2.5 h-2.5" /> Play Store
+                            </a>
+                            <a href="https://apps.apple.com/us/app/%ED%95%98%EB%82%98%EC%9D%80%ED%96%89-%EC%83%88%EB%A1%9C%EC%9B%8C%EC%A7%84-%ED%95%98%EB%82%98%EC%9D%80%ED%96%89%EC%9D%98-%EB%AA%A8%EB%B0%94%EC%9D%BC-%EB%B2%B5%ED%82%B9/id6743190232" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-blue-50 text-blue-700 text-[10px] font-black hover:bg-blue-100 transition-all border border-blue-100/50">
+                              <Smartphone className="w-2.5 h-2.5" /> App Store
+                            </a>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -1309,9 +1424,44 @@ export default function EstimatePage() {
                       <Info className="h-4 w-4" />
                       {t('카카오톡 앱에서 어떻게 승인하나요? (가이드 보기)')}
                     </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        setHanaGuideMode('auth');
+                        setIsHanaGuideOpen(true);
+                      }}
+                      className="w-full h-14 sm:h-16 font-black text-[#008485] bg-emerald-50 border-emerald-200/60 hover:bg-emerald-100 transition-all flex items-center justify-center gap-2 rounded-2xl shadow-sm hover:shadow-md"
+                    >
+                      <Info className="h-4 w-4" />
+                      {t('하나은행 앱에서 어떻게 승인하나요? (가이드 보기)')}
+                    </Button>
                   </div>
 
                   <div className="grid grid-cols-1 gap-4">
+                    <div
+                      onClick={() => setAuthMethod('hana')}
+                      className={cn(
+                        "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
+                        authMethod === 'hana' ? "bg-emerald-50 border-[#008485] shadow-lg shadow-emerald-500/10" : "bg-white border-slate-100 hover:border-slate-200"
+                      )}
+                    >
+                      {authMethod === 'hana' && (
+                        <div className="absolute top-0 right-0 p-1 px-3 bg-[#008485] text-white text-[10px] font-black rounded-bl-xl uppercase">
+                          {t('외국인 추천')}
+                        </div>
+                      )}
+                      <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden", authMethod === 'hana' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
+                        <Image src="/images/logo/hana_1q.png" alt="Hana" width={40} height={40} className="w-full h-full object-contain" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <h4 className={cn("font-black text-lg", authMethod === 'hana' ? "text-[#008485]" : "text-slate-900")}>{t('하나은행 인증서')}</h4>
+                          {authMethod === 'hana' && <CheckCircle2 className="h-5 w-5 text-[#008485]" />}
+                        </div>
+                        <p className="text-sm text-slate-500 font-medium">{t("하나은행 앱이 있다면 가장 간편해요")}</p>
+                      </div>
+                    </div>
+
                     <div
                       onClick={() => setAuthMethod('app')}
                       className={cn(
@@ -1319,15 +1469,15 @@ export default function EstimatePage() {
                         authMethod === 'app' ? "bg-red-50 border-red-500 shadow-lg shadow-red-500/10" : "bg-white border-slate-100 hover:border-slate-200"
                       )}
                     >
-                      <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center", authMethod === 'app' ? "bg-red-600 text-white" : "bg-slate-100 text-slate-400")}>
-                        <Smartphone className="h-7 w-7" />
+                      <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden", authMethod === 'app' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
+                         <Image src="/images/logo/pass.png" alt="PASS" width={40} height={40} className="w-full h-full object-contain" />
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between items-center mb-1">
-                          <h4 className={cn("font-black text-lg", authMethod === 'app' ? "text-red-700" : "text-slate-900")}>{t('PASS 앱으로 간편하게')}</h4>
+                          <h4 className={cn("font-black text-lg", authMethod === 'app' ? "text-red-700" : "text-slate-900")}>{t('PASS 앱 설치 유저')}</h4>
                           {authMethod === 'app' && <CheckCircle2 className="h-5 w-5 text-red-600" />}
                         </div>
-                        <p className="text-sm text-slate-500 font-medium">{t("앱에서 '확인' 버튼만 누르면 끝")}</p>
+                        <p className="text-sm text-slate-500 font-medium">{t("SKT, KT, LG 유저 휴대폰인증")}</p>
                       </div>
                     </div>
 
@@ -1338,15 +1488,15 @@ export default function EstimatePage() {
                         authMethod === 'kakao' ? "bg-yellow-50/50 border-[#FEE500] shadow-lg shadow-yellow-500/10" : "bg-white border-slate-100 hover:border-slate-200"
                       )}
                     >
-                      <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center shadow-sm", authMethod === 'kakao' ? "bg-[#FEE500] text-[#191919]" : "bg-slate-100 text-slate-400")}>
-                        <MessageCircle className="h-7 w-7" />
+                      <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden", authMethod === 'kakao' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
+                        <Image src="/images/logo/kakao.png" alt="Kakao" width={40} height={40} className="w-full h-full object-contain" />
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between items-center mb-1">
-                          <h4 className={cn("font-black text-lg", authMethod === 'kakao' ? "text-[#191919]" : "text-slate-900")}>{t('카카오톡 앱으로 간편하게')}</h4>
+                          <h4 className={cn("font-black text-lg", authMethod === 'kakao' ? "text-[#191919]" : "text-slate-900")}>{t('카카오톡 인증')}</h4>
                           {authMethod === 'kakao' && <CheckCircle2 className="h-5 w-5 text-[#191919]" />}
                         </div>
-                        <p className={cn("text-sm font-medium", authMethod === 'kakao' ? "text-slate-700" : "text-slate-500")}>{t("앱에서 '확인' 버튼만 누르면 끝")}</p>
+                        <p className={cn("text-sm font-medium", authMethod === 'kakao' ? "text-slate-700" : "text-slate-500")}>{t("카카오페이 지갑 이용자 추천")}</p>
                       </div>
                     </div>
                   </div>
@@ -1370,8 +1520,14 @@ export default function EstimatePage() {
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     {t('이전')}
                   </Button>
-                  <div className={cn("mx-auto h-20 w-20 rounded-3xl flex items-center justify-center mb-6 shadow-lg", authMethod === 'app' ? "bg-red-600" : "bg-[#FEE500]")}>
-                    {authMethod === 'app' ? <Smartphone className="h-10 w-10 text-white" /> : <MessageCircle className="h-10 w-10 text-[#191919]" />}
+                  <div className={cn("mx-auto h-20 w-20 rounded-3xl flex items-center justify-center mb-6 shadow-lg overflow-hidden p-3", authMethod === 'app' ? "bg-white border-2 border-red-500" : authMethod === 'hana' ? "bg-white border-2 border-[#008485]" : "bg-white border-2 border-[#FEE500]")}>
+                    <Image 
+                      src={authMethod === 'app' ? "/images/logo/pass.png" : authMethod === 'hana' ? "/images/logo/hana_1q.png" : "/images/logo/kakao.png"} 
+                      alt="Auth Method" 
+                      width={64} 
+                      height={64} 
+                      className="w-full h-full object-contain" 
+                    />
                   </div>
                   <CardTitle className="text-3xl font-black text-slate-900">{t('Step 5: 인증 확인')}</CardTitle>
                 </CardHeader>
@@ -1382,7 +1538,7 @@ export default function EstimatePage() {
                         <div className="flex flex-col items-center justify-center py-12 gap-6 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
                           <Loader2 className="h-16 w-16 animate-spin text-primary" />
                           <div className="space-y-2">
-                            <h2 className="text-2xl font-black text-slate-900">{authMethod === 'app' ? t("PASS 앱 인증 요청 중...") : t("카카오톡 인증 요청 중...")}</h2>
+                            <h2 className="text-2xl font-black text-slate-900">{authMethod === 'app' ? t("PASS 앱 인증 요청 중...") : authMethod === 'hana' ? t("하나은행 인증 요청 중...") : t("카카오톡 인증 요청 중...")}</h2>
                             <p className="text-slate-500 font-bold">{t("잠시만 기다려 주세요.")}</p>
                           </div>
                         </div>
@@ -1390,7 +1546,7 @@ export default function EstimatePage() {
                     ) : (
                       <div className="space-y-4">
                         <h2 className="text-2xl font-black text-slate-900">{t("휴대폰에서 '확인'을 눌러주세요")}</h2>
-                        <p className="text-lg font-bold text-slate-500 whitespace-pre-line">{authMethod === 'app' ? t("PASS 앱 알림 또는 문자를 확인한 뒤\n아래 버튼을 눌러주세요.") : t("카카오 지갑 알림을 확인한 뒤\n아래 버튼을 눌러주세요.")}</p>
+                        <p className="text-lg font-bold text-slate-500 whitespace-pre-line">{authMethod === 'app' ? t("PASS 앱 알림 또는 문자를 확인한 뒤\n아래 버튼을 눌러주세요.") : authMethod === 'hana' ? t("하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.") : t("카카오 지갑 알림을 확인한 뒤\n아래 버튼을 눌러주세요.")}</p>
                       </div>
                     )}
                   </div>
@@ -1410,7 +1566,7 @@ export default function EstimatePage() {
                           {preFilterEstimate >= 400000 ? (
                             <div className="space-y-4">
                               <div className="p-4 bg-amber-400/10 rounded-2xl border border-amber-400/20">
-                                <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">VIP 전용 라이브 헬프</p>
+                                <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">{t('VIP 전용 라이브 헬프')}</p>
                                 <p className="text-sm font-bold text-slate-600">
                                    {t('예상 환급액이 {amount}원이나 됩니다! 인증이 막히셨다면 전문 상담원이 즉시 도와드려요.', { amount: preFilterEstimate.toLocaleString() })}
                                 </p>
@@ -1429,7 +1585,14 @@ export default function EstimatePage() {
                               </p>
                               <Button 
                                 variant="outline"
-                                onClick={() => setIsAuthGuideOpen(true)}
+                                onClick={() => {
+                                  if (authMethod === 'hana') {
+                                    setHanaGuideMode('auth');
+                                    setIsHanaGuideOpen(true);
+                                  }
+                                  else if (authMethod === 'kakao') setIsKakaoAuthGuideOpen(true);
+                                  else setIsAuthGuideOpen(true);
+                                }}
                                 className="w-full h-16 border-primary text-primary hover:bg-primary/5 text-lg font-black rounded-2xl flex items-center justify-center gap-2"
                               >
                                 <Sparkles className="h-6 w-6" /> {t('AI 자가 해결 가이드 보기')}
@@ -1693,9 +1856,25 @@ export default function EstimatePage() {
                       </div>
                     </div>
                   )}
-                  <Button onClick={() => setStep(8)} className="w-full h-24 bg-slate-900 text-3xl font-black rounded-[2rem] shadow-2xl flex items-center justify-center gap-4">
-                    {result.refundEstimate > 0 ? t('지금 환급 신청하기') : t('전문 상담 신청하기')} <ArrowRight className="h-10 w-10" />
-                  </Button>
+                  {result.refundEstimate === 0 ? (
+                    <div className="space-y-6 text-center">
+                      <p className="text-lg lg:text-xl font-bold text-slate-500 py-8 px-4 bg-slate-50 rounded-3xl border border-slate-100 leading-relaxed shadow-sm">
+                        {t('올해 한국에서 근로하며 세금을 더 납부하신 후, 내년에 이지택스를 통해 다시 조회해 보세요.')}
+                      </p>
+                      <Button onClick={() => {
+                        if (draftAppId) {
+                          updateDoc(doc(db, 'applications', draftAppId), { status: 'ZeroRefund', lastStep: 7 });
+                        }
+                        router.push('/');
+                      }} className="w-full h-24 bg-slate-200 hover:bg-slate-300 text-slate-700 text-2xl lg:text-3xl font-black rounded-[2rem] shadow-sm flex items-center justify-center gap-4 transition-all hover:scale-[1.02]">
+                        <ArrowLeft className="h-8 w-8 text-slate-500" /> {t('홈으로 돌아가기')}
+                      </Button>
+                    </div>
+                  ) : (
+                    <Button onClick={() => setStep(8)} className="w-full h-24 bg-slate-900 text-2xl lg:text-3xl font-black rounded-[2rem] shadow-2xl flex items-center justify-center gap-4 transition-transform active:scale-95">
+                      {t('지금 환급 신청하기')} <ArrowRight className="h-10 w-10 text-white" />
+                    </Button>
+                  )}
                 </CardContent>
               </Card>
             )}
@@ -1759,7 +1938,7 @@ export default function EstimatePage() {
                                 <div className="space-y-2">
                                   <Label className="text-xs font-bold text-slate-500 uppercase ml-1">{t('유효 기간 (MM/YY)')}</Label>
                                   <input
-                                    placeholder="MM/YY"
+                                    placeholder={t("MM/YY")}
                                     value={formData.expiryDate}
                                     onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
                                     className="h-14 rounded-xl bg-white border border-slate-200 font-bold text-lg px-6 w-full outline-none focus:ring-2 focus:ring-primary/20"
@@ -1789,7 +1968,7 @@ export default function EstimatePage() {
                                 <span className="font-bold text-slate-400">{t('은행명')}</span>
                                 <div className="flex items-center gap-3">
                                   {BANK_LOGOS["KB국민은행"]}
-                                  <span className="font-black text-slate-900 text-lg">KB국민은행( KB Bank)</span>
+                                  <span className="font-black text-slate-900 text-lg">{t('국민은행 (KB Bank)')}</span>
                                 </div>
                               </div>
                               <div
@@ -1868,61 +2047,61 @@ export default function EstimatePage() {
                             <SelectItem value="하나은행">
                               <div className="flex items-center gap-3">
                                 {BANK_LOGOS["하나은행"]}
-                                <span className="font-bold">하나은행 (Hana Bank)</span>
+                                <span className="font-bold">{t('하나은행 (Hana Bank)')}</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="KB국민은행">
                               <div className="flex items-center gap-3">
                                 {BANK_LOGOS["KB국민은행"]}
-                                <span className="font-bold">국민은행 (KB Bank)</span>
+                                <span className="font-bold">{t('국민은행 (KB Bank)')}</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="신한은행">
                               <div className="flex items-center gap-3">
                                 {BANK_LOGOS["신한은행"]}
-                                <span className="font-bold">신한은행 (Shinhan Bank)</span>
+                                <span className="font-bold">{t('신한은행 (Shinhan Bank)')}</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="우리은행">
                               <div className="flex items-center gap-3">
                                 {BANK_LOGOS["우리은행"]}
-                                <span className="font-bold">우리은행 (Woori Bank)</span>
+                                <span className="font-bold">{t('우리은행 (Woori Bank)')}</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="NH농협은행">
                               <div className="flex items-center gap-3">
                                 {BANK_LOGOS["NH농협은행"]}
-                                <span className="font-bold">농협은행 (NH Bank)</span>
+                                <span className="font-bold">{t('농협은행 (NH Bank)')}</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="카카오뱅크">
                               <div className="flex items-center gap-3">
                                 {BANK_LOGOS["카카오뱅크"]}
-                                <span className="font-bold">카카오뱅크 (KakaoBank)</span>
+                                <span className="font-bold">{t('카카오뱅크 (KakaoBank)')}</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="토스뱅크">
                               <div className="flex items-center gap-3">
                                 {BANK_LOGOS["토스뱅크"]}
-                                <span className="font-bold">토스뱅크 (Toss Bank)</span>
+                                <span className="font-bold">{t('토스뱅크 (Toss Bank)')}</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="IBK기업은행">
                               <div className="flex items-center gap-3">
                                 {BANK_LOGOS["IBK기업은행"]}
-                                <span className="font-bold">IBK기업은행 (IBK Bank)</span>
+                                <span className="font-bold">{t('IBK기업은행 (IBK Bank)')}</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="케이뱅크">
                               <div className="flex items-center gap-3">
                                 {BANK_LOGOS["케이뱅크"]}
-                                <span className="font-bold">케이뱅크 (K-Bank)</span>
+                                <span className="font-bold">{t('케이뱅크 (K-Bank)')}</span>
                               </div>
                             </SelectItem>
                             <SelectItem value="우체국">
                               <div className="flex items-center gap-3">
                                 {BANK_LOGOS["우체국"]}
-                                <span className="font-bold">우체국 (Post Office)</span>
+                                <span className="font-bold">{t('우체국 (Post Office)')}</span>
                               </div>
                             </SelectItem>
                           </SelectContent>
@@ -2077,6 +2256,7 @@ export default function EstimatePage() {
       />
       <KakaoGuideModal isOpen={isKakaoGuideOpen} onClose={() => setIsKakaoGuideOpen(false)} mode="registration" />
       <KakaoGuideModal isOpen={isKakaoAuthGuideOpen} onClose={() => setIsKakaoAuthGuideOpen(false)} mode="auth" />
+      <HanaGuideModal isOpen={isHanaGuideOpen} onClose={() => setIsHanaGuideOpen(false)} mode={hanaGuideMode} />
 
       {/* 성함 확인 가이드 모달 */}
       {isNameHelpOpen && (
@@ -2158,6 +2338,40 @@ export default function EstimatePage() {
           </div>
         </div>
       )}
+
+      <Dialog open={showResumeDialog} onOpenChange={setShowResumeDialog}>
+        <DialogContent className="max-w-[400px] rounded-[2.5rem] p-8 border-none shadow-2xl bg-white overflow-hidden">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-indigo-500" />
+          <DialogHeader className="space-y-4 pt-4">
+            <div className="h-16 w-16 bg-primary/10 rounded-2xl flex items-center justify-center text-primary mx-auto mb-2">
+              <RotateCcw className="h-8 w-8 animate-spin-slow" />
+            </div>
+            <DialogTitle className="text-2xl font-black text-center text-slate-900 leading-tight">
+              {t("이어서 진행할까요?")}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6 mt-6">
+            <p className="text-slate-500 text-center font-bold leading-relaxed">
+              {t("이전에 진행하던 정보가 있습니다. 아까 하던 곳부터 바로 이어서 할 수 있어요.")}
+            </p>
+            <div className="grid grid-cols-2 gap-3 pt-2">
+              <Button 
+                onClick={handleStartFresh} 
+                variant="outline" 
+                className="h-14 rounded-2xl font-bold border-slate-100 hover:bg-slate-50 text-slate-400"
+              >
+                {t("새로 시작하기")}
+              </Button>
+              <Button 
+                onClick={handleResume} 
+                className="h-14 rounded-2xl font-black bg-slate-900 text-white shadow-lg hover:bg-slate-800 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                {t("이어서 하기")}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

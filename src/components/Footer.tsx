@@ -42,7 +42,7 @@ export function Footer() {
           <div>
             <h4 className="font-black text-slate-900 mb-6 uppercase tracking-widest text-xs">{t('고객 지원')}</h4>
             <ul className="space-y-4 text-sm font-bold text-slate-500">
-              <li><Link href="/faq" className="hover:text-primary transition-colors">{t('FAQ')}</Link></li>
+              <li><Link href="/faq" className="text-slate-400 font-bold hover:text-primary transition-colors">{t('자주 묻는 질문')}</Link></li>
               <li>
                 <AiChatDialog>
                   <button className="hover:text-primary transition-colors text-left">{t('1:1 AI 상담')}</button>
