@@ -174,4 +174,6 @@ export const common = {
   "이전에 진행하던 정보가 있습니다. 아까 하던 곳부터 바로 이어서 할 수 있어요.": "You have previous information. You can resume from where you left off.",
   "새로 시작하기": "Start New",
   "이어서 하기": "Continue",
+  "올해 한국에서 근로하며 세금을 더 납부하신 후, 내년에 이지택스를 통해 다시 조회해 보세요.": "Please work and pay more taxes in Korea this year, and check again through EasyTax next year.",
+  "홈으로 돌아가기": "Return to Home",
 };

@@ -177,4 +177,6 @@ export const common = {
   "이전에 진행하던 정보가 있습니다. 아까 하던 곳부터 바로 이어서 할 수 있어요.": "Oldin kiritilgan ma'lumotlar mavjud. Siz to'xtagan joyingizdan davom ettirishingiz mumkin.",
   "새로 시작하기": "Yangidan boshlash",
   "이어서 하기": "Davom etish",
+  "올해 한국에서 근로하며 세금을 더 납부하신 후, 내년에 이지택스를 통해 다시 조회해 보세요.": "Iltimos, bu yil Koreyada ishlang va ko'proq soliq to'lang, so'ngra kelasi yili EasyTax orqali qayta tekshirib ko'ring.",
+  "홈으로 돌아가기": "Bosh sahifaga qaytish",
 };
