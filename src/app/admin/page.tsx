@@ -75,6 +75,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const [isTranslating, setIsTranslating] = useState(false);
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<any>(null);
+  const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
 
   // Chat States
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -418,11 +419,11 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   };
 
   const handleDeleteApplicant = async (appId: string) => {
-    if (!window.confirm("🚨 경고: 이 신청자를 정말로 삭제하시겠습니까?\n모든 신청 내역이 영구적으로 제거되며 되돌릴 수 없습니다.")) return;
-    
     try {
+      console.log("Deleting applicant:", appId);
       await deleteDoc(doc(db, 'applications', appId));
       toast({ title: "삭제 완료", description: "신청자 데이터가 시스템에서 영구적으로 제거되었습니다." });
+      setIsDeleteDialogOpen(false);
       setIsDetailOpen(false);
       setSelectedApp(null);
     } catch (error) {
@@ -563,25 +564,6 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     toast({ title: "자료 추출 성공", description: "세무사 제출용 CSV 자료가 다운로드되었습니다." });
   };
 
-  if (usersError) {
-    return (
-      <div className="space-y-6">
-        <Alert variant="destructive" className="rounded-[2.5rem] p-8 border-red-200 bg-red-50">
-          <AlertTriangle className="h-8 w-8 text-red-500" />
-          <div className="ml-4">
-            <AlertTitle className="text-xl font-black text-red-900 mb-2">서버 보안 규칙 동기화 지연</AlertTitle>
-            <AlertDescription className="text-red-700 font-bold leading-relaxed">
-              보안 규칙을 "전면 개방"으로 수정했습니다. 하지만 Firebase 서버가 이 변경사항을 전 세계 노드에 뿌리는 데 1분 정도 소요될 수 있습니다.<br /><br />
-              현재 서버가 아직 이전 규칙(거절)을 들고 있습니다. <span className="underline font-black">딱 1분만 기다리신 후 브라우저를 새로고침(F5) 해주세요.</span>
-            </AlertDescription>
-          </div>
-        </Alert>
-        <Button onClick={() => window.location.reload()} className="w-full h-16 bg-slate-900 rounded-2xl font-black text-lg">
-          <RefreshCw className="mr-2 h-5 w-5 animate-spin" /> 시스템 강제 새로고침
-        </Button>
-      </div>
-    );
-  }
 
   return (
     <div className="space-y-10 animate-fade-in-up">
@@ -827,13 +809,8 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                   <DialogTitle className="text-3xl font-black">{selectedApp.fullName || "성명 미입력"}</DialogTitle>
                 </DialogHeader>
 
-                <button 
-                  onClick={() => handleDeleteApplicant(selectedApp.id)}
-                  className="absolute top-8 right-8 p-3 rounded-2xl text-slate-500 hover:text-red-500 hover:bg-red-500/10 transition-all group/del"
-                  title="신청자 삭제"
-                >
-                  <Trash2 className="h-6 w-6 group-active/del:scale-90 transition-transform" />
-                </button>
+                {/* Header info only */}
+
               </div>
 
               <div className="p-8 overflow-y-auto bg-white space-y-8">
@@ -989,9 +966,62 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                     정밀 리포트 보기
                   </Button>
                 </div>
+                  {/* Danger Zone */}
+                  <div className="pt-10 border-t border-slate-100 mt-8">
+                    <div className="p-6 bg-red-50 rounded-[2rem] border border-red-100 space-y-4">
+                      <div className="flex items-center gap-3">
+                        <div className="h-8 w-8 bg-red-500 rounded-xl flex items-center justify-center">
+                          <AlertTriangle className="h-4 w-4 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-sm font-black text-red-900">Danger Zone</p>
+                          <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest">데이터 영구 삭제 처리</p>
+                        </div>
+                      </div>
+                      <p className="text-xs font-bold text-red-600/70 leading-relaxed">
+                        신청자를 삭제하면 복구가 불가능합니다. 모든 채팅 내역과 개인정보가 즉시 파기됩니다.
+                      </p>
+                      <Button 
+                        variant="destructive" 
+                        onClick={() => setIsDeleteDialogOpen(true)}
+                        className="w-full h-14 rounded-xl font-black bg-red-500 hover:bg-red-600 shadow-lg shadow-red-200"
+                      >
+                        <Trash2 className="h-4 w-4 mr-2" /> 신청자 영구 삭제하기
+                      </Button>
+                    </div>
+                  </div>
+                </div>
               </div>
+            )}
+          </DialogContent>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
+        <DialogContent className="max-w-md rounded-[2.5rem] p-8 border-none shadow-2xl">
+          <DialogHeader className="mb-6">
+            <div className="h-16 w-16 bg-red-100 rounded-2xl flex items-center justify-center mb-4">
+              <AlertTriangle className="h-8 w-8 text-red-600" />
             </div>
-          )}
+            <DialogTitle className="text-2xl font-black text-slate-900">정말로 삭제하시겠습니까?</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            <p className="text-slate-500 font-bold leading-relaxed">
+              이 작업은 즉시 실행되며 되돌릴 수 없습니다.<br />
+              <span className="text-red-600 font-black">신청번호: {selectedApp?.id}</span><br />
+              모든 신청 내역과 개인정보가 시스템에서 영구적으로 파기됩니다.
+            </p>
+            <div className="flex gap-4">
+              <Button variant="ghost" className="flex-1 h-14 rounded-xl font-bold" onClick={() => setIsDeleteDialogOpen(false)}>취소</Button>
+              <Button 
+                variant="destructive" 
+                className="flex-[2] h-14 rounded-xl font-black bg-red-500 text-white shadow-lg" 
+                onClick={() => handleDeleteApplicant(selectedApp.id)}
+              >
+                네, 영구 삭제합니다
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
 
