@@ -89,7 +89,7 @@ import {
   orderBy, 
   increment 
 } from "firebase/firestore";
-import { getStoredTrackingData } from "@/lib/tracking";
+import { getStoredTrackingData, getEffectiveSource } from "@/lib/tracking";
 import Image from "next/image";
 
 export default function EstimatePage() {
@@ -457,9 +457,10 @@ export default function EstimatePage() {
         phone: formData.phone,
         lastStep: nextStep,
         preFilterEstimate,
-        utmSource: trackingData?.utmSource || null,
+        utmSource: getEffectiveSource(),
         utmMedium: trackingData?.utmMedium || null,
         utmCampaign: trackingData?.utmCampaign || null,
+        userLanguage: (typeof window !== 'undefined' ? localStorage.getItem('app_lang') || 'ko' : 'ko'),
         updatedAt: serverTimestamp(),
         isDraft: !isFinal
       };
@@ -718,7 +719,7 @@ export default function EstimatePage() {
         details: result?.details || [],
         status: 'InquiryCompleted',
         lastStep: 9,
-        utmSource: trackingData?.utmSource || null,
+        utmSource: getEffectiveSource(),
         utmMedium: trackingData?.utmMedium || null,
         utmCampaign: trackingData?.utmCampaign || null,
         paymentStatus: 'pending',
@@ -1024,17 +1025,18 @@ export default function EstimatePage() {
                       </div>
                     </div>
 
-                    <div className="space-y-3 pt-4">
-                      <h3 className="font-black text-slate-400 text-lg flex items-center gap-2">
-                        <div className="w-1.5 h-6 bg-slate-200 rounded-full" />
+                    <div className="space-y-4 pt-6 p-6 bg-emerald-50/50 rounded-[2rem] border-2 border-dashed border-emerald-100 shadow-sm">
+                      <h3 className="font-black text-emerald-600 text-lg flex items-center gap-2">
+                        <div className="w-1.5 h-6 bg-emerald-400 rounded-full" />
                         {t('이미 인증서가 있다면?')}
                       </h3>
-                      <div className="grid grid-cols-1 gap-3 ml-3">
+                      <div className="grid grid-cols-1 gap-3">
                         <Button 
                           variant="outline"
                           onClick={() => { setStep(2); saveProgress(2); }}
-                          className="h-14 border-slate-200 text-slate-600 font-black rounded-2xl hover:bg-slate-50"
+                          className="h-16 border-emerald-200 bg-white text-emerald-700 font-black rounded-2xl hover:bg-emerald-50 hover:border-emerald-300 shadow-sm transition-all flex items-center justify-center gap-2 group"
                         >
+                          <BadgeCheck className="w-5 h-5 text-emerald-500 group-hover:scale-110 transition-transform" />
                           {t('인증서가 있습니다. 바로 시작하기')}
                         </Button>
                       </div>

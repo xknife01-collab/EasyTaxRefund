@@ -153,7 +153,16 @@ export default function AdminStatsPage() {
       : dateFilteredApps.filter(a => (LANGUAGE_TO_COUNTRY[a.userLanguage] || a.userLanguage) === selectedCountry);
 
     // Basic Metrics
-    const totalVisits = dateFilteredDaily.reduce((acc, s) => acc + (s.visitCount || 0), 0);
+    const totalVisits = dateFilteredDaily.reduce((acc, s) => {
+      if (selectedCountry === 'all') return acc + (s.visitCount || 0);
+      
+      // 선택된 국가 이름에 해당하는 언어 코드를 찾음 (예: '베트남' -> 'vi')
+      const langCode = Object.keys(LANGUAGE_TO_COUNTRY).find(key => LANGUAGE_TO_COUNTRY[key] === selectedCountry);
+      if (langCode) {
+        return acc + (s.languageVisits?.[langCode] || 0);
+      }
+      return acc;
+    }, 0);
     const countryApps = countryFilteredApps.length;
     const countryPaid = countryFilteredApps.filter(a => a.paymentStatus === 'paid').length;
     const countryRevenue = countryFilteredApps.filter(a => a.paymentStatus === 'paid').reduce((acc, a) => acc + Math.floor((a.estimatedRefundAmount || 0) * 0.2), 0);
@@ -274,8 +283,18 @@ export default function AdminStatsPage() {
             <Card className="premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 space-y-4">
               <div className="h-12 w-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600"><Users /></div>
               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{selectedCountry === 'all' ? '전체 방문자' : `${selectedCountry} 예상 유입`}</p>
-                <p className="text-3xl font-black text-slate-900">{filteredData.totalVisits.toLocaleString()}명</p>
+                {selectedCountry === 'all' ? (
+                  <>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">전체 방문자 (Global)</p>
+                    <p className="text-3xl font-black text-slate-900">{filteredData.totalVisits.toLocaleString()}명</p>
+                  </>
+                ) : (
+                  <>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{selectedCountry} 신청자</p>
+                    <p className="text-3xl font-black text-slate-900">{filteredData.countryApps.toLocaleString()}명</p>
+                    <p className="text-[10px] font-bold text-slate-400 mt-1">※ 방문자 통계는 국가별 분리 불가 (전체 기준)</p>
+                  </>
+                )}
               </div>
             </Card>
             <Card className="premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 space-y-4">

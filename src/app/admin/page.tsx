@@ -184,12 +184,11 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     }
   }, [chatMessages]);
 
-  const users: any[] = [];
+  // users 컬렉션 대신 apps 데이터에서 직접 언어/채널 정보를 추출
   const usersError = null;
-  const appsError = null;
 
   const stats = useMemo(() => {
-    if (!users || !apps) return [];
+    if (!apps) return [];
     const today = new Date().toISOString().split('T')[0];
     
     // Safely extract string representation of dates
@@ -207,7 +206,6 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       return String(dateVal);
     };
 
-    const todayUsers = users.filter(u => safeDateString(u.createdAt).startsWith(today)).length;
     const todayApps = apps.filter(a => safeDateString(a.createdAt).startsWith(today)).length;
     
     // Revenue calculations
@@ -232,8 +230,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
 
     return [
       { label: "오늘 방문자", value: `${todayVisits}명`, icon: <RotateCcw className="h-5 w-5" /> },
-      { label: "오늘 가입자", value: `${todayUsers}명`, icon: <UsersIcon className="h-5 w-5" /> },
-      { label: "오늘 신청 수", value: `${todayApps}명`, icon: <FileText className="h-5 w-5" /> },
+      { label: "오늘 신청 수", value: `${todayApps}건`, icon: <FileText className="h-5 w-5" /> },
       { label: "누적 예상 수수료", value: `₩ ${expectedRevenue.toLocaleString()}`, icon: <Wallet className="h-5 w-5" /> },
       { label: "결제 완료 수익", value: `₩ ${paidRevenue.toLocaleString()}`, icon: <ShieldCheck className="h-5 w-5 text-green-500" /> },
       { label: "미결제 예정액", value: `₩ ${unpaidRevenue > 0 ? unpaidRevenue.toLocaleString() : 0}`, icon: <Clock className="h-5 w-5 text-amber-500" /> },
@@ -241,42 +238,37 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       { label: "파트너 정산 (건당 5만)", value: `₩ ${settlementTaxAccountant.toLocaleString()}`, icon: <Wallet className="h-5 w-5 text-slate-500" /> },
       { label: "환급 성공률", value: `${successRate}%`, icon: <Trophy className="h-5 w-5" /> },
     ];
-  }, [users, apps, todayVisits]);
+  }, [apps, todayVisits]);
+
+  const LANG_LABEL: Record<string, string> = {
+    'ko': '🇰🇷 한국어', 'vi': '🇻🇳 베트남어', 'zh': '🇨🇳 중국어',
+    'km': '🇰🇭 캄보디아어', 'ne': '🇳🇵 네팔어', 'uz': '🇺🇿 우즈베크어',
+    'my': '🇲🇲 미얀마어', 'id': '🇮🇩 인도네시아어', 'th': '🇹🇭 태국어',
+    'en': '🇵🇭 영어(필리핀)', 'si': '🇱🇰 스리랑카어', 'mn': '🇲🇳 몽골어',
+    'bn': '🇧🇩 방글라데시어', 'kk': '🇰🇿 카자흐어', 'ur': '🇵🇰 우르두어'
+  };
 
   const marketingStats = useMemo(() => {
-    if (!users || !apps) return { byNationality: [], byVisaType: [], byUtm: [], funnel: {} };
+    if (!apps) return { byLanguage: [], byUtm: [], funnel: {} };
 
-    // Grouping variables
-    const byNat: Record<string, { total: number, success: number, refundValue: number }> = {};
-    const byVisa: Record<string, { total: number, success: number, refundValue: number }> = {};
+    // 언어별 집계 (apps에서 직접 추출)
+    const byLang: Record<string, { total: number, paid: number, revenue: number }> = {};
     const byUtm: Record<string, { total: number, paid: number, revenue: number }> = {};
-    
-    // Funnel counts (assuming 8 steps in total for Estimate process)
     const funnel: Record<number, number> = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0 };
 
-    users.forEach(u => {
-      const nat = u.nationality || '미입력(Unknown)';
-      const visa = u.visaType || '미입력(Unknown)';
-      
-      const userApps = apps.filter(a => a.clientId === u.id);
-      const isSuccess = userApps.some(a => a.status === 'RefundCompleted');
-      const isPaid = userApps.some(a => a.paymentStatus === 'paid');
-      const refundVal = userApps.reduce((acc, a) => acc + (a.estimatedRefundAmount || 0), 0);
-
-      if (!byNat[nat]) byNat[nat] = { total: 0, success: 0, refundValue: 0 };
-      byNat[nat].total++;
-      if (isSuccess) byNat[nat].success++;
-      byNat[nat].refundValue += refundVal;
-
-      if (!byVisa[visa]) byVisa[visa] = { total: 0, success: 0, refundValue: 0 };
-      byVisa[visa].total++;
-      if (isSuccess) byVisa[visa].success++;
-      byVisa[visa].refundValue += refundVal;
-    });
-
     apps.forEach(app => {
-      // UTM Tracking
-      const source = app.utmSource || '기타/직접유입 (Direct)';
+      // 언어별 통계
+      const lang = app.userLanguage || 'ko';
+      const langLabel = LANG_LABEL[lang] || lang.toUpperCase();
+      if (!byLang[langLabel]) byLang[langLabel] = { total: 0, paid: 0, revenue: 0 };
+      byLang[langLabel].total++;
+      if (app.paymentStatus === 'paid') {
+        byLang[langLabel].paid++;
+        byLang[langLabel].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.2);
+      }
+
+      // UTM 채널별 통계
+      const source = app.utmSource || '직접유입 (Direct)';
       if (!byUtm[source]) byUtm[source] = { total: 0, paid: 0, revenue: 0 };
       byUtm[source].total++;
       if (app.paymentStatus === 'paid') {
@@ -284,18 +276,15 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
         byUtm[source].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.2);
       }
 
-      // Funnel Tracking
+      // 퍼널 추적
       const maxStep = app.lastStep || 1;
-      for (let i = 1; i <= maxStep; i++) {
-        funnel[i]++;
+      for (let i = 1; i <= Math.min(maxStep, 8); i++) {
+        funnel[i] = (funnel[i] || 0) + 1;
       }
     });
 
     return {
-      byNationality: Object.entries(byNat)
-        .sort((a, b) => b[1].total - a[1].total)
-        .map(([name, data]) => ({ name, ...data })),
-      byVisaType: Object.entries(byVisa)
+      byLanguage: Object.entries(byLang)
         .sort((a, b) => b[1].total - a[1].total)
         .map(([name, data]) => ({ name, ...data })),
       byUtm: Object.entries(byUtm)
@@ -303,7 +292,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
         .map(([name, data]) => ({ name, ...data })),
       funnel
     };
-  }, [users, apps]);
+  }, [apps]);
 
   const statusFlow = ['InquiryCompleted', 'Applying', 'AdditionalDocsNeeded', 'TaxAccountantReceiving', 'TaxOfficeReviewing', 'NTSDocumentReceipt', 'NTSReviewing', 'RefundCompleted'];
 
@@ -574,7 +563,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     toast({ title: "자료 추출 성공", description: "세무사 제출용 CSV 자료가 다운로드되었습니다." });
   };
 
-  if (usersError || appsError) {
+  if (usersError) {
     return (
       <div className="space-y-6">
         <Alert variant="destructive" className="rounded-[2.5rem] p-8 border-red-200 bg-red-50">
