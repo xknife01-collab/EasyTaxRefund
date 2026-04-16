@@ -447,8 +447,10 @@ export function HanaGuideModal({
 
   React.useEffect(() => {
     if (isOpen) {
+      window.dispatchEvent(new CustomEvent("hide-social-proof"));
       document.body.classList.add("guide-modal-open");
     } else {
+      window.dispatchEvent(new CustomEvent("show-social-proof"));
       document.body.classList.remove("guide-modal-open");
     }
     return () => document.body.classList.remove("guide-modal-open");

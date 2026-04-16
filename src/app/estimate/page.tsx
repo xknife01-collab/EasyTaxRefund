@@ -2162,8 +2162,8 @@ export default function EstimatePage() {
       <Footer />
 
       {/* VIP 전용 플로팅 채팅 버튼 */}
-      {preFilterEstimate >= 400000 && !isVipChatOpen && (
-        <div className="fixed bottom-10 right-8 z-[60] animate-bounce-subtle">
+      {preFilterEstimate >= 400000 && !isVipChatOpen && !isGuideOpen && !isAuthGuideOpen && !isKakaoGuideOpen && !isKakaoAuthGuideOpen && !isHanaGuideOpen && (
+        <div className="fixed bottom-6 right-6 z-[60] animate-bounce-subtle">
            <Button 
              onClick={() => setIsVipChatOpen(true)}
              className="h-20 w-20 rounded-full bg-amber-400 text-amber-950 shadow-2xl flex items-center justify-center hover:bg-amber-500 hover:scale-110 transition-all border-4 border-white group relative"
