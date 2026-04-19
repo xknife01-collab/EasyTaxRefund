@@ -181,13 +181,18 @@ export default function AdminStatsPage() {
 
     const sortedChannels = Object.entries(channelStats).sort((a, b) => b[1].applicants - a[1].applicants);
 
-    // Funnel
-    const funnel: Record<number, number> = { 1: 0, 3: 0, 8: 0 };
+    // Detailed 10-Step Funnel
+    const funnel: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+    
+    // Step 0 is effectively the total visits for the estimate page in this context, 
+    // but for application funneling we start from the applications created.
+    funnel[0] = totalVisits;
+
     countryFilteredApps.forEach(app => {
-      const max = app.lastStep || 1;
-      if (max >= 1) funnel[1]++;
-      if (max >= 3) funnel[3]++;
-      if (max >= 8) funnel[8]++;
+      const max = app.lastStep || 0;
+      for (let i = 1; i <= Math.min(max, 9); i++) {
+        funnel[i] = (funnel[i] || 0) + 1;
+      }
     });
 
     // Global Stats for Ranking
@@ -421,21 +426,31 @@ export default function AdminStatsPage() {
                 <h3 className="text-xl font-black">사용자 퍼널 (Conversion)</h3>
                 <div className="space-y-10">
                     {[
-                        { step: 1, label: '인증 시작' },
-                        { step: 3, label: '환급액 조회' },
-                        { step: 8, label: '최종 신청' }
+                        { step: 0, label: '0단계: 사전 진단 (전체 유입)', color: 'bg-slate-400' },
+                        { step: 1, label: '1단계: 인증 시작', color: 'bg-blue-400' },
+                        { step: 2, label: '2단계: 신분증 판독', color: 'bg-blue-500' },
+                        { step: 3, label: '3단계: 성명/정보 확인', color: 'bg-cyan-500' },
+                        { step: 4, label: '4단계: 연락처/인증 선택', color: 'bg-indigo-400' },
+                        { step: 5, label: '5단계: 간편인증 요청', color: 'bg-indigo-500' },
+                        { step: 6, label: '6단계: 데이터 수집 중', color: 'bg-purple-500' },
+                        { step: 7, label: '7단계: 환급액 결과 확인', color: 'bg-emerald-500' },
+                        { step: 8, label: '8단계: 서비스 신청/결제', color: 'bg-amber-500' },
+                        { step: 9, label: '9단계: 최종 신청 완료', color: 'bg-rose-500' }
                     ].map((item) => {
                         const count = filteredData.funnel[item.step] || 0;
-                        const total = filteredData.funnel[1] || 1;
+                        const total = filteredData.funnel[0] || 1;
                         const pct = Math.round((count / total) * 100);
                         return (
-                            <div key={item.step} className="space-y-3">
+                            <div key={item.step} className="space-y-2">
                                 <div className="flex justify-between items-center">
-                                    <span className="font-bold text-slate-500">{item.label}</span>
-                                    <span className="font-black text-indigo-600">{count}명 ({pct}%)</span>
+                                    <span className="text-[11px] font-bold text-slate-500">{item.label}</span>
+                                    <span className="text-[11px] font-black text-slate-700">{count.toLocaleString()}명 ({pct}%)</span>
                                 </div>
-                                <div className="h-3 bg-slate-50 rounded-full overflow-hidden">
-                                    <div className="h-full bg-indigo-500 transition-all duration-700" style={{ width: `${pct}%` }} />
+                                <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
+                                    <div 
+                                      className={cn("h-full transition-all duration-700 rounded-full", item.color)} 
+                                      style={{ width: `${pct}%` }} 
+                                    />
                                 </div>
                             </div>
                         );

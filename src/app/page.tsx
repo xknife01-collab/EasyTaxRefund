@@ -236,9 +236,10 @@ export default function HomePage() {
               </div>
               
               <h1 className="text-4xl md:text-6xl lg:text-[5.5rem] font-black font-headline text-slate-900 text-gradient animate-fade-in-up delay-100 leading-[1.1] break-keep">
-                {t('한국에서 일하는 당신의')}<br />
-                {t('땀방울,')}<br />
-                <span className="text-primary inline-block transform -skew-x-1">{t('이제 90%의 세금 환급')}</span>{t('으로 보상받으세요.')}
+                {t('한국에서 일하는 외국인 청년이라면')}<br />
+                <span className="text-primary">{t('1년에 200만원 한도,')}</span> {t('5년동안,')}<br />
+                <span className="text-primary">{t('월급에서 차감한 세금 90%')}</span>{t('를 환급을 받을 수 있습니다.')}<br />
+                <span className="text-primary">{t('평균 환급액 300만원이상!')}</span>
               </h1>
               
               <div className="max-w-3xl mx-auto space-y-8 text-xl lg:text-2xl text-slate-500 font-medium leading-relaxed animate-fade-in-up delay-200">
@@ -250,9 +251,9 @@ export default function HomePage() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 animate-fade-in-up delay-300">
-                <Button size="lg" asChild className="text-lg sm:text-2xl px-8 sm:px-16 py-6 sm:py-10 h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/20 rounded-2xl sm:rounded-[2rem] transition-all hover:scale-105 active:scale-95 group">
-                  <Link href="/estimate" className="flex items-center gap-3 sm:gap-4">
-                    {t('30초 만에 환급액 확인하기')} <ArrowRight className="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:translate-x-1" />
+                <Button size="lg" asChild className="w-full sm:w-auto text-lg sm:text-2xl px-6 sm:px-12 py-6 sm:py-10 h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/20 rounded-2xl sm:rounded-[2rem] transition-all hover:scale-105 active:scale-95 group whitespace-normal break-words">
+                  <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 sm:gap-4 text-center leading-tight py-2 w-full">
+                    <span className="flex-1 min-w-[150px]">{t('1분안에 전문세무사 환급신청하기')}</span> <ArrowRight className="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:translate-x-1 shrink-0" />
                   </Link>
                 </Button>
               </div>
@@ -401,9 +402,9 @@ export default function HomePage() {
               {t('단 30초의 확인으로')}<br />{t('지난 5년의 권리를 찾으세요.')}
             </h2>
             <div className="flex flex-col items-center gap-8 pt-8">
-              <Button size="lg" asChild className="text-xl sm:text-3xl px-10 sm:px-20 py-8 sm:py-12 h-auto bg-primary hover:bg-primary/90 shadow-[0_32px_64px_-12px_rgba(99,102,241,0.4)] rounded-2xl sm:rounded-[2.5rem] transition-all hover:scale-105 active:scale-95">
-                <Link href="/estimate" className="flex items-center gap-4">
-                  {t('내 환급액 무료로 확인하기')} <ArrowRight className="h-6 w-6 sm:h-8 sm:w-8" />
+              <Button size="lg" asChild className="w-full sm:w-auto text-xl sm:text-3xl px-8 sm:px-12 py-8 sm:py-12 h-auto bg-primary hover:bg-primary/90 shadow-[0_32px_64px_-12px_rgba(99,102,241,0.4)] rounded-2xl sm:rounded-[2.5rem] transition-all hover:scale-105 active:scale-95 whitespace-normal break-words">
+                <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-4 text-center leading-tight py-4 w-full">
+                  <span className="flex-1 min-w-[200px]">{t('내 환급액 확인후 환급 신청하기')}</span> <ArrowRight className="h-6 w-6 sm:h-8 sm:w-8 shrink-0" />
                 </Link>
               </Button>
               <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-3xl bg-white border border-slate-100 shadow-sm">
@@ -749,9 +750,9 @@ export default function HomePage() {
 
       {/* Mobile Sticky CTA */}
       <div className="lg:hidden fixed bottom-6 left-6 right-6 z-50 animate-fade-in-up delay-300">
-        <Button size="lg" asChild className="w-full text-lg h-16 bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/40 rounded-2xl font-black">
-          <Link href="/estimate" className="flex items-center justify-center gap-3">
-            {t('30초 만에 환급액 확인하기')} <ArrowRight className="h-5 w-5" />
+        <Button size="lg" asChild className="w-full text-lg min-h-[4rem] h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/40 rounded-2xl font-black py-4 px-6 whitespace-normal break-words">
+          <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 text-center leading-tight w-full">
+            <span className="flex-1 min-w-[150px]">{t('1분안에 전문세무사 환급신청하기')}</span> <ArrowRight className="h-5 w-5 shrink-0" />
           </Link>
         </Button>
       </div>

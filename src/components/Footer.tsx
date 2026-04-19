@@ -34,7 +34,7 @@ export function Footer() {
           <div>
             <h4 className="font-black text-slate-900 mb-6 uppercase tracking-widest text-xs">{t('제품 및 가격')}</h4>
             <ul className="space-y-4 text-sm font-bold text-slate-500">
-              <li><Link href="/estimate" className="hover:text-primary transition-colors">{t('환급액 빠른 조회')}</Link></li>
+              <li><Link href="/estimate" className="hover:text-primary transition-colors">{t('환급 신청')}</Link></li>
               <li><Link href="/pricing" className="hover:text-primary transition-colors">{t('가격 정책 (20%)')}</Link></li>
               <li><Link href="/upload" className="hover:text-primary transition-colors">{t('서류 업로드 센터')}</Link></li>
             </ul>

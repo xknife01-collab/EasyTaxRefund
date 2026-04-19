@@ -177,4 +177,6 @@ export const common = {
   "이어서 하기": "Lanjutkan",
   "올해 한국에서 근로하며 세금을 더 납부하신 후, 내년에 이지택스를 통해 다시 조회해 보세요.": "Silakan bekerja dan membayar lebih banyak pajak di Korea tahun ini, lalu periksa lagi melalui EasyTax tahun depan.",
   "홈으로 돌아가기": "Kembali ke Beranda",
+  "환급 신청": "Ajukan Pengembalian Pajak",
+  "환급액 확인후 환급 신청하기": "Ajukan pengembalian pajak setelah cek jumlah",
 };

@@ -164,5 +164,7 @@ export const common = {
   "새로 시작하기": "Bắt đầu mới",
   "이어서 하기": "Tiếp tục",
   "올해 한국에서 근로하며 세금을 더 납부하신 후, 내년에 이지택스를 통해 다시 조회해 보세요.": "Vui lòng làm việc và nộp thêm thuế tại Hàn Quốc trong năm nay, sau đó kiểm tra lại bằng EasyTax vào năm sau.",
-  "홈으로 돌아가기": "Trở về trang chủ",
+  "홈으로 돌아가기": "Quay lại Trang chủ",
+  "환급 신청": "Đăng ký hoàn thuế",
+  "환급액 확인후 환급 신청하기": "Đăng ký hoàn thuế sau khi kiểm tra số tiền",
 };

@@ -38,7 +38,7 @@ export function Navbar() {
   };
 
   const navLinks = [
-    { href: "/estimate", label: t('환급금 확인'), icon: <Calculator className="h-4 w-4" /> },
+    { href: "/estimate", label: t('환급 신청'), icon: <Calculator className="h-4 w-4" /> },
     { href: "/pricing", label: t('가격 정책'), icon: <CreditCard className="h-4 w-4" /> },
     { href: "/faq", label: t('자주 묻는 질문'), icon: <HelpCircle className="h-4 w-4" /> },
   ];
@@ -88,8 +88,8 @@ export function Navbar() {
               </Button>
             )
           )}
-          <Button asChild className="hidden sm:inline-flex bg-primary hover:bg-primary/90 text-white font-black rounded-2xl px-8 h-12 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95">
-            <Link href="/estimate">{t('무료 환급액 조회')}</Link>
+          <Button asChild className="hidden sm:inline-flex bg-primary hover:bg-primary/90 text-white font-black rounded-2xl px-8 h-auto min-h-[3rem] py-2 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 whitespace-normal break-words">
+            <Link href="/estimate" className="flex-1 min-w-[max-content]">{t('환급액 확인후 환급 신청하기')}</Link>
           </Button>
           
           {/* Mobile Menu */}
@@ -128,8 +128,8 @@ export function Navbar() {
                  </Link>
                 <div className="h-px bg-slate-100 my-4" />
                 <Link href="/login" className="text-xl font-bold text-slate-900">{t('로그인 / 신청 현황')}</Link>
-                <Button asChild className="w-full bg-primary h-16 rounded-2xl font-black text-xl mt-4">
-                  <Link href="/estimate">{t('무료 조회 시작')}</Link>
+                <Button asChild className="w-full bg-primary h-auto min-h-[4rem] rounded-2xl font-black text-xl mt-4 py-4 px-6 shadow-lg shadow-primary/20 whitespace-normal break-words">
+                  <Link href="/estimate" className="text-center leading-tight flex-1">{t('환급액 확인후 환급 신청하기')}</Link>
                 </Button>
               </div>
             </SheetContent>

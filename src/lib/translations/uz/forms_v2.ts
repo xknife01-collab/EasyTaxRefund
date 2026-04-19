@@ -147,7 +147,7 @@ export const forms = {
   "이메일 로그인": "Email orqali kirish",
   "이메일 주소": "Email manzili",
   "이미 인증서가 있다면?": "Sertifikatingiz bormi?",
-  "이어서 정밀 진단 시작하기": "Tahlilni davom ettirish",
+  "이어서 정밀 진단 시작하기": "Aniq tahlildan so'ng professional buxgalter bilan pulni qaytarish uchun ariza bering",
   "인증 과정을 자세한 그림 가이드로 확인해 보세요.": "Tasdiqlash jarayonini rasmli qo'llanma orqali ko'ring.",
   "인증 단계로 이동": "Identifikatsiya bosqichiga o'tish",
   "인증 방식 다시 선택하기": "Tasdiqlash usulini qayta tanlash",

@@ -147,7 +147,7 @@ export const forms_v2 = {
   "이메일 로그인": "Email Login",
   "이메일 주소": "Email Address",
   "이미 인증서가 있다면?": "Already have a certificate?",
-  "이어서 정밀 진단 시작하기": "Continue with Precision Diagnosis",
+  "이어서 정밀 진단 시작하기": "Apply for refund with a professional accountant after precision diagnosis",
   "인증 과정을 자세한 그림 가이드로 확인해 보세요.": "Check the verification process with a detailed visual guide.",
   "인증 단계로 이동": "Move to verification step",
   "인증 방식 다시 선택하기": "Re-select verification method",

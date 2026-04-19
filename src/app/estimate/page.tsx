@@ -278,8 +278,13 @@ export default function EstimatePage() {
         lastSaved: Date.now()
       };
       localStorage.setItem("easy_tax_refund_persistence", JSON.stringify(dataToSave));
+      
+      // Also update remote DB for funnel tracking whenever step changes
+      if (step > 0) {
+        saveProgress(step);
+      }
     }
-  }, [step, formData, draftAppId]);
+  }, [step]); // Only trigger on step change for Firestore to avoid excessive writes
 
   // Session Persistence: Load on mount
   useEffect(() => {
@@ -875,9 +880,9 @@ export default function EstimatePage() {
                   <div className="space-y-4 pt-4">
                     <Button 
                       onClick={() => { setStep(1); saveProgress(1); }}
-                      className="w-full h-24 bg-slate-900 text-2xl font-black rounded-3xl shadow-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                      className="w-full h-auto min-h-[6rem] py-4 px-6 bg-slate-900 text-2xl font-black rounded-3xl shadow-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98] group whitespace-normal break-words"
                     >
-                      {t('이어서 정밀 진단 시작하기')} <ArrowRight className="h-8 w-8 transition-transform group-hover:translate-x-2" />
+                      <span className="flex-1">{t('이어서 정밀 진단 시작하기')}</span> <ArrowRight className="h-8 w-8 transition-transform group-hover:translate-x-2 shrink-0" />
                     </Button>
                     <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
                       <ShieldCheck className="h-3 w-3" /> {t('9 step precision diagnostic flow initiated')}

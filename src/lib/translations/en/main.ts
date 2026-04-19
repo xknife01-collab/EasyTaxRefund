@@ -23,7 +23,7 @@ export const main = {
   "\"절차가 어렵다는 이유만으로 당신의 소중한 돈을 포기하지 마세요. 저희가 그 과정을 쉽고 완벽하게 만들어 드립니다.\"": "\"Don't give up your precious money just because the procedure is difficult. We will make that process easy and perfect.\"",
   "hide-social-proof": "hide-social-proof",
   "nts_trust_message": "Verifying accurately with real-time data from the National Tax Service.",
-  "nts_trust_title": "Direct Link to Official NTS (Hometax) Data",
+  "nts_trust_title": "Official data linkage with Republic of Korea National Tax Service (Hometax)",
   "safe_and_secure": "Safe and Transparent Verification",
   "security_card_subtitle": "All your information is safely handled with top-tier data protection technology.",
   "security_card_title": "256-bit Bank Grade Security Certification",
@@ -97,5 +97,13 @@ export const main = {
   "핵심 정책 (CORE POLICY)": "CORE POLICY",
   "현재 기준 대상 생년월일": "Current Target Birth Dates",
   "환급이 거절되면, 선임료 20% 전액을 즉시 돌려드립니다.": "If the refund is rejected, the entire 20% retainer fee will be returned immediately.",
-  "회사 인사팀에 직접 물어보기 껄끄러운 상황": "Awkward situation to ask HR teams directly"
+  "회사 인사팀에 직접 물어보기 껄끄러운 상황": "Awkward situation to ask HR teams directly",
+  "한국에서 일하는 외국인 청년이라면": "If you are a young foreign worker in Korea",
+  "1년에 200만원 한도,": "An annual limit of 2 million won,",
+  "5년동안,": "for 5 years,",
+  "월급에서 차감한 세금 90%": "90% of the tax deducted from your salary",
+  "를 환급을 받을 수 있습니다.": "can be refunded.",
+  "평균 환급액 300만원이상!": "Average refund over 3 million won!",
+  "1분안에 전문세무사 환급신청하기": "Apply for refund with a professional accountant in 1 minute",
+  "내 환급액 확인후 환급 신청하기": "Apply for refund after checking my refund amount",
 };
