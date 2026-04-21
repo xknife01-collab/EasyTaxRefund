@@ -1,4 +1,4 @@
-const CACHE_NAME = 'easytax-pwa-cache-v1';
+const CACHE_NAME = 'easytax-pwa-cache-v2';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -7,6 +7,7 @@ self.addEventListener('install', (event) => {
       return cache.addAll([
         '/',
         '/manifest.json',
+        '/icon-192.png',
         '/icon-512.png'
       ]);
     })
