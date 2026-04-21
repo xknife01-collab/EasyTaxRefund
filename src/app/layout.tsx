@@ -4,8 +4,15 @@ import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/components/LanguageContext';
 import { SocialProof } from '@/components/SocialProof';
+import { PWASetup } from '@/components/PWASetup';
 
 export const metadata: Metadata = {
+  manifest: '/manifest.json',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'EasyTax',
+  },
   title: 'Easy Tax Refund | 간편한 외국인 세금 환급',
   description: '대한민국에 있는 외국인들이 정당한 권리를 찾을 수 있도록 돕는 AI 기반 세금 환급 서비스입니다.',
   openGraph: {
@@ -40,6 +47,7 @@ export default function RootLayout({
           {children}
           <Toaster />
           <SocialProof />
+          <PWASetup />
         </LanguageProvider>
       </body>
     </html>

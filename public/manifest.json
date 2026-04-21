@@ -1,0 +1,22 @@
+{
+  "name": "EasyTax Refund (이지텍스 환급)",
+  "short_name": "EasyTax",
+  "description": "외국인 근로자 전용 맞춤형 환급 플랫폼",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0ea5e9",
+  "icons": [
+    {
+      "src": "/og-image.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/og-image.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

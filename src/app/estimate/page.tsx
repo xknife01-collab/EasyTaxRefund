@@ -191,6 +191,7 @@ export default function EstimatePage() {
   const [isNameHelpOpen, setIsNameHelpOpen] = useState(false);
   const [showResumeDialog, setShowResumeDialog] = useState(false);
   const [resumeData, setResumeData] = useState<any>(null);
+  const [showProactiveHelp, setShowProactiveHelp] = useState(false);
   
   // Step 0: Pre-filter Data
   const [preFilterData, setPreFilterData] = useState({
@@ -198,6 +199,42 @@ export default function EstimatePage() {
     avgSalary: 250
   });
   const [preFilterEstimate, setPreFilterEstimate] = useState(0);
+
+  const [isInAppBrowser, setIsInAppBrowser] = useState(false);
+  const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
+      if (/FBAN|FBAV|Instagram|KAKAOTALK|Line|Twitter/i.test(ua)) {
+        setIsInAppBrowser(true);
+      }
+      
+      window.addEventListener('beforeinstallprompt', (e) => {
+        e.preventDefault();
+        setDeferredPrompt(e);
+      });
+    }
+  }, []);
+
+  const handleInstallApp = () => {
+    if (isInAppBrowser) {
+      const targetUrl = window.location.href;
+      if (navigator.userAgent.match(/Android/i)) {
+        window.location.href = `intent://${targetUrl.replace(/^https?:\/\//i, '')}#Intent;scheme=https;package=com.android.chrome;end`;
+      } else {
+        navigator.clipboard.writeText(targetUrl);
+        toast({ title: t("링크 복사 완료"), description: t("사파리(Safari) 브라우저를 열고 주소창에 붙여넣으세요!") });
+      }
+    } else if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then((choiceResult: any) => {
+        setDeferredPrompt(null);
+      });
+    } else {
+      toast({ title: t("앱 설치 안내"), description: t("안드로이드는 크롬 메뉴에서, 아이폰은 공유 버튼을 누르고 '홈 화면에 추가'를 선택해주세요.") });
+    }
+  };
 
   const [analysisError, setAnalysisError] = useState<{
     code: string;
@@ -309,7 +346,7 @@ export default function EstimatePage() {
       setFormData(resumeData.formData);
       if (resumeData.draftAppId) {
         setDraftAppId(resumeData.draftAppId);
-        sessionStorage.setItem('currentDraftId', resumeData.draftAppId);
+        localStorage.setItem('currentDraftId', resumeData.draftAppId);
       }
     }
     setShowResumeDialog(false);
@@ -332,21 +369,39 @@ export default function EstimatePage() {
 
   const handleSendVipMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!chatInput.trim() || !draftAppId || isChatLoading) return;
+    if (!chatInput.trim() || isChatLoading) return;
     
-    const text = chatInput.trim();
-    setChatInput("");
     setIsChatLoading(true);
+    let targetDraftId = draftAppId;
 
     try {
-      await addDoc(collection(db, 'applications', draftAppId, 'chat_messages'), {
+      // 사용자가 1단계 전에 채팅을 먼저 보내는 경우 빈 신청서라도 만들어서 세션을 연결
+      if (!targetDraftId) {
+        const newDoc = await addDoc(collection(db, 'applications'), {
+          status: 'InquiryCompleted',
+          lastStep: step,
+          preFilterEstimate,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          isDraft: true,
+          fullName: formData.officialName || '문의고객(익명)'
+        });
+        targetDraftId = newDoc.id;
+        setDraftAppId(targetDraftId);
+        localStorage.setItem('currentDraftId', targetDraftId);
+      }
+
+      const text = chatInput.trim();
+      setChatInput("");
+
+      await addDoc(collection(db, 'applications', targetDraftId, 'chat_messages'), {
         text,
         sender: 'user',
         timestamp: serverTimestamp()
       });
 
       // 관리자에게 알림
-      await updateDoc(doc(db, 'applications', draftAppId), {
+      await updateDoc(doc(db, 'applications', targetDraftId), {
         unreadChatCountAdmin: increment(1),
         lastMessageAt: serverTimestamp(),
         lastMessageText: text
@@ -373,6 +428,19 @@ export default function EstimatePage() {
     setEligibilityRange({ start: formatDate(startDate), end: formatDate(endDate) });
   }, [t]);
 
+  // Proactive VIP Chat Timer for Step 1
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (step === 1 && !isVipChatOpen) {
+      timer = setTimeout(() => {
+        setShowProactiveHelp(true);
+      }, 8000);
+    } else {
+      setShowProactiveHelp(false);
+    }
+    return () => clearTimeout(timer);
+  }, [step, isVipChatOpen, formData.officialName, formData.registrationNumber]);
+
   // Step 0 Estimate Calculation
   useEffect(() => {
     // 90% exemption rough calculation: Monthly Salary * 12 * 3.3% * 90%
@@ -387,11 +455,22 @@ export default function EstimatePage() {
     setPreFilterEstimate(Math.floor(totalEstimate / 1000) * 1000); // Round to thousands
   }, [preFilterData]);
 
-  // 드래프트 복구
+  // 드래프트 재연결 (브라우저 종료 후 앱을 다시 켰을 때 메시지 내역 복구)
   useEffect(() => {
-    const savedDraftId = sessionStorage.getItem('currentDraftId');
+    const savedDraftId = localStorage.getItem('currentDraftId');
     if (savedDraftId) {
       setDraftAppId(savedDraftId);
+    } else {
+      const savedPersistence = localStorage.getItem("easy_tax_refund_persistence");
+      if (savedPersistence) {
+        try {
+          const parsed = JSON.parse(savedPersistence);
+          if (parsed.draftAppId) {
+            setDraftAppId(parsed.draftAppId);
+            localStorage.setItem('currentDraftId', parsed.draftAppId);
+          }
+        } catch (e) {}
+      }
     }
   }, []);
 
@@ -878,6 +957,16 @@ export default function EstimatePage() {
                   </div>
 
                   <div className="space-y-4 pt-4">
+                    {/* Free Risk Reversal Alert */}
+                    <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100 mb-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
+                      <div className="h-8 w-8 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="h-5 w-5 text-emerald-600" />
+                      </div>
+                      <p className="text-[13px] font-black text-emerald-800 leading-tight">
+                        {t('예상 환급액을 확인하는 데는 비용이 전혀 들지 않습니다. 안심하고 확인해 보세요.')}
+                      </p>
+                    </div>
+
                     <Button 
                       onClick={() => { setStep(1); saveProgress(1); }}
                       className="w-full h-auto min-h-[6rem] py-4 px-6 bg-slate-900 text-2xl font-black rounded-3xl shadow-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98] group whitespace-normal break-words"
@@ -1055,8 +1144,29 @@ export default function EstimatePage() {
                     </AlertDescription>
                   </Alert>
 
-                  {/* Security Assurance Card */}
-                  <div className="mt-12 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 relative overflow-hidden group">
+                </CardContent>
+              </Card>
+            )}
+
+            {step === 2 && (
+              <Card className="premium-card rounded-[2.5rem] border-none shadow-sm overflow-hidden">
+                <CardHeader className="text-center bg-slate-50/50 py-6 sm:py-10 border-b border-slate-100 relative">
+                  <Button 
+                    variant="ghost" 
+                    size="sm" 
+                    onClick={() => { setStep(1); saveProgress(1); }}
+                    className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    {t('이전')}
+                  </Button>
+                  <div className="mx-auto h-12 w-12 sm:h-16 sm:w-16 bg-primary/10 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-4"><Scan className="h-6 w-6 sm:h-8 sm:w-8 text-primary" /></div>
+                  <CardTitle className="text-2xl sm:text-3xl font-black break-keep">{t('Step 2: 외국인등록증 인증')}</CardTitle>
+                  <CardDescription className="font-bold text-slate-400 text-xs sm:text-sm">{t('신분증 정보를 확인하여 감면 대상을 판별합니다.')}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6 sm:space-y-8 p-6 sm:p-10">
+                  {/* Security Assurance Card - Embedded in Step 2 */}
+                  <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-primary/10 transition-colors" />
                     <div className="relative flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
                       <div className="shrink-0 relative">
@@ -1103,27 +1213,7 @@ export default function EstimatePage() {
                       </div>
                     </div>
                   </div>
-                </CardContent>
-              </Card>
-            )}
 
-            {step === 2 && (
-              <Card className="premium-card rounded-[2.5rem] border-none shadow-sm overflow-hidden">
-                <CardHeader className="text-center bg-slate-50/50 py-6 sm:py-10 border-b border-slate-100 relative">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
-                    onClick={() => { setStep(1); saveProgress(1); }}
-                    className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    {t('이전')}
-                  </Button>
-                  <div className="mx-auto h-12 w-12 sm:h-16 sm:w-16 bg-primary/10 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-4"><Scan className="h-6 w-6 sm:h-8 sm:w-8 text-primary" /></div>
-                  <CardTitle className="text-2xl sm:text-3xl font-black break-keep">{t('Step 2: 외국인등록증 인증')}</CardTitle>
-                  <CardDescription className="font-bold text-slate-400 text-xs sm:text-sm">{t('신분증 정보를 확인하여 감면 대상을 판별합니다.')}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6 sm:space-y-8 p-6 sm:p-10">
                   {!isCameraActive ? (
                     <div onClick={startCamera} className="border-2 border-dashed border-slate-200 rounded-[2.5rem] p-12 text-center bg-slate-50 cursor-pointer hover:bg-primary/5 transition-all group">
                       <Camera className="h-14 w-14 text-primary mx-auto mb-4 transition-transform group-hover:scale-110" />
@@ -1139,6 +1229,25 @@ export default function EstimatePage() {
                     </div>
                   )}
                   <canvas ref={canvasRef} width={640} height={480} className="hidden" />
+
+                  {/* 추가된 신분증 입력뷰 Trust Indicators */}
+                  <div className="space-y-4 mb-2 mt-4">
+                    <Alert className="bg-emerald-50 border-emerald-200 rounded-2xl shadow-sm pb-3">
+                      <ShieldCheck className="h-5 w-5 text-emerald-600 mt-0.5" />
+                      <AlertDescription className="text-sm font-black text-emerald-800 leading-relaxed ml-1">
+                        {t('본 환급은 합법적 권리로, 비자(E-9, E-7, F-2 등) 연장이나 체류 자격에 어떠한 불이익도 없습니다.')}
+                      </AlertDescription>
+                    </Alert>
+                    
+                    <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                      <Lock className="w-6 h-6 text-slate-400 shrink-0 mt-0.5" />
+                      <div>
+                        <p className="text-[13px] font-black text-slate-700">{t('입력하신 정보는 은행 수준(AES-256)으로 암호화됩니다.')}</p>
+                        <p className="text-[11px] font-bold text-slate-500 mt-1 leading-tight">{t('국세청 환급금 조회를 위해서만 1회 사용되며 서버에 절대 저장되지 않습니다. (평가 후 즉시 파기)')}</p>
+                      </div>
+                    </div>
+                  </div>
+
                   <form onSubmit={handleOcrConfirm} className="space-y-8">
                     <div className="grid gap-6">
                       <div className="space-y-3">
@@ -2161,14 +2270,57 @@ export default function EstimatePage() {
                 </CardContent>
               </Card>
             )}
+            
+            {/* Global App Install / In-App Browser Escape Banner (Visible across all steps) */}
+            <div className="flex flex-col gap-3 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl border border-blue-100 shadow-md w-full mx-auto relative overflow-hidden mt-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-500">
+              <div className="absolute -top-4 -right-4 p-4 opacity-5"><Smartphone className="h-32 w-32" /></div>
+              <div className="flex items-start gap-4 relative z-10">
+                <div className="h-12 w-12 bg-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-blue-600/30">
+                  <Smartphone className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1 space-y-1 text-left">
+                  <p className="text-[15px] font-black text-blue-950 tracking-tight">
+                    {isInAppBrowser 
+                      ? t("더 빠르고 편하게 환급받기 (기본 브라우저 권장)") 
+                      : t("더 빠르고 편하게 환급받기 (앱 바로 설치)")}
+                  </p>
+                  <p className="text-[11px] font-bold text-blue-800/80 leading-snug">
+                    {isInAppBrowser 
+                      ? t("현재 화면에서는 환급 기능이 제한될 수 있습니다. 아래 버튼을 눌러 기본 브라우저로 쾌적하게 진행해 보세요.")
+                      : t("1초 만에 앱을 설치하고 다음부터는 아이콘 터치 한 번으로 내 환급금을 확인하세요!")}
+                  </p>
+                </div>
+              </div>
+              <Button 
+                onClick={handleInstallApp}
+                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl h-14 shadow-lg shadow-blue-600/20 transition-all active:scale-95 flex items-center justify-center gap-2 mt-1 relative z-10 text-base"
+              >
+                {isInAppBrowser ? (
+                  <><ArrowRight className="h-5 w-5" /> {t("기본 브라우저 열기 (앱 설치)")}</>
+                ) : (
+                  <><Download className="h-5 w-5" /> {t("내 휴대폰에 이지텍스 앱 설치하기")}</>
+                )}
+              </Button>
+            </div>
           </div>
         </div>
       </main>
       <Footer />
 
       {/* VIP 전용 플로팅 채팅 버튼 */}
-      {preFilterEstimate >= 400000 && !isVipChatOpen && !isGuideOpen && !isAuthGuideOpen && !isKakaoGuideOpen && !isKakaoAuthGuideOpen && !isHanaGuideOpen && (
-        <div className="fixed bottom-6 right-6 z-[60] animate-bounce-subtle">
+      {(preFilterEstimate >= 400000 || showProactiveHelp) && !isVipChatOpen && !isGuideOpen && !isAuthGuideOpen && !isKakaoGuideOpen && !isKakaoAuthGuideOpen && !isHanaGuideOpen && (
+        <div className="fixed bottom-6 right-6 z-[60] animate-bounce-subtle flex flex-col items-end gap-3">
+           {showProactiveHelp && (
+             <div className="bg-slate-900 text-white text-sm font-bold p-4 rounded-2xl rounded-br-none shadow-xl max-w-[260px] animate-in slide-in-from-bottom-2 fade-in duration-500 relative cursor-pointer hover:scale-[1.02] transition-transform" onClick={() => setIsVipChatOpen(true)}>
+               <div className="flex items-start gap-3">
+                 <div className="h-6 w-6 bg-amber-400 rounded-full flex items-center justify-center shrink-0 shadow-sm shadow-amber-400/20">
+                   <Lightbulb className="h-4 w-4 text-amber-950" />
+                 </div>
+                 <p className="leading-relaxed">{t('개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.')}</p>
+               </div>
+               <div className="absolute -bottom-2 right-4 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-slate-900 border-r-[8px] border-r-transparent" />
+             </div>
+           )}
            <Button 
              onClick={() => setIsVipChatOpen(true)}
              className="h-20 w-20 rounded-full bg-amber-400 text-amber-950 shadow-2xl flex items-center justify-center hover:bg-amber-500 hover:scale-110 transition-all border-4 border-white group relative"

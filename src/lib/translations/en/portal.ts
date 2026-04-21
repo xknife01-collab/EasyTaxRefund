@@ -70,4 +70,11 @@ export const portal = {
   "환급 완료": "Refund Complete",
   "환급 은행": "Refund Bank",
   "환급 진행 상황을 실시간으로 확인하는 곳입니다.": "Place to check real-time refund progress.",
+  "더 빠르고 편하게 환급받기 (기본 브라우저 권장)": "Get Your Refund Faster & Easier (Default Browser Recommended)",
+  "더 빠르고 편하게 환급받기 (앱 바로 설치)": "Get Your Refund Faster & Easier (Install App Now)",
+  "현재 화면에서는 환급 기능이 제한될 수 있습니다. 아래 버튼을 눌러 기본 브라우저로 쾌적하게 진행해 보세요.": "Refund features may be limited on this current screen. Please click the button below to proceed smoothly on your default browser.",
+  "1초 만에 앱을 설치하고 다음부터는 아이콘 터치 한 번으로 내 환급금을 확인하세요!": "Install the app in 1 second and check your refund amount with a single touch starting from your next visit!",
+  "기본 브라우저 열기 (앱 설치)": "Open in Default Browser (Install App)",
+  "내 휴대폰에 이지텍스 앱 설치하기": "Install EasyTax App on my phone",
+  "🎉 {name}님이 {amount}원을 환급받았습니다!": "🎉 {name} just received a tax refund of {amount}!",
 };

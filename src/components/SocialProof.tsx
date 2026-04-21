@@ -37,14 +37,27 @@ export function SocialProof() {
 
   const generateNotification = useCallback(() => {
     const country = COUNTRIES[Math.floor(Math.random() * COUNTRIES.length)];
-    const action = ACTIONS[Math.floor(Math.random() * ACTIONS.length)];
     const iconTypes: Notification["iconType"][] = ["user", "check", "globe", "sparkles"];
     const iconType = iconTypes[Math.floor(Math.random() * iconTypes.length)];
+    
+    const isRefundAction = Math.random() > 0.3; // 70% chance to show high-value refund
+
+    let actionText = "";
+    if (isRefundAction) {
+       const FIRST_CHARS = ["N", "A", "M", "T", "J", "S", "L", "K", "D", "R", "P"];
+       const nameStr = FIRST_CHARS[Math.floor(Math.random() * FIRST_CHARS.length)] + "***";
+       const amount = (Math.floor(Math.random() * 30) + 5) * 50000; // ₩250,000 ~ ₩1,700,000
+       
+       const template = t("🎉 {name}님이 {amount}원을 환급받았습니다!");
+       actionText = template.replace("{name}", nameStr).replace("{amount}", `₩${amount.toLocaleString()}`);
+    } else {
+       actionText = t(ACTIONS[Math.floor(Math.random() * ACTIONS.length)]);
+    }
     
     return {
       id: Date.now(),
       country: t(country),
-      action: t(action),
+      action: actionText,
       timeAgo: t("방금 전"),
       iconType
     };

@@ -153,6 +153,51 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
 
   const totalPages = Math.ceil(filteredApps.length / itemsPerPage);
 
+  // Global Unread & Push Notification Logic
+  const prevUnreadRef = useRef<number>(0);
+  
+  useEffect(() => {
+    const totalUnread = apps.reduce((acc, app) => acc + (app.unreadChatCountAdmin || 0), 0);
+    
+    // 1. 브라우저 탭 타이틀 알림 (다른 탭에 있어도 확인 가능하게)
+    if (totalUnread > 0) {
+      document.title = `(${totalUnread}) 새 메시지 - 이지텍스 관리자`;
+    } else {
+      document.title = `이지텍스 관리자`;
+    }
+
+    // 2. 새 메시지 수신 시 사운드 및 토스트 알람 푸시
+    if (totalUnread > prevUnreadRef.current) {
+      try {
+        const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        // 맑고 경쾌한 알림음 (E5 -> A5)
+        osc.frequency.setValueAtTime(659.25, audioCtx.currentTime);     
+        osc.frequency.exponentialRampToValueAtTime(880, audioCtx.currentTime + 0.1); 
+        gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.5);
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.5);
+      } catch(e) {
+        console.log("Audio play failed: ", e);
+      }
+
+      const appWithNewMsg = apps.find(a => (a.unreadChatCountAdmin || 0) > 0);
+      toast({
+        title: "🔔 새로운 메시지 도착!",
+        description: `${appWithNewMsg?.fullName || '가등록 고객'}님으로부터 새 메시지가 도착했습니다. 즉시 확인해주세요!`,
+        duration: 8000,
+        className: "bg-blue-600 text-white border-none shadow-2xl font-black rounded-2xl",
+      });
+    }
+    
+    prevUnreadRef.current = totalUnread;
+  }, [apps, toast]);
+
   // Chat Real-time Listener
   useEffect(() => {
     if (!chatAppId || !isChatOpen) {
@@ -359,12 +404,12 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     }
   };
 
-  const handleSendChatMessage = async () => {
-    if (!chatAppId || !chatInput.trim() || isSendingChat) return;
+  const handleSendChatMessage = async (macroOverrideText?: string | React.MouseEvent | React.KeyboardEvent) => {
+    const textToSend = typeof macroOverrideText === 'string' ? macroOverrideText : chatInput;
+    if (!chatAppId || !textToSend.trim() || isSendingChat) return;
     
     setIsSendingChat(true);
-    const messageToSend = chatInput;
-    setChatInput(""); // Clear immediately for UX
+    if (typeof macroOverrideText !== 'string') setChatInput(""); // Clear immediately for UX
 
     try {
       const appDoc = apps.find(a => a.id === chatAppId);
@@ -374,7 +419,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       if (userLanguage !== 'ko') {
         try {
           const res = await translateChatMessage({ 
-            message: messageToSend, 
+            message: textToSend, 
             sourceLanguage: 'ko', 
             targetLanguage: userLanguage 
           });
@@ -386,18 +431,20 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
 
       await addDoc(collection(db, 'applications', chatAppId, 'chat_messages'), {
         sender: 'Admin',
-        text: messageToSend,
+        text: textToSend,
         translatedText,
         timestamp: serverTimestamp()
       });
       
-      // 사용자용 읽지 않은 메시지 카운트 증가
+      // 사용자용 읽지 않은 메시지 카운트 증가 및 마지막 메시지 시간 갱신
       await updateDoc(doc(db, 'applications', chatAppId), {
-        unreadChatCountUser: increment(1)
+        unreadChatCountUser: increment(1),
+        lastMessageAt: serverTimestamp(),
+        lastMessageText: textToSend.substring(0, 50)
       });
     } catch (error) {
       toast({ variant: "destructive", title: "발송 실패", description: "메시지를 보내지 못했습니다." });
-      setChatInput(messageToSend); // Restore if failed
+      if (typeof macroOverrideText !== 'string') setChatInput(textToSend); // Restore if failed
     } finally {
       setIsSendingChat(false);
     }
@@ -703,26 +750,34 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                               </TableCell>
                               <TableCell className="pr-8 text-right">
                                 <div className="flex justify-end gap-2">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="rounded-xl text-indigo-500 hover:bg-indigo-50 relative group"
-                                    onClick={async () => {
-                                      setChatAppId(app.id);
-                                      setIsChatOpen(true);
-                                      if (app.unreadChatCountAdmin > 0) {
-                                        await updateDoc(doc(db, 'applications', app.id), { unreadChatCountAdmin: 0 });
-                                      }
-                                    }}
-                                  >
-                                    <MessageSquare className={cn("h-4 w-4 mr-1", app.unreadChatCountAdmin > 0 && "animate-bounce")} />
-                                    상담
-                                    {app.unreadChatCountAdmin > 0 && (
-                                      <span className="absolute -top-2 -right-2 h-8 w-8 bg-red-500 text-white rounded-full border-2 border-white flex items-center justify-center text-[11px] font-black animate-bounce shadow-lg z-10">
-                                        {app.unreadChatCountAdmin > 9 ? '9+' : app.unreadChatCountAdmin}
-                                      </span>
+                                  <div className="flex flex-col items-end gap-1.5">
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      className="rounded-xl text-indigo-500 hover:bg-indigo-50 relative group"
+                                      onClick={async () => {
+                                        setChatAppId(app.id);
+                                        setIsChatOpen(true);
+                                        if (app.unreadChatCountAdmin > 0) {
+                                          await updateDoc(doc(db, 'applications', app.id), { unreadChatCountAdmin: 0 });
+                                        }
+                                      }}
+                                    >
+                                      <MessageSquare className={cn("h-4 w-4 mr-1", app.unreadChatCountAdmin > 0 && "animate-bounce")} />
+                                      상담
+                                      {app.unreadChatCountAdmin > 0 && (
+                                        <span className="absolute -top-2 -right-2 h-8 w-8 bg-red-500 text-white rounded-full border-2 border-white flex items-center justify-center text-[11px] font-black animate-bounce shadow-lg z-10">
+                                          {app.unreadChatCountAdmin > 9 ? '9+' : app.unreadChatCountAdmin}
+                                        </span>
+                                      )}
+                                    </Button>
+                                    {app.unreadChatCountAdmin > 0 && app.lastMessageAt && (
+                                      <div className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-100 flex items-center gap-1 max-w-[150px]">
+                                        <Clock className="w-3 h-3 shrink-0" />
+                                        <span className="shrink-0">{app.lastMessageAt?.toDate ? app.lastMessageAt.toDate().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : "방금 전"}</span>
+                                      </div>
                                     )}
-                                  </Button>
+                                  </div>
                                   <Button variant="outline" size="sm" className="rounded-xl font-black" onClick={() => handleStatusChange(app, 1)}>
                                     단계 제어 <ChevronRight className="h-4 w-4 ml-1" />
                                   </Button>
@@ -1164,6 +1219,43 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                 <Loader2 className="h-3 w-3 animate-spin" /> AI가 상대방의 언어로 전문 번역 중...
               </div>
             )}
+            
+            {/* Macro Action Buttons */}
+            <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+              <Button 
+                variant="outline" size="sm" 
+                className="h-9 rounded-full text-xs font-bold whitespace-nowrap bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100"
+                onClick={() => handleSendChatMessage("신분증(ARC) 사진이 흐립니다. 빛 반사가 없도록 다시 촬영하여 업로드해 주세요.")}
+                disabled={isSendingChat}
+              >
+                📸 신분증 재요청
+              </Button>
+              <Button 
+                variant="outline" size="sm" 
+                className="h-9 rounded-full text-xs font-bold whitespace-nowrap bg-rose-50 text-rose-700 border-rose-200 hover:bg-rose-100"
+                onClick={() => handleSendChatMessage("입력하신 은행 계좌번호가 올바르지 않습니다. 정확히 확인 후 다시 알려주세요.")}
+                disabled={isSendingChat}
+              >
+                🏦 계좌번호 오류
+              </Button>
+              <Button 
+                variant="outline" size="sm" 
+                className="h-9 rounded-full text-xs font-bold whitespace-nowrap bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100"
+                onClick={() => handleSendChatMessage("현재 귀하의 환급 서류가 관할 세무서에서 안전하게 검토 중입니다. 조금만 기다려주시면 환급 처리가 완료됩니다.")}
+                disabled={isSendingChat}
+              >
+                ✅ 진행상황 안내
+              </Button>
+              <Button 
+                variant="outline" size="sm" 
+                className="h-9 rounded-full text-xs font-bold whitespace-nowrap bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200"
+                onClick={() => handleSendChatMessage("안녕하세요! 이지텍스 관리자입니다. 더 궁금하신 점이 있으시면 편하게 남겨주세요.")}
+                disabled={isSendingChat}
+              >
+                👋 기본 인사
+              </Button>
+            </div>
+
             <div className="flex gap-4">
               <input 
                 className="flex-1 bg-slate-50 border-none rounded-2xl px-6 h-16 font-bold outline-none focus:ring-2 focus:ring-primary/20 text-slate-900"
@@ -1250,24 +1342,33 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                             >
                               <BellRing className="h-7 w-7" />
                             </Button>
-                            <Button 
-                              className="rounded-2xl h-16 px-8 bg-amber-400 text-amber-950 font-black shadow-lg shadow-amber-200 hover:bg-amber-500 scale-100 hover:scale-105 transition-all relative overflow-hidden group"
-                              onClick={async () => {
-                                setChatAppId(app.id);
-                                setIsChatOpen(true);
-                                if (app.unreadChatCountAdmin > 0) {
-                                  await updateDoc(doc(db, 'applications', app.id), { unreadChatCountAdmin: 0 });
-                                }
-                              }}
-                            >
-                               <MessageSquare className="h-6 w-6 mr-3 animate-bounce" />
-                               VIP 우선 상담 시작하기
-                               {app.unreadChatCountAdmin > 0 && (
-                                  <span className="absolute -top-3 -right-3 h-[42px] w-[42px] bg-red-600 text-white rounded-full border-4 border-white flex items-center justify-center text-sm font-black shadow-2xl animate-bounce z-10 transition-all">
-                                    {app.unreadChatCountAdmin > 99 ? '99+' : app.unreadChatCountAdmin}
-                                  </span>
-                               )}
-                            </Button>
+                            <div className="flex flex-col items-end gap-2">
+                              <Button 
+                                className="rounded-2xl h-16 px-8 bg-amber-400 text-amber-950 font-black shadow-lg shadow-amber-200 hover:bg-amber-500 scale-100 hover:scale-105 transition-all relative overflow-hidden group"
+                                onClick={async () => {
+                                  setChatAppId(app.id);
+                                  setIsChatOpen(true);
+                                  if (app.unreadChatCountAdmin > 0) {
+                                    await updateDoc(doc(db, 'applications', app.id), { unreadChatCountAdmin: 0 });
+                                  }
+                                }}
+                              >
+                                 <MessageSquare className="h-6 w-6 mr-3 animate-bounce" />
+                                 VIP 우선 상담 시작하기
+                                 {app.unreadChatCountAdmin > 0 && (
+                                    <span className="absolute -top-3 -right-3 h-[42px] w-[42px] bg-red-600 text-white rounded-full border-4 border-white flex items-center justify-center text-sm font-black shadow-2xl animate-bounce z-10 transition-all">
+                                      {app.unreadChatCountAdmin > 99 ? '99+' : app.unreadChatCountAdmin}
+                                    </span>
+                                 )}
+                              </Button>
+                              {app.unreadChatCountAdmin > 0 && app.lastMessageAt && (
+                                <div className="text-[12px] font-black text-red-600 bg-red-50/80 px-3 py-1.5 rounded-xl border border-red-200 flex items-center gap-1.5 animate-pulse max-w-[240px] shadow-sm">
+                                  <Clock className="w-3.5 h-3.5 shrink-0" />
+                                  <span className="shrink-0">{app.lastMessageAt?.toDate ? app.lastMessageAt.toDate().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : "방금 전"}</span>
+                                  <span className="text-slate-500 truncate block border-l border-red-200 pl-2 ml-0.5">"{app.lastMessageText || '새로 받은 메시지'}"</span>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </TableCell>
                      </TableRow>

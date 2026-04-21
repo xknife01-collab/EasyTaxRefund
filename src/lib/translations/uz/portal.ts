@@ -70,4 +70,11 @@ export const portal = {
   "환급 완료": "Pul o'tkazildi",
   "환급 은행": "To'lov banki",
   "환급 진행 상황을 실시간으로 확인하는 곳입니다.": "Jarayonni real vaqtda kuzatish bo'limi.",
+  "더 빠르고 편하게 환급받기 (기본 브라우저 권장)": "Soliqni tezroq va qulayroq qaytarib olish (Standart brauzer tavsiya etiladi)",
+  "더 빠르고 편하게 환급받기 (앱 바로 설치)": "Soliqni tezroq va qulayroq qaytarib olish (Ilovani darhol o'rnatish)",
+  "현재 화면에서는 환급 기능이 제한될 수 있습니다. 아래 버튼을 눌러 기본 브라우저로 쾌적하게 진행해 보세요.": "Joriy ekranda soliqni qaytarish xususiyati cheklanishi mumkin. Standart brauzerda silliq davom etish uchun quyidagi tugmani bosing.",
+  "1초 만에 앱을 설치하고 다음부터는 아이콘 터치 한 번으로 내 환급금을 확인하세요!": "Ilovani 1 soniyada o'rnating va keyingi safardan bitta bosish orqali qaytarilish miqdorini tekshiring!",
+  "기본 브라우저 열기 (앱 설치)": "Standart brauzerni ochish (Ilovani o'rnatish)",
+  "내 휴대폰에 이지텍스 앱 설치하기": "EasyTax ilovasini telefonimga o'rnatish",
+  "🎉 {name}님이 {amount}원을 환급받았습니다!": "🎉 {name} hozirgina {amount} miqdorida soliqni qaytarib oldi!",
 };

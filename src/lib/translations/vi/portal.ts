@@ -71,4 +71,11 @@ export const portal = {
   "환급 완료": "Hoàn tất hoàn thuế",
   "환급 은행": "Ngân hàng nhận tiền hoàn",
   "환급 진행 상황을 실시간으로 확인하는 곳입니다.": "Đây là nơi kiểm tra tiến độ hoàn thuế của bạn theo thời gian thực.",
+  "더 빠르고 편하게 환급받기 (기본 브라우저 권장)": "Nhận tiền hoàn thuế nhanh chóng và tiện lợi hơn (Khuyên dùng trình duyệt mặc định)",
+  "더 빠르고 편하게 환급받기 (앱 바로 설치)": "Nhận tiền hoàn thuế nhanh chóng và tiện lợi hơn (Cài đặt ứng dụng ngay)",
+  "현재 화면에서는 환급 기능이 제한될 수 있습니다. 아래 버튼을 눌러 기본 브라우저로 쾌적하게 진행해 보세요.": "Trên màn hình hiện tại, chức năng hoàn thuế có thể bị hạn chế. Vui lòng nhấn nút bên dưới để tiến hành dễ dàng trên trình duyệt mặc định.",
+  "1초 만에 앱을 설치하고 다음부터는 아이콘 터치 한 번으로 내 환급금을 확인하세요!": "Cài đặt ngay trong 1 giây và kiểm tra tiền hoàn thuế chỉ bằng một lần chạm vào biểu tượng cho những lần sau!",
+  "기본 브라우저 열기 (앱 설치)": "Mở trên trình duyệt mặc định (Cài đặt ứng dụng)",
+  "내 휴대폰에 이지텍스 앱 설치하기": "Cài đặt ứng dụng EasyTax trên điện thoại của bạn",
+  "🎉 {name}님이 {amount}원을 환급받았습니다!": "🎉 {name} vừa nhận được {amount} tiền hoàn thuế!",
 };
