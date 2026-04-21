@@ -78,4 +78,6 @@ export const portal = {
   "기본 브라우저 열기 (앱 설치)": "Mở trên trình duyệt mặc định (Cài đặt ứng dụng)",
   "내 휴대폰에 이지텍스 앱 설치하기": "Cài đặt ứng dụng EasyTax trên điện thoại của bạn",
   "🎉 {name}님이 {amount}원을 환급받았습니다!": "🎉 {name} vừa nhận được {amount} tiền hoàn thuế!",
+  "예상 환급액을 확인하는 데는 비용이 전혀 들지 않습니다. 안심하고 확인해 보세요.": "Việc kiểm tra số tiền hoàn thuế dự kiến là hoàn toàn miễn phí. Hãy yên tâm kiểm tra nhé.",
+  "개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.": "Bạn ngần ngại khi nhập thông tin cá nhân? Hãy trò chuyện trước với quản lý thuế chuyên môn nhé."
 };
