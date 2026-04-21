@@ -77,4 +77,11 @@ export const portal = {
   "기본 브라우저 열기 (앱 설치)": "Open in Default Browser (Install App)",
   "내 휴대폰에 이지텍스 앱 설치하기": "Install EasyTax App on my phone",
   "🎉 {name}님이 {amount}원을 환급받았습니다!": "🎉 {name} just received a tax refund of {amount}!",
+  "예상 환급액을 확인하는 데는 비용이 전혀 들지 않습니다. 안심하고 확인해 보세요.": "Checking your estimated refund amount costs nothing. Please check with peace of mind.",
+  "개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.": "Are you hesitant to enter your personal information? Talk to a dedicated tax manager first.",
+  "본 환급은 합법적 권리로, 비자(E-9, E-7, F-2 등) 연장이나 체류 자격에 어떠한 불이익도 없습니다.": "This refund is a legal right, and there are no disadvantages to visa (E-9, E-7, F-2, etc.) extension or residence status.",
+  "입력하신 정보는 은행 수준(AES-256)으로 암호화됩니다.": "The information you enter is encrypted at bank level (AES-256).",
+  "국세청 환급금 조회를 위해서만 1회 사용되며 서버에 절대 저장되지 않습니다. (평가 후 즉시 파기)": "It is used only once for NTS refund inquiry and is never stored on the server. (Destroyed immediately after evaluation)",
+  "앱 설치 안내": "App Installation Guide",
+  "안드로이드는 크롬 메뉴에서, 아이폰은 공유 버튼을 누르고 '홈 화면에 추가'를 선택해주세요.": "For Android, choose from the Chrome menu. For iPhone, press the Share button and select 'Add to Home Screen'."
 };

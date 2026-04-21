@@ -76,5 +76,12 @@ export const portal = {
   "1초 만에 앱을 설치하고 다음부터는 아이콘 터치 한 번으로 내 환급금을 확인하세요!": "Ilovani 1 soniyada o'rnating va keyingi safardan bitta bosish orqali qaytarilish miqdorini tekshiring!",
   "기본 브라우저 열기 (앱 설치)": "Standart brauzerni ochish (Ilovani o'rnatish)",
   "내 휴대폰에 이지텍스 앱 설치하기": "EasyTax ilovasini telefonimga o'rnatish",
-  "🎉 {name}님이 {amount}원을 환급받았습니다!": "🎉 {name} hozirgina {amount} miqdorida soliqni qaytarib oldi!",
+  "🎉 {name}님이 {amount}원을 환급받았습니다!": "🎉 {name} hozirgina {amount} soliq qaytarib oldi!",
+  "예상 환급액을 확인하는 데는 비용이 전혀 들지 않습니다. 안심하고 확인해 보세요.": "Taxminiy qaytarib beriladigan mablag'ni tekshirish mutlaqo bepul. Iltimos, xotirjamlik bilan tekshiring.",
+  "개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.": "Shaxsiy ma'lumotlaringizni kiritishda ikkilanyapsizmi? Avval maxsus soliq menejeri bilan gaplashib ko'ring.",
+  "본 환급은 합법적 권리로, 비자(E-9, E-7, F-2 등) 연장이나 체류 자격에 어떠한 불이익도 없습니다.": "Ushbu qaytarib berish qonuniy huquq bo'lib, viza (E-9, E-7, F-2 va h.k.) muddatini uzaytirish yoki yashash maqomiga hech qanday salbiy ta'sir ko'rsatmaydi.",
+  "입력하신 정보는 은행 수준(AES-256)으로 암호화됩니다.": "Siz kiritgan ma'lumotlar bank darajasidagi (AES-256) shifrlash bilan himoyalangan.",
+  "국세청 환급금 조회를 위해서만 1회 사용되며 서버에 절대 저장되지 않습니다. (평가 후 즉시 파기)": "Faqat bir marta soliq idorasidan qaytarib beriladigan mablag'ni tekshirish uchun foydalaniladi va serverda hech qachon saqlanmaydi. (Tekshirilgandan so'ng darhol yo'q qilinadi)",
+  "앱 설치 안내": "Ilovani o'rnatish bo'yicha qo'llanma",
+  "안드로이드는 크롬 메뉴에서, 아이폰은 공유 버튼을 누르고 '홈 화면에 추가'를 선택해주세요.": "Android uchun Chrome menyusidan tanlang, iPhone uchun esa Share tugmasini bosing va 'Asosiy ekranga qo'shish'ni tanlang."
 };

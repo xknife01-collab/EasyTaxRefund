@@ -76,5 +76,12 @@ export const portal = {
   "1초 만에 앱을 설치하고 다음부터는 아이콘 터치 한 번으로 내 환급금을 확인하세요!": "Instal aplikasi dalam 1 detik dan periksa pengembalian Anda hanya dengan satu sentuhan pada ikon mulai dari waktu berikutnya!",
   "기본 브라우저 열기 (앱 설치)": "Buka Browser Bawaan (Instal Aplikasi)",
   "내 휴대폰에 이지텍스 앱 설치하기": "Instal aplikasi EasyTax di ponsel saya",
-  "🎉 {name}님이 {amount}원을 환급받았습니다!": "🎉 {name} baru saja menerima pengembalian dana sebesar {amount}!",
+  "🎉 {name}님이 {amount}원을 환급받았습니다!": "🎉 {name} baru saja menerima pengembalian pajak sebesar {amount}!",
+  "예상 환급액을 확인하는 데는 비용이 전혀 들지 않습니다. 안심하고 확인해 보세요.": "Pemeriksaan perkiraan jumlah pengembalian dana tidak dipungut biaya apa pun. Silakan periksa dengan aman.",
+  "개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.": "Apakah Anda ragu untuk memasukkan informasi pribadi? Silakan bicarakan dengan manajer pajak khusus terlebih dahulu.",
+  "본 환급은 합법적 권리로, 비자(E-9, E-7, F-2 등) 연장이나 체류 자격에 어떠한 불이익도 없습니다.": "Pengembalian dana ini adalah hak hukum, dan tidak ada kerugian apa pun terhadap perpanjangan visa (E-9, E-7, F-2, dll.) atau status domisili.",
+  "입력하신 정보는 은행 수준(AES-256)으로 암호화됩니다.": "Informasi yang Anda masukkan dienkripsi pada tingkat perbankan (AES-256).",
+  "국세청 환급금 조회를 위해서만 1회 사용되며 서버에 절대 저장되지 않습니다. (평가 후 즉시 파기)": "Hanya digunakan satu kali untuk pengecekan pengembalian dana kantor pajak dan sama sekali tidak disimpan di server. (Langsung dihancurkan setelah evaluasi)",
+  "앱 설치 안내": "Panduan Pemasangan Aplikasi",
+  "안드로이드는 크롬 메뉴에서, 아이폰은 공유 버튼을 누르고 '홈 화면에 추가'를 선택해주세요.": "Untuk Android, pilih dari menu Chrome, dan untuk iPhone, tekan tombol bagikan lalu pilih 'Tambahkan ke Layar Utama'."
 };

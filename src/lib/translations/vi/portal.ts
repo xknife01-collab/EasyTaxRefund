@@ -79,5 +79,10 @@ export const portal = {
   "내 휴대폰에 이지텍스 앱 설치하기": "Cài đặt ứng dụng EasyTax trên điện thoại của bạn",
   "🎉 {name}님이 {amount}원을 환급받았습니다!": "🎉 {name} vừa nhận được {amount} tiền hoàn thuế!",
   "예상 환급액을 확인하는 데는 비용이 전혀 들지 않습니다. 안심하고 확인해 보세요.": "Việc kiểm tra số tiền hoàn thuế dự kiến là hoàn toàn miễn phí. Hãy yên tâm kiểm tra nhé.",
-  "개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.": "Bạn ngần ngại khi nhập thông tin cá nhân? Hãy trò chuyện trước với quản lý thuế chuyên môn nhé."
+  "개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.": "Bạn ngần ngại khi nhập thông tin cá nhân? Hãy trò chuyện trước với quản lý thuế chuyên môn nhé.",
+  "본 환급은 합법적 권리로, 비자(E-9, E-7, F-2 등) 연장이나 체류 자격에 어떠한 불이익도 없습니다.": "Việc hoàn thuế này là quyền hợp pháp, hoàn toàn không gây bất lợi nào đến việc gia hạn visa (E-9, E-7, F-2, v.v.) hay tư cách lưu trú.",
+  "입력하신 정보는 은행 수준(AES-256)으로 암호화됩니다.": "Thông tin bạn nhập được mã hóa cấp ngân hàng (AES-256).",
+  "국세청 환급금 조회를 위해서만 1회 사용되며 서버에 절대 저장되지 않습니다. (평가 후 즉시 파기)": "Thông tin chỉ được sử dụng một lần duy nhất để tra cứu tiền hoàn từ Cục Thuế Quốc gia và tuyệt đối không được lưu trữ trên máy chủ. (Hủy ngay sau khi đánh giá)",
+  "앱 설치 안내": "Hướng dẫn cài đặt ứng dụng",
+  "안드로이드는 크롬 메뉴에서, 아이폰은 공유 버튼을 누르고 '홈 화면에 추가'를 선택해주세요.": "Đối với Android, hãy chọn từ menu Chrome, còn đối với iPhone, hãy nhấn nút chia sẻ và chọn 'Thêm vào màn hình chính'."
 };
