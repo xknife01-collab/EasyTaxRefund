@@ -167,4 +167,5 @@ export const common = {
   "홈으로 돌아가기": "Quay lại Trang chủ",
   "환급 신청": "Đăng ký hoàn thuế",
   "환급액 확인후 환급 신청하기": "Đăng ký hoàn thuế sau khi kiểm tra số tiền",
+  "세금 환급 궁굼하신가요.바로 물어보세요...": "Bạn tò mò về hoàn thuế? Hỏi ngay bây giờ...",
 };

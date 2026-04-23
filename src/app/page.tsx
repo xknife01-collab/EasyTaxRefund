@@ -537,70 +537,82 @@ export default function HomePage() {
                 <div key={i} className="flex gap-8">
                   {[
                     { 
-                      name: "Nguyen", country: "베트남", flag: "🇻🇳", amount: "3,100,000", 
+                      name: "Nguyen", country: "베트남", flag: "🇻🇳", amount: "3,100,000", image: "/reviews/nguyen.png",
                       text: "맨 처음에는 한국어를 몰라서 인증앱을 어떻게 깔아야 하나 걱정부터 앞섰어요. 그런데 이지텍스리펀드의 자세한 안내를 하나하나 따라하다 보니 인증에 성공했구요. 결과는 대박! 제가 받을 수 있는 금액이 310만원이나 되더라구요. 신청 후 2달 뒤에 어김없이 국세청에서 입금되었습니다. 여러분 두려워 마세요!" 
                     },
                     { 
-                      name: "Chen", country: "중국", flag: "🇨🇳", amount: "2,250,000", 
+                      name: "Chen", country: "중국", flag: "🇨🇳", amount: "2,250,000", image: "/reviews/chen.png",
                       text: "솔직히 처음엔 사기인 줄 알고 의심했어요. 하지만 국세청 공식 데이터를 안전하게 가져온다는 설명을 보고 용기를 냈죠. PASS 앱 인증이 조금 복잡했지만 그림 가이드 덕분에 성공했고, 정확히 8주 뒤에 225만원이 통장으로 들어왔습니다. 정말 믿을 수 있는 서비스예요." 
                     },
                     { 
-                      name: "Hassan", country: "우즈베키스탄", flag: "🇺🇿", amount: "1,850,000", 
+                      name: "Hassan", country: "우즈베키스탄", flag: "🇺🇿", amount: "1,850,000", image: "/reviews/hassan.png",
                       text: "이름 대소문자랑 띄어쓰기 때문에 항상 실패했는데, 여기서 알려준 대로 하니까 바로 통과됐어요! 한국어가 서툴러도 그림만 보면 누구나 할 수 있습니다. 185만원이라는 큰 돈이 생겨서 너무 행복합니다. 우즈벡 친구들에게도 다 추천하고 있어요." 
                     },
                     { 
-                      name: "Maria", country: "필리핀", flag: "🇵🇭", amount: "2,780,000", 
+                      name: "Maria", country: "필리핀", flag: "🇵🇭", amount: "2,780,000", image: "/reviews/maria.png",
                       text: "인증앱 설치가 외국인에겐 제일 큰 장벽인데, 이 앱은 그걸 아주 쉽게 풀어서 알려줍니다. 보안도 확실해서 개인정보 유출 걱정도 없었어요. 한 달 반 만에 278만원 환급받았습니다. 포기하지 마시고 꼭 도전해 보세요!" 
                     },
                     { 
-                      name: "Aris", country: "Indonesia", flag: "🇮🇩", amount: "1,420,000", 
+                      name: "Aris", country: "Indonesia", flag: "🇮🇩", amount: "1,420,000", image: "/reviews/aris.png",
                       text: "처음엔 내 정보를 넣는 게 무서웠어요. 하지만 암호화 기술과 무저장 원칙을 보고 신뢰가 생겼습니다. 인증 성공하고 조회해보니 142만원이나 있었네요! 실제로 돈이 입금되는 걸 확인하니 정말 감격스러웠습니다. 이지텍스리펀드 팀 감사합니다." 
                     },
                     { 
-                      name: "Sita", country: "네팔", flag: "🇳🇵", amount: "3,000,000", 
+                      name: "Sita", country: "네팔", flag: "🇳🇵", amount: "3,000,000", image: "/reviews/sita.png",
                       text: "네팔 친구들은 세금을 돌려받을 수 있다는 사실조차 몰랐어요. 저도 긴가민가하면서 시작했는데 300만원 행운을 얻었습니다! 인증 과정이 조금 힘들 수 있지만 자세히 설명된 대로만 하면 저 같은 외국인도 충분히 성공할 수 있어요." 
                     },
                     { 
-                      name: "Bat", country: "몽골", flag: "🇲🇳", amount: "950,000", 
+                      name: "Bat", country: "몽골", flag: "🇲🇳", amount: "950,000", image: "/reviews/bat.png",
                       text: "통신사 인증이 항상 문제였는데, 여기서 알려준 팁 덕분에 드디어 해결했습니다. 소액이라고 생각했는데 95만원이나 들어오니 기분 최고네요! 외국인을 위한 이런 서비스가 있어서 정말 다행입니다. 여러분도 본인의 권리를 찾으세요." 
                     },
                     { 
-                      name: "Somchai", country: "태국", flag: "🇹🇭", amount: "2,120,000", 
+                      name: "Somchai", country: "태국", flag: "🇹🇭", amount: "2,120,000", image: "/reviews/somchai.png",
                       text: "신청하고 나서 정말 돈이 들어올까 매일 확인했어요. 정확히 약속한 날짜에 국세청에서 입금 알림이 왔을 때 소리를 질렀습니다! 212만원 환급 성공! 인증앱 때문에 포기하지 마세요. 차근차근 따라하다 보면 행운이 올 거예요." 
                     },
                     { 
-                      name: "Vlad", country: "Russia", flag: "🇷🇺", amount: "1,680,000", 
+                      name: "Vlad", country: "Russia", flag: "🇷🇺", amount: "1,680,000", image: "/reviews/vlad.png",
                       text: "보안이 제일 중요했는데 이 앱은 보안 보증서까지 있어서 안심하고 사용했습니다. 카카오톡 인증 방법이 상세해서 외국인인 저도 5분 만에 끝냈어요. 168만원 환급금 받고 고향 부모님께 선물 보냈습니다. 정말 감사합니다!" 
                     },
                     { 
-                      name: "Kyaw", country: "미얀마", flag: "🇲🇲", amount: "1,150,000", 
+                      name: "Kyaw", country: "미얀마", flag: "🇲🇲", amount: "1,150,000", image: "/reviews/kyaw.png",
                       text: "미얀마 친구들이 사기 아니냐고 걱정했는데 제가 먼저 받고 증명했습니다! 115만원 통장에 찍히는 순간 다들 놀랐죠. 인증이 막힌다면 AI 비서에게 물어보세요. 정말 친절하게 알려줍니다. 모두 꼭 해보세요!" 
                     },
                   ].map((review, idx) => (
-                    <Card key={idx} className="w-[550px] min-h-[350px] shrink-0 border-none shadow-[0_20px_45px_-10px_rgba(0,0,0,0.08)] rounded-[2.5rem] p-10 bg-white border border-slate-50 transition-all hover:scale-[1.03] active:scale-95 group flex flex-col justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center gap-5 mb-8">
-                          <div className="h-16 w-16 rounded-[1.25rem] bg-slate-50 flex items-center justify-center text-4xl shadow-inner leading-none group-hover:bg-primary/5 transition-colors">
-                            {review.flag}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="font-black text-slate-900 text-xl tracking-tight">{review.name}</span>
-                              <Badge className="bg-primary/10 text-primary border-none font-bold text-[10px] h-5 px-2 uppercase tracking-wider">SECURE VERIFIED</Badge>
+                    <Card key={idx} className="w-[450px] shrink-0 border-none shadow-[0_20px_45px_-10px_rgba(0,0,0,0.08)] rounded-[2.5rem] bg-white border border-slate-50 transition-all hover:scale-[1.03] active:scale-95 group flex flex-col overflow-hidden">
+                      <div className="relative h-[300px] w-full shrink-0">
+                        <Image 
+                          src={review.image} 
+                          alt={review.name} 
+                          fill 
+                          className="object-cover transition-transform duration-500 group-hover:scale-110"
+                          unoptimized={true}
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
+                      </div>
+                      <div className="p-8 space-y-6">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-4">
+                            <div className="h-14 w-14 rounded-2xl bg-slate-50 flex items-center justify-center text-3xl shadow-inner leading-none group-hover:bg-primary/5 transition-colors">
+                              {review.flag}
                             </div>
-                            <p className="text-sm text-slate-400 font-bold uppercase tracking-widest">{t(review.country)}</p>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-black text-slate-900 text-lg tracking-tight">{review.name}</span>
+                                <Badge className="bg-primary/10 text-primary border-none font-bold text-[9px] h-4 px-2 uppercase tracking-wider">VERIFIED</Badge>
+                              </div>
+                              <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{t(review.country)}</p>
+                            </div>
                           </div>
-                          <div className="ml-auto flex flex-col items-end">
+                          <div className="flex flex-col items-end">
                             <div className="flex items-baseline gap-1">
-                              <span className="text-primary font-black text-3xl tracking-tighter">+{review.amount}</span>
-                              <span className="text-slate-400 font-black text-sm">{t('원')}</span>
+                              <span className="text-primary font-black text-2xl tracking-tighter">+{review.amount}</span>
+                              <span className="text-slate-400 font-black text-xs">{t('원')}</span>
                             </div>
-                            <p className="text-[10px] text-green-500 font-black uppercase mt-1">NTS Deposited ✓</p>
+                            <p className="text-[9px] text-green-500 font-black uppercase mt-1">Deposited ✓</p>
                           </div>
                         </div>
                         <div className="relative">
-                          <div className="absolute -top-4 -left-2 text-primary/10 text-6xl font-serif">"</div>
-                          <p className="text-slate-600 font-bold leading-relaxed text-lg lg:text-xl pl-4 relative z-10 break-words whitespace-normal">
+                          <div className="absolute -top-3 -left-1 text-primary/10 text-5xl font-serif">"</div>
+                          <p className="text-slate-600 font-bold leading-relaxed text-base pl-4 relative z-10 break-words whitespace-normal line-clamp-4">
                             {t(review.text)}
                           </p>
                         </div>

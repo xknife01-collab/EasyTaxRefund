@@ -179,4 +179,5 @@ export const common = {
   "홈으로 돌아가기": "Kembali ke Beranda",
   "환급 신청": "Ajukan Pengembalian Pajak",
   "환급액 확인후 환급 신청하기": "Ajukan pengembalian pajak setelah cek jumlah",
+  "세금 환급 궁굼하신가요.바로 물어보세요...": "Penasaran soal pengembalian pajak? Tanyakan langsung...",
 };

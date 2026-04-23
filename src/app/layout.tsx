@@ -5,6 +5,7 @@ import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/components/LanguageContext';
 import { SocialProof } from '@/components/SocialProof';
 import { PWASetup } from '@/components/PWASetup';
+import { FloatingAiChat } from '@/components/FloatingAiChat';
 
 export const metadata: Metadata = {
   manifest: '/manifest.json',
@@ -52,6 +53,7 @@ export default function RootLayout({
           <Toaster />
           <SocialProof />
           <PWASetup />
+          <FloatingAiChat />
         </LanguageProvider>
       </body>
     </html>

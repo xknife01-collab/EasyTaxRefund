@@ -181,4 +181,5 @@ export const common = {
   "홈으로 돌아가기": "Bosh sahifaga qaytish",
   "환급 신청": "Pulni qaytarish uchun ariza berish",
   "환급액 확인후 환급 신청하기": "Summani tekshirgandan keyin ariza berish",
+  "세금 환급 궁굼하신가요.바로 물어보세요...": "Soliq qaytarimi haqida qiziqishingiz bormi? Hoziroq so'rang...",
 };
