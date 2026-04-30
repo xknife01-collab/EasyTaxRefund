@@ -18,7 +18,7 @@ export function AiChatDialog({ children }: { children: React.ReactNode }) {
   const { t, language } = useTranslation();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<{ role: 'user' | 'ai', content: string }[]>([
-    { role: 'ai', content: t('안녕하세요! Easy Tax Refund AI 상담사입니다. 중소기업 취업자 소득세 감면과 핸드폰 본인 인증 방법에 대해 궁금한 점이 있으신가요?') }
+    { role: 'ai', content: t('ai_chat_greeting') }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);

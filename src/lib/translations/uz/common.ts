@@ -182,4 +182,5 @@ export const common = {
   "환급 신청": "Pulni qaytarish uchun ariza berish",
   "환급액 확인후 환급 신청하기": "Summani tekshirgandan keyin ariza berish",
   "세금 환급 궁굼하신가요.바로 물어보세요...": "Soliq qaytarimi haqida qiziqishingiz bormi? Hoziroq so'rang...",
+  "ai_chat_greeting": "Salom! Men Easy Tax Refund AI maslahatchisiman. Kichik va o'rta biznes xodimlari uchun daromad solig'ini kamaytirish yoki mobil telefon orqali shaxsni tasdiqlash usullari bo'yicha savollaringiz bormi?",
 };

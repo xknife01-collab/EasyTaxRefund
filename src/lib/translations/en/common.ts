@@ -179,4 +179,5 @@ export const common = {
   "환급 신청": "Apply for Refund",
   "환급액 확인후 환급 신청하기": "Apply for refund after checking amount",
   "세금 환급 궁굼하신가요.바로 물어보세요...": "Curious about tax refunds? Ask us right away...",
+  "ai_chat_greeting": "Hello! I am the Easy Tax Refund AI counselor. Do you have any questions about income tax reduction for SME employees or how to authenticate your identity via mobile phone?",
 };
