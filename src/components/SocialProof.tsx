@@ -97,22 +97,26 @@ export function SocialProof() {
   return (
     <div
       className={cn(
-        "fixed bottom-6 left-6 z-[120] transition-all duration-700 transform print:hidden",
-        isVisible && !isForcedHidden ? "translate-y-0 opacity-100 scale-100" : "translate-y-12 opacity-0 scale-95 pointer-events-none"
+        "fixed z-[120] transition-all duration-700 transform print:hidden",
+        // 모바일에서는 위쪽(top), 데스크톱에서는 아래쪽(bottom)
+        "top-4 left-4 sm:top-auto sm:bottom-6 sm:left-6",
+        isVisible && !isForcedHidden 
+          ? "translate-y-0 opacity-100 scale-100" 
+          : "sm:translate-y-12 -translate-y-12 opacity-0 scale-95 pointer-events-none"
       )}
     >
-      <div className="bg-white/90 backdrop-blur-md border border-slate-200 shadow-2xl rounded-[1.5rem] p-4 flex items-center gap-4 min-w-[300px] max-w-sm">
+      <div className="bg-white/95 backdrop-blur-md border border-slate-200 shadow-2xl rounded-[1.2rem] p-3 flex items-center gap-3 min-w-[260px] max-w-[320px] sm:min-w-[300px] sm:max-w-sm">
         <div className={cn(
-          "h-12 w-12 rounded-2xl flex items-center justify-center shrink-0 shadow-sm",
+          "h-10 w-10 sm:h-12 sm:w-12 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-sm",
           notification.iconType === "user" && "bg-blue-50 text-blue-500",
           notification.iconType === "check" && "bg-emerald-50 text-emerald-500",
           notification.iconType === "globe" && "bg-indigo-50 text-indigo-500",
           notification.iconType === "sparkles" && "bg-amber-50 text-amber-500"
         )}>
-          {notification.iconType === "user" && <User className="h-6 w-6" />}
-          {notification.iconType === "check" && <CheckCircle2 className="h-6 w-6" />}
-          {notification.iconType === "globe" && <Globe className="h-6 w-6" />}
-          {notification.iconType === "sparkles" && <Sparkles className="h-6 w-6" />}
+          {notification.iconType === "user" && <User className="h-5 w-5 sm:h-6 sm:w-6" />}
+          {notification.iconType === "check" && <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6" />}
+          {notification.iconType === "globe" && <Globe className="h-5 w-5 sm:h-6 sm:w-6" />}
+          {notification.iconType === "sparkles" && <Sparkles className="h-5 w-5 sm:h-6 sm:w-6" />}
         </div>
         
         <div className="flex-1 space-y-0.5">
@@ -120,7 +124,7 @@ export function SocialProof() {
             <span className="text-[10px] font-black text-primary uppercase tracking-widest">{notification.country}</span>
             <span className="text-[9px] font-bold text-slate-300">{notification.timeAgo}</span>
           </div>
-          <p className="text-[13px] font-black text-slate-900 leading-tight">
+          <p className="text-[11px] sm:text-[13px] font-black text-slate-900 leading-tight">
             {notification.action}
           </p>
           <div className="flex items-center gap-1">
