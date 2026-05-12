@@ -176,4 +176,12 @@ export const common = {
   "환급액 확인후 환급 신청하기": "환급액 확인후 환급 신청하기",
   "세금 환급 궁굼하신가요.바로 물어보세요...": "세금 환급 궁굼하신가요.바로 물어보세요...",
   "ai_chat_greeting": "안녕하세요! Easy Tax Refund AI 상담사입니다. 중소기업 취업자 소득세 감면과 핸드폰 본인 인증 방법에 대해 궁금한 점이 있으신가요?",
+  "in_app_browser_title_android": "보안 연결을 위해 보다 안전한 Chrome으로 이동합니다",
+  "in_app_browser_desc_android": "페이스북/인스타그램 브라우저에서는 본인 인증이 제한될 수 있습니다. 아래 버튼을 눌러 크롬 브라우저에서 안전하게 계속해 주세요.",
+  "in_app_browser_btn_android": "Chrome에서 계속하기",
+  "in_app_browser_title_ios": "안전한 이용을 위해 Safari 브라우저에서 실행해 주세요",
+  "in_app_browser_desc_ios": "아이폰은 보안 정책상 링크를 복사하여 Safari 주소창에 직접 붙여넣어야 본인 인증이 가능합니다.",
+  "in_app_browser_btn_ios": "링크 복사하기",
+  "in_app_browser_copy_done": "링크 복사 완료",
+  "in_app_browser_copy_desc": "사파리 브라우저에 붙여넣어 주세요!"
 };

@@ -210,13 +210,7 @@ export default function EstimatePage() {
 
       if (isInApp) {
         setIsInAppBrowser(true);
-
-        // 안드로이드: 즉시 Chrome으로 자동 전환 (메시지 없음)
-        if (/android/i.test(ua)) {
-          const currentUrl = window.location.href.replace(/^https?:\/\//i, '');
-          window.location.href = `intent://${currentUrl}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;end`;
-        }
-        // iOS: 자동 전환 불가 (Apple 정책) → 아무것도 하지 않음
+        // 자동 전환은 페이스북에 의해 차단되므로, 오버레이를 통해 사용자 클릭 유도
       }
 
       window.addEventListener('beforeinstallprompt', (e) => {
@@ -855,6 +849,57 @@ export default function EstimatePage() {
 
   return (
     <div className="min-h-screen flex flex-col font-body bg-slate-50/50">
+      {isInAppBrowser && (
+        <div className="fixed inset-0 z-[10000] bg-white flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
+          <div className="w-24 h-24 bg-primary/10 rounded-[2.5rem] flex items-center justify-center mb-10 relative">
+            <ShieldCheck className="w-12 h-12 text-primary" />
+            <div className="absolute inset-0 bg-primary/20 rounded-[2.5rem] blur-2xl animate-pulse" />
+          </div>
+          
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-6 break-keep leading-tight">
+            {/android/i.test(navigator.userAgent) 
+              ? t('in_app_browser_title_android')
+              : t('in_app_browser_title_ios')}
+          </h2>
+          
+          <p className="text-slate-500 font-bold mb-12 leading-relaxed break-keep max-w-sm mx-auto">
+            {/android/i.test(navigator.userAgent)
+              ? t('in_app_browser_desc_android')
+              : t('in_app_browser_desc_ios')}
+          </p>
+          
+          {/android/i.test(navigator.userAgent) ? (
+            <Button 
+              onClick={handleInstallApp}
+              className="w-full max-w-sm h-20 bg-primary text-xl font-black rounded-3xl shadow-2xl shadow-primary/30 flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98]"
+            >
+              <Smartphone className="w-7 h-7" />
+              {t('in_app_browser_btn_android')}
+            </Button>
+          ) : (
+            <div className="space-y-6 w-full max-w-sm">
+               <Button 
+                onClick={() => {
+                  navigator.clipboard.writeText(window.location.href);
+                  toast({ title: t("in_app_browser_copy_done"), description: t("in_app_browser_copy_desc") });
+                }}
+                className="w-full h-20 bg-slate-900 text-xl font-black rounded-3xl shadow-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98]"
+              >
+                <Copy className="w-7 h-7" />
+                {t('in_app_browser_btn_ios')}
+              </Button>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('Copy link and paste into Safari browser')}</p>
+            </div>
+          )}
+          
+          <button 
+            onClick={() => setIsInAppBrowser(false)}
+            className="mt-12 text-slate-400 font-bold text-sm underline underline-offset-4 decoration-slate-200 hover:text-slate-600 transition-colors"
+          >
+            {t('계속 진행하기 (추천하지 않음)')}
+          </button>
+        </div>
+      )}
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-8 lg:py-24">
         <div className="max-w-2xl mx-auto space-y-6 sm:space-y-8">

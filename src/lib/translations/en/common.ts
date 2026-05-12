@@ -180,4 +180,12 @@ export const common = {
   "환급액 확인후 환급 신청하기": "Apply for refund after checking amount",
   "세금 환급 궁굼하신가요.바로 물어보세요...": "Curious about tax refunds? Ask us right away...",
   "ai_chat_greeting": "Hello! I am the Easy Tax Refund AI counselor. Do you have any questions about income tax reduction for SME employees or how to authenticate your identity via mobile phone?",
+  "in_app_browser_title_android": "Moving to Chrome for a Secure Connection",
+  "in_app_browser_desc_android": "Identity verification may be restricted in Facebook/Instagram browsers. Please tap the button below to continue securely in Chrome.",
+  "in_app_browser_btn_android": "Continue in Chrome",
+  "in_app_browser_title_ios": "Please Open in Safari for a Secure Experience",
+  "in_app_browser_desc_ios": "Due to iOS security policies, you must copy the link and paste it into the Safari address bar to complete identity verification.",
+  "in_app_browser_btn_ios": "Copy Link",
+  "in_app_browser_copy_done": "Link Copied",
+  "in_app_browser_copy_desc": "Please paste it into your Safari browser!"
 };
