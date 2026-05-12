@@ -197,5 +197,7 @@ export const common = {
   "in_app_browser_desc_ios": "iOS қауіпсіздік саясатына байланысты, жеке басты растауды аяқтау үшін сілтемені көшіріп, Safari мекенжай жолағына қоюыңыз керек.",
   "in_app_browser_btn_ios": "Сілтемені көшіру",
   "in_app_browser_copy_done": "Сілтеме көшірілді",
-  "in_app_browser_copy_desc": "Оны Safari браузеріне қойыңыз!"
+  "in_app_browser_copy_desc": "Оны Safari браузеріне қойыңыз!",
+  "in_app_browser_continue_anyway": "Бәрібір жалғастыру (Ұсынылмайды)",
+  "in_app_browser_ios_manual": "Сілтемені көшіріп, Safari браузеріне қойыңыз"
 };

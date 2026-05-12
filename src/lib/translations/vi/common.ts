@@ -176,5 +176,7 @@ export const common = {
   "in_app_browser_desc_ios": "Do chính sách bảo mật của iOS, bạn phải sao chép liên kết và dán vào thanh địa chỉ của Safari để hoàn tất xác minh danh tính.",
   "in_app_browser_btn_ios": "Sao chép liên kết",
   "in_app_browser_copy_done": "Liên kết đã được sao chép",
-  "in_app_browser_copy_desc": "Vui lòng dán vào trình duyệt Safari của bạn!"
+  "in_app_browser_copy_desc": "Vui lòng dán vào trình duyệt Safari của bạn!",
+  "in_app_browser_continue_anyway": "Tiếp tục (Không khuyến nghị)",
+  "in_app_browser_ios_manual": "Sao chép liên kết và dán vào trình duyệt Safari"
 };

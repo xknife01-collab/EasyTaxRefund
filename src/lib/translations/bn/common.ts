@@ -197,5 +197,7 @@ export const common = {
   "in_app_browser_desc_ios": "iOS নিরাপত্তা নীতির কারণে, পরিচয় যাচাইকরণ সম্পন্ন করতে আপনাকে লিঙ্কটি কপি করে Safari-র অ্যাড্রেস বারে পেস্ট করতে হবে।",
   "in_app_browser_btn_ios": "লিঙ্ক কপি করুন",
   "in_app_browser_copy_done": "লিঙ্ক কপি করা হয়েছে",
-  "in_app_browser_copy_desc": "দয়া করে এটি আপনার Safari ব্রাউজারে পেস্ট করুন!"
+  "in_app_browser_copy_desc": "দয়া করে এটি আপনার Safari ব্রাউজারে পেস্ট করুন!",
+  "in_app_browser_continue_anyway": "যাইহোক চালিয়ে যান (প্রস্তাবিত নয়)",
+  "in_app_browser_ios_manual": "লিঙ্ক কপি করুন এবং Safari ব্রাউজারে পেস্ট করুন"
 };

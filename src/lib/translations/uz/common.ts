@@ -190,5 +190,7 @@ export const common = {
   "in_app_browser_desc_ios": "iOS xavfsizlik siyosati tufayli shaxsni tasdiqlashni yakunlash uchun havolani nusxalashingiz va Safari manzil satriga joylashtirishingiz kerak.",
   "in_app_browser_btn_ios": "Havolani nusxalash",
   "in_app_browser_copy_done": "Havola nusxalandi",
-  "in_app_browser_copy_desc": "Iltimos, uni Safari brauzeriga joylashtiring!"
+  "in_app_browser_copy_desc": "Iltimos, uni Safari brauzeriga joylashtiring!",
+  "in_app_browser_continue_anyway": "Davom etish (Tavsiya etilmaydi)",
+  "in_app_browser_ios_manual": "Havolani nusxalang va Safari brauzeriga joylashtiring"
 };

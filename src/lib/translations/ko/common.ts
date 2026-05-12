@@ -183,5 +183,7 @@ export const common = {
   "in_app_browser_desc_ios": "아이폰은 보안 정책상 링크를 복사하여 Safari 주소창에 직접 붙여넣어야 본인 인증이 가능합니다.",
   "in_app_browser_btn_ios": "링크 복사하기",
   "in_app_browser_copy_done": "링크 복사 완료",
-  "in_app_browser_copy_desc": "사파리 브라우저에 붙여넣어 주세요!"
+  "in_app_browser_copy_desc": "사파리 브라우저에 붙여넣어 주세요!",
+  "in_app_browser_continue_anyway": "계속 진행하기 (추천하지 않음)",
+  "in_app_browser_ios_manual": "사파리 주소창에 링크를 복사하여 붙여넣어주세요"
 };

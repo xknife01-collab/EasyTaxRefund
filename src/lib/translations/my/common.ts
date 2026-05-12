@@ -176,5 +176,7 @@ export const common = {
   "in_app_browser_desc_ios": "iOS လုံခြုံရေးမူဝါဒကြောင့်၊ ကိုယ်ရေးကိုယ်တာအတည်ပြုခြင်းကို အပြီးသတ်ရန် လင့်ခ်ကို ကူးယူပြီး Safari လိပ်စာဘားတွင် ကူးထည့်ရပါမည်။",
   "in_app_browser_btn_ios": "လင့်ခ်ကို ကူးယူပါ",
   "in_app_browser_copy_done": "လင့်ခ်ကို ကူးယူပြီးပါပြီ",
-  "in_app_browser_copy_desc": "၎င်းကို သင်၏ Safari ဘရောက်ဆာတွင် ကူးထည့်ပါ။"
+  "in_app_browser_copy_desc": "၎င်းကို သင်၏ Safari ဘရောက်ဆာတွင် ကူးထည့်ပါ။",
+  "in_app_browser_continue_anyway": "မည်သို့ပင်ဆိုစေ ဆက်လက်လုပ်ဆောင်ရန် (အကြံမပြုပါ)",
+  "in_app_browser_ios_manual": "လင့်ခ်ကို ကူးယူပြီး Safari ဘရောက်ဆာတွင် ကူးထည့်ပါ"
 };

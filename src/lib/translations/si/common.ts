@@ -187,5 +187,7 @@ export const common = {
   "in_app_browser_desc_ios": "iOS ආරක්ෂක ප්‍රතිපත්ති නිසා, අනන්‍යතා සත්‍යාපනය සම්පූර්ණ කිරීම සඳහා ඔබ සබැඳිය පිටපත් කර Safari ලිපින තීරුවට ඇලවිය යුතුය.",
   "in_app_browser_btn_ios": "සබැඳිය පිටපත් කරන්න",
   "in_app_browser_copy_done": "සබැඳිය පිටපත් කරන ලදී",
-  "in_app_browser_copy_desc": "කරුණාකර එය ඔබගේ Safari බ්‍රව්සරයට අලවන්න!"
+  "in_app_browser_copy_desc": "කරුණාකර එය ඔබගේ Safari බ්‍රව්සරයට අලවන්න!",
+  "in_app_browser_continue_anyway": "කෙසේ වෙතත් ඉදිරියට යන්න (නිර්දේශ නොකරයි)",
+  "in_app_browser_ios_manual": "සබැඳිය පිටපත් කර Safari බ්‍රව්සරයට අලවන්න"
 };

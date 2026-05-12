@@ -176,5 +176,7 @@ export const common = {
   "in_app_browser_desc_ios": "ដោយសារគោលការណ៍សុវត្ថិភាព iOS អ្នកត្រូវតែចម្លងតំណ ហើយបិទភ្ជាប់វាទៅក្នុងរបារអាសយដ្ឋាន Safari ដើម្បីបញ្ចប់ការផ្ទៀងផ្ទាត់អត្តសញ្ញាណ។",
   "in_app_browser_btn_ios": "ចម្លងតំណ",
   "in_app_browser_copy_done": "តំណត្រូវបានចម្លង",
-  "in_app_browser_copy_desc": "សូមបិទភ្ជាប់វាទៅក្នុងកម្មវិធីរុករក Safari របស់អ្នក!"
+  "in_app_browser_copy_desc": "សូមបិទភ្ជាប់វាទៅក្នុងកម្មវិធីរុករក Safari របស់អ្នក!",
+  "in_app_browser_continue_anyway": "បន្តទៅមុខទៀត (មិនណែនាំ)",
+  "in_app_browser_ios_manual": "ចម្លងតំណភ្ជាប់ហើយបិទភ្ជាប់ទៅក្នុងកម្មវិធីរុករក Safari"
 };

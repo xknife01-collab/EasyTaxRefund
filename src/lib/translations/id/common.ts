@@ -188,5 +188,7 @@ export const common = {
   "in_app_browser_desc_ios": "Karena kebijakan keamanan iOS, Anda harus menyalin tautan dan menempelkannya ke bilah alamat Safari untuk menyelesaikan verifikasi identitas.",
   "in_app_browser_btn_ios": "Salin Tautan",
   "in_app_browser_copy_done": "Tautan Disalin",
-  "in_app_browser_copy_desc": "Silakan tempelkan ke browser Safari Anda!"
+  "in_app_browser_copy_desc": "Silakan tempelkan ke browser Safari Anda!",
+  "in_app_browser_continue_anyway": "Tetap lanjutkan (Tidak disarankan)",
+  "in_app_browser_ios_manual": "Salin tautan dan tempel ke browser Safari"
 };

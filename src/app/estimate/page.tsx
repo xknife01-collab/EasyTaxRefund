@@ -93,7 +93,7 @@ import { getStoredTrackingData, getEffectiveSource } from "@/lib/tracking";
 import Image from "next/image";
 
 export default function EstimatePage() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
   const { toast } = useToast();
 
   const BANK_LOGOS: Record<string, React.ReactNode> = {
@@ -222,12 +222,16 @@ export default function EstimatePage() {
 
   const handleInstallApp = () => {
     if (isInAppBrowser) {
-      const targetUrl = window.location.href;
+      // 현재 URL에 언어 파라미터를 추가하여 전달
+      const currentUrl = new URL(window.location.href);
+      currentUrl.searchParams.set('lang', language);
+      const targetUrl = currentUrl.toString();
+
       if (navigator.userAgent.match(/Android/i)) {
         window.location.href = `intent://${targetUrl.replace(/^https?:\/\//i, '')}#Intent;scheme=https;package=com.android.chrome;end`;
       } else {
         navigator.clipboard.writeText(targetUrl);
-        toast({ title: t("링크 복사 완료"), description: t("사파리(Safari) 브라우저를 열고 주소창에 붙여넣으세요!") });
+        toast({ title: t("in_app_browser_copy_done"), description: t("in_app_browser_copy_desc") });
       }
     } else if (deferredPrompt) {
       deferredPrompt.prompt();
@@ -880,7 +884,9 @@ export default function EstimatePage() {
             <div className="space-y-6 w-full max-w-sm">
                <Button 
                 onClick={() => {
-                  navigator.clipboard.writeText(window.location.href);
+                  const currentUrl = new URL(window.location.href);
+                  currentUrl.searchParams.set('lang', language);
+                  navigator.clipboard.writeText(currentUrl.toString());
                   toast({ title: t("in_app_browser_copy_done"), description: t("in_app_browser_copy_desc") });
                 }}
                 className="w-full h-20 bg-slate-900 text-xl font-black rounded-3xl shadow-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98]"
@@ -888,7 +894,7 @@ export default function EstimatePage() {
                 <Copy className="w-7 h-7" />
                 {t('in_app_browser_btn_ios')}
               </Button>
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('Copy link and paste into Safari browser')}</p>
+              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('in_app_browser_ios_manual')}</p>
             </div>
           )}
           
@@ -896,7 +902,7 @@ export default function EstimatePage() {
             onClick={() => setIsInAppBrowser(false)}
             className="mt-12 text-slate-400 font-bold text-sm underline underline-offset-4 decoration-slate-200 hover:text-slate-600 transition-colors"
           >
-            {t('계속 진행하기 (추천하지 않음)')}
+            {t('in_app_browser_continue_anyway')}
           </button>
         </div>
       )}

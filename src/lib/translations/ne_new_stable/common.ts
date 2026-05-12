@@ -190,5 +190,7 @@ export const common = {
   "in_app_browser_desc_ios": "iOS सुरक्षा नीतिका कारण, पहिचान प्रमाणीकरण पूरा गर्न तपाईंले लिङ्क प्रतिलिपि गरेर Safari ठेगाना बारमा टाँस्नुपर्छ।",
   "in_app_browser_btn_ios": "लिङ्क प्रतिलिपि गर्नुहोस्",
   "in_app_browser_copy_done": "लिङ्क प्रतिलिपि गरियो",
-  "in_app_browser_copy_desc": "कृपया यसलाई आफ्नो Safari ब्राउजरमा टाँस्नुहोस्!"
+  "in_app_browser_copy_desc": "कृपया यसलाई आफ्नो Safari ब्राउजरमा टाँस्नुहोस्!",
+  "in_app_browser_continue_anyway": "जे भए पनि जारी राख्नुहोस् (सिफारिस गरिएको छैन)",
+  "in_app_browser_ios_manual": "लिङ्क प्रतिलिपि गर्नुहोस् र Safari ब्राउजरमा टाँस्नुहोस्"
 };

@@ -187,5 +187,7 @@ export const common = {
   "in_app_browser_desc_ios": "เนื่องจากนโยบายความปลอดภัยของ iOS คุณต้องคัดลอกลิงก์และวางลงในแถบที่อยู่ของ Safari เพื่อยืนยันตัวตนให้เสร็จสมบูรณ์",
   "in_app_browser_btn_ios": "คัดลอกลิงก์",
   "in_app_browser_copy_done": "คัดลอกลิงก์แล้ว",
-  "in_app_browser_copy_desc": "โปรดวางลงในเบราว์เซอร์ Safari ของคุณ!"
+  "in_app_browser_copy_desc": "โปรดวางลงในเบราว์เซอร์ Safari ของคุณ!",
+  "in_app_browser_continue_anyway": "ดำเนินการต่อ (ไม่แนะนำ)",
+  "in_app_browser_ios_manual": "คัดลอกลิงก์และวางในเบราว์เซอร์ Safari"
 };

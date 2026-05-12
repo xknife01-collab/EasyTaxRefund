@@ -212,5 +212,7 @@ export const common = {
   "in_app_browser_desc_ios": "iOS سیکیورٹی پالیسیوں کی وجہ سے، آپ کو لنک کاپی کر کے Safari کے ایڈریس بار میں پیسٹ کرنا ہوگا تاکہ شناخت کی تصدیق مکمل ہو سکے۔",
   "in_app_browser_btn_ios": "لنک کاپی کریں",
   "in_app_browser_copy_done": "لنک کاپی ہو گیا",
-  "in_app_browser_copy_desc": "براہ کرم اسے اپنے Safari براؤزر میں پیسٹ کریں!"
+  "in_app_browser_copy_desc": "براہ کرم اسے اپنے Safari براؤزر میں پیسٹ کریں!",
+  "in_app_browser_continue_anyway": "بہر حال جاری رکھیں (تجویز کردہ نہیں)",
+  "in_app_browser_ios_manual": "لنک کاپی کریں اور Safari براؤزر میں پیسٹ کریں"
 };

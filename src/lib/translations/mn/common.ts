@@ -187,5 +187,7 @@ export const common = {
   "in_app_browser_desc_ios": "iOS-ийн аюулгүй байдлын бодлогын улмаас та иргэний үнэмлэх баталгаажуулалтыг дуусгахын тулд холбоосыг хуулж, Safari-н хаягийн мөрөнд буулгах ёстой.",
   "in_app_browser_btn_ios": "Холбоос хуулах",
   "in_app_browser_copy_done": "Холбоос хуулагдлаа",
-  "in_app_browser_copy_desc": "Safari хөтөч дээрээ буулгана уу!"
+  "in_app_browser_copy_desc": "Safari хөтөч дээрээ буулгана уу!",
+  "in_app_browser_continue_anyway": "Үргэлжлүүлэх (Зөвлөхгүй)",
+  "in_app_browser_ios_manual": "Холбоосыг хуулж Safari хөтөч дээр буулгана уу"
 };

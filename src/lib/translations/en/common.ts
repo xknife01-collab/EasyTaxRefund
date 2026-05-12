@@ -187,5 +187,7 @@ export const common = {
   "in_app_browser_desc_ios": "Due to iOS security policies, you must copy the link and paste it into the Safari address bar to complete identity verification.",
   "in_app_browser_btn_ios": "Copy Link",
   "in_app_browser_copy_done": "Link Copied",
-  "in_app_browser_copy_desc": "Please paste it into your Safari browser!"
+  "in_app_browser_copy_desc": "Please paste it into your Safari browser!",
+  "in_app_browser_continue_anyway": "Continue anyway (Not recommended)",
+  "in_app_browser_ios_manual": "Copy link and paste into Safari browser"
 };

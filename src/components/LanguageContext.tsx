@@ -61,11 +61,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     const initLanguage = async () => {
       try {
         let lang: Language = 'ko';
-        try {
-          const savedLang = localStorage.getItem('app_lang') as Language;
-          if (savedLang) lang = savedLang;
-        } catch (storageError) {
-          console.error('LocalStorage access blocked:', storageError);
+        
+        // 1. URL Query Parameter 우선 확인 (?lang=vi 등)
+        if (typeof window !== 'undefined') {
+          const params = new URLSearchParams(window.location.search);
+          const urlLang = params.get('lang') as Language;
+          if (urlLang) {
+            lang = urlLang;
+            localStorage.setItem('app_lang', lang);
+          } else {
+            // 2. LocalStorage 확인
+            const savedLang = localStorage.getItem('app_lang') as Language;
+            if (savedLang) lang = savedLang;
+          }
         }
         
         setLanguageState(lang);

@@ -176,5 +176,7 @@ export const common = {
   "in_app_browser_desc_ios": "由于 iOS 安全政策，您必须复制链接并将其粘贴到 Safari 地址栏中才能完成身份验证。",
   "in_app_browser_btn_ios": "复制链接",
   "in_app_browser_copy_done": "链接已复制",
-  "in_app_browser_copy_desc": "请将其粘贴到您的 Safari 浏览器中！"
+  "in_app_browser_copy_desc": "请将其粘贴到您的 Safari 浏览器中！",
+  "in_app_browser_continue_anyway": "仍然继续（不推荐）",
+  "in_app_browser_ios_manual": "复制链接并粘贴到 Safari 浏览器"
 };
