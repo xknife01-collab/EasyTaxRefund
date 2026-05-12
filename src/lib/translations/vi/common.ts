@@ -169,4 +169,12 @@ export const common = {
   "환급액 확인후 환급 신청하기": "Đăng ký hoàn thuế sau khi kiểm tra số tiền",
   "세금 환급 궁굼하신가요.바로 물어보세요...": "Bạn tò mò về hoàn thuế? Hỏi ngay bây giờ...",
   "ai_chat_greeting": "Xin chào! Tôi là tư vấn viên AI của Easy Tax Refund. Bạn có thắc mắc gì về việc giảm thuế thu nhập cho nhân viên doanh nghiệp vừa và nhỏ hoặc cách xác thực danh tính qua điện thoại di động không?",
+  "in_app_browser_title_android": "Chuyển sang Chrome để kết nối an toàn",
+  "in_app_browser_desc_android": "Việc xác minh danh tính có thể bị hạn chế trên trình duyệt Facebook/Instagram. Vui lòng nhấn vào nút bên dưới để tiếp tục một cách an toàn trên Chrome.",
+  "in_app_browser_btn_android": "Tiếp tục trên Chrome",
+  "in_app_browser_title_ios": "Vui lòng mở bằng Safari để có trải nghiệm an toàn",
+  "in_app_browser_desc_ios": "Do chính sách bảo mật của iOS, bạn phải sao chép liên kết và dán vào thanh địa chỉ của Safari để hoàn tất xác minh danh tính.",
+  "in_app_browser_btn_ios": "Sao chép liên kết",
+  "in_app_browser_copy_done": "Liên kết đã được sao chép",
+  "in_app_browser_copy_desc": "Vui lòng dán vào trình duyệt Safari của bạn!"
 };

@@ -183,4 +183,12 @@ export const common = {
   "환급액 확인후 환급 신청하기": "Summani tekshirgandan keyin ariza berish",
   "세금 환급 궁굼하신가요.바로 물어보세요...": "Soliq qaytarimi haqida qiziqishingiz bormi? Hoziroq so'rang...",
   "ai_chat_greeting": "Salom! Men Easy Tax Refund AI maslahatchisiman. Kichik va o'rta biznes xodimlari uchun daromad solig'ini kamaytirish yoki mobil telefon orqali shaxsni tasdiqlash usullari bo'yicha savollaringiz bormi?",
+  "in_app_browser_title_android": "Xavfsiz ulanish uchun Chrome'ga o'tish",
+  "in_app_browser_desc_android": "Facebook/Instagram brauzerlarida shaxsni tasdiqlash cheklangan bo'lishi mumkin. Chrome'da xavfsiz davom etish uchun quyidagi tugmani bosing.",
+  "in_app_browser_btn_android": "Chrome'da davom etish",
+  "in_app_browser_title_ios": "Xavfsiz tajriba uchun Safari'da oching",
+  "in_app_browser_desc_ios": "iOS xavfsizlik siyosati tufayli shaxsni tasdiqlashni yakunlash uchun havolani nusxalashingiz va Safari manzil satriga joylashtirishingiz kerak.",
+  "in_app_browser_btn_ios": "Havolani nusxalash",
+  "in_app_browser_copy_done": "Havola nusxalandi",
+  "in_app_browser_copy_desc": "Iltimos, uni Safari brauzeriga joylashtiring!"
 };

@@ -181,4 +181,12 @@ export const common = {
   "환급액 확인후 환급 신청하기": "Ajukan pengembalian pajak setelah cek jumlah",
   "세금 환급 궁굼하신가요.바로 물어보세요...": "Penasaran soal pengembalian pajak? Tanyakan langsung...",
   "ai_chat_greeting": "Halo! Saya konsultan AI Easy Tax Refund. Apakah Anda memiliki pertanyaan tentang pengurangan pajak penghasilan bagi karyawan UKM atau cara verifikasi identitas melalui ponsel?",
+  "in_app_browser_title_android": "Beralih ke Chrome untuk Koneksi Aman",
+  "in_app_browser_desc_android": "Verifikasi identitas mungkin dibatasi di browser Facebook/Instagram. Silakan ketuk tombol di bawah untuk melanjutkan dengan aman di Chrome.",
+  "in_app_browser_btn_android": "Lanjutkan di Chrome",
+  "in_app_browser_title_ios": "Silakan Buka di Safari untuk Pengalaman yang Aman",
+  "in_app_browser_desc_ios": "Karena kebijakan keamanan iOS, Anda harus menyalin tautan dan menempelkannya ke bilah alamat Safari untuk menyelesaikan verifikasi identitas.",
+  "in_app_browser_btn_ios": "Salin Tautan",
+  "in_app_browser_copy_done": "Tautan Disalin",
+  "in_app_browser_copy_desc": "Silakan tempelkan ke browser Safari Anda!"
 };

@@ -169,4 +169,12 @@ export const common = {
   "환급액 확인후 환급 신청하기": "查完税额后申请退税",
   "세금 환급 궁굼하신가요.바로 물어보세요...": "对退税有疑问？马上来问我们吧...",
   "ai_chat_greeting": "您好！我是 Easy Tax Refund 的 AI 顾问。您对中小企业员工所得税减免或手机身份验证方法有什么疑问吗？",
+  "in_app_browser_title_android": "正在移至 Chrome 以实现安全连接",
+  "in_app_browser_desc_android": "身份验证在 Facebook/Instagram 浏览器中可能会受到限制。请点击下面的按钮以在 Chrome 中安全地继续。",
+  "in_app_browser_btn_android": "在 Chrome 中继续",
+  "in_app_browser_title_ios": "请在 Safari 中打开以获得安全体验",
+  "in_app_browser_desc_ios": "由于 iOS 安全政策，您必须复制链接并将其粘贴到 Safari 地址栏中才能完成身份验证。",
+  "in_app_browser_btn_ios": "复制链接",
+  "in_app_browser_copy_done": "链接已复制",
+  "in_app_browser_copy_desc": "请将其粘贴到您的 Safari 浏览器中！"
 };
