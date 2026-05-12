@@ -72,7 +72,7 @@ export function AiChatDialog({ children }: { children: React.ReactNode }) {
               <Sparkles className="h-6 w-6 text-white" />
             </div>
             <div>
-              <DialogTitle className="text-xl font-black">{t('실시간 AI 세무 비서')}</DialogTitle>
+              <DialogTitle className="text-xl font-black">{t('ai_chat_title')}</DialogTitle>
               <div className="flex items-center gap-2">
                 <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
                 <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{t('Online • Active Now')}</p>
@@ -121,7 +121,7 @@ export function AiChatDialog({ children }: { children: React.ReactNode }) {
 
         <form onSubmit={handleSend} className="p-6 bg-white border-t border-slate-100 flex gap-3 items-center shrink-0">
           <Input 
-            placeholder={t("상담 내용을 입력하세요...")} 
+            placeholder={t("ai_chat_placeholder")} 
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="flex-1 h-14 rounded-xl bg-slate-50 border-none focus-visible:ring-primary font-medium px-6"

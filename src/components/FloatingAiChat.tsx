@@ -123,7 +123,7 @@ function FloatingAiChatInner() {
           </div>
           <div className="flex-1">
             <p className="text-white font-black text-sm">
-              {t("실시간 AI 세무 비서")}
+              {t("ai_chat_title")}
             </p>
             <div className="flex items-center gap-1.5 mt-0.5">
               <div className="h-1.5 w-1.5 rounded-full bg-green-400 animate-pulse" />
@@ -208,7 +208,7 @@ function FloatingAiChatInner() {
           className="p-4 bg-white border-t border-slate-100 flex gap-2 items-center shrink-0"
         >
           <Input
-            placeholder={t("상담 내용을 입력하세요...")}
+            placeholder={t("ai_chat_placeholder")}
             value={input}
             onChange={(e) => setInput(e.target.value)}
             className="flex-1 h-11 rounded-xl bg-slate-50 border-none focus-visible:ring-primary font-medium text-sm"
@@ -234,7 +234,7 @@ function FloatingAiChatInner() {
             setIsOpen(true);
           }}
         >
-          {t("세금 환급 궁금하신가요? 바로 물어보세요! 😊")}
+          {t("ai_chat_bubble")}
           <div className="absolute -bottom-2 right-14 w-0 h-0 border-l-8 border-r-0 border-t-8 border-l-transparent border-t-slate-900" />
         </div>
       )}
@@ -271,7 +271,7 @@ function FloatingAiChatInner() {
         {/* 호버 툴팁 */}
         {!isOpen && (
           <span className="absolute right-full mr-3 whitespace-nowrap bg-slate-900 text-white text-xs font-bold px-3 py-1.5 rounded-xl opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-lg">
-            {t("1:1 AI 상담")}
+            {t("ai_chat_tooltip")}
           </span>
         )}
       </button>

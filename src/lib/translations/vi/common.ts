@@ -1,5 +1,9 @@
 export const common = {
   "1:1 AI 상담": "Tư vấn AI 1:1",
+  "ai_chat_tooltip": "Tư vấn AI 1:1",
+  "ai_chat_title": "Trợ lý thuế AI thời gian thực",
+  "ai_chat_placeholder": "Nhập nội dung tư vấn...",
+  "ai_chat_bubble": "Bạn thắc mắc về hoàn thuế? Hỏi chúng tôi ngay! 😊",
   "30분 뒤에 다시 시도해 주세요.": "Vui lòng thử lại sau 30 phút.",
   "30초 만에 환급액 확인": "Kiểm tra tiền hoàn lại sau 30 giây",
   "30초 환급액 조회": "Tra cứu số tiền hoàn lại trong 30 giây",
@@ -167,7 +171,6 @@ export const common = {
   "홈으로 돌아가기": "Quay lại Trang chủ",
   "환급 신청": "Đăng ký hoàn thuế",
   "환급액 확인후 환급 신청하기": "Đăng ký hoàn thuế sau khi kiểm tra số tiền",
-  "세금 환급 궁굼하신가요.바로 물어보세요...": "Bạn tò mò về hoàn thuế? Hỏi ngay bây giờ...",
   "ai_chat_greeting": "Xin chào! Tôi là tư vấn viên AI của Easy Tax Refund. Bạn có thắc mắc gì về việc giảm thuế thu nhập cho nhân viên doanh nghiệp vừa và nhỏ hoặc cách xác thực danh tính qua điện thoại di động không?",
   "in_app_browser_title_android": "Chuyển sang Chrome để kết nối an toàn",
   "in_app_browser_desc_android": "Việc xác minh danh tính có thể bị hạn chế trên trình duyệt Facebook/Instagram. Vui lòng nhấn vào nút bên dưới để tiếp tục một cách an toàn trên Chrome.",

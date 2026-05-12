@@ -1,5 +1,9 @@
 export const common = {
   "1:1 AI 상담": "Konsultasi AI 1:1",
+  "ai_chat_tooltip": "Konsultasi AI 1:1",
+  "ai_chat_title": "Asisten Pajak AI Real-time",
+  "ai_chat_placeholder": "Masukkan pertanyaan Anda...",
+  "ai_chat_bubble": "Penasaran dengan pengembalian pajak? Tanya kami sekarang! 😊",
   "30분 뒤에 다시 시도해 주세요.": "Silakan coba lagi dalam 30 menit.",
   "30초 만에 환급액 확인": "Cek pengembalian dana dalam 30 detik",
   "30초 환급액 조회": "Cek pengembalian 30 detik",
@@ -179,7 +183,6 @@ export const common = {
   "홈으로 돌아가기": "Kembali ke Beranda",
   "환급 신청": "Ajukan Pengembalian Pajak",
   "환급액 확인후 환급 신청하기": "Ajukan pengembalian pajak setelah cek jumlah",
-  "세금 환급 궁굼하신가요.바로 물어보세요...": "Penasaran soal pengembalian pajak? Tanyakan langsung...",
   "ai_chat_greeting": "Halo! Saya konsultan AI Easy Tax Refund. Apakah Anda memiliki pertanyaan tentang pengurangan pajak penghasilan bagi karyawan UKM atau cara verifikasi identitas melalui ponsel?",
   "in_app_browser_title_android": "Beralih ke Chrome untuk Koneksi Aman",
   "in_app_browser_desc_android": "Verifikasi identitas mungkin dibatasi di browser Facebook/Instagram. Silakan ketuk tombol di bawah untuk melanjutkan dengan aman di Chrome.",

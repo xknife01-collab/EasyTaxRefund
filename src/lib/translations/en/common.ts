@@ -1,5 +1,9 @@
 export const common = {
   "1:1 AI 상담": "1:1 AI Consultation",
+  "ai_chat_tooltip": "1:1 AI Consultation",
+  "ai_chat_title": "Real-time AI Tax Assistant",
+  "ai_chat_placeholder": "Enter your question...",
+  "ai_chat_bubble": "Curious about tax refunds? Ask us right away! 😊",
   "30분 뒤에 다시 시도해 주세요.": "Please try again in 30 minutes.",
   "30초 만에 환급액 확인": "Check Refund in 30 Seconds",
   "30초 환급액 조회": "Quick 30-Second Refund Check",
@@ -178,7 +182,6 @@ export const common = {
   "홈으로 돌아가기": "Return to Home",
   "환급 신청": "Apply for Refund",
   "환급액 확인후 환급 신청하기": "Apply for refund after checking amount",
-  "세금 환급 궁굼하신가요.바로 물어보세요...": "Curious about tax refunds? Ask us right away...",
   "ai_chat_greeting": "Hello! I am the Easy Tax Refund AI counselor. Do you have any questions about income tax reduction for SME employees or how to authenticate your identity via mobile phone?",
   "in_app_browser_title_android": "Moving to Chrome for a Secure Connection",
   "in_app_browser_desc_android": "Identity verification may be restricted in Facebook/Instagram browsers. Please tap the button below to continue securely in Chrome.",

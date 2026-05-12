@@ -1,4 +1,8 @@
 export const common = {
+  "ai_chat_tooltip": "1:1 AI maslahati",
+  "ai_chat_title": "Haqiqiy vaqtdagi AI soliq yordamchisi",
+  "ai_chat_placeholder": "Savolingizni kiriting...",
+  "ai_chat_bubble": "Soliq qaytarish haqida qiziqyapsizmi? Darhol so'rang! 😊",
   "1:1 AI 상담": "1:1 AI konsultatsiyasi",
   "30분 뒤에 다시 시도해 주세요.": "Iltimos, 30 daqiqadan so'ng qayta urinib ko'ring.",
   "30초 만에 환급액 확인": "30 soniyada kutilayotgan summani tekshirish",
