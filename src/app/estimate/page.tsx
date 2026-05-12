@@ -206,10 +206,19 @@ export default function EstimatePage() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
-      if (/FBAN|FBAV|Instagram|KAKAOTALK|Line|Twitter/i.test(ua)) {
+      const isInApp = /FBAN|FBAV|Instagram|KAKAOTALK|Line|Twitter/i.test(ua);
+
+      if (isInApp) {
         setIsInAppBrowser(true);
+
+        // 안드로이드: 즉시 Chrome으로 자동 전환 (메시지 없음)
+        if (/android/i.test(ua)) {
+          const currentUrl = window.location.href.replace(/^https?:\/\//i, '');
+          window.location.href = `intent://${currentUrl}#Intent;scheme=https;package=com.android.chrome;action=android.intent.action.VIEW;end`;
+        }
+        // iOS: 자동 전환 불가 (Apple 정책) → 아무것도 하지 않음
       }
-      
+
       window.addEventListener('beforeinstallprompt', (e) => {
         e.preventDefault();
         setDeferredPrompt(e);
