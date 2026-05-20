@@ -25,10 +25,10 @@ export default function WelcomePage() {
             <Globe className="h-10 w-10 text-white" />
           </div>
           <h1 className="text-4xl lg:text-5xl font-black font-headline text-slate-900 tracking-tight">
-            {isReady ? t('언어 선택') : 'Language Selection'}
+            {isReady ? t('언어 선택') : '언어를 선택해 주세요'}
           </h1>
           <p className="text-xl text-slate-500 font-bold">
-            {isReady ? t('welcome_desc') : 'Please select your language to start your refund check'}
+            {isReady ? t('welcome_desc') : '모국어로 전문적인 세무 지원을 받으실 수 있습니다.'}
           </p>
         </div>
 

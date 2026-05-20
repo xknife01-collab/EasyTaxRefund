@@ -193,5 +193,7 @@ export const common = {
   "in_app_browser_copy_done": "සබැඳිය පිටපත් කරන ලදී",
   "in_app_browser_copy_desc": "කරුණාකර එය ඔබගේ Safari බ්‍රව්සරයට අලවන්න!",
   "in_app_browser_continue_anyway": "කෙසේ වෙතත් ඉදිරියට යන්න (නිර්දේශ නොකරයි)",
-  "in_app_browser_ios_manual": "සබැඳිය පිටපත් කර Safari බ්‍රව්සරයට අලවන්න"
+  "in_app_browser_ios_manual": "සබැඳිය පිටපත් කර Safari බ්‍රව්සරයට අලවන්න",
+  "SMS 인증번호 받기": "Get SMS Auth Code",
+  "본인 확인 및 데이터 보안을 위해 휴대폰 인증이 필수입니다.": "Mobile authentication is required for identity verification and data security.",
 };

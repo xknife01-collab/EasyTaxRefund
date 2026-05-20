@@ -188,5 +188,7 @@ export const common = {
   "in_app_browser_copy_done": "링크 복사 완료",
   "in_app_browser_copy_desc": "사파리 브라우저에 붙여넣어 주세요!",
   "in_app_browser_continue_anyway": "계속 진행하기 (추천하지 않음)",
-  "in_app_browser_ios_manual": "사파리 주소창에 링크를 복사하여 붙여넣어주세요"
+  "in_app_browser_ios_manual": "사파리 주소창에 링크를 복사하여 붙여넣어주세요",
+  "SMS 인증번호 받기": "SMS 인증번호 받기",
+  "본인 확인 및 데이터 보안을 위해 휴대폰 인증이 필수입니다.": "본인 확인 및 데이터 보안을 위해 휴대폰 인증이 필수입니다.",
 };

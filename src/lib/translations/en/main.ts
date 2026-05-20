@@ -106,4 +106,5 @@ export const main = {
   "평균 환급액 300만원이상!": "Average refund over 3 million won!",
   "1분안에 전문세무사 환급신청하기": "Apply for refund with a professional accountant in 1 minute",
   "내 환급액 확인후 환급 신청하기": "Apply for refund after checking my refund amount",
+  "개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.": "Are you hesitant to enter your personal information? Try talking to a dedicated tax manager first.",
 };

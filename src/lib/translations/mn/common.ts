@@ -193,5 +193,7 @@ export const common = {
   "in_app_browser_copy_done": "Холбоос хуулагдлаа",
   "in_app_browser_copy_desc": "Safari хөтөч дээрээ буулгана уу!",
   "in_app_browser_continue_anyway": "Үргэлжлүүлэх (Зөвлөхгүй)",
-  "in_app_browser_ios_manual": "Холбоосыг хуулж Safari хөтөч дээр буулгана уу"
+  "in_app_browser_ios_manual": "Холбоосыг хуулж Safari хөтөч дээр буулгана уу",
+  "SMS 인증번호 받기": "Get SMS Auth Code",
+  "본인 확인 및 데이터 보안을 위해 휴대폰 인증이 필수입니다.": "Mobile authentication is required for identity verification and data security.",
 };

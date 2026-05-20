@@ -52,3 +52,16 @@ next-env.d.ts
 firebase-debug.log
 firestore-debug.log
 .vercel
+
+# custom
+.next_old/
+.next_old_2/
+scratch/
+*.bak
+add_translations.js
+check_syntax.js
+diagnose_commas.py
+find_commas.js
+find_line.js
+fix_guides.js
+global_search.js

@@ -77,17 +77,17 @@ import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/components/LanguageContext";
 import { db } from "@/lib/firebase";
-import { 
-  collection, 
-  addDoc, 
-  serverTimestamp, 
-  doc, 
-  updateDoc, 
+import {
+  collection,
+  addDoc,
+  serverTimestamp,
+  doc,
+  updateDoc,
   setDoc,
-  onSnapshot, 
-  query, 
-  orderBy, 
-  increment 
+  onSnapshot,
+  query,
+  orderBy,
+  increment
 } from "firebase/firestore";
 import { getStoredTrackingData, getEffectiveSource } from "@/lib/tracking";
 import Image from "next/image";
@@ -175,7 +175,7 @@ export default function EstimatePage() {
   const [chatInput, setChatInput] = useState("");
   const chatScrollRef = useRef<HTMLDivElement>(null);
   const [isChatLoading, setIsChatLoading] = useState(false);
-  
+
   const [loading, setLoading] = useState(false);
   const [isOcrLoading, setIsOcrLoading] = useState(false);
   const [ocrResult, setOcrResult] = useState<any>(null);
@@ -187,12 +187,12 @@ export default function EstimatePage() {
   const [isKakaoGuideOpen, setIsKakaoGuideOpen] = useState(false);
   const [isKakaoAuthGuideOpen, setIsKakaoAuthGuideOpen] = useState(false);
   const [isHanaGuideOpen, setIsHanaGuideOpen] = useState(false);
-  const [hanaGuideMode, setHanaGuideMode] = useState<'registration' | 'auth'>('registration');
+  const [hanaGuideMode, setHanaGuideMode] = useState<'registration' | 'auth' | 'full'>('registration');
   const [isNameHelpOpen, setIsNameHelpOpen] = useState(false);
   const [showResumeDialog, setShowResumeDialog] = useState(false);
   const [resumeData, setResumeData] = useState<any>(null);
   const [showProactiveHelp, setShowProactiveHelp] = useState(false);
-  
+
   // Step 0: Pre-filter Data
   const [preFilterData, setPreFilterData] = useState({
     workMonths: 36,
@@ -287,11 +287,11 @@ export default function EstimatePage() {
   const progressValue = (step / 9) * 100; // VIP 채팅 실시간 감시 및 동기화
   useEffect(() => {
     if (!draftAppId) return;
-    
+
     // 유저가 읽지 않은 관리자 메시지 카운트 모니터링
     const unsubApp = onSnapshot(doc(db, 'applications', draftAppId), (doc) => {
       if (doc.exists()) {
-         setUnreadCount(doc.data().unreadChatCountUser || 0);
+        setUnreadCount(doc.data().unreadChatCountUser || 0);
       }
     });
 
@@ -299,7 +299,7 @@ export default function EstimatePage() {
       collection(db, 'applications', draftAppId, 'chat_messages'),
       orderBy('timestamp', 'asc')
     );
-    
+
     const unsubChat = onSnapshot(q, (snapshot) => {
       const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       setChatMessages(msgs);
@@ -322,7 +322,7 @@ export default function EstimatePage() {
         lastSaved: Date.now()
       };
       localStorage.setItem("easy_tax_refund_persistence", JSON.stringify(dataToSave));
-      
+
       // Also update remote DB for funnel tracking whenever step changes
       if (step > 0) {
         saveProgress(step);
@@ -367,17 +367,17 @@ export default function EstimatePage() {
   // 채팅 창 열 때 카운트 초기화
   useEffect(() => {
     if (isVipChatOpen && draftAppId && unreadCount > 0) {
-       updateDoc(doc(db, 'applications', draftAppId), { unreadChatCountUser: 0 });
+      updateDoc(doc(db, 'applications', draftAppId), { unreadChatCountUser: 0 });
     }
     if (isVipChatOpen && chatScrollRef.current) {
-       chatScrollRef.current.scrollIntoView({ behavior: 'smooth' });
+      chatScrollRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [isVipChatOpen, draftAppId, unreadCount]);
 
   const handleSendVipMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!chatInput.trim() || isChatLoading) return;
-    
+
     setIsChatLoading(true);
     let targetDraftId = draftAppId;
 
@@ -455,10 +455,10 @@ export default function EstimatePage() {
     const yearlyGross = preFilterData.avgSalary * 10000 * 12;
     const yearlyPotential = yearlyGross * 0.033 * 0.9;
     const cappedYearly = Math.min(yearlyPotential, 2000000);
-    
+
     // Total based on work months (up to 5 years / 60 months)
     const totalEstimate = (cappedYearly / 12) * preFilterData.workMonths;
-    
+
     setPreFilterEstimate(Math.floor(totalEstimate / 1000) * 1000); // Round to thousands
   }, [preFilterData]);
 
@@ -476,7 +476,7 @@ export default function EstimatePage() {
             setDraftAppId(parsed.draftAppId);
             localStorage.setItem('currentDraftId', parsed.draftAppId);
           }
-        } catch (e) {}
+        } catch (e) { }
       }
     }
   }, []);
@@ -578,7 +578,7 @@ export default function EstimatePage() {
       toast({ variant: "destructive", title: t("정보 부족"), description: t("성함과 외국인 등록번호를 확인해 주세요.") });
       return;
     }
-    
+
     // Step 2로 즉시 전환 (낙관적 전환)
     setStep(3);
     saveProgress(3);
@@ -676,7 +676,7 @@ export default function EstimatePage() {
     setStep(6);
     setAnalysisError(null);
     setLoading(true);
-    
+
     // 브라우저가 Step 5 화면을 렌더링할 시간을 줌
     await new Promise(resolve => setTimeout(resolve, 150));
 
@@ -706,8 +706,8 @@ export default function EstimatePage() {
         code: error.message,
         title: t("데이터 수집에 실패했습니다"),
         reason: t("알 수 없는 통신 오류가 발생했습니다."),
-        solution: isHighValue 
-          ? t("고액 환급 대상자이시군요! 인증이 어려우시다면 전문 상담원을 연결해 드릴까요?") 
+        solution: isHighValue
+          ? t("고액 환급 대상자이시군요! 인증이 어려우시다면 전문 상담원을 연결해 드릴까요?")
           : t("AI 가이드의 그림을 보고 다시 한 번 시도해 보세요."),
         isHighValue: isHighValue
       };
@@ -718,7 +718,7 @@ export default function EstimatePage() {
           code: "NAME_MISMATCH",
           title: t("성명 정보가 일치하지 않습니다"),
           reason: t("외국인 등록증 성명({name})과 통신사(PASS) 등록 성명이 다릅니다.", { name: formData.officialName }),
-          solution: isHighValue 
+          solution: isHighValue
             ? t("성공 확률이 높은 이름들을 AI가 찾았습니다. 해결이 안 된다면 VIP 상담원과 채팅해 보세요.")
             : t("Step 3로 돌아가 AI가 추천하는 다른 이름 조합을 선택해 보세요.")
         };
@@ -859,21 +859,21 @@ export default function EstimatePage() {
             <ShieldCheck className="w-12 h-12 text-primary" />
             <div className="absolute inset-0 bg-primary/20 rounded-[2.5rem] blur-2xl animate-pulse" />
           </div>
-          
+
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 mb-6 break-keep leading-tight">
-            {/android/i.test(navigator.userAgent) 
+            {/android/i.test(navigator.userAgent)
               ? t('in_app_browser_title_android')
               : t('in_app_browser_title_ios')}
           </h2>
-          
+
           <p className="text-slate-500 font-bold mb-12 leading-relaxed break-keep max-w-sm mx-auto">
             {/android/i.test(navigator.userAgent)
               ? t('in_app_browser_desc_android')
               : t('in_app_browser_desc_ios')}
           </p>
-          
+
           {/android/i.test(navigator.userAgent) ? (
-            <Button 
+            <Button
               onClick={handleInstallApp}
               className="w-full max-w-sm h-20 bg-primary text-xl font-black rounded-3xl shadow-2xl shadow-primary/30 flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98]"
             >
@@ -882,7 +882,7 @@ export default function EstimatePage() {
             </Button>
           ) : (
             <div className="space-y-6 w-full max-w-sm">
-               <Button 
+              <Button
                 onClick={() => {
                   const currentUrl = new URL(window.location.href);
                   currentUrl.searchParams.set('lang', language);
@@ -897,8 +897,8 @@ export default function EstimatePage() {
               <p className="text-xs font-bold text-slate-400 uppercase tracking-widest">{t('in_app_browser_ios_manual')}</p>
             </div>
           )}
-          
-          <button 
+
+          <button
             onClick={() => setIsInAppBrowser(false)}
             className="mt-12 text-slate-400 font-bold text-sm underline underline-offset-4 decoration-slate-200 hover:text-slate-600 transition-colors"
           >
@@ -967,7 +967,7 @@ export default function EstimatePage() {
                         <Label className="text-lg font-black text-slate-800">{t('최근 5년 한국 근무 기간')}</Label>
                         <span className="text-2xl font-black text-primary">{preFilterData.workMonths}{t('개월')}</span>
                       </div>
-                      <input 
+                      <input
                         type="range" min="1" max="60" step="1"
                         value={preFilterData.workMonths}
                         onChange={(e) => setPreFilterData({ ...preFilterData, workMonths: parseInt(e.target.value) })}
@@ -987,7 +987,7 @@ export default function EstimatePage() {
                       </div>
                       <div className="grid grid-cols-4 gap-2">
                         {[150, 200, 250, 300, 350, 400, 500, 600].map((val) => (
-                          <Button 
+                          <Button
                             key={val}
                             variant={preFilterData.avgSalary === val ? 'default' : 'outline'}
                             onClick={() => setPreFilterData({ ...preFilterData, avgSalary: val })}
@@ -1027,7 +1027,7 @@ export default function EstimatePage() {
                       </p>
                     </div>
 
-                    <Button 
+                    <Button
                       onClick={() => { setStep(1); saveProgress(1); }}
                       className="w-full h-auto min-h-[6rem] py-4 px-6 bg-slate-900 text-2xl font-black rounded-3xl shadow-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98] group whitespace-normal break-words"
                     >
@@ -1046,7 +1046,7 @@ export default function EstimatePage() {
                   <div className="mx-auto flex flex-col items-center gap-4">
                     <div className="relative group">
                       <div className="absolute -inset-4 bg-primary/10 rounded-full blur-xl opacity-50" />
-                      <Image 
+                      <Image
                         src="/official_nts_carrier_badge_v2_1774141326494.png"
                         alt="Official NTS & Carrier Badge"
                         width={120}
@@ -1055,9 +1055,9 @@ export default function EstimatePage() {
                       />
                     </div>
                     <div className="space-y-2">
-                       <Badge variant="outline" className="text-emerald-600 bg-emerald-50 border-emerald-100 text-[10px] font-black uppercase tracking-widest">{t('safe_and_secure')}</Badge>
-                       <h2 className="text-xl sm:text-2xl font-black text-slate-800">{t('nts_trust_title')}</h2>
-                       <p className="text-[13px] font-bold text-slate-500 leading-tight max-w-[280px] mx-auto opacity-80">{t('nts_trust_message')}</p>
+                      <Badge variant="outline" className="text-emerald-600 bg-emerald-50 border-emerald-100 text-[10px] font-black uppercase tracking-widest">{t('safe_and_secure')}</Badge>
+                      <h2 className="text-xl sm:text-2xl font-black text-slate-800">{t('nts_trust_title')}</h2>
+                      <p className="text-[13px] font-bold text-slate-500 leading-tight max-w-[280px] mx-auto opacity-80">{t('nts_trust_message')}</p>
                     </div>
                   </div>
                 </CardHeader>
@@ -1071,10 +1071,6 @@ export default function EstimatePage() {
                   </CardTitle>
                   <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm">
                     {t('성공적인 환급 조회를 위해 아래 사항을 준비해 주세요.')}
-                    <br />
-                    <span className="block mt-2 text-primary/80 font-black">
-                      {t('한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.')}
-                    </span>
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 sm:p-10 space-y-8">
@@ -1102,98 +1098,15 @@ export default function EstimatePage() {
                   <Separator className="bg-slate-100" />
 
                   <div className="space-y-6">
-                    <div className="space-y-3">
-                      <h3 className="font-black text-red-500 text-lg flex items-center gap-2">
-                        <div className="w-1.5 h-6 bg-red-500 rounded-full" />
-                        {t('인증서가 없으신가요? (추천)')}
-                      </h3>
-                      <p className="text-sm font-bold text-slate-500 leading-relaxed ml-3">
-                        {t('대부분의 외국인 사용자는 인증서가 없습니다. 아래 가이드를 보고 1분 만에 발급받으세요.')}
-                      </p>
-                      <div className="flex flex-col sm:flex-row gap-4">
-                        <div className="flex-1 flex flex-col gap-2">
-                          <Button
-                            variant="outline"
-                            onClick={() => setIsGuideOpen(true)}
-                            className="w-full h-16 rounded-2xl border-red-200 text-red-600 hover:bg-red-50 font-black text-sm gap-3 group transition-all"
-                          >
-                            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 group-hover:scale-110 transition-transform">
-                              <Image src="/images/logo/pass.png" alt="PASS" width={32} height={32} className="w-full h-full object-cover" />
-                            </div>
-                            {t('PASS 가이드')}
-                          </Button>
-                          <div className="flex justify-center gap-2 px-2">
-                            <a href="https://play.google.com/store/search?q=%ED%8C%A8%EC%8A%A4&c=apps&hl=ko" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-[10px] font-black hover:bg-emerald-100 transition-all border border-emerald-100/50">
-                              <Download className="w-2.5 h-2.5" /> Play Store
-                            </a>
-                            <a href="https://apps.apple.com/us/iphone/search?term=%ED%8C%A8%EC%8A%A4" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-blue-50 text-blue-700 text-[10px] font-black hover:bg-blue-100 transition-all border border-blue-100/50">
-                              <Smartphone className="w-2.5 h-2.5" /> App Store
-                            </a>
-                          </div>
-                        </div>
-
-                        <div className="flex-1 flex flex-col gap-2">
-                          <Button
-                            variant="outline"
-                            onClick={() => setIsKakaoGuideOpen(true)}
-                            className="w-full h-16 rounded-2xl border-yellow-200 text-yellow-700 hover:bg-yellow-50 font-black text-sm gap-3 group transition-all"
-                          >
-                            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 group-hover:scale-110 transition-transform">
-                              <Image src="/images/logo/kakao.png" alt="Kakao" width={32} height={32} className="w-full h-full object-cover" />
-                            </div>
-                            {t('카카오 가이드')}
-                          </Button>
-                          <div className="flex justify-center gap-2 px-2">
-                            <a href="https://play.google.com/store/apps/details?id=com.kakao.talk" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-[10px] font-black hover:bg-emerald-100 transition-all border border-emerald-100/50">
-                              <Download className="w-2.5 h-2.5" /> Play Store
-                            </a>
-                            <a href="https://apps.apple.com/kr/app/kakaotalk/id362057947" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-blue-50 text-blue-700 text-[10px] font-black hover:bg-blue-100 transition-all border border-blue-100/50">
-                              <Smartphone className="w-2.5 h-2.5" /> App Store
-                            </a>
-                          </div>
-                        </div>
-
-                        <div className="flex-1 flex flex-col gap-2">
-                          <Button
-                            variant="outline"
-                            onClick={() => {
-                              setHanaGuideMode('registration');
-                              setIsHanaGuideOpen(true);
-                            }}
-                            className="w-full h-16 rounded-2xl border-[#008485]/20 text-[#008485] hover:bg-[#008485]/5 font-black text-sm gap-3 group transition-all"
-                          >
-                            <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0 group-hover:scale-110 transition-transform">
-                              <Image src="/images/logo/hana_1q.png" alt="Hana" width={32} height={32} className="w-full h-full object-cover" />
-                            </div>
-                            {t('하나은행 가이드')}
-                          </Button>
-                          <div className="flex justify-center gap-2 px-2">
-                            <a href="https://play.google.com/store/apps/details?id=com.hanabank.oqf" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-emerald-50 text-emerald-700 text-[10px] font-black hover:bg-emerald-100 transition-all border border-emerald-100/50">
-                              <Download className="w-2.5 h-2.5" /> Play Store
-                            </a>
-                            <a href="https://apps.apple.com/us/app/%ED%95%98%EB%82%98%EC%9D%80%ED%96%89-%EC%83%88%EB%A1%9C%EC%9B%8C%EC%A7%84-%ED%95%98%EB%82%98%EC%9D%80%ED%96%89%EC%9D%98-%EB%AA%A8%EB%B0%94%EC%9D%BC-%EB%B2%B5%ED%82%B9/id6743190232" target="_blank" rel="noopener noreferrer" className="flex-1 flex items-center justify-center gap-1 py-2 rounded-xl bg-blue-50 text-blue-700 text-[10px] font-black hover:bg-blue-100 transition-all border border-blue-100/50">
-                              <Smartphone className="w-2.5 h-2.5" /> App Store
-                            </a>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="space-y-4 pt-6 p-6 bg-emerald-50/50 rounded-[2rem] border-2 border-dashed border-emerald-100 shadow-sm">
-                      <h3 className="font-black text-emerald-600 text-lg flex items-center gap-2">
-                        <div className="w-1.5 h-6 bg-emerald-400 rounded-full" />
-                        {t('이미 인증서가 있다면?')}
-                      </h3>
-                      <div className="grid grid-cols-1 gap-3">
-                        <Button 
-                          variant="outline"
-                          onClick={() => { setStep(2); saveProgress(2); }}
-                          className="h-16 border-emerald-200 bg-white text-emerald-700 font-black rounded-2xl hover:bg-emerald-50 hover:border-emerald-300 shadow-sm transition-all flex items-center justify-center gap-2 group"
-                        >
-                          <BadgeCheck className="w-5 h-5 text-emerald-500 group-hover:scale-110 transition-transform" />
-                          {t('인증서가 있습니다. 바로 시작하기')}
-                        </Button>
-                      </div>
+                    <div className="pt-2">
+                      <Button
+                        variant="default"
+                        onClick={() => { setStep(2); saveProgress(2); }}
+                        className="w-full h-16 bg-emerald-600 text-white font-black rounded-2xl hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-2 group"
+                      >
+                        <BadgeCheck className="w-6 h-6 group-hover:scale-110 transition-transform" />
+                        {t('시작하기')}
+                      </Button>
                     </div>
                   </div>
 
@@ -1211,9 +1124,9 @@ export default function EstimatePage() {
             {step === 2 && (
               <Card className="premium-card rounded-[2.5rem] border-none shadow-sm overflow-hidden">
                 <CardHeader className="text-center bg-slate-50/50 py-6 sm:py-10 border-b border-slate-100 relative">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => { setStep(1); saveProgress(1); }}
                     className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
                   >
@@ -1231,11 +1144,11 @@ export default function EstimatePage() {
                     <div className="relative flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
                       <div className="shrink-0 relative">
                         <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
-                        <Image 
-                          src="/certified_security_seal_premium_1774150786685.png" 
-                          alt="Certified Security" 
-                          width={80} 
-                          height={80} 
+                        <Image
+                          src="/certified_security_seal_premium_1774150786685.png"
+                          alt="Certified Security"
+                          width={80}
+                          height={80}
                           className="relative transition-transform group-hover:scale-110"
                         />
                       </div>
@@ -1298,7 +1211,7 @@ export default function EstimatePage() {
                         {t('본 환급은 합법적 권리로, 비자(E-9, E-7, F-2 등) 연장이나 체류 자격에 어떠한 불이익도 없습니다.')}
                       </AlertDescription>
                     </Alert>
-                    
+
                     <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
                       <Lock className="w-6 h-6 text-slate-400 shrink-0 mt-0.5" />
                       <div>
@@ -1315,9 +1228,9 @@ export default function EstimatePage() {
                           <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('영문 성명 (NAME)')}</Label>
                           <p className="text-[10px] text-amber-600 font-bold ml-1">{t('* 정확한 조회를 위해 성과 이름을 꼭 띄어서 입력해 주세요.')}</p>
                         </div>
-                        <input 
-                          placeholder={t("예: HONG GIL DONG")} 
-                          value={formData.officialName} 
+                        <input
+                          placeholder={t("예: HONG GIL DONG")}
+                          value={formData.officialName}
                           onChange={(e) => {
                             const newName = e.target.value.toUpperCase();
                             setFormData({ ...formData, officialName: newName });
@@ -1325,8 +1238,8 @@ export default function EstimatePage() {
                             if (newName.length > 3) {
                               prefetchNameOptimization(newName);
                             }
-                          }} 
-                          className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg w-full outline-none focus:ring-2 focus:ring-primary/20" 
+                          }}
+                          className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg w-full outline-none focus:ring-2 focus:ring-primary/20"
                         />
                       </div>
                       <div className="space-y-3">
@@ -1343,9 +1256,9 @@ export default function EstimatePage() {
             {step === 3 && (
               <Card className="premium-card rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
                 <CardHeader className="text-center bg-slate-50/50 py-6 sm:py-10 border-b border-slate-100 relative">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => { setStep(2); saveProgress(2); }}
                     className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
                   >
@@ -1365,11 +1278,11 @@ export default function EstimatePage() {
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         <div className="space-y-3">
                           <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('휴대폰 번호')}</Label>
-                          <input 
-                            placeholder="01012345678" 
-                            className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg w-full outline-none focus:ring-2 focus:ring-primary/20" 
-                            value={formData.phone} 
-                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })} 
+                          <input
+                            placeholder="01012345678"
+                            className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg w-full outline-none focus:ring-2 focus:ring-primary/20"
+                            value={formData.phone}
+                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                           />
                         </div>
                         <div className="space-y-3">
@@ -1394,7 +1307,7 @@ export default function EstimatePage() {
                         <div className="absolute top-0 right-0 p-4 opacity-10">
                           <Sparkles className="h-24 w-24 text-primary" />
                         </div>
-                        
+
                         <div className="flex items-center justify-between mb-4">
                           <div className="flex items-center gap-3">
                             <div className="h-8 w-8 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
@@ -1405,9 +1318,9 @@ export default function EstimatePage() {
                             </h4>
                           </div>
                           {!isOptimizing && (
-                            <Button 
+                            <Button
                               type="button"
-                              variant="ghost" 
+                              variant="ghost"
                               size="sm"
                               onClick={() => setIsNameHelpOpen(true)}
                               className="text-[11px] h-8 px-3 font-black text-primary hover:bg-primary/10 rounded-xl flex items-center gap-1.5 transition-colors"
@@ -1417,7 +1330,7 @@ export default function EstimatePage() {
                             </Button>
                           )}
                         </div>
-                        
+
                         {!isOptimizing && (
                           <div className="mb-6 space-y-4">
                             <div className="p-5 bg-white rounded-2xl border border-primary/10 shadow-sm">
@@ -1448,52 +1361,52 @@ export default function EstimatePage() {
                             </div>
                           ) : (
                             <>
-                                {nameSuggestions.map((item, i) => (
-                                  <div 
-                                    key={i} 
-                                    onClick={() => {
-                                      setFormData({ ...formData, authName: item.name });
-                                      navigator.clipboard.writeText(item.name);
-                                      toast({
-                                        title: t("성명 복사 완료"),
-                                        description: t("'{name}'이(가) 클립보드에 복사되었습니다. PASS 앱에 그대로 붙여넣으세요.", { name: item.name })
-                                      });
-                                    }} 
-                                    className={`group p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col gap-1.5 relative ${formData.authName === item.name ? 'bg-primary border-primary text-white shadow-xl scale-[1.02] z-20' : 'bg-white border-slate-100 text-slate-600 hover:border-primary/30'}`}
-                                  >
-                                    <div className="flex justify-between items-center">
-                                      <span className="font-black text-xl tracking-tight">{item.name}</span>
-                                      {formData.authName === item.name ? (
-                                        <div className="h-6 w-6 bg-white rounded-full flex items-center justify-center">
-                                          <CheckCircle2 className="h-4 w-4 text-primary" />
-                                        </div>
-                                      ) : (
-                                        <div className="h-8 w-8 bg-slate-50 rounded-xl flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                                          <Copy className="h-4 w-4 text-slate-300 group-hover:text-primary" />
-                                        </div>
-                                      )}
-                                    </div>
-                                    <span className={cn("text-[11px] font-black uppercase tracking-wider", formData.authName === item.name ? "text-white/70" : "text-primary/70")}>
-                                      {t(item.label)}
-                                    </span>
+                              {nameSuggestions.map((item, i) => (
+                                <div
+                                  key={i}
+                                  onClick={() => {
+                                    setFormData({ ...formData, authName: item.name });
+                                    navigator.clipboard.writeText(item.name);
+                                    toast({
+                                      title: t("성명 복사 완료"),
+                                      description: t("'{name}'이(가) 클립보드에 복사되었습니다. PASS 앱에 그대로 붙여넣으세요.", { name: item.name })
+                                    });
+                                  }}
+                                  className={`group p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col gap-1.5 relative ${formData.authName === item.name ? 'bg-primary border-primary text-white shadow-xl scale-[1.02] z-20' : 'bg-white border-slate-100 text-slate-600 hover:border-primary/30'}`}
+                                >
+                                  <div className="flex justify-between items-center">
+                                    <span className="font-black text-xl tracking-tight">{item.name}</span>
+                                    {formData.authName === item.name ? (
+                                      <div className="h-6 w-6 bg-white rounded-full flex items-center justify-center">
+                                        <CheckCircle2 className="h-4 w-4 text-primary" />
+                                      </div>
+                                    ) : (
+                                      <div className="h-8 w-8 bg-slate-50 rounded-xl flex items-center justify-center group-hover:bg-primary/10 transition-colors">
+                                        <Copy className="h-4 w-4 text-slate-300 group-hover:text-primary" />
+                                      </div>
+                                    )}
                                   </div>
-                                ))}
-
-                                <div className="pt-6 border-t border-slate-100 mt-4 space-y-4">
-                                  <div className="flex items-center justify-between px-1">
-                                    <Label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('직접 입력하기')}</Label>
-                                    <span className="text-[10px] text-slate-300 font-bold">{t('추천 목록에 없는 경우')}</span>
-                                  </div>
-                                  <div className="relative group">
-                                    <input 
-                                      placeholder={t('통신사에 등록된 이름을 그대로 입력')}
-                                      value={formData.authName}
-                                      onChange={(e) => setFormData({ ...formData, authName: e.target.value.toUpperCase() })}
-                                      className="h-16 px-6 rounded-2xl bg-white border-2 border-slate-100 font-black text-lg w-full outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all pr-12"
-                                    />
-                                    <User className="absolute right-4 top-1/2 -translate-y-1/2 h-6 w-6 text-slate-300 group-focus-within:text-primary transition-colors" />
-                                  </div>
+                                  <span className={cn("text-[11px] font-black uppercase tracking-wider", formData.authName === item.name ? "text-white/70" : "text-primary/70")}>
+                                    {t(item.label)}
+                                  </span>
                                 </div>
+                              ))}
+
+                              <div className="pt-6 border-t border-slate-100 mt-4 space-y-4">
+                                <div className="flex items-center justify-between px-1">
+                                  <Label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('직접 입력하기')}</Label>
+                                  <span className="text-[10px] text-slate-300 font-bold">{t('추천 목록에 없는 경우')}</span>
+                                </div>
+                                <div className="relative group">
+                                  <input
+                                    placeholder={t('통신사에 등록된 이름을 그대로 입력')}
+                                    value={formData.authName}
+                                    onChange={(e) => setFormData({ ...formData, authName: e.target.value.toUpperCase() })}
+                                    className="h-16 px-6 rounded-2xl bg-white border-2 border-slate-100 font-black text-lg w-full outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all pr-12"
+                                  />
+                                  <User className="absolute right-4 top-1/2 -translate-y-1/2 h-6 w-6 text-slate-300 group-focus-within:text-primary transition-colors" />
+                                </div>
+                              </div>
                             </>
                           )}
                         </div>
@@ -1520,11 +1433,11 @@ export default function EstimatePage() {
                     <div className="relative flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
                       <div className="shrink-0 relative">
                         <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
-                        <Image 
-                          src="/certified_security_seal_premium_1774150786685.png" 
-                          alt="Certified Security" 
-                          width={80} 
-                          height={80} 
+                        <Image
+                          src="/certified_security_seal_premium_1774150786685.png"
+                          alt="Certified Security"
+                          width={80}
+                          height={80}
                           className="relative transition-transform group-hover:scale-110"
                         />
                       </div>
@@ -1569,9 +1482,9 @@ export default function EstimatePage() {
             {step === 4 && (
               <Card className="premium-card rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
                 <CardHeader className="text-center py-8 sm:py-12 bg-slate-50/50 relative">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => { setStep(3); saveProgress(3); }}
                     className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
                   >
@@ -1580,30 +1493,22 @@ export default function EstimatePage() {
                   </Button>
                   <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-primary rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg"><UserCheck className="h-8 w-8 sm:h-10 sm:w-10 text-white" /></div>
                   <CardTitle className="text-2xl sm:text-3xl font-black text-slate-900 break-keep">{t('Step 4: 인증 방식 선택')}</CardTitle>
-                  <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm">{t('가장 편리한 방법으로 본인을 인증해 주세요.')}</CardDescription>
+                  <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm">
+                    {t('가장 편리한 방법으로 본인을 인증해 주세요.')}
+                    <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+                      <p className="text-[12px] sm:text-[13px] font-black text-amber-900 leading-relaxed text-left flex items-start gap-2">
+                        <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
+                        {t('한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.')}
+                      </p>
+                    </div>
+                  </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 sm:p-10 space-y-6 sm:space-y-8">
                   <div className="space-y-3 mb-6">
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setIsAuthGuideOpen(true)}
-                      className="w-full h-14 sm:h-16 font-black text-emerald-700 bg-emerald-50 border-emerald-200/60 hover:bg-emerald-100 transition-all flex items-center justify-center gap-2 rounded-2xl shadow-sm hover:shadow-md"
-                    >
-                      <Info className="h-4 w-4" />
-                      {t('PASS 앱에서 어떻게 승인하나요? (가이드 보기)')}
-                    </Button>
-                    <Button 
-                      variant="outline" 
-                      onClick={() => setIsKakaoAuthGuideOpen(true)}
-                      className="w-full h-14 sm:h-16 font-black text-[#3C1E1E] bg-[#FEE500]/10 border-[#FEE500]/40 hover:bg-[#FEE500]/20 transition-all flex items-center justify-center gap-2 rounded-2xl shadow-sm hover:shadow-md"
-                    >
-                      <Info className="h-4 w-4" />
-                      {t('카카오톡 앱에서 어떻게 승인하나요? (가이드 보기)')}
-                    </Button>
-                    <Button 
-                      variant="outline" 
+                    <Button
+                      variant="outline"
                       onClick={() => {
-                        setHanaGuideMode('auth');
+                        setHanaGuideMode('full');
                         setIsHanaGuideOpen(true);
                       }}
                       className="w-full h-14 sm:h-16 font-black text-[#008485] bg-emerald-50 border-emerald-200/60 hover:bg-emerald-100 transition-all flex items-center justify-center gap-2 rounded-2xl shadow-sm hover:shadow-md"
@@ -1611,6 +1516,86 @@ export default function EstimatePage() {
                       <Info className="h-4 w-4" />
                       {t('하나은행 앱에서 어떻게 승인하나요? (가이드 보기)')}
                     </Button>
+
+                    <div className="flex items-center justify-center gap-3 py-0.5">
+                      <a 
+                        href="https://play.google.com/store/search?q=%ED%95%98%EB%82%98%EC%9B%90%ED%81%90&c=apps" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group"
+                      >
+                        <Smartphone className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
+                        <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-700">Google Play</span>
+                      </a>
+                      <a 
+                        href="https://apps.apple.com/kr/iphone/search?term=%ED%95%98%EB%82%98%EC%9B%90%ED%81%90" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group relative z-10"
+                      >
+                        <Smartphone className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
+                        <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-700">App Store</span>
+                      </a>
+                    </div>
+
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsGuideOpen(true)}
+                      className="w-full h-14 sm:h-16 font-black text-emerald-700 bg-emerald-50 border-emerald-200/60 hover:bg-emerald-100 transition-all flex items-center justify-center gap-2 rounded-2xl shadow-sm hover:shadow-md"
+                    >
+                      <Info className="h-4 w-4" />
+                      {t('PASS 앱에서 어떻게 승인하나요? (가이드 보기)')}
+                    </Button>
+                    
+                    <div className="flex items-center justify-center gap-3 py-0.5">
+                      <a 
+                        href="https://play.google.com/store/search?q=PASS&c=apps" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group"
+                      >
+                        <Smartphone className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
+                        <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-700">Google Play</span>
+                      </a>
+                      <a 
+                        href="https://apps.apple.com/kr/iphone/search?term=%ED%8C%A8%EC%8A%A4" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group relative z-10"
+                      >
+                        <Smartphone className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
+                        <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-700">App Store</span>
+                      </a>
+                    </div>
+                    <Button
+                      variant="outline"
+                      onClick={() => setIsKakaoAuthGuideOpen(true)}
+                      className="w-full h-14 sm:h-16 font-black text-[#3C1E1E] bg-[#FEE500]/10 border-[#FEE500]/40 hover:bg-[#FEE500]/20 transition-all flex items-center justify-center gap-2 rounded-2xl shadow-sm hover:shadow-md"
+                    >
+                      <Info className="h-4 w-4" />
+                      {t('카카오톡 앱에서 어떻게 승인하나요? (가이드 보기)')}
+                    </Button>
+
+                    <div className="flex items-center justify-center gap-3 py-0.5">
+                      <a 
+                        href="https://play.google.com/store/search?q=%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1&c=apps" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group"
+                      >
+                        <Smartphone className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
+                        <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-700">Google Play</span>
+                      </a>
+                      <a 
+                        href="https://apps.apple.com/kr/iphone/search?term=%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1" 
+                        target="_blank" 
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group relative z-10"
+                      >
+                        <Smartphone className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
+                        <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-700">App Store</span>
+                      </a>
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-1 gap-4">
@@ -1646,7 +1631,7 @@ export default function EstimatePage() {
                       )}
                     >
                       <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden", authMethod === 'app' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
-                         <Image src="/images/logo/pass.png" alt="PASS" width={40} height={40} className="w-full h-full object-contain" />
+                        <Image src="/images/logo/pass.png" alt="PASS" width={40} height={40} className="w-full h-full object-contain" />
                       </div>
                       <div className="flex-1">
                         <div className="flex justify-between items-center mb-1">
@@ -1687,9 +1672,9 @@ export default function EstimatePage() {
             {step === 5 && (
               <Card className="premium-card rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
                 <CardHeader className="text-center py-12 bg-slate-50/50 relative">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => { setStep(4); saveProgress(4); }}
                     className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
                   >
@@ -1697,12 +1682,12 @@ export default function EstimatePage() {
                     {t('이전')}
                   </Button>
                   <div className={cn("mx-auto h-20 w-20 rounded-3xl flex items-center justify-center mb-6 shadow-lg overflow-hidden p-3", authMethod === 'app' ? "bg-white border-2 border-red-500" : authMethod === 'hana' ? "bg-white border-2 border-[#008485]" : "bg-white border-2 border-[#FEE500]")}>
-                    <Image 
-                      src={authMethod === 'app' ? "/images/logo/pass.png" : authMethod === 'hana' ? "/images/logo/hana_1q.png" : "/images/logo/kakao.png"} 
-                      alt="Auth Method" 
-                      width={64} 
-                      height={64} 
-                      className="w-full h-full object-contain" 
+                    <Image
+                      src={authMethod === 'app' ? "/images/logo/pass.png" : authMethod === 'hana' ? "/images/logo/hana_1q.png" : "/images/logo/kakao.png"}
+                      alt="Auth Method"
+                      width={64}
+                      height={64}
+                      className="w-full h-full object-contain"
                     />
                   </div>
                   <CardTitle className="text-3xl font-black text-slate-900">{t('Step 5: 인증 확인')}</CardTitle>
@@ -1731,23 +1716,23 @@ export default function EstimatePage() {
                     <div className="space-y-6">
                       <div className="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-6">
                         <div className="flex items-center gap-3">
-                           <AlertTriangle className="h-6 w-6 text-amber-500" />
-                           <h4 className="text-lg font-black text-slate-900">{t('인증 알림이 오지 않나요?')}</h4>
+                          <AlertTriangle className="h-6 w-6 text-amber-500" />
+                          <h4 className="text-lg font-black text-slate-900">{t('인증 알림이 오지 않나요?')}</h4>
                         </div>
                         <p className="text-sm font-bold text-slate-500 leading-relaxed">
                           {t('외국 국적자는 통신사에 등록된 이름이 신분증과 다른 경우가 많습니다. 알림이 오지 않는다면 AI가 제안해 준 추천 성명을 하나씩 시도해 보세요.')}
                         </p>
-                        
+
                         <div className="pt-2 space-y-4">
                           {preFilterEstimate >= 400000 ? (
                             <div className="space-y-4">
                               <div className="p-4 bg-amber-400/10 rounded-2xl border border-amber-400/20">
                                 <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">{t('VIP 전용 라이브 헬프')}</p>
                                 <p className="text-sm font-bold text-slate-600">
-                                   {t('예상 환급액이 {amount}원이나 됩니다! 인증이 막히셨다면 전문 상담원이 즉시 도와드려요.', { amount: preFilterEstimate.toLocaleString() })}
+                                  {t('예상 환급액이 {amount}원이나 됩니다! 인증이 막히셨다면 전문 상담원이 즉시 도와드려요.', { amount: preFilterEstimate.toLocaleString() })}
                                 </p>
                               </div>
-                              <Button 
+                              <Button
                                 onClick={() => setIsVipChatOpen(true)}
                                 className="w-full h-16 bg-slate-900 text-white hover:bg-slate-800 text-lg font-black rounded-2xl shadow-xl flex items-center justify-center gap-2 group transition-all hover:scale-[1.02]"
                               >
@@ -1759,15 +1744,17 @@ export default function EstimatePage() {
                               <p className="text-sm font-bold text-slate-600">
                                 {t('인증 과정을 자세한 그림 가이드로 확인해 보세요.')}
                               </p>
-                              <Button 
+                              <Button
                                 variant="outline"
                                 onClick={() => {
                                   if (authMethod === 'hana') {
                                     setHanaGuideMode('auth');
                                     setIsHanaGuideOpen(true);
+                                  } else if (authMethod === 'kakao') {
+                                    setIsKakaoAuthGuideOpen(true);
+                                  } else {
+                                    setIsGuideOpen(true); // Open the full PASS guide
                                   }
-                                  else if (authMethod === 'kakao') setIsKakaoAuthGuideOpen(true);
-                                  else setIsAuthGuideOpen(true);
                                 }}
                                 className="w-full h-16 border-primary text-primary hover:bg-primary/5 text-lg font-black rounded-2xl flex items-center justify-center gap-2"
                               >
@@ -1778,51 +1765,51 @@ export default function EstimatePage() {
 
                           {/* AI OCR 이름 추출 섹션 */}
                           <div className="p-6 bg-blue-50/50 rounded-3xl border border-blue-100 mt-4 space-y-4">
-                             <div className="flex items-center gap-2">
-                               <Sparkles className="h-5 w-5 text-blue-500" />
-                               <h4 className="font-black text-blue-900">{t('ai_name_check_title')}</h4>
-                             </div>
-                             <p className="text-xs font-bold text-blue-700/70 leading-relaxed">
-                               {t('ai_name_check_desc')}
-                             </p>
-                             
-                             {!ocrResult ? (
-                               <div className="relative">
-                                 <input 
-                                   type="file" 
-                                   accept="image/*" 
-                                   onChange={handleCarrierOcrUpload}
-                                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                   disabled={isOcrLoading}
-                                 />
-                                 <Button 
-                                   variant="outline" 
-                                   className="w-full h-14 border-blue-200 text-blue-600 hover:bg-blue-100/50 rounded-2xl flex items-center justify-center gap-2"
-                                   disabled={isOcrLoading}
-                                 >
-                                   {isOcrLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
-                                   {isOcrLoading ? t('analyzing_screenshot') : t('upload_screenshot')}
-                                 </Button>
-                               </div>
-                             ) : (
-                               <div className="p-4 bg-white rounded-2xl border border-blue-200 space-y-4 animate-in zoom-in-95 duration-300">
-                                 <div className="text-center space-y-1">
-                                    <p className="text-xs font-black text-blue-400 uppercase tracking-widest">{t('ocr_result_title')}</p>
-                                    <p className="text-xl font-black text-slate-900">"{ocrResult.extractedName}"</p>
-                                 </div>
-                                 <p className="text-xs font-bold text-slate-500 text-center">
-                                    {ocrResult.recommendation}
-                                 </p>
-                                 <div className="grid grid-cols-2 gap-2">
-                                   <Button variant="ghost" onClick={() => setOcrResult(null)} className="rounded-xl h-12 font-bold text-slate-400">
-                                      {t('다시 인증')}
-                                   </Button>
-                                   <Button onClick={applyOcrName} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-12 font-black shadow-lg shadow-blue-200">
-                                      {t('use_this_name')}
-                                   </Button>
-                                 </div>
-                               </div>
-                             )}
+                            <div className="flex items-center gap-2">
+                              <Sparkles className="h-5 w-5 text-blue-500" />
+                              <h4 className="font-black text-blue-900">{t('ai_name_check_title')}</h4>
+                            </div>
+                            <p className="text-xs font-bold text-blue-700/70 leading-relaxed">
+                              {t('ai_name_check_desc')}
+                            </p>
+
+                            {!ocrResult ? (
+                              <div className="relative">
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleCarrierOcrUpload}
+                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                  disabled={isOcrLoading}
+                                />
+                                <Button
+                                  variant="outline"
+                                  className="w-full h-14 border-blue-200 text-blue-600 hover:bg-blue-100/50 rounded-2xl flex items-center justify-center gap-2"
+                                  disabled={isOcrLoading}
+                                >
+                                  {isOcrLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
+                                  {isOcrLoading ? t('analyzing_screenshot') : t('upload_screenshot')}
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="p-4 bg-white rounded-2xl border border-blue-200 space-y-4 animate-in zoom-in-95 duration-300">
+                                <div className="text-center space-y-1">
+                                  <p className="text-xs font-black text-blue-400 uppercase tracking-widest">{t('ocr_result_title')}</p>
+                                  <p className="text-xl font-black text-slate-900">"{ocrResult.extractedName}"</p>
+                                </div>
+                                <p className="text-xs font-bold text-slate-500 text-center">
+                                  {ocrResult.recommendation}
+                                </p>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <Button variant="ghost" onClick={() => setOcrResult(null)} className="rounded-xl h-12 font-bold text-slate-400">
+                                    {t('다시 인증')}
+                                  </Button>
+                                  <Button onClick={applyOcrName} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-12 font-black shadow-lg shadow-blue-200">
+                                    {t('use_this_name')}
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
                           </div>
                         </div>
                       </div>
@@ -1851,7 +1838,7 @@ export default function EstimatePage() {
                       <h2 className="text-4xl font-black font-headline text-primary tracking-tight">{t('데이터를 분석 중입니다.')}</h2>
                       <p className="text-slate-400 font-bold">{t('잠시만 기다려 주세요.')}</p>
                     </div>
-                    
+
                     <div className="max-w-[340px] mx-auto space-y-6 text-left border-l-2 border-primary/20 pl-8 py-2">
                       <div className="flex items-center gap-4 text-emerald-400 font-bold transition-all">
                         <CheckCircle2 className="h-6 w-6" />
@@ -1900,7 +1887,7 @@ export default function EstimatePage() {
                         </div>
                       </div>
                     )}
-                    
+
                     <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100 space-y-4">
                       <div className="flex items-center gap-2">
                         <AlertTriangle className="h-5 w-5 text-amber-500" />
@@ -1915,13 +1902,13 @@ export default function EstimatePage() {
                         <h4 className="font-black text-primary">{t('해결책 (Solution)')}</h4>
                       </div>
                       <p className="text-slate-700 font-bold leading-relaxed">{analysisError.solution}</p>
-                      
+
                       {analysisError.code === "NAME_MISMATCH" && nameSuggestions.length > 0 && (
                         <div className="mt-8 pt-8 border-t border-primary/10 space-y-4">
                           <p className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('다른 이름 조합으로 바로 시도하기')}</p>
                           <div className="grid grid-cols-1 gap-3">
                             {nameSuggestions.filter(s => s.name !== formData.authName).map((s, i) => (
-                              <Button 
+                              <Button
                                 key={i}
                                 variant="outline"
                                 onClick={() => {
@@ -1951,7 +1938,7 @@ export default function EstimatePage() {
 
                   <div className="flex flex-col gap-4">
                     {analysisError.isHighValue && (
-                      <Button 
+                      <Button
                         asChild
                         className="w-full h-20 bg-primary text-xl font-black rounded-3xl shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] flex items-center justify-center gap-3"
                       >
@@ -1960,9 +1947,9 @@ export default function EstimatePage() {
                         </a>
                       </Button>
                     )}
-                    
+
                     {!analysisError.isHighValue && (
-                       <Button 
+                      <Button
                         variant="outline"
                         onClick={() => setIsGuideOpen(true)}
                         className="w-full h-20 border-primary text-primary hover:bg-primary/5 text-xl font-black rounded-3xl shadow-sm transition-all hover:scale-[1.02] flex items-center justify-center gap-3"
@@ -1971,8 +1958,8 @@ export default function EstimatePage() {
                       </Button>
                     )}
 
-                    <Button 
-                      onClick={() => setStep(3)} 
+                    <Button
+                      onClick={() => setStep(3)}
                       variant={analysisError.isHighValue ? "outline" : "default"}
                       className={cn(
                         "w-full h-20 text-xl font-black rounded-3xl shadow-xl transition-all hover:scale-[1.02]",
@@ -1981,9 +1968,9 @@ export default function EstimatePage() {
                     >
                       {t('이름 조합 다시 선택하기 (Step 3)')}
                     </Button>
-                    <Button 
-                      variant="ghost" 
-                      onClick={() => setStep(4)} 
+                    <Button
+                      variant="ghost"
+                      onClick={() => setStep(4)}
                       className="w-full h-14 font-bold text-slate-400 hover:text-slate-600"
                     >
                       <ArrowLeft className="mr-2 h-4 w-4" /> {t('인증 방식 다시 선택하기')}
@@ -1996,9 +1983,9 @@ export default function EstimatePage() {
             {step === 7 && result && (
               <Card className="premium-card rounded-[3rem] border-none shadow-2xl overflow-hidden bg-white">
                 <CardHeader className="text-center py-16 bg-slate-50/50 relative">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => { setStep(4); saveProgress(4); }}
                     className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
                   >
@@ -2058,9 +2045,9 @@ export default function EstimatePage() {
             {step === 8 && (
               <Card className="premium-card rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
                 <CardHeader className="text-center py-12 bg-slate-900 text-white relative">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => { setStep(7); saveProgress(7); }}
                     className="absolute top-6 left-6 text-white/40 hover:text-white font-bold flex items-center"
                   >
@@ -2185,9 +2172,9 @@ export default function EstimatePage() {
             {step === 9 && (
               <Card className="premium-card rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
                 <CardHeader className="text-center py-12 bg-slate-900 text-white relative">
-                  <Button 
-                    variant="ghost" 
-                    size="sm" 
+                  <Button
+                    variant="ghost"
+                    size="sm"
                     onClick={() => { setStep(8); saveProgress(8); }}
                     className="absolute top-6 left-6 text-white/40 hover:text-white font-bold flex items-center"
                   >
@@ -2330,7 +2317,7 @@ export default function EstimatePage() {
                 </CardContent>
               </Card>
             )}
-            
+
             {/* Global App Install / In-App Browser Escape Banner (Visible across all steps) */}
             <div className="flex flex-col gap-3 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl border border-blue-100 shadow-md w-full mx-auto relative overflow-hidden mt-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-500">
               <div className="absolute -top-4 -right-4 p-4 opacity-5"><Smartphone className="h-32 w-32" /></div>
@@ -2340,18 +2327,18 @@ export default function EstimatePage() {
                 </div>
                 <div className="flex-1 space-y-1 text-left">
                   <p className="text-[15px] font-black text-blue-950 tracking-tight">
-                    {isInAppBrowser 
-                      ? t("더 빠르고 편하게 환급받기 (기본 브라우저 권장)") 
+                    {isInAppBrowser
+                      ? t("더 빠르고 편하게 환급받기 (기본 브라우저 권장)")
                       : t("더 빠르고 편하게 환급받기 (앱 바로 설치)")}
                   </p>
                   <p className="text-[11px] font-bold text-blue-800/80 leading-snug">
-                    {isInAppBrowser 
+                    {isInAppBrowser
                       ? t("현재 화면에서는 환급 기능이 제한될 수 있습니다. 아래 버튼을 눌러 기본 브라우저로 쾌적하게 진행해 보세요.")
                       : t("1초 만에 앱을 설치하고 다음부터는 아이콘 터치 한 번으로 내 환급금을 확인하세요!")}
                   </p>
                 </div>
               </div>
-              <Button 
+              <Button
                 onClick={handleInstallApp}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl h-14 shadow-lg shadow-blue-600/20 transition-all active:scale-95 flex items-center justify-center gap-2 mt-1 relative z-10 text-base"
               >
@@ -2370,28 +2357,28 @@ export default function EstimatePage() {
       {/* VIP 전용 플로팅 채팅 버튼 */}
       {(preFilterEstimate >= 400000 || showProactiveHelp) && !isVipChatOpen && !isGuideOpen && !isAuthGuideOpen && !isKakaoGuideOpen && !isKakaoAuthGuideOpen && !isHanaGuideOpen && (
         <div className="fixed bottom-6 right-6 z-[60] animate-bounce-subtle flex flex-col items-end gap-3">
-           {showProactiveHelp && (
-             <div className="bg-slate-900 text-white text-sm font-bold p-4 rounded-2xl rounded-br-none shadow-xl max-w-[260px] animate-in slide-in-from-bottom-2 fade-in duration-500 relative cursor-pointer hover:scale-[1.02] transition-transform" onClick={() => setIsVipChatOpen(true)}>
-               <div className="flex items-start gap-3">
-                 <div className="h-6 w-6 bg-amber-400 rounded-full flex items-center justify-center shrink-0 shadow-sm shadow-amber-400/20">
-                   <Lightbulb className="h-4 w-4 text-amber-950" />
-                 </div>
-                 <p className="leading-relaxed">{t('개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.')}</p>
-               </div>
-               <div className="absolute -bottom-2 right-4 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-slate-900 border-r-[8px] border-r-transparent" />
-             </div>
-           )}
-           <Button 
-             onClick={() => setIsVipChatOpen(true)}
-             className="h-20 w-20 rounded-full bg-amber-400 text-amber-950 shadow-2xl flex items-center justify-center hover:bg-amber-500 hover:scale-110 transition-all border-4 border-white group relative"
-           >
-              <MessageSquare className="h-10 w-10 text-amber-950" />
-              {unreadCount > 0 && (
-                <span className="absolute -top-1 -right-1 h-7 w-7 bg-red-600 rounded-full flex items-center justify-center text-white text-sm font-black border-2 border-white animate-pulse">
-                  {unreadCount}
-                </span>
-              )}
-           </Button>
+          {showProactiveHelp && (
+            <div className="bg-slate-900 text-white text-sm font-bold p-4 rounded-2xl rounded-br-none shadow-xl max-w-[260px] animate-in slide-in-from-bottom-2 fade-in duration-500 relative cursor-pointer hover:scale-[1.02] transition-transform" onClick={() => setIsVipChatOpen(true)}>
+              <div className="flex items-start gap-3">
+                <div className="h-6 w-6 bg-amber-400 rounded-full flex items-center justify-center shrink-0 shadow-sm shadow-amber-400/20">
+                  <Lightbulb className="h-4 w-4 text-amber-950" />
+                </div>
+                <p className="leading-relaxed">{t('개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.')}</p>
+              </div>
+              <div className="absolute -bottom-2 right-4 w-0 h-0 border-l-[8px] border-l-transparent border-t-[8px] border-t-slate-900 border-r-[8px] border-r-transparent" />
+            </div>
+          )}
+          <Button
+            onClick={() => setIsVipChatOpen(true)}
+            className="h-20 w-20 rounded-full bg-amber-400 text-amber-950 shadow-2xl flex items-center justify-center hover:bg-amber-500 hover:scale-110 transition-all border-4 border-white group relative"
+          >
+            <MessageSquare className="h-10 w-10 text-amber-950" />
+            {unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 h-7 w-7 bg-red-600 rounded-full flex items-center justify-center text-white text-sm font-black border-2 border-white animate-pulse">
+                {unreadCount}
+              </span>
+            )}
+          </Button>
         </div>
       )}
 
@@ -2399,82 +2386,82 @@ export default function EstimatePage() {
       <Dialog open={isVipChatOpen} onOpenChange={setIsVipChatOpen}>
         <DialogContent className="sm:max-w-[450px] h-[650px] flex flex-col p-0 overflow-hidden rounded-[2.5rem] border-none shadow-2xl bg-white z-[120]">
           <DialogHeader className="p-8 bg-slate-900 text-white shrink-0 relative overflow-hidden">
-             <div className="absolute top-0 right-0 p-8">
-               <Button variant="ghost" size="icon" onClick={() => setIsVipChatOpen(false)} className="text-white/50 hover:text-white rounded-full">
-                  <X className="h-6 w-6" />
-               </Button>
-             </div>
-             <div className="flex items-center gap-4">
-               <div className="h-14 w-14 bg-amber-400 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-400/20">
-                  <Trophy className="h-8 w-8 text-amber-950" />
-               </div>
-               <div>
-                 <DialogTitle className="text-xl font-black">{t('실시간 VIP 전문 세무사 상담')}</DialogTitle>
-                 <div className="flex items-center gap-2">
-                    <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">LIVE • EXPERT CONNECTED</p>
-                 </div>
-               </div>
-             </div>
+            <div className="absolute top-0 right-0 p-8">
+              <Button variant="ghost" size="icon" onClick={() => setIsVipChatOpen(false)} className="text-white/50 hover:text-white rounded-full">
+                <X className="h-6 w-6" />
+              </Button>
+            </div>
+            <div className="flex items-center gap-4">
+              <div className="h-14 w-14 bg-amber-400 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-400/20">
+                <Trophy className="h-8 w-8 text-amber-950" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl font-black">{t('실시간 VIP 전문 세무사 상담')}</DialogTitle>
+                <div className="flex items-center gap-2">
+                  <div className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">LIVE • EXPERT CONNECTED</p>
+                </div>
+              </div>
+            </div>
           </DialogHeader>
 
           <div className="flex-1 overflow-hidden p-6 bg-slate-50">
-             <ScrollArea className="h-full pr-4">
-               <div className="space-y-6">
-                 <div className="flex justify-start">
-                   <div className="bg-white p-5 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 text-sm font-bold text-slate-700 max-w-[85%] leading-relaxed">
-                     {t('안녕하세요! 예상 환급액이 매우 큰 고액 자산가님으로 감지되어 전문 상담원 채팅 세션이 열렸습니다. 인증이나 서류 접수에 어려움이 있다면 무엇이든 물어봐 주세요.')}
-                   </div>
-                 </div>
-                 
-                 {chatMessages.map((msg, i) => (
-                   <div key={i} className={cn("flex", msg.sender === 'user' ? "justify-end" : "justify-start")}>
-                      <div className={cn(
-                        "p-5 rounded-2xl shadow-sm text-sm font-bold max-w-[85%] leading-relaxed",
-                        msg.sender === 'user' 
-                          ? "bg-slate-900 text-white rounded-tr-none" 
-                          : "bg-white text-slate-800 border border-slate-200 rounded-tl-none"
-                      )}>
-                        {msg.text}
-                      </div>
-                   </div>
-                 ))}
-                 <div ref={chatScrollRef} />
-               </div>
-             </ScrollArea>
+            <ScrollArea className="h-full pr-4">
+              <div className="space-y-6">
+                <div className="flex justify-start">
+                  <div className="bg-white p-5 rounded-2xl rounded-tl-none shadow-sm border border-slate-200 text-sm font-bold text-slate-700 max-w-[85%] leading-relaxed">
+                    {t('안녕하세요! 예상 환급액이 매우 큰 고액 자산가님으로 감지되어 전문 상담원 채팅 세션이 열렸습니다. 인증이나 서류 접수에 어려움이 있다면 무엇이든 물어봐 주세요.')}
+                  </div>
+                </div>
+
+                {chatMessages.map((msg, i) => (
+                  <div key={i} className={cn("flex", msg.sender === 'user' ? "justify-end" : "justify-start")}>
+                    <div className={cn(
+                      "p-5 rounded-2xl shadow-sm text-sm font-bold max-w-[85%] leading-relaxed",
+                      msg.sender === 'user'
+                        ? "bg-slate-900 text-white rounded-tr-none"
+                        : "bg-white text-slate-800 border border-slate-200 rounded-tl-none"
+                    )}>
+                      {msg.text}
+                    </div>
+                  </div>
+                ))}
+                <div ref={chatScrollRef} />
+              </div>
+            </ScrollArea>
           </div>
 
           <form onSubmit={handleSendVipMessage} className="p-6 bg-white border-t border-slate-100 flex gap-3">
-             <Input 
-               value={chatInput}
-               onChange={(e) => setChatInput(e.target.value)}
-               placeholder={t('상담 내용을 입력하세요...')}
-               className="h-14 rounded-2xl bg-slate-50 border-none px-6 font-bold"
-             />
-             <Button type="submit" size="icon" className="h-14 w-14 rounded-2xl bg-amber-400 hover:bg-amber-500 shadow-lg shadow-amber-200" disabled={isChatLoading}>
-                <Send className="h-6 w-6 text-amber-950" />
-             </Button>
+            <Input
+              value={chatInput}
+              onChange={(e) => setChatInput(e.target.value)}
+              placeholder={t('상담 내용을 입력하세요...')}
+              className="h-14 rounded-2xl bg-slate-50 border-none px-6 font-bold"
+            />
+            <Button type="submit" size="icon" className="h-14 w-14 rounded-2xl bg-amber-400 hover:bg-amber-500 shadow-lg shadow-amber-200" disabled={isChatLoading}>
+              <Send className="h-6 w-6 text-amber-950" />
+            </Button>
           </form>
         </DialogContent>
       </Dialog>
-      <PassGuideModal 
-        isOpen={isGuideOpen} 
-        onClose={() => setIsGuideOpen(false)} 
+      <PassGuideModal
+        isOpen={isGuideOpen}
+        onClose={() => setIsGuideOpen(false)}
         optimizedNames={nameSuggestions}
         currentAuthName={formData.authName}
         officialName={formData.officialName}
-        mode="registration"
+        mode="full"
       />
-      <PassGuideModal 
-        isOpen={isAuthGuideOpen} 
-        onClose={() => setIsAuthGuideOpen(false)} 
+      <PassGuideModal
+        isOpen={isAuthGuideOpen}
+        onClose={() => setIsAuthGuideOpen(false)}
         optimizedNames={nameSuggestions}
         currentAuthName={formData.authName}
         officialName={formData.officialName}
         mode="auth"
       />
       <KakaoGuideModal isOpen={isKakaoGuideOpen} onClose={() => setIsKakaoGuideOpen(false)} mode="registration" />
-      <KakaoGuideModal isOpen={isKakaoAuthGuideOpen} onClose={() => setIsKakaoAuthGuideOpen(false)} mode="auth" />
+      <KakaoGuideModal isOpen={isKakaoAuthGuideOpen} onClose={() => setIsKakaoAuthGuideOpen(false)} mode="full" />
       <HanaGuideModal isOpen={isHanaGuideOpen} onClose={() => setIsHanaGuideOpen(false)} mode={hanaGuideMode} />
 
       {/* 성함 확인 가이드 모달 */}
@@ -2499,8 +2486,8 @@ export default function EstimatePage() {
               <div className="space-y-8">
                 {/* Visual Guide Screenshot Placeholder */}
                 <div className="rounded-3xl border border-slate-100 overflow-hidden shadow-inner bg-slate-50 aspect-[4/3] relative group">
-                  <img 
-                    src="/images/guide/name_check_guide.png" 
+                  <img
+                    src="/images/guide/name_check_guide.png"
                     alt="Carrier App Name Check Guide"
                     className="w-full h-full object-cover"
                   />
@@ -2574,15 +2561,15 @@ export default function EstimatePage() {
               {t("이전에 진행하던 정보가 있습니다. 아까 하던 곳부터 바로 이어서 할 수 있어요.")}
             </p>
             <div className="grid grid-cols-2 gap-3 pt-2">
-              <Button 
-                onClick={handleStartFresh} 
-                variant="outline" 
+              <Button
+                onClick={handleStartFresh}
+                variant="outline"
                 className="h-14 rounded-2xl font-bold border-slate-100 hover:bg-slate-50 text-slate-400"
               >
                 {t("새로 시작하기")}
               </Button>
-              <Button 
-                onClick={handleResume} 
+              <Button
+                onClick={handleResume}
                 className="h-14 rounded-2xl font-black bg-slate-900 text-white shadow-lg hover:bg-slate-800 transition-all hover:scale-[1.02] active:scale-[0.98]"
               >
                 {t("이어서 하기")}

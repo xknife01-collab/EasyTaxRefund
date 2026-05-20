@@ -106,4 +106,5 @@ export const main = {
   "평균 환급액 300만원이상!": "Rata-rata pengembalian dana lebih dari 3 juta won!",
   "1분안에 전문세무사 환급신청하기": "Ajukan pengembalian pajak dengan akuntan profesional dalam 1 menit",
   "내 환급액 확인후 환급 신청하기": "Ajukan pengembalian pajak setelah memeriksa jumlah pengembalian Anda",
+  "개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.": "Apakah Anda ragu untuk memasukkan informasi pribadi? Coba bicara dengan manajer pajak khusus terlebih dahulu.",
 };

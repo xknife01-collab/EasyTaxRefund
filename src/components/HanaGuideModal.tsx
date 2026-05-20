@@ -17,12 +17,13 @@ import {
 import { useTranslation } from "@/components/LanguageContext";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import { 
-  ChevronLeft, 
-  ChevronRight, 
-  Info, 
-  X, 
-  Building2
+import {
+  ChevronLeft,
+  ChevronRight,
+  Info,
+  X,
+  Building2,
+  Smartphone
 } from "lucide-react";
 
 interface GuideMarker {
@@ -42,6 +43,7 @@ interface GuideMarker {
   textX?: number;
   textY?: number;
   isLabel?: boolean;
+  isBridge?: boolean;
 }
 
 interface GuideStep {
@@ -49,89 +51,113 @@ interface GuideStep {
   markers: GuideMarker[];
 }
 
-const HANA_GUIDE_STEPS: GuideStep[] = Array.from({ length: 32 }, (_, i) => ({
-  image: `/images/guide/hana/${i < 20 ? i + 1 : i + 2}.jpg`,
-  markers: []
-}));
+const HANA_GUIDE_STEPS: GuideStep[] = [
+  ...Array.from({ length: 20 }, (_, i) => ({
+    image: `/images/guide/hana/${i + 1}.jpg`,
+    markers: []
+  })),
+  ...Array.from({ length: 6 }, (_, i) => ({
+    image: `/images/guide/hana/${i + 22}.jpg`,
+    markers: []
+  })),
+  {
+    image: "/images/guide/hana/KakaoTalk_20260512_122226025_02.jpg",
+    markers: [{
+      x: 50,
+      y: 80,
+      width: 90,
+      height: 8,
+      text: "GUIDE_BRIDGE_HANA",
+      textX: 50,
+      textY: 45,
+      isBridge: true
+    }]
+  },
+  ...Array.from({ length: 5 }, (_, i) => ({
+    image: `/images/guide/hana/${i + 29}.jpg`,
+    markers: []
+  }))
+];
 
 const CHAPTERS = [
   { title: "하나원큐 시작", start: 0, icon: "🚀" },
   { title: "회원가입", start: 6, icon: "📝" },
   { title: "인증서 발급", start: 16, icon: "🔐" },
+  { title: "인증 승인", start: 26, icon: "✅" },
 ];
 
 // Define markers for Hana with precise coordinates based on renamed files
-HANA_GUIDE_STEPS[0].markers = [{ 
-  x: 43.5, 
-  y: 38.7, 
-  width: 78, 
-  height: 5.5, 
+HANA_GUIDE_STEPS[0].markers = [{
+  x: 43.5,
+  y: 38.7,
+  width: 78,
+  height: 5.5,
   text: "Play 스토어에서 '하나원큐'를 검색하여 설치해 주세요.",
-  textY: 30 
+  textY: 30
 }];
-HANA_GUIDE_STEPS[1].markers = [{ 
-  x: 74, 
-  y: 25, 
-  width: 42, 
-  height: 5.5, 
+HANA_GUIDE_STEPS[1].markers = [{
+  x: 74,
+  y: 25,
+  width: 42,
+  height: 5.5,
   text: "설치가 완료되었습니다. '열기'를 눌러 하나원큐를 실행해 주세요.",
   textY: 15
 }];
-HANA_GUIDE_STEPS[2].markers = [{ 
-  x: 50, 
-  y: 88, 
-  width: 90, 
-  height: 7, 
+HANA_GUIDE_STEPS[2].markers = [{
+  x: 50,
+  y: 88,
+  width: 90,
+  height: 7,
   text: "원활한 가입을 위해 안내 내용을 확인하신 후 '확인'을 눌러주세요.",
   textY: 75
 }];
-HANA_GUIDE_STEPS[3].markers = [{ 
-  x: 50, 
-  y: 81, 
-  width: 30, 
-  height: 6, 
+HANA_GUIDE_STEPS[3].markers = [{
+  x: 50,
+  y: 81,
+  width: 30,
+  height: 6,
   text: "알림 권한 '허용'을 눌러주세요.",
   textY: 70
 }];
-HANA_GUIDE_STEPS[4].markers = [{ 
-  x: 50, 
-  y: 81, 
-  width: 30, 
-  height: 6, 
+HANA_GUIDE_STEPS[4].markers = [{
+  x: 50,
+  y: 81,
+  width: 30,
+  height: 6,
   text: "전화 권한 '허용'을 눌러주세요.",
   textY: 70
 }];
-HANA_GUIDE_STEPS[5].markers = [{ 
-  x: 90, 
-  y: 7, 
-  width: 12, 
-  height: 6, 
+HANA_GUIDE_STEPS[5].markers = [{
+  x: 90,
+  y: 7,
+  width: 12,
+  height: 6,
   text: "인증서 발급을 위해 오른쪽 상단의 'X'를 눌러주세요.",
   textY: 15,
   position: "bottom"
 }];
-HANA_GUIDE_STEPS[6].markers = [{ 
-  x: 50, 
-  y: 85, 
-  width: 90, 
-  height: 8, 
+HANA_GUIDE_STEPS[6].markers = [{
+  x: 50,
+  y: 85,
+  width: 90,
+  height: 8,
   text: "하단의 '하나원큐 시작하기' 버튼을 눌러주세요.",
   textY: 75
 }];
-HANA_GUIDE_STEPS[7].markers = [{ 
-  x: 50, 
-  y: 58, 
-  width: 85, 
-  height: 6, 
+HANA_GUIDE_STEPS[7].markers = [{
+  x: 50,
+  y: 58,
+  width: 85,
+  height: 6,
   text: "인증서 발급을 위해 '휴대폰인증'을 선택해 주세요.",
   textY: 45
 }];
 HANA_GUIDE_STEPS[8].markers = [
-  { 
-    x: 50, 
-    y: 10, 
-    text: "성명, 외국인등록번호 앞 7자리, 통신사, 휴대폰번호를 정확히 입력해 주세요.", 
-    hideBox: true 
+  {
+    x: 50,
+    y: 10,
+    text: "성명, 외국인등록번호 앞 7자리, 통신사, 휴대폰번호를 정확히 입력해 주세요.",
+    hideBox: true
   },
   { x: 40, y: 32, text: "성명 (Name)", isLabel: true },
   { x: 30, y: 47, text: "등록번호 앞 6자리", isLabel: true },
@@ -139,26 +165,26 @@ HANA_GUIDE_STEPS[8].markers = [
   { x: 45, y: 60, text: "통신사 선택", isLabel: true },
   { x: 45, y: 75, text: "휴대폰 번호 입력", isLabel: true }
 ];
-HANA_GUIDE_STEPS[9].markers = [{ 
-  x: 50, 
-  y: 62, 
-  width: 88, 
-  height: 75, 
+HANA_GUIDE_STEPS[9].markers = [{
+  x: 50,
+  y: 62,
+  width: 88,
+  height: 75,
   text: "통신사를 선택하고 '인증번호 요청'을 눌러주세요.",
   textY: 28
 }];
-HANA_GUIDE_STEPS[10].markers = [{ 
-  x: 50, 
-  y: 89, 
-  width: 90, 
-  height: 8, 
+HANA_GUIDE_STEPS[10].markers = [{
+  x: 50,
+  y: 89,
+  width: 90,
+  height: 8,
   text: "선택한 통신사가 맞는지 확인하고, 하단의 '인증번호 요청' 버튼을 눌러주세요.",
   textY: 75
 }];
 HANA_GUIDE_STEPS[11].markers = [
-  { 
-    x: 14, 
-    y: 53, 
+  {
+    x: 14,
+    y: 53,
     isSmall: true,
     text: "서비스 이용 약관에 '전체동의'를 체크해 주세요.",
     textY: 43,
@@ -174,11 +200,11 @@ HANA_GUIDE_STEPS[11].markers = [
   }
 ];
 HANA_GUIDE_STEPS[12].markers = [
-  { 
-    x: 50, 
-    y: 30, 
-    width: 90, 
-    height: 12, 
+  {
+    x: 50,
+    y: 30,
+    width: 90,
+    height: 12,
     text: "문자로 받은 인증번호 6자리를 입력해 주세요.",
     textY: 15
   },
@@ -192,9 +218,9 @@ HANA_GUIDE_STEPS[12].markers = [
   }
 ];
 HANA_GUIDE_STEPS[13].markers = [
-  { 
-    x: 16, 
-    y: 24, 
+  {
+    x: 16,
+    y: 24,
     isSmall: true,
     text: "약관에 체크해 주세요.",
     textY: 16
@@ -208,18 +234,18 @@ HANA_GUIDE_STEPS[13].markers = [
     textY: 78
   }
 ];
-HANA_GUIDE_STEPS[14].markers = [{ 
-  x: 50, 
-  y: 87, 
-  width: 90, 
-  height: 8, 
+HANA_GUIDE_STEPS[14].markers = [{
+  x: 50,
+  y: 87,
+  width: 90,
+  height: 8,
   text: "약관에 동의하신 후 하단의 '확인' 혹은 '동의' 버튼을 눌러주세요.",
   textY: 79
 }];
 HANA_GUIDE_STEPS[15].markers = [
-  { 
-    x: 16, 
-    y: 24, 
+  {
+    x: 16,
+    y: 24,
     isSmall: true,
     text: "약관에 체크해 주세요.",
     textY: 16
@@ -233,20 +259,20 @@ HANA_GUIDE_STEPS[15].markers = [
     textY: 78
   }
 ];
-HANA_GUIDE_STEPS[16].markers = [{ 
-  x: 50, 
-  y: 75, 
-  width: 90, 
-  height: 8, 
+HANA_GUIDE_STEPS[16].markers = [{
+  x: 50,
+  y: 75,
+  width: 90,
+  height: 8,
   text: "본인 인증을 위해 사용하실 '여권(Passport)'을 선택해 주세요.",
   textY: 63
 }];
 HANA_GUIDE_STEPS[17].markers = [
-  { 
-    x: 50, 
-    y: 55, 
-    width: 90, 
-    height: 35, 
+  {
+    x: 50,
+    y: 55,
+    width: 90,
+    height: 35,
     text: "사각형 가이드 라인에 맞춰 '여권(Passport)'을 촬영해 주세요.",
     textY: 30
   },
@@ -261,11 +287,11 @@ HANA_GUIDE_STEPS[17].markers = [
   }
 ];
 HANA_GUIDE_STEPS[18].markers = [
-  { 
-    x: 50, 
-    y: 45, 
-    width: 90, 
-    height: 8, 
+  {
+    x: 50,
+    y: 45,
+    width: 90,
+    height: 8,
     text: "여권에서 인식된 이름이 자동으로 입력됩니다.",
     textY: 37
   },
@@ -279,11 +305,11 @@ HANA_GUIDE_STEPS[18].markers = [
   }
 ];
 HANA_GUIDE_STEPS[19].markers = [
-  { 
-    x: 50, 
-    y: 42, 
-    width: 90, 
-    height: 12, 
+  {
+    x: 50,
+    y: 42,
+    width: 90,
+    height: 12,
     text: "본인 인증을 진행할 '계좌'를 선택해 주세요.",
     textY: 30
   },
@@ -296,154 +322,159 @@ HANA_GUIDE_STEPS[19].markers = [
     textY: 80
   }
 ];
-HANA_GUIDE_STEPS[20].markers = [{ 
-  x: 50, 
-  y: 75, 
-  width: 75, 
-  height: 45, 
+HANA_GUIDE_STEPS[20].markers = [{
+  x: 50,
+  y: 75,
+  width: 75,
+  height: 45,
   text: "해당 계좌의 비밀번호 4자리를 키패드로 입력해 주세요.",
   textY: 35
 }];
 HANA_GUIDE_STEPS[21].markers = [
-  { 
-    x: 14, 
-    y: 52, 
+  {
+    x: 14,
+    y: 52,
     isSmall: true,
     text: "클라우드 서비스 이용약관에 체크해 주세요.",
     textY: 40
   },
-  { 
-    x: 62, 
-    y: 89, 
-    width: 75, 
-    height: 8, 
+  {
+    x: 62,
+    y: 89,
+    width: 75,
+    height: 8,
     text: "하단의 '저장' 버튼을 눌러주세요.",
     textY: 80
   }
 ];
-HANA_GUIDE_STEPS[22].markers = [{ 
-  x: 50, 
-  y: 89, 
-  width: 90, 
-  height: 8, 
+HANA_GUIDE_STEPS[22].markers = [{
+  x: 50,
+  y: 89,
+  width: 90,
+  height: 8,
   text: "약관 내용을 확인하고 하단의 '동의'를 눌러주세요.",
   textY: 80
 }];
 HANA_GUIDE_STEPS[23].markers = [
-  { 
-    x: 14, 
-    y: 52, 
+  {
+    x: 14,
+    y: 52,
     isSmall: true,
     text: "클라우드 서비스 이용약관에 체크해 주세요.",
     textY: 40
   },
-  { 
-    x: 62, 
-    y: 89, 
-    width: 75, 
-    height: 8, 
+  {
+    x: 62,
+    y: 89,
+    width: 75,
+    height: 8,
     text: "하단의 '저장' 버튼을 눌러주세요.",
     textY: 80
   }
 ];
-HANA_GUIDE_STEPS[24].markers = [{ 
-  x: 50, 
-  y: 43, 
-  width: 44, 
-  height: 6, 
+HANA_GUIDE_STEPS[24].markers = [{
+  x: 50,
+  y: 43,
+  width: 44,
+  height: 6,
   text: "인증서에서 사용할 비밀번호 6자리를 설정해 주세요.",
   textY: 40
 }];
-HANA_GUIDE_STEPS[25].markers = [{ 
-  x: 20, 
-  y: 88, 
-  width: 22, 
-  height: 6, 
-  text: "축하합니다! 발급이 완료되었습니다. '다음에'를 누르면 메인 화면으로 돌아가 인증을 계속할 수 있습니다.",
-  textY: 74
-}];
-HANA_GUIDE_STEPS[26].markers = [{ 
-  x: 50, 
-  y: 55, 
-  width: 90, 
-  height: 8, 
-  text: "🎉 축하합니다! 하나인증서 발급이 완료되었습니다.\n\n'확인'을 눌러주세요.",
-  textY: 45
+HANA_GUIDE_STEPS[25].markers = [{
+  x: 20,
+  y: 90,
+  width: 36,
+  height: 8,
+  text: "축하합니다! 하나인증서 발급이 완료되었습니다. 다음 화면으로 넘기기 위해 '다음에'를 눌러주세요.",
+  textY: 80
 }];
 
-HANA_GUIDE_STEPS[27].markers = [{ 
-  x: 50, 
-  y: 12, 
-  width: 90, 
-  height: 12, 
+HANA_GUIDE_STEPS[27].markers = [{
+  x: 50,
+  y: 12,
+  width: 90,
+  height: 12,
   text: "국세청에서 인증 요청이 도착했습니다. 상단 알림을 눌러 하나원큐 앱을 열어주세요.",
   textY: 28,
   position: "bottom"
 }];
-HANA_GUIDE_STEPS[28].markers = [{ 
-  x: 14, 
-  y: 50, 
-  isSmall: true,
-  text: "개인정보 제3자 제공 동의 체크박스를 눌러주세요.",
-  textY: 43
-}];
-HANA_GUIDE_STEPS[29].markers = [{ 
-  x: 50, 
-  y: 89, 
-  width: 90, 
-  height: 8, 
+HANA_GUIDE_STEPS[28].markers = [
+  {
+    x: 14,
+    y: 50,
+    isSmall: true,
+    text: "개인정보 제3자 제공 동의 체크박스를 눌러주세요.",
+    textY: 43
+  },
+  {
+    x: 50,
+    y: 87,
+    width: 90,
+    height: 8,
+    text: "그 다음, 하단의 '인증 요청' 버튼을 눌러주세요.",
+    textY: 79
+  }
+];
+HANA_GUIDE_STEPS[29].markers = [{
+  x: 50,
+  y: 89,
+  width: 90,
+  height: 8,
   text: "하단의 '인증하기' 버튼을 눌러 인증을 진행합니다.",
   textY: 78
 }];
-HANA_GUIDE_STEPS[30].markers = [{ 
-  x: 50, 
-  y: 57, 
-  width: 44, 
-  height: 6, 
+HANA_GUIDE_STEPS[30].markers = [{
+  x: 50,
+  y: 57,
+  width: 44,
+  height: 6,
   text: "하나인증서 비밀번호 6자리를 입력해 주세요.",
   textY: 47
 }];
-HANA_GUIDE_STEPS[31].markers = [{ 
-  x: 50, 
-  y: 90, 
-  width: 88, 
-  height: 8, 
+HANA_GUIDE_STEPS[31].markers = [{
+  x: 50,
+  y: 90,
+  width: 88,
+  height: 8,
   text: "인증이 완료되었습니다! '확인'을 눌러주세요.\n\n그 후 이지텍스리펀드 웹페이지로 돌아가 '인증 완료'를 누르세요!",
   textY: 78
 }];
 
-const FINAL_CELEBRATION_STEPS = [];
+const FINAL_CELEBRATION_STEPS: number[] = [];
 FINAL_CELEBRATION_STEPS.forEach(idx => {
   HANA_GUIDE_STEPS[idx].markers = [{
     x: 50,
     y: 35,
-    text: "🎉 축하합니다 🎉\n이제 하나원큐에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!",
+    text: "GUIDE_CONGRATS",
     hideBox: true,
     textX: 50,
     textY: 45
   }];
 });
 
-export function HanaGuideModal({ 
-  isOpen, 
+export function HanaGuideModal({
+  isOpen,
   onClose,
-  mode = 'registration'
-}: { 
-  isOpen: boolean; 
+  mode = 'full'
+}: {
+  isOpen: boolean;
   onClose: () => void;
-  mode?: 'registration' | 'auth';
+  mode?: 'registration' | 'auth' | 'full';
 }) {
   const { t } = useTranslation();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
 
-  const displaySteps = mode === 'auth' 
-    ? HANA_GUIDE_STEPS.slice(27, 32) // Steps 28-32 (NTS Approval)
-    : HANA_GUIDE_STEPS.slice(0, 27); // Steps 1-27 (Registration & Issuance)
-    
-  const displayChapters = mode === 'auth'
-    ? [{ title: "인증 승인", start: 0, icon: "✅" }]
-    : CHAPTERS;
+  const displaySteps = React.useMemo(() => {
+    if (mode === 'auth') return HANA_GUIDE_STEPS.slice(27, 33);
+    if (mode === 'registration') return HANA_GUIDE_STEPS.slice(0, 27);
+    return HANA_GUIDE_STEPS;
+  }, [mode]);
+
+  const displayChapters = React.useMemo(() => {
+    if (mode === 'auth') return [{ title: "인증 승인", start: 0, icon: "✅" }];
+    return CHAPTERS;
+  }, [mode]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -477,7 +508,7 @@ export function HanaGuideModal({
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white/95 border-none h-[95vh] flex flex-col sm:rounded-[2.5rem]">
         <DialogHeader className="p-6 bg-white shrink-0 border-b z-50 relative pr-12">
-          <button 
+          <button
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
             aria-label={t("가이드 닫기")}
@@ -497,28 +528,28 @@ export function HanaGuideModal({
               </DialogDescription>
             </div>
             <div className="flex items-center gap-1.5 p-1 bg-slate-100 rounded-2xl sm:rounded-full shrink-0 overflow-x-auto no-scrollbar">
-                {displayChapters.map((ch, i) => (
-                  <button
-                    key={i}
-                    onClick={() => goToChapter(i)}
-                    className={cn(
-                      "flex-1 sm:flex-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-full text-[10px] sm:text-xs font-black transition-all flex items-center justify-center gap-1.5 whitespace-nowrap",
-                      currentChapterIndex === i 
-                        ? "bg-[#008485] text-white shadow-lg scale-105" 
-                        : "text-slate-400 hover:text-slate-600 hover:bg-slate-200"
-                    )}
-                  >
-                    <span className="opacity-70">{ch.icon}</span>
-                    {t(ch.title)}
-                  </button>
-                ))}
+              {displayChapters.map((ch, i) => (
+                <button
+                  key={i}
+                  onClick={() => goToChapter(i)}
+                  className={cn(
+                    "flex-1 sm:flex-none px-3 py-2 sm:px-4 sm:py-2.5 rounded-xl sm:rounded-full text-[10px] sm:text-xs font-black transition-all flex items-center justify-center gap-1.5 whitespace-nowrap",
+                    currentChapterIndex === i
+                      ? "bg-[#008485] text-white shadow-lg scale-105"
+                      : "text-slate-400 hover:text-slate-600 hover:bg-slate-200"
+                  )}
+                >
+                  <span className="opacity-70">{ch.icon}</span>
+                  {t(ch.title)}
+                </button>
+              ))}
             </div>
           </div>
         </DialogHeader>
 
         <div className="flex-1 w-full bg-slate-50 relative overflow-hidden min-h-0">
-          <Carousel 
-            setApi={setApi} 
+          <Carousel
+            setApi={setApi}
             className="w-full h-full"
             opts={{ align: "start", loop: false, watchDrag: false }}
           >
@@ -553,11 +584,11 @@ export function HanaGuideModal({
                                     marker.isMask
                                       ? "bg-white border-none opacity-100 shadow-[0_0_15px_rgba(255,255,255,1)]"
                                       : cn(
-                                          !marker.width && (marker.isLarge 
-                                            ? "w-[80vw] h-[60vw] max-w-[420px] max-h-[280px]" 
-                                            : marker.isSmall ? "w-[12vw] h-[12vw] max-w-[60px] max-h-[60px]" : "w-[18vw] h-[18vw] max-w-[100px] max-h-[100px] min-w-[50px] min-h-[50px]"),
-                                          "border-[4px] sm:border-[6px] border-dashed rounded-2xl sm:rounded-[2.5rem] animate-pulse border-[#008485] shadow-[0_0_25px_rgba(0,132,133,0.8)] bg-[#008485]/20"
-                                        )
+                                        !marker.width && (marker.isLarge
+                                          ? "w-[80vw] h-[60vw] max-w-[420px] max-h-[280px]"
+                                          : marker.isSmall ? "w-[12vw] h-[12vw] max-w-[60px] max-h-[60px]" : "w-[18vw] h-[18vw] max-w-[100px] max-h-[100px] min-w-[50px] min-h-[50px]"),
+                                        "border-[4px] sm:border-[6px] border-dashed rounded-2xl sm:rounded-[2.5rem] animate-pulse border-[#008485] shadow-[0_0_25px_rgba(0,132,133,0.8)] bg-[#008485]/20"
+                                      )
                                   )}
                                 />
                               </div>
@@ -567,13 +598,13 @@ export function HanaGuideModal({
                               <div
                                 className={cn(
                                   "absolute pointer-events-auto z-[60] transition-all duration-300",
-                                  marker.isLabel 
-                                    ? "" 
+                                  marker.isLabel
+                                    ? ""
                                     : (marker.textX === undefined && marker.textY === undefined
-                                        ? marker.position === "bottom"
-                                          ? "translate-y-[15vw] sm:translate-y-32"
-                                          : "-translate-y-full -mt-4"
-                                        : "")
+                                      ? marker.position === "bottom"
+                                        ? "translate-y-[15vw] sm:translate-y-32"
+                                        : "-translate-y-full -mt-4"
+                                      : "")
                                 )}
                                 style={{
                                   left: `${marker.textX !== undefined ? marker.textX : marker.x}%`,
@@ -585,14 +616,27 @@ export function HanaGuideModal({
                                   <div className="bg-black/70 text-white font-black px-3 py-1 sm:px-4 sm:py-2 rounded-lg text-[10px] sm:text-sm whitespace-nowrap backdrop-blur-sm border border-white/20">
                                     {t(marker.text)}
                                   </div>
+                                ) : marker.isBridge ? (
+                                  <div
+                                    className="bg-indigo-600/90 text-white font-black px-6 py-4 sm:px-10 sm:py-6 rounded-3xl sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(79,70,229,0.5)] flex flex-col items-center gap-4 border-4 border-white/30 backdrop-blur-md ring-4 ring-indigo-500/20 whitespace-normal text-center w-[85vw] max-w-[420px] relative animate-in fade-in zoom-in duration-500"
+                                    style={{ fontSize: marker.fontSize ? `${marker.fontSize}px` : 'clamp(13px,3.5vw,22px)' }}
+                                  >
+                                    <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-1">
+                                      <Smartphone className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                                    </div>
+                                    <span className="leading-relaxed break-keep whitespace-pre-line">{t(marker.text)}</span>
+
+                                    <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[25px] border-t-white/30" />
+                                    <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-indigo-600/90" />
+                                  </div>
                                 ) : (
-                                  <div 
+                                  <div
                                     className="bg-[#008485] text-white font-black px-4 py-2 sm:px-8 sm:py-4 rounded-xl sm:rounded-[2rem] shadow-xl sm:shadow-2xl flex items-center gap-2 sm:gap-4 border-2 border-white ring-2 sm:ring-4 ring-[#008485]/30 whitespace-normal sm:whitespace-nowrap w-max max-w-[70vw] sm:max-w-none relative"
                                     style={{ fontSize: marker.fontSize ? `${marker.fontSize}px` : 'clamp(11px,3.0vw,20px)' }}
                                   >
                                     <Info className="w-[4vw] h-[4vw] max-w-[24px] max-h-[24px] min-w-[14px] min-h-[14px] text-white flex-shrink-0" />
                                     <span className="leading-tight break-keep">{t(marker.text)}</span>
-                                    
+
                                     {!marker.hideArrow && (
                                       marker.position === "bottom" ? (
                                         <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 sm:w-6 sm:h-6 bg-[#008485] rotate-45 border-l-2 border-t-2 border-white" />
@@ -613,18 +657,18 @@ export function HanaGuideModal({
                 </CarouselItem>
               ))}
             </CarouselContent>
-            
+
             <div className="absolute bottom-10 left-0 right-0 flex justify-center items-center gap-6 px-8 pointer-events-none z-[100]">
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={(e) => { e.stopPropagation(); api?.scrollPrev(); }} 
-                disabled={current === 0} 
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={(e) => { e.stopPropagation(); api?.scrollPrev(); }}
+                disabled={current === 0}
                 className="h-14 w-14 sm:h-16 sm:w-16 rounded-full shadow-2xl pointer-events-auto bg-white border-black/5 hover:bg-slate-50 hover:scale-110 transition-transform"
               >
                 <ChevronLeft className="h-8 w-8 sm:h-10 sm:w-10 text-[#008485]" />
               </Button>
-              
+
               <div className="bg-[#008485] backdrop-blur-xl text-white px-6 py-2.5 sm:px-8 sm:py-4 rounded-full font-black text-base sm:text-xl pointer-events-auto shadow-2xl flex items-center gap-2">
                 {currentChapterIndex !== -1 && (
                   <>
@@ -637,11 +681,11 @@ export function HanaGuideModal({
                 <span>{displaySteps.length}</span>
               </div>
 
-              <Button 
-                variant="outline" 
-                size="icon" 
-                onClick={(e) => { e.stopPropagation(); api?.scrollNext(); }} 
-                disabled={current === displaySteps.length - 1} 
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={(e) => { e.stopPropagation(); api?.scrollNext(); }}
+                disabled={current === displaySteps.length - 1}
                 className="h-14 w-14 sm:h-16 sm:w-16 rounded-full shadow-2xl pointer-events-auto bg-white border-black/5 hover:bg-slate-50 hover:scale-110 transition-transform"
               >
                 <ChevronRight className="h-8 w-8 sm:h-10 sm:w-10 text-[#008485]" />

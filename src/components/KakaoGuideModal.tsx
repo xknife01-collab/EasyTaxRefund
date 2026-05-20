@@ -32,6 +32,7 @@ import {
   Check,
   RefreshCw,
   Copy,
+  Smartphone,
   X
 } from "lucide-react";
 import { extractIdInfo } from "@/ai/flows/ocr-id-flow";
@@ -40,6 +41,8 @@ import { optimizeName } from "@/ai/flows/name-optimization-flow";
 interface GuideMarker {
   x: number; // percentage from left (0-100)
   y: number; // percentage from top (0-100)
+  width?: number;
+  height?: number;
   text: string;
   hideBox?: boolean;
   isMask?: boolean; // If true, make the box solid to cover sensitive info
@@ -51,6 +54,8 @@ interface GuideMarker {
   position?: "top" | "bottom" | "center"; // Default to top
   textX?: number; // Optional override for text x position
   textY?: number; // Optional override for text y position
+  isBridge?: boolean;
+  isLabel?: boolean;
 }
 
 interface GuideStep {
@@ -60,16 +65,35 @@ interface GuideStep {
 
 // Fixed sequence 1-? (Will be updated as images are uploaded)
 // Keeping it simple for now, assuming at least one placeholder or first step
-const KAKAO_GUIDE_STEPS: GuideStep[] = Array.from({ length: 37 }, (_, i) => ({
-  image: `/images/guide/KakaoTalk/kakao_${i + 1}.jpg`,
-  markers: [],
-}));
+const KAKAO_GUIDE_STEPS: GuideStep[] = [
+  ...Array.from({ length: 32 }, (_, i) => ({
+    image: `/images/guide/KakaoTalk/kakao_${i + 1}.jpg`,
+    markers: [],
+  })),
+  {
+    image: "/images/guide/KakaoTalk/KakaoTalk_20260512_122226025.jpg",
+    markers: [{
+      x: 50,
+      y: 80,
+      width: 90,
+      height: 8,
+      text: "GUIDE_BRIDGE_KAKAO",
+      textX: 50,
+      textY: 45,
+      isBridge: true
+    }]
+  },
+  ...Array.from({ length: 5 }, (_, i) => ({
+    image: `/images/guide/KakaoTalk/kakao_${i + 33}.jpg`,
+    markers: [],
+  }))
+];
 
 const CHAPTERS = [
   { title: "카카오톡 시작", start: 0, icon: "📱" },
-  { title: "회원가입", start: 2, icon: "⚠️" },
-  { title: "인증서 발급", start: 20, icon: "🎫" },
-  { title: "계좌 인증 완료", start: 25, icon: "🏦" },
+  { title: "회원가입", start: 2, icon: "📝" },
+  { title: "인증서 발급", start: 20, icon: "🔐" },
+  { title: "인증 승인", start: 32, icon: "✅" },
 ];
 
 // We'll manually specify each step's markers in the next turns.
@@ -586,14 +610,14 @@ KAKAO_GUIDE_STEPS[31].markers = [
   {
     x: 50,
     y: 35,
-    text: "🎉 축하합니다 🎉\n이제 카카오톡에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!",
+    text: "GUIDE_CONGRATS",
     hideBox: true,
     textX: 50,
     textY: 45
   },
 ];
 
-KAKAO_GUIDE_STEPS[32].markers = [
+KAKAO_GUIDE_STEPS[33].markers = [
   {
     x: 50,
     y: 32,
@@ -604,7 +628,7 @@ KAKAO_GUIDE_STEPS[32].markers = [
   },
 ];
 
-KAKAO_GUIDE_STEPS[33].markers = [
+KAKAO_GUIDE_STEPS[34].markers = [
   {
     x: 50,
     y: 61,
@@ -615,7 +639,7 @@ KAKAO_GUIDE_STEPS[33].markers = [
   },
 ];
 
-KAKAO_GUIDE_STEPS[34].markers = [
+KAKAO_GUIDE_STEPS[35].markers = [
   {
     x: 50,
     y: 89,
@@ -626,7 +650,7 @@ KAKAO_GUIDE_STEPS[34].markers = [
   },
 ];
 
-KAKAO_GUIDE_STEPS[35].markers = [
+KAKAO_GUIDE_STEPS[36].markers = [
   {
     x: 50,
     y: 89,
@@ -637,11 +661,11 @@ KAKAO_GUIDE_STEPS[35].markers = [
   },
 ];
 
-KAKAO_GUIDE_STEPS[36].markers = [
+KAKAO_GUIDE_STEPS[37].markers = [
   {
     x: 50,
     y: 35,
-    text: "🎉 축하합니다 🎉\n이제 카카오톡에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!",
+    text: "GUIDE_CONGRATS",
     hideBox: true,
     textX: 50,
     textY: 45
@@ -907,40 +931,58 @@ export function KakaoGuideModal({
                                 <div
                                   className={cn(
                                     "absolute pointer-events-auto z-[60] transition-all duration-300",
-                                    marker.textX === undefined && marker.textY === undefined
-                                      ? marker.position === "bottom"
-                                        ? "translate-y-[15vw] sm:translate-y-32"
-                                        : "-translate-y-full -mt-4"
-                                      : ""
+                                    marker.isBridge 
+                                      ? "inset-x-0 top-[15%] px-4" 
+                                      : marker.textX === undefined && marker.textY === undefined
+                                        ? marker.position === "bottom"
+                                          ? "translate-y-[15vw] sm:translate-y-32"
+                                          : "-translate-y-full -mt-4"
+                                        : ""
                                   )}
                                   style={{
-                                    left: `${marker.textX !== undefined ? marker.textX : marker.x}%`,
-                                    top: `${marker.textY !== undefined ? marker.textY : marker.y}%`,
-                                    transform: "translate(-50%, -50%)",
+                                    left: marker.isBridge ? "0" : `${marker.textX !== undefined ? marker.textX : marker.x}%`,
+                                    right: marker.isBridge ? "0" : "auto",
+                                    top: marker.isBridge ? "15%" : `${marker.textY !== undefined ? marker.textY : marker.y}%`,
+                                    transform: marker.isBridge ? "none" : "translate(-50%, -50%)",
                                   }}
                                 >
-                                  <div 
-                                    className={`bg-[#3C1E1E] ${marker.isRed ? 'text-[#FF0000]' : 'text-[#FEE500]'} font-black px-4 py-2 sm:px-8 sm:py-4 rounded-xl sm:rounded-[2rem] shadow-xl sm:shadow-2xl flex items-center gap-2 sm:gap-4 border-2 ${marker.isRed ? 'border-[#FF0000]' : 'border-[#FEE500]'} ring-2 sm:ring-4 ring-[#3C1E1E]/30 whitespace-normal sm:whitespace-nowrap w-max max-w-[70vw] sm:max-w-none relative`}
-                                    style={{ fontSize: marker.fontSize ? `${marker.fontSize}px` : 'clamp(11px,3.0vw,20px)' }}
-                                  >
-                                    <Info className={`w-[4vw] h-[4vw] max-w-[24px] max-h-[24px] min-w-[14px] min-h-[14px] ${marker.isRed ? 'text-[#FF0000]' : 'text-[#FEE500]'} flex-shrink-0`} />
-                                    <span className="leading-tight break-keep">{t(marker.text)}</span>
-                                    
-                                    {/* Arrow */}
-                                    {!marker.hideArrow && (
-                                      marker.position === "bottom" ? (
-                                        <div className={cn(
-                                          "absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 sm:w-6 sm:h-6 bg-[#3C1E1E] rotate-45 border-l-2 border-t-2",
-                                          marker.isRed ? "border-[#FF0000]" : "border-[#FEE500]"
-                                        )} />
-                                      ) : (
-                                        <div className={cn(
-                                          "absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-4 h-4 sm:w-6 sm:h-6 bg-[#3C1E1E] rotate-45 border-r-2 border-b-2",
-                                          marker.isRed ? "border-[#FF0000]" : "border-[#FEE500]"
-                                        )} />
-                                      )
-                                    )}
-                                  </div>
+                                  {marker.isBridge ? (
+                                    <div
+                                      className="bg-indigo-600/90 text-white font-black px-6 py-4 sm:px-10 sm:py-6 rounded-3xl sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(79,70,229,0.5)] flex flex-col items-center gap-4 border-4 border-white/30 backdrop-blur-md ring-4 ring-indigo-500/20 whitespace-normal text-center w-[85vw] max-w-[420px] relative animate-in fade-in zoom-in duration-500"
+                                      style={{ fontSize: marker.fontSize ? `${marker.fontSize}px` : 'clamp(13px,3.5vw,22px)' }}
+                                    >
+                                      <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-1">
+                                        <Smartphone className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                                      </div>
+                                      <span className="leading-relaxed break-keep whitespace-pre-line">{t(marker.text)}</span>
+
+                                      <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[25px] border-t-white/30" />
+                                      <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-indigo-600/90" />
+                                    </div>
+                                  ) : (
+                                    <div 
+                                      className={`bg-[#3C1E1E] ${marker.isRed ? 'text-[#FF0000]' : 'text-[#FEE500]'} font-black px-4 py-2 sm:px-8 sm:py-4 rounded-xl sm:rounded-[2rem] shadow-xl sm:shadow-2xl flex items-center gap-2 sm:gap-4 border-2 ${marker.isRed ? 'border-[#FF0000]' : 'border-[#FEE500]'} ring-2 sm:ring-4 ring-[#3C1E1E]/30 whitespace-normal sm:whitespace-nowrap w-max max-w-[70vw] sm:max-w-none relative`}
+                                      style={{ fontSize: marker.fontSize ? `${marker.fontSize}px` : 'clamp(11px,3.0vw,20px)' }}
+                                    >
+                                      <Info className={`w-[4vw] h-[4vw] max-w-[24px] max-h-[24px] min-w-[14px] min-h-[14px] ${marker.isRed ? 'text-[#FF0000]' : 'text-[#FEE500]'} flex-shrink-0`} />
+                                      <span className="leading-tight break-keep">{t(marker.text)}</span>
+                                      
+                                      {/* Arrow */}
+                                      {!marker.hideArrow && (
+                                        marker.position === "bottom" ? (
+                                          <div className={cn(
+                                            "absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 sm:w-6 sm:h-6 bg-[#3C1E1E] rotate-45 border-l-2 border-t-2",
+                                            marker.isRed ? "border-[#FF0000]" : "border-[#FEE500]"
+                                          )} />
+                                        ) : (
+                                          <div className={cn(
+                                            "absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-4 h-4 sm:w-6 sm:h-6 bg-[#3C1E1E] rotate-45 border-r-2 border-b-2",
+                                            marker.isRed ? "border-[#FF0000]" : "border-[#FEE500]"
+                                          )} />
+                                        )
+                                      )}
+                                    </div>
+                                  )}
                                 </div>
                               )}
                             </React.Fragment>

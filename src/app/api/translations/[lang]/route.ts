@@ -26,7 +26,7 @@ export async function GET(
         case 'vi': moduleRaw = await import('@/lib/translations/vi'); break;
         case 'zh': moduleRaw = await import('@/lib/translations/zh'); break;
         case 'km': moduleRaw = await import('@/lib/translations/km'); break;
-        case 'ne': moduleRaw = await import('@/lib/translations/ne'); break;
+        case 'ne': moduleRaw = await import('@/lib/translations/ne_new_stable'); break;
         case 'uz': moduleRaw = await import('@/lib/translations/uz'); break;
         case 'my': moduleRaw = await import('@/lib/translations/my'); break;
         case 'id': moduleRaw = await import('@/lib/translations/id'); break;
@@ -35,7 +35,7 @@ export async function GET(
         case 'mn': moduleRaw = await import('@/lib/translations/mn'); break;
         case 'bn': moduleRaw = await import('@/lib/translations/bn'); break;
         case 'kk': moduleRaw = await import('@/lib/translations/kk'); break;
-        case 'ur': moduleRaw = await import('@/lib/translations/ur'); break;
+        case 'ur': moduleRaw = await import('@/lib/translations/ur_new'); break;
         default: moduleRaw = { [lang]: {} };
       }
       const module = moduleRaw as any;

@@ -203,5 +203,7 @@ export const common = {
   "in_app_browser_copy_done": "লিঙ্ক কপি করা হয়েছে",
   "in_app_browser_copy_desc": "দয়া করে এটি আপনার Safari ব্রাউজারে পেস্ট করুন!",
   "in_app_browser_continue_anyway": "যাইহোক চালিয়ে যান (প্রস্তাবিত নয়)",
-  "in_app_browser_ios_manual": "লিঙ্ক কপি করুন এবং Safari ব্রাউজারে পেস্ট করুন"
+  "in_app_browser_ios_manual": "লিঙ্ক কপি করুন এবং Safari ব্রাউজারে পেস্ট করুন",
+  "SMS 인증번호 받기": "Get SMS Auth Code",
+  "본인 확인 및 데이터 보안을 위해 휴대폰 인증이 필수입니다.": "Mobile authentication is required for identity verification and data security.",
 };

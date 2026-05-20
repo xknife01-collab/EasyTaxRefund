@@ -106,4 +106,5 @@ export const main = {
   "평균 환급액 300만원이상!": "O'rtacha qaytarish 3 million vondan ortiq!",
   "1분안에 전문세무사 환급신청하기": "1 daqiqa ichida professional soliq hisobchisi bilan pulni qaytarish uchun ariza bering",
   "내 환급액 확인후 환급 신청하기": "Pulni qaytarish summasini tekshirgandan so'ng qaytarish uchun ariza bering",
+  "개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.": "Shaxsiy ma'lumotlaringizni kiritishga ikkilanyapsizmi? Avval maxsus soliq menejeri bilan gaplashib ko'ring.",
 };

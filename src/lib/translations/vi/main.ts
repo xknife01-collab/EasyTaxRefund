@@ -109,4 +109,5 @@ export const main = {
   "평균 환급액 300만원이상!": "Số tiền hoàn lại trung bình trên 3 triệu won!",
   "1분안에 전문세무사 환급신청하기": "Đăng ký hoàn thuế với kế toán chuyên nghiệp trong 1 phút",
   "내 환급액 확인후 환급 신청하기": "Đăng ký hoàn thuế sau khi kiểm tra số tiền hoàn lại",
+  "개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.": "Bạn có ngần ngại khi nhập thông tin cá nhân không? Hãy thử nói chuyện với quản lý thuế chuyên dụng trước.",
 };

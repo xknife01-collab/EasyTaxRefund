@@ -36,7 +36,8 @@ import {
   Check, 
   Scan, 
   Loader2,
-  ScanText
+  ScanText,
+  Smartphone
 } from "lucide-react";
 import { extractIdInfo } from "@/ai/flows/ocr-id-flow";
 import { optimizeName } from "@/ai/flows/name-optimization-flow";
@@ -48,6 +49,8 @@ interface GuideMarker {
   hideBox?: boolean;
   isMask?: boolean; // If true, make the box solid to cover sensitive info
   position?: "top" | "bottom"; // Default to top
+  variant?: "default" | "special";
+  fontSize?: number;
 }
 
 interface GuideStep {
@@ -55,11 +58,26 @@ interface GuideStep {
   markers: GuideMarker[];
 }
 
-// Fixed sequence 1-27
-const PASS_GUIDE_STEPS: GuideStep[] = Array.from({ length: 27 }, (_, i) => ({
-  image: `/images/guide/pass/pass_${String(i + 1).padStart(2, "0")}.jpg`,
-  markers: [],
-}));
+// Fixed sequence 1-28 (Includes new step 24)
+const PASS_GUIDE_STEPS: GuideStep[] = [
+  ...Array.from({ length: 23 }, (_, i) => ({
+    image: `/images/guide/pass/pass_${String(i + 1).padStart(2, "0")}.jpg`,
+    markers: [],
+  })),
+  {
+    image: `/images/guide/pass/KakaoTalk_20260512_122226025_01.jpg`,
+    markers: [{ 
+      x: 50, 
+      y: 78, 
+      text: "GUIDE_BRIDGE_PASS",
+      variant: "special"
+    }],
+  },
+  ...Array.from({ length: 4 }, (_, i) => ({
+    image: `/images/guide/pass/pass_${String(i + 24).padStart(2, "0")}.jpg`,
+    markers: [],
+  })),
+];
 
 // Step 1 (pass_01)
 PASS_GUIDE_STEPS[0].markers = [
@@ -200,25 +218,27 @@ PASS_GUIDE_STEPS[22].markers = [
   { x: 50, y: 55, text: "가운데 '확인' 버튼을 눌러주세요", position: "bottom" },
 ];
 
-// Step 24 (pass_24)
-PASS_GUIDE_STEPS[23].markers = [
+// Step 24: New Step (KakaoTalk image) - Already defined in array
+
+// Step 25 (pass_24)
+PASS_GUIDE_STEPS[24].markers = [
   { x: 50, y: 15, text: "상단의 빨간색 '홈택스 인증 요청' 알림을 눌러주세요", position: "bottom" },
 ];
 
-// Step 25 (pass_25)
-PASS_GUIDE_STEPS[24].markers = [
+// Step 26 (pass_25)
+PASS_GUIDE_STEPS[25].markers = [
   { x: 50, y: 64, text: "제3자 제공 동의에 체크해 주세요" },
   { x: 68, y: 76, text: "우측 하단의 '인증' 버튼을 눌러주세요", position: "bottom" },
 ];
 
-// Step 26 (pass_26)
-PASS_GUIDE_STEPS[25].markers = [
+// Step 27 (pass_26)
+PASS_GUIDE_STEPS[26].markers = [
   { x: 50, y: 36, text: "조금 전 가입할 때 설정하신 비밀번호 6자리를 입력하세요", position: "bottom" },
 ];
 
-// Step 27 (pass_27)
-PASS_GUIDE_STEPS[26].markers = [
-  { x: 50, y: 35, text: "🎉 축하합니다 🎉\n이제 PASS에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!", hideBox: true },
+// Step 28 (pass_27)
+PASS_GUIDE_STEPS[27].markers = [
+  { x: 50, y: 35, text: "GUIDE_CONGRATS", hideBox: true },
 ];
 
 const CHAPTERS = [
@@ -226,6 +246,7 @@ const CHAPTERS = [
   { title: "회원가입", start: 6, icon: "⚠️" },
   { title: "인증서 발급", start: 12, icon: "🎫" },
   { title: "계좌 인증 완료", start: 17, icon: "🏦" },
+  { title: "인증 승인", start: 24, icon: "✅" },
 ];
 
 export function PassGuideModal({ 
@@ -257,11 +278,11 @@ export function PassGuideModal({
 
   const stepsToRender = React.useMemo(() => {
     if (mode === "registration") return PASS_GUIDE_STEPS.slice(0, 23);
-    if (mode === "auth") return PASS_GUIDE_STEPS.slice(23, 27);
+    if (mode === "auth") return PASS_GUIDE_STEPS.slice(23, 28);
     return PASS_GUIDE_STEPS;
   }, [mode]);
 
-  const absoluteIndex = mode === "auth" ? current + 23 : current;
+  const absoluteIndex = mode === "auth" ? current + 24 : current;
 
   const currentChapterIndex = CHAPTERS.findIndex((ch, i) => {
     const nextCh = CHAPTERS[i + 1];
@@ -523,16 +544,45 @@ export function PassGuideModal({
                           <div key={mId} className="absolute pointer-events-auto" style={{ left: `${marker.x}%`, top: `${marker.y}%`, transform: "translate(-50%, -50%)" }}>
                             <div className="relative group">
                               {!marker.hideBox && (
-                                <div className={cn("transition-all duration-300", marker.isMask ? "w-[90vw] max-w-[420px] h-[35px] sm:h-[45px] bg-white border-none opacity-100 shadow-[0_0_15px_rgba(255,255,255,1)]" : "w-[18vw] h-[18vw] max-w-[100px] max-h-[100px] min-w-[50px] min-h-[50px] border-[3px] sm:border-[5px] border-amber-400 border-dashed rounded-2xl sm:rounded-3xl animate-pulse shadow-[0_0_20px_rgba(251,191,36,0.6)] bg-amber-400/20")} />
+                                <div className={cn(
+                                  "transition-all duration-300", 
+                                  marker.isMask ? "w-[90vw] max-w-[420px] h-[35px] sm:h-[45px] bg-white border-none opacity-100 shadow-[0_0_15px_rgba(255,255,255,1)]" : 
+                                  marker.variant === "special" ? "w-[15vw] h-[15vw] max-w-[100px] max-h-[100px] min-w-[60px] min-h-[60px] border-[4px] sm:border-[6px] border-indigo-500 rounded-full animate-bounce shadow-[0_0_25px_rgba(99,102,241,0.7)] bg-indigo-500/30" :
+                                  "w-[18vw] h-[18vw] max-w-[100px] max-h-[100px] min-w-[50px] min-h-[50px] border-[3px] sm:border-[5px] border-amber-400 border-dashed rounded-2xl sm:rounded-3xl animate-pulse shadow-[0_0_20px_rgba(251,191,36,0.6)] bg-amber-400/20"
+                                )} />
                               )}
                               {marker.text && (
-                                <div className={cn("absolute left-1/2 -translate-x-1/2 whitespace-normal sm:whitespace-nowrap z-[60] w-max max-w-[70vw] sm:max-w-none transition-all duration-300", marker.position === "bottom" ? "top-[15vw] sm:top-32 translate-y-0" : "-top-[1.5vw] sm:-top-6 -translate-y-full")}>
-                                  <div className="bg-amber-400 text-slate-900 text-[clamp(10px,2.8vw,18px)] font-black px-4 py-2 sm:px-8 sm:py-4 rounded-xl sm:rounded-3xl shadow-xl sm:shadow-2xl flex items-center gap-2 sm:gap-4 border-2 border-white ring-2 sm:ring-4 ring-amber-400/30">
-                                    <Info className="w-[4vw] h-[4vw] max-w-[24px] max-h-[24px] min-w-[14px] min-h-[14px] text-slate-900 flex-shrink-0" />
-                                    <span className="leading-tight break-keep whitespace-pre-line text-center">{t(marker.text)}</span>
-                                    {marker.position === "bottom" ? <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 sm:w-6 sm:h-6 bg-amber-400 rotate-45 border-l-2 border-t-2 border-white" /> : <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-4 h-4 sm:w-6 sm:h-6 bg-amber-400 rotate-45 border-r-2 border-b-2 border-white" />}
+                                  <div className={cn(
+                                    "absolute left-1/2 -translate-x-1/2 whitespace-normal z-[60] transition-all duration-300", 
+                                    marker.position === "bottom" ? "top-[15vw] sm:top-32 translate-y-0" : "-top-[1.5vw] sm:-top-6 -translate-y-full"
+                                  )}>
+                                    {marker.variant === "special" ? (
+                                      <div
+                                        className="bg-indigo-600/90 text-white font-black px-6 py-4 sm:px-10 sm:py-6 rounded-3xl sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(79,70,229,0.5)] flex flex-col items-center gap-4 border-4 border-white/30 backdrop-blur-md ring-4 ring-indigo-500/20 whitespace-normal text-center w-[85vw] max-w-[420px] relative animate-in fade-in zoom-in duration-500"
+                                        style={{ fontSize: marker.fontSize ? `${marker.fontSize}px` : 'clamp(13px,3.5vw,22px)' }}
+                                      >
+                                        <div className="w-12 h-12 sm:w-16 sm:h-16 bg-white/20 rounded-2xl flex items-center justify-center mb-1">
+                                          <Smartphone className="w-8 h-8 sm:w-10 sm:h-10 text-white" />
+                                        </div>
+                                        <span className="leading-relaxed break-keep whitespace-pre-line">{t(marker.text)}</span>
+
+                                        <div className="absolute -bottom-6 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[15px] border-l-transparent border-r-[15px] border-r-transparent border-t-[25px] border-t-white/30" />
+                                        <div className="absolute -bottom-5 left-1/2 -translate-x-1/2 w-0 h-0 border-l-[12px] border-l-transparent border-r-[12px] border-r-transparent border-t-[20px] border-t-indigo-600/90" />
+                                      </div>
+                                    ) : (
+                                      <div className={cn(
+                                        "text-[clamp(10px,2.8vw,18px)] font-black px-4 py-2 sm:px-8 sm:py-4 rounded-xl sm:rounded-3xl shadow-xl sm:shadow-2xl flex items-center gap-2 sm:gap-4 border-2 border-white ring-2 sm:ring-4 bg-amber-400 text-slate-900 ring-amber-400/30 w-max max-w-[70vw] sm:max-w-none relative"
+                                      )}>
+                                        <Info className="w-[4vw] h-[4vw] max-w-[24px] max-h-[24px] min-w-[14px] min-h-[14px] text-slate-900 flex-shrink-0" />
+                                        <span className="leading-tight break-keep whitespace-pre-line text-center">{t(marker.text)}</span>
+                                        {marker.position === "bottom" ? (
+                                          <div className="absolute -top-2.5 left-1/2 -translate-x-1/2 w-4 h-4 sm:w-6 sm:h-6 rotate-45 border-l-2 border-t-2 border-white bg-amber-400" />
+                                        ) : (
+                                          <div className="absolute -bottom-2.5 left-1/2 -translate-x-1/2 w-4 h-4 sm:w-6 sm:h-6 rotate-45 border-r-2 border-b-2 border-white bg-amber-400" />
+                                        )}
+                                      </div>
+                                    )}
                                   </div>
-                                </div>
                               )}
                             </div>
                           </div>
