@@ -196,4 +196,9 @@ export const common = {
   "in_app_browser_ios_manual": "Salin tautan dan tempel ke browser Safari",
   "SMS 인증번호 받기": "Get SMS Auth Code",
   "본인 확인 및 데이터 보안을 위해 휴대폰 인증이 필수입니다.": "Mobile authentication is required for identity verification and data security.",
+
+  "국세청 홈택스 보안 터널을 연결하는 중...": "Menghubungkan ke terowongan aman Hometax Layanan Pajak Nasional...",
+  "최근 5개년 근로소득 납부 세액 조회 중...": "Mencari jumlah pajak penghasilan yang dibayarkan selama 5 tahun terakhir...",
+  "중소기업 취업자 감면 자격(취업 당시 연령 및 기간) 조회 중...": "Memeriksa kelayakan pengurangan pajak karyawan UKM (usia dan periode saat mulai bekerja)...",
+  "최종 예상 환급금 보고서 분석 및 생성 중...": "Menganalisis dan membuat laporan akhir perkiraan pengembalian uang...",
 };

@@ -199,4 +199,9 @@ export const common = {
   "in_app_browser_ios_manual": "Havolani nusxalang va Safari brauzeriga joylashtiring",
   "SMS 인증번호 받기": "Get SMS Auth Code",
   "본인 확인 및 데이터 보안을 위해 휴대폰 인증이 필수입니다.": "Mobile authentication is required for identity verification and data security.",
+
+  "국세청 홈택스 보안 터널을 연결하는 중...": "Milliy soliq xizmati (Hometax) xavfsiz tunneliga ulanmoqda...",
+  "최근 5개년 근로소득 납부 세액 조회 중...": "Oxirgi 5 yildagi ish haqi soliq to'lovlari tekshirilmoqda...",
+  "중소기업 취업자 감면 자격(취업 당시 연령 및 기간) 조회 중...": "Kichik va o'rta biznes xodimlari uchun soliq imtiyozlari shartlari (ishga kirgan paytdagi yosh va muddat) tekshirilmoqda...",
+  "최종 예상 환급금 보고서 분석 및 생성 중...": "Yakuniy kutilayotgan soliq qaytarilishi hisoboti tahlil qilinmoqda va tayyorlanmoqda...",
 };

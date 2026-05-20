@@ -184,4 +184,9 @@ export const common = {
   "in_app_browser_ios_manual": "Sao chép liên kết và dán vào trình duyệt Safari",
   "SMS 인증번호 받기": "Get SMS Auth Code",
   "본인 확인 및 데이터 보안을 위해 휴대폰 인증이 필수입니다.": "Mobile authentication is required for identity verification and data security.",
+
+  "국세청 홈택스 보안 터널을 연결하는 중...": "Đang kết nối đường truyền bảo mật Hometax của Cơ quan Thuế...",
+  "최근 5개년 근로소득 납부 세액 조회 중...": "Đang tra cứu số thuế thu nhập lao động đã nộp trong 5 năm gần đây...",
+  "중소기업 취업자 감면 자격(취업 당시 연령 및 기간) 조회 중...": "Đang kiểm tra điều kiện giảm thuế cho người lao động tại doanh nghiệp vừa và nhỏ (tuổi và thời gian lúc vào làm)...",
+  "최종 예상 환급금 보고서 분석 및 생성 중...": "Đang phân tích và lập báo cáo số tiền hoàn thuế dự kiến cuối cùng...",
 };
