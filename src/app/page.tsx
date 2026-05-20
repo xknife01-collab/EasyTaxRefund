@@ -39,7 +39,7 @@ import { askFaqQuestion } from "@/ai/flows/ai-powered-faq-flow";
 import { useToast } from "@/hooks/use-toast";
 import { AiChatDialog } from "@/components/AiChatDialog";
 import { useTranslation } from "@/components/LanguageContext";
-import { captureTrackingData, logVisit, logLanguageVisit } from "@/lib/tracking";
+import { logLanguageVisit } from "@/lib/tracking";
 
 import { useRouter } from "next/navigation";
 import { languages } from '@/lib/translations/config';
@@ -81,11 +81,7 @@ export default function HomePage() {
     setHasSeenWelcome(true);
   };
 
-  // Parse and store UTM or referrer data on first load
-  useEffect(() => {
-    captureTrackingData();
-    logVisit();
-  }, []);
+
 
   const handleAsk = async (e: React.FormEvent) => {
     e.preventDefault();

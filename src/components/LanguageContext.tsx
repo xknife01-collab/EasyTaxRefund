@@ -130,6 +130,18 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     if (metaDesc) metaDesc.setAttribute('content', t('app_description'));
   }, [language, t]);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const path = window.location.pathname;
+      if (!path.startsWith('/admin') && !path.startsWith('/api')) {
+        import('@/lib/tracking').then(({ captureTrackingData, logVisit }) => {
+          captureTrackingData();
+          logVisit();
+        }).catch(err => console.error('Failed to load tracking:', err));
+      }
+    }
+  }, []);
+
   return (
     <LanguageContext.Provider value={{ language, setLanguage, t, isReady }}>
       {children}
