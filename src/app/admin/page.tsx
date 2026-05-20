@@ -154,9 +154,11 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const totalPages = Math.ceil(filteredApps.length / itemsPerPage);
 
   // Global Unread & Push Notification Logic
-  const prevUnreadRef = useRef<number>(0);
+  const prevUnreadRef = useRef<number>(-1);
   
   useEffect(() => {
+    if (appsLoading) return;
+    
     const totalUnread = apps.reduce((acc, app) => acc + (app.unreadChatCountAdmin || 0), 0);
     
     // 1. 브라우저 탭 타이틀 알림 (다른 탭에 있어도 확인 가능하게)
@@ -166,8 +168,8 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       document.title = `이지텍스 관리자`;
     }
 
-    // 2. 새 메시지 수신 시 사운드 및 토스트 알람 푸시
-    if (totalUnread > prevUnreadRef.current) {
+    // 2. 새 메시지 수신 시 사운드 및 토스트 알람 푸시 (초기 로딩 시점의 울림 방지)
+    if (prevUnreadRef.current >= 0 && totalUnread > prevUnreadRef.current) {
       try {
         const audioCtx = new (window.AudioContext || (window as any).webkitAudioContext)();
         const osc = audioCtx.createOscillator();
@@ -196,7 +198,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     }
     
     prevUnreadRef.current = totalUnread;
-  }, [apps, toast]);
+  }, [apps, appsLoading, toast]);
 
   // Chat Real-time Listener
   useEffect(() => {

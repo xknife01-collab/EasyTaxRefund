@@ -8,7 +8,7 @@
  */
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
-import type { Language } from '@/lib/translations/config';
+import { Language, languages } from '@/lib/translations/config';
 import { useRouter } from 'next/navigation';
 
 interface LanguageContextType {
@@ -72,7 +72,19 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
           } else {
             // 2. LocalStorage 확인
             const savedLang = localStorage.getItem('app_lang') as Language;
-            if (savedLang) lang = savedLang;
+            if (savedLang) {
+              lang = savedLang;
+            } else {
+              // 3. 브라우저 설정 언어 감지 (첫 방문 시)
+              const browserLang = (navigator.language || (navigator as any).userLanguage || '').toLowerCase();
+              const matchedLang = languages.find(l => {
+                if (l.code === 'ko') return false; // 한국어 외의 모국어 설정 매칭
+                return browserLang.startsWith(l.code);
+              });
+              if (matchedLang) {
+                lang = matchedLang.code;
+              }
+            }
           }
         }
         
