@@ -177,6 +177,7 @@ export default function EstimatePage() {
   const [isChatLoading, setIsChatLoading] = useState(false);
 
   const [loading, setLoading] = useState(false);
+  const [loadProgress, setLoadProgress] = useState(0);
   const [isOcrLoading, setIsOcrLoading] = useState(false);
   const [ocrResult, setOcrResult] = useState<any>(null);
   const [result, setResult] = useState<any>(null);
@@ -434,6 +435,24 @@ export default function EstimatePage() {
 
     setEligibilityRange({ start: formatDate(startDate), end: formatDate(endDate) });
   }, [t]);
+
+  // 로딩 단계 타이머 (Step 6 분석 진행 연출)
+  useEffect(() => {
+    if (step !== 6) {
+      setLoadProgress(0);
+      return;
+    }
+    
+    const t1 = setTimeout(() => setLoadProgress(1), 3000);
+    const t2 = setTimeout(() => setLoadProgress(2), 8000);
+    const t3 = setTimeout(() => setLoadProgress(3), 13000);
+    
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+      clearTimeout(t3);
+    };
+  }, [step]);
 
   // Proactive VIP Chat Timer for Step 1
   useEffect(() => {
@@ -1839,21 +1858,72 @@ export default function EstimatePage() {
                       <p className="text-slate-400 font-bold">{t('잠시만 기다려 주세요.')}</p>
                     </div>
 
-                    <div className="max-w-[340px] mx-auto space-y-6 text-left border-l-2 border-primary/20 pl-8 py-2">
-                      <div className="flex items-center gap-4 text-emerald-400 font-bold transition-all">
-                        <CheckCircle2 className="h-6 w-6" />
-                        <span className="text-lg">{t('PASS 인증 세션 연결 성공')}</span>
+                    <div className="max-w-[360px] mx-auto space-y-6 text-left border-l-2 border-primary/20 pl-8 py-2">
+                      {/* Step 1: 국세청 홈택스 보안 터널 연결 */}
+                      <div className={cn(
+                        "flex items-center gap-4 font-bold transition-all duration-300",
+                        loadProgress > 0 ? "text-emerald-400" : "text-white animate-pulse"
+                      )}>
+                        {loadProgress > 0 ? (
+                          <CheckCircle2 className="h-6 w-6 shrink-0" />
+                        ) : (
+                          <Loader2 className="h-6 w-6 animate-spin text-primary shrink-0" />
+                        )}
+                        <span className="text-lg">{t('국세청 홈택스 보안 터널을 연결하는 중...')}</span>
                       </div>
-                      <div className="flex items-center gap-4 text-white font-black animate-pulse">
-                        <Loader2 className="h-6 w-6 animate-spin text-primary" />
-                        <span className="text-lg">{t('최근 5년 소득 내역 수집 중')}</span>
+
+                      {/* Step 2: 최근 5개년 근로소득 납부 세액 조회 */}
+                      <div className={cn(
+                        "flex items-center gap-4 font-bold transition-all duration-300",
+                        loadProgress > 1 ? "text-emerald-400" : loadProgress === 1 ? "text-white animate-pulse" : "text-slate-500"
+                      )}>
+                        {loadProgress > 1 ? (
+                          <CheckCircle2 className="h-6 w-6 shrink-0" />
+                        ) : loadProgress === 1 ? (
+                          <Loader2 className="h-6 w-6 animate-spin text-primary shrink-0" />
+                        ) : (
+                          <div className="relative h-6 w-6 flex items-center justify-center shrink-0">
+                            <div className="absolute h-full w-full bg-white/5 rounded-full" />
+                            <Database className="h-4 w-4" />
+                          </div>
+                        )}
+                        <span className="text-lg">{t('최근 5개년 근로소득 납부 세액 조회 중...')}</span>
                       </div>
-                      <div className="flex items-center gap-4 text-slate-500 font-bold">
-                        <div className="relative h-6 w-6 flex items-center justify-center">
-                          <div className="absolute h-full w-full bg-white/5 rounded-full" />
-                          <Database className="h-4 w-4" />
-                        </div>
-                        <span className="text-lg">{t('국세청 업종 실시간 시계열 검증 중')}</span>
+
+                      {/* Step 3: 중소기업 취업자 감면 자격 조회 */}
+                      <div className={cn(
+                        "flex items-center gap-4 font-bold transition-all duration-300",
+                        loadProgress > 2 ? "text-emerald-400" : loadProgress === 2 ? "text-white animate-pulse" : "text-slate-500"
+                      )}>
+                        {loadProgress > 2 ? (
+                          <CheckCircle2 className="h-6 w-6 shrink-0" />
+                        ) : loadProgress === 2 ? (
+                          <Loader2 className="h-6 w-6 animate-spin text-primary shrink-0" />
+                        ) : (
+                          <div className="relative h-6 w-6 flex items-center justify-center shrink-0">
+                            <div className="absolute h-full w-full bg-white/5 rounded-full" />
+                            <Database className="h-4 w-4" />
+                          </div>
+                        )}
+                        <span className="text-lg">{t('중소기업 취업자 감면 자격(취업 당시 연령 및 기간) 조회 중...')}</span>
+                      </div>
+
+                      {/* Step 4: 최종 예상 환급금 보고서 분석 및 생성 */}
+                      <div className={cn(
+                        "flex items-center gap-4 font-bold transition-all duration-300",
+                        loadProgress > 3 ? "text-emerald-400" : loadProgress === 3 ? "text-white animate-pulse" : "text-slate-500"
+                      )}>
+                        {loadProgress > 3 ? (
+                          <CheckCircle2 className="h-6 w-6 shrink-0" />
+                        ) : loadProgress === 3 ? (
+                          <Loader2 className="h-6 w-6 animate-spin text-primary shrink-0" />
+                        ) : (
+                          <div className="relative h-6 w-6 flex items-center justify-center shrink-0">
+                            <div className="absolute h-full w-full bg-white/5 rounded-full" />
+                            <Database className="h-4 w-4" />
+                          </div>
+                        )}
+                        <span className="text-lg">{t('최종 예상 환급금 보고서 분석 및 생성 중...')}</span>
                       </div>
                     </div>
                   </div>
