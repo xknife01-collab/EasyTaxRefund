@@ -77,13 +77,13 @@ export function SocialProof() {
         setIsVisible(false);
       }, 5000);
 
-      // Schedule next one after 10-20 seconds
-      const nextDelay = 10000 + Math.random() * 10000;
+      // Schedule next one after 80-100 seconds (average 1.5 minutes) to feel more natural and authentic
+      const nextDelay = 80000 + Math.random() * 20000;
       nextTimeout = setTimeout(showNotification, nextDelay);
     };
 
-    // Initial delay
-    initialTimeout = setTimeout(showNotification, 3000);
+    // Initial delay: 15 seconds after landing
+    initialTimeout = setTimeout(showNotification, 15000);
 
     return () => {
       clearTimeout(hideTimeout);
