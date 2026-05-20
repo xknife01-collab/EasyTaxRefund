@@ -165,7 +165,7 @@ export default function AdminStatsPage() {
     }, 0);
     const countryApps = countryFilteredApps.length;
     const countryPaid = countryFilteredApps.filter(a => a.paymentStatus === 'paid').length;
-    const countryRevenue = countryFilteredApps.filter(a => a.paymentStatus === 'paid').reduce((acc, a) => acc + Math.floor((a.estimatedRefundAmount || 0) * 0.2), 0);
+    const countryRevenue = countryFilteredApps.filter(a => a.paymentStatus === 'paid').reduce((acc, a) => acc + Math.floor((a.estimatedRefundAmount || 0) * 0.25), 0);
 
     // Channel Stats (UTM)
     const channelStats: Record<string, { applicants: number, paid: number, revenue: number }> = {};
@@ -175,7 +175,7 @@ export default function AdminStatsPage() {
       channelStats[src].applicants++;
       if (app.paymentStatus === 'paid') {
         channelStats[src].paid++;
-        channelStats[src].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.2);
+        channelStats[src].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.25);
       }
     });
 

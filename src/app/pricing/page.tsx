@@ -32,7 +32,7 @@ export default function PricingPage() {
             <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-bold uppercase tracking-widest">{t('가격 정책')}</Badge>
             <h1 className="text-4xl lg:text-6xl font-black font-headline text-slate-900 tracking-tighter">
               {t('[가격 정책]')}<br />
-              <span className="text-primary">{t('투명하고 안전한 20% 선임 제도')}</span>
+              <span className="text-primary">{t('투명하고 안전한 25% 선임 제도')}</span>
             </h1>
             <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto">
               {t('우리는 단순히 계산기만 돌리는 앱이 아닙니다. 당신의 사건을 맡아 해결하는 법적 대리인입니다.')}
@@ -51,7 +51,7 @@ export default function PricingPage() {
                 </div>
                 <div className="space-y-6">
                   <p className="text-xl lg:text-2xl font-medium text-slate-300 leading-relaxed">
-                    {t('저희 서비스는 복잡한 가입비나 숨겨진 비용 없이, 환급액의 20%를 정찰제로 운영합니다.')}
+                    {t('저희 서비스는 복잡한 가입비나 숨겨진 비용 없이, 환급액의 25%를 정찰제로 운영합니다.')}
                   </p>
                   <p className="text-slate-400 font-medium border-l-4 border-primary pl-6">
                     {t('이 수수료는 당신의 소중한 세금을 되찾아오기 위한 전문 세무사의 전담 마크와 AI 시스템 이용료가 포함된 금액입니다.')}
@@ -67,7 +67,7 @@ export default function PricingPage() {
                   <div className="h-14 w-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
                     <Scale className="h-7 w-7" />
                   </div>
-                  <h3 className="text-2xl font-black text-slate-900">{t('2. 왜 20% 선결제(선임)가 필요한가요?')}</h3>
+                  <h3 className="text-2xl font-black text-slate-900">{t('2. 왜 25% 선결제(선임)가 필요한가요?')}</h3>
                   <p className="text-slate-500 font-medium">{t('외국인 세금 환급은 한국인보다 과정이 훨씬 까다롭습니다.')}</p>
                 </div>
                 <div className="space-y-6">
@@ -111,7 +111,7 @@ export default function PricingPage() {
                 
                 <div className="p-8 bg-slate-50 rounded-[2rem] border border-slate-200 space-y-6 relative z-10">
                   <p className="text-2xl lg:text-3xl font-black leading-tight text-slate-900">
-                    {t('환급이 거절되면, 선임료 20% 전액을 즉시 돌려드립니다.')}
+                    {t('환급이 거절되면, 선임료 25% 전액을 즉시 돌려드립니다.')}
                   </p>
                   <p className="text-slate-700 font-bold text-base leading-relaxed">
                     {t('만약 세무서의 최종 검토 결과 환급이 불가능한 것으로 판명될 경우, 결제하신 선임료는 단 1원도 빠짐없이 100% 환불해 드립니다. 당신의 리스크는 0%입니다.')}

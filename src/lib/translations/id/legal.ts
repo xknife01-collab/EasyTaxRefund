@@ -18,7 +18,7 @@ export const legal = {
   "서비스 이용 약관": "Syarat dan Ketentuan Layanan",
   "세무 대리인 선임 및 세무서 경정청구 서류 제출": "Penunjukan perwakilan pajak dan penyerahan dokumen permohonan pembetulan ke kantor pajak",
   "소비자의 불만 또는 분쟁처리에 관한 기록: 3년": "Catatan mengenai penanganan keluhan atau perselisihan konsumen: 3 tahun",
-  "수수료는 예상 환급액의 20%를 원칙으로 합니다.": "Biaya pada prinsipnya adalah 20% dari estimasi jumlah pengembalian.",
+  "수수료는 예상 환급액의 25%를 원칙으로 합니다.": "Biaya pada prinsipnya adalah 25% dari estimasi jumlah pengembalian.",
   "수집된 정보는 다음의 목적을 위해서만 사용됩니다.": "Informasi yang dikumpulkan hanya digunakan untuk tujuan berikut.",
   "이용자는 서비스 이용을 위해 정확한 정보를 제공해야 합니다.": "Pengguna harus memberikan informasi yang akurat untuk menggunakan layanan.",
   "제 1 조 (목적)": "Pasal 1 (Tujuan)",
@@ -34,7 +34,7 @@ export const legal = {
   "타인의 명의나 부정확한 정보를 사용하여 신청할 경우 서비스가 거절될 수 있으며 법적 책임이 발생할 수 있습니다.": "Jika pengajuan dilakukan menggunakan nama orang lain atau informasi yang tidak akurat, layanan dapat ditolak dan tanggung jawab hukum dapat timbul.",
   "필수 항목: 성명(영문/한글), 외국인등록번호, 휴대폰 번호, 통신사 정보, 계좌 정보(은행명, 계좌번호, 예금주명)": "Item Wajib: Nama (Inggris/Korea), nomor registrasi asing, nomor ponsel, informasi operator seluler, informasi rekening (nama bank, nomor rekening, nama pemilik rekening)",
   "환급금 입금을 위한 계좌 정보 확인 및 서비스 수수료 결제 처리": "Pengecekan informasi rekening untuk setoran pengembalian dan pemrosesan pembayaran biaya layanan",
-  "환급액의 20%를 정찰제로 운영합니다.": "Biaya dioperasikan dengan harga tetap 20% dari jumlah pengembalian.",
+  "환급액의 25%를 정찰제로 운영합니다.": "Biaya dioperasikan dengan harga tetap 25% dari jumlah pengembalian.",
   "회사는 서비스 제공을 위해 아래와 같은 정보를 수집합니다.": "Perusahaan mengumpulkan informasi berikut untuk menyediakan layanan.",
   "회사는 원칙적으로 개인정보 수집 및 이용 목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다. 단, 관계법령의 규정에 의하여 보존할 필요가 있는 경우 회사는 아래와 같이 관계법령에서 정한 일정한 기간 동안 회원정보를 보관합니다.": "Perusahaan pada prinsipnya akan segera menghancurkan informasi tersebut setelah tujuan pengumpulan dan penggunaan informasi pribadi tercapai. Namun, jika diperlukan untuk menyimpannya sesuai dengan peraturan perundang-undangan terkait, perusahaan akan menyimpan informasi anggota untuk jangka waktu tertentu sebagaimana diatur oleh undang-undangan terkait sebagai berikut.",
 };

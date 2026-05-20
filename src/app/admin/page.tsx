@@ -256,14 +256,14 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     
     // Revenue calculations
     const totalEstimatedRefund = apps.reduce((acc, app) => acc + (app.estimatedRefundAmount || 0), 0);
-    const expectedRevenue = Math.floor(totalEstimatedRefund * 0.2); // 20% fee
+    const expectedRevenue = Math.floor(totalEstimatedRefund * 0.25); // 25% fee
     
     // Revenue based on manual payment confirmation
     const completedAppsList = apps.filter(a => a.status === 'RefundCompleted');
     const completedApps = completedAppsList.length;
     
     const paidAppsList = apps.filter(a => a.paymentStatus === 'paid');
-    const paidRevenue = paidAppsList.reduce((acc, app) => acc + Math.floor((app.estimatedRefundAmount || 0) * 0.2), 0);
+    const paidRevenue = paidAppsList.reduce((acc, app) => acc + Math.floor((app.estimatedRefundAmount || 0) * 0.25), 0);
     
     // Unpaid revenue is expected revenue minus already paid revenue
     const unpaidRevenue = expectedRevenue - paidRevenue;
@@ -310,7 +310,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       byLang[langLabel].total++;
       if (app.paymentStatus === 'paid') {
         byLang[langLabel].paid++;
-        byLang[langLabel].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.2);
+        byLang[langLabel].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.25);
       }
 
       // UTM 채널별 통계
@@ -319,7 +319,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       byUtm[source].total++;
       if (app.paymentStatus === 'paid') {
         byUtm[source].paid++;
-        byUtm[source].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.2);
+        byUtm[source].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.25);
       }
 
       // 퍼널 추적

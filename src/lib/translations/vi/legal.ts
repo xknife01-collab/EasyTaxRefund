@@ -18,7 +18,7 @@ export const legal = {
   "서비스 이용 약관": "Điều khoản sử dụng dịch vụ",
   "세무 대리인 선임 및 세무서 경정청구 서류 제출": "Chỉ định đại diện thuế và nộp hồ sơ yêu cầu điều chỉnh tại cơ quan thuế",
   "소비자의 불만 또는 분쟁처리에 관한 기록: 3년": "Hồ sơ về khiếu nại của người tiêu dùng hoặc xử lý tranh chấp: 3 năm",
-  "수수료는 예상 환급액의 20%를 원칙으로 합니다.": "Phí dịch vụ được tính bằng 20% số tiền hoàn lại dự kiến theo nguyên tắc.",
+  "수수료는 예상 환급액의 25%를 원칙으로 합니다.": "Phí dịch vụ được tính bằng 25% số tiền hoàn lại dự kiến theo nguyên tắc.",
   "수집된 정보는 다음의 목적을 위해서만 사용됩니다.": "Thông tin thu thập được chỉ được sử dụng cho các mục đích sau:",
   "이용자는 서비스 이용을 위해 정확한 정보를 제공해야 합니다.": "Người dùng phải cung cấp thông tin chính xác để sử dụng dịch vụ.",
   "제 1 조 (목적)": "Điều 1 (Mục đích)",
@@ -34,7 +34,7 @@ export const legal = {
   "타인의 명의나 부정확한 정보를 사용하여 신청할 경우 서비스가 거절될 수 있으며 법적 책임이 발생할 수 있습니다.": "Nếu bạn đăng ký bằng tên của người khác hoặc thông tin không chính xác, dịch vụ có thể bị từ chối và trách nhiệm pháp lý có thể phát sinh.",
   "필수 항목: 성명(영문/한글), 외국인등록번호, 휴대폰 번호, 통신사 정보, 계좌 정보(은행명, 계좌번호, 예금주명)": "Các hạng mục bắt buộc: Họ và tên (Tiếng Anh/Tiếng Hàn), Số đăng ký người nước ngoài (ARC), Số điện thoại di động, Nhà mạng, Thông tin tài khoản (Tên ngân hàng, số tài khoản, tên chủ tài khoản)",
   "환급금 입금을 위한 계좌 정보 확인 및 서비스 수수료 결제 처리": "Kiểm tra thông tin tài khoản để chuyển tiền hoàn lại và xử lý thanh toán phí dịch vụ",
-  "환급액의 20%를 정찰제로 운영합니다.": "Chúng tôi áp dụng mức phí cố định 20% trên số tiền hoàn lại.",
+  "환급액의 25%를 정찰제로 운영합니다.": "Chúng tôi áp dụng mức phí cố định 25% trên số tiền hoàn lại.",
   "회사는 서비스 제공을 위해 아래와 같은 정보를 수집합니다.": "Công ty thu thập các thông tin sau để cung cấp dịch vụ.",
   "회사는 원칙적으로 개인정보 수집 및 이용 목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다. 단, 관계법령의 규정에 의하여 보존할 필요가 있는 경우 회사는 아래와 같이 관계법령에서 정한 일정한 기간 동안 회원정보를 보관합니다.": "Về nguyên tắc, Công ty sẽ hủy thông tin ngay lập tức sau khi mục đích thu thập và sử dụng thông tin cá nhân đã đạt được. Tuy nhiên, nếu cần bảo quản theo quy định của pháp luật liên quan, Công ty sẽ lưu trữ thông tin thành viên trong một khoảng thời gian nhất định theo quy định của pháp luật như sau.",
 };

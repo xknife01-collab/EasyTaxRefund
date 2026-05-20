@@ -18,7 +18,7 @@ export const legal = {
   "서비스 이용 약관": "Terms of Service",
   "세무 대리인 선임 및 세무서 경정청구 서류 제출": "Appointment of a tax representative and submission of rectification request documents to the tax office",
   "소비자의 불만 또는 분쟁처리에 관한 기록: 3년": "Records on consumer complaints or dispute handling: 3 years",
-  "수수료는 예상 환급액의 20%를 원칙으로 합니다.": "The service fee is 20% of the estimated refund amount in principle.",
+  "수수료는 예상 환급액의 25%를 원칙으로 합니다.": "The service fee is 25% of the estimated refund amount in principle.",
   "수집된 정보는 다음의 목적을 위해서만 사용됩니다.": "The collected information will be used only for the following purposes.",
   "이용자는 서비스 이용을 위해 정확한 정보를 제공해야 합니다.": "Users must provide accurate information to use the service.",
   "제 1 조 (목적)": "Article 1 (Purpose)",
@@ -34,7 +34,7 @@ export const legal = {
   "타인의 명의나 부정확한 정보를 사용하여 신청할 경우 서비스가 거절될 수 있으며 법적 책임이 발생할 수 있습니다.": "If you apply using another person's name or inaccurate information, the service may be refused, and legal liability may arise.",
   "필수 항목: 성명(영문/한글), 외국인등록번호, 휴대폰 번호, 통신사 정보, 계좌 정보(은행명, 계좌번호, 예금주명)": "Required items: Name (English/Korean), Alien Registration Number, mobile number, carrier info, account info (bank name, account number, account holder's name)",
   "환급금 입금을 위한 계좌 정보 확인 및 서비스 수수료 결제 처리": "Verification of account information for refund deposits and payment processing of service fees",
-  "환급액의 20%를 정찰제로 운영합니다.": "We operate with a fixed price of 20% of the refund amount.",
+  "환급액의 25%를 정찰제로 운영합니다.": "We operate with a fixed price of 25% of the refund amount.",
   "회사는 서비스 제공을 위해 아래와 같은 정보를 수집합니다.": "The Company collects the following information to provide the service.",
   "회사는 원칙적으로 개인정보 수집 및 이용 목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다. 단, 관계법령의 규정에 의하여 보존할 필요가 있는 경우 회사는 아래와 같이 관계법령에서 정한 일정한 기간 동안 회원정보를 보관합니다.": "The Company, in principle, destroys the information without delay after the purpose of collection and use is achieved. However, if retention is required by relevant laws, the Company stores member info for the period set by law, as follows.",
 };

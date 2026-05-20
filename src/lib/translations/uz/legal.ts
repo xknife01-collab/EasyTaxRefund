@@ -18,7 +18,7 @@ export const legal = {
   "서비스 이용 약관": "Xizmatdan foydalanish shartlari",
   "세무 대리인 선임 및 세무서 경정청구 서류 제출": "Soliq vakilini tayinlash va soliq idorasiga tuzatish soʻrovi hujjatlarini topshirish",
   "소비자의 불만 또는 분쟁처리에 관한 기록: 3년": "Isteʼmolchilarning shikoyatlari yoki nizolarni hal qilishga oid yozuvlar: 3 yil",
-  "수수료는 예상 환급액의 20%를 원칙으로 합니다.": "Xizmat haqi kutilayotgan qaytarish summasining 20% ni tashkil etadi.",
+  "수수료는 예상 환급액의 25%를 원칙으로 합니다.": "Xizmat haqi kutilayotgan qaytarish summasining 25% ni tashkil etadi.",
   "수집된 정보는 다음의 목적을 위해서만 사용됩니다.": "Toʻplangan maʼlumotlar faqat quyidagi maqsadlar uchun ishlatiladi.",
   "이용자는 서비스 이용을 위해 정확한 정보를 제공해야 합니다.": "Foydalanuvchi xizmatdan foydalanish uchun aniq va toʻgri maʼlumotlarni taqdim etishi shart.",
   "제 1 조 (목적)": "1-modda (Maqsad)",
@@ -34,7 +34,7 @@ export const legal = {
   "타인의 명의나 부정확한 정보를 사용하여 신청할 경우 서비스가 거절될 수 있으며 법적 책임이 발생할 수 있습니다.": "Boshqa shaxs nomi yoki notoʻgʻri maʼlumotlar bilan ariza berish xizmat rad etilishiga va huquqiy javobgarlikka sabab boʻlishi mumkin.",
   "필수 항목: 성명(영문/한글), 외국인등록번호, 휴대폰 번호, 통신사 정보, 계좌 정보(은행명, 계좌번호, 예금주명)": "Majburiy bandlar: Ism-sharif (Lotin/Koreys), ARC raqami, telefon raqami, aloqa operatori maʼlumotlari, hisob raqami (bank nomi, hisob raqami, hisob egasining ismi)",
   "환급금 입금을 위한 계좌 정보 확인 및 서비스 수수료 결제 처리": "Qaytarilgan pulni oʻtkazish uchun hisob raqami maʼlumotlarini tasdiqlash va xizmat haqi toʻlovlarini amalga oshirish",
-  "환급액의 20%를 정찰제로 운영합니다.": "Qaytarilgan summaning 20% miqdori belgilangan narx sifatida olinadi.",
+  "환급액의 25%를 정찰제로 운영합니다.": "Qaytarilgan summaning 25% miqdori belgilangan narx sifatida olinadi.",
   "회사는 서비스 제공을 위해 아래와 같은 정보를 수집합니다.": "Kompaniya xizmat koʻrsatish uchun quyidagi maʼlumotlarni toʻplaydi.",
   "회사는 원칙적으로 개인정보 수집 및 이용 목적이 달성된 후에는 해당 정보를 지체 없이 파기합니다. 단, 관계법령의 규정에 의하여 보존할 필요가 있는 경우 회사는 아래와 같이 관계법령에서 정한 일정한 기간 동안 회원정보를 보관합니다.": "Kompaniya, qoida tariqasida, shaxsiy maʼlumotlarni toʻplash va ulardan foydalanish maqsadi amalga oshirilgandan soʻng, ularni darhol yoʻq qiladi. Biroq, agar qonunchilikka muvofiq saqlash zarur boʻlsa, kompaniya aʼzolarning maʼlumotlarini qonunda belgilangan muddat davomida saqlaydi.",
 };

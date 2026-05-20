@@ -2060,7 +2060,7 @@ export default function EstimatePage() {
                   <div className="p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 shadow-inner space-y-6">
                     <div className="flex justify-between items-center"><span className="font-bold text-slate-400">{t('총 환급 예정액')}</span><span className="text-2xl font-black text-slate-900">₩ {result?.refundEstimate?.toLocaleString() || 0}</span></div>
                     <Separator className="bg-slate-200" />
-                    <div className="flex justify-between items-center"><span className="font-black text-slate-900 text-xl">{t('수수료 (선임료 20%)')}</span><span className="text-3xl font-black text-primary">₩ {(Math.floor((result?.refundEstimate || 0) * 0.2)).toLocaleString()}</span></div>
+                    <div className="flex justify-between items-center"><span className="font-black text-slate-900 text-xl">{t('수수료 (선임료 25%)')}</span><span className="text-3xl font-black text-primary">₩ {(Math.floor((result?.refundEstimate || 0) * 0.25)).toLocaleString()}</span></div>
                   </div>
 
                   <div className="space-y-10">
@@ -2069,7 +2069,7 @@ export default function EstimatePage() {
                       <div className="ml-4">
                         <AlertTitle className="text-amber-800 font-black text-lg mb-2">{t('Legal Policy (결제 및 환불 안내)')}</AlertTitle>
                         <AlertDescription className="text-amber-700 font-bold text-base leading-relaxed">
-                          {t("수수료 20%는 전문세무사의 수임료입니다. 대한민국 국세청(NTS)은 환급금을 사용자 본인의 계좌로 직접 입금합니다. 따라서 시스템상 환급액 중 수수료를 사전에 차감할 수 없습니다. 전문 세무사의 선임을 위해 수수료 선결제가 필요하며, 환급이 불가능한 경우 100% 즉시 환불됩니다.")}
+                          {t("수수료 25%는 전문세무사의 수임료입니다. 대한민국 국세청(NTS)은 환급금을 사용자 본인의 계좌로 직접 입금합니다. 따라서 시스템상 환급액 중 수수료를 사전에 차감할 수 없습니다. 전문 세무사의 선임을 위해 수수료 선결제가 필요하며, 환급이 불가능한 경우 100% 즉시 환불됩니다.")}
                         </AlertDescription>
                       </div>
                     </Alert>

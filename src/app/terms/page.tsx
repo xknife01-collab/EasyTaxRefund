@@ -51,7 +51,7 @@ export default function TermsPage() {
                     {t('본 서비스는 조세특례제한법에 따른 세금 환급 대행을 위해 전문 세무사를 선임하는 방식으로 운영됩니다.')}
                   </p>
                   <ul className="list-disc pl-6 space-y-2 font-bold text-sm text-slate-700">
-                    <li>{t('수수료는 예상 환급액의 20%를 원칙으로 합니다.')}</li>
+                    <li>{t('수수료는 예상 환급액의 25%를 원칙으로 합니다.')}</li>
                     <li>{t('대한민국 국세청(NTS)의 직접 입금 원칙에 따라, 수수료는 신청 시점에 선결제(선임료) 방식으로 지급되어야 합니다.')}</li>
                     <li>{t('사용자는 전자서명을 통해 세무 대리 수임에 명시적으로 동의합니다.')}</li>
                   </ul>
@@ -65,7 +65,7 @@ export default function TermsPage() {
                 <div className="bg-slate-900 text-white p-8 rounded-[2rem] space-y-4">
                   <h4 className="text-lg font-black text-primary">{t('100% 안심 환불 약속')}</h4>
                   <p className="font-medium text-slate-300">
-                    {t('회사는 전문적인 검토를 통해 최선의 환급 서비스를 제공합니다. 만약 국세청의 최종 결정 결과 환급이 불가능하거나 환급액이 발생하지 않는 것으로 확정될 경우, 사용자가 지불한 선임료(수수료) 20%는 전액 즉시 환불됩니다.')}
+                    {t('회사는 전문적인 검토를 통해 최선의 환급 서비스를 제공합니다. 만약 국세청의 최종 결정 결과 환급이 불가능하거나 환급액이 발생하지 않는 것으로 확정될 경우, 사용자가 지불한 선임료(수수료) 25%는 전액 즉시 환불됩니다.')}
                   </p>
                 </div>
               </section>
