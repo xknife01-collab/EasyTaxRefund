@@ -443,9 +443,9 @@ export default function EstimatePage() {
       return;
     }
     
-    const t1 = setTimeout(() => setLoadProgress(1), 3000);
-    const t2 = setTimeout(() => setLoadProgress(2), 8000);
-    const t3 = setTimeout(() => setLoadProgress(3), 13000);
+    const t1 = setTimeout(() => setLoadProgress(1), 1200);
+    const t2 = setTimeout(() => setLoadProgress(2), 2500);
+    const t3 = setTimeout(() => setLoadProgress(3), 3800);
     
     return () => {
       clearTimeout(t1);
@@ -714,7 +714,15 @@ export default function EstimatePage() {
         otpCode: formData.otpCode
       });
       const endTime = Date.now();
-      console.log(`[Frontend] completeAuthAndEstimate finished in ${((endTime - startTime) / 1000).toFixed(2)}s`);
+      const elapsedMs = endTime - startTime;
+      console.log(`[Frontend] completeAuthAndEstimate finished in ${(elapsedMs / 1000).toFixed(2)}s`);
+      
+      // 5초 최소 대기 시간을 적용하여 로딩 연출이 온전히 사용자에게 보이도록 함
+      const minDurationMs = 5000;
+      if (elapsedMs < minDurationMs) {
+        await new Promise(resolve => setTimeout(resolve, minDurationMs - elapsedMs));
+      }
+      
       setResult(analysisResult);
       setStep(7);
       saveProgress(7);
