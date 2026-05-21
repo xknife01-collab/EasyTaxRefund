@@ -122,7 +122,7 @@ export const guides: Guides = {
   "설치가 완료되었습니다. '열기'를 눌러 카카오톡을 실행해 주세요.": "Cài đặt hoàn tất. Nhấn 'Mở' để chạy .",
   "설치가 완료되었습니다. '열기'를 눌러 하나원큐를 실행해 주세요.": "Cài đặt hoàn tất. Nhấn 'Mở' để chạy Hana 1Q.",
   "성공적인 환급 조회를 위해 아래 사항을 준비해 주세요.": "lòng chuẩn bị các mục để cứu hoàn thuế thành công.",
-  "성명 (Name)": "",
+  "성명 (Name)": "Họ và tên (Name)",
   "성명, 외국인등록번호 앞 7자리, 통신사, 휴대폰번호를 정확히 입력해 주세요.": "lòng nhập đúng họ tên, 7 số đầu thẻ cư trú, nhà mạng và số điện thoại.",
   "성명, 주민등록번호 앞 7자리, 통신사, 휴대폰번호를 정확히 입력해 주세요.": "lòng nhập chính xác họ tên, 7 chữ số đầu của số , nhà mạng và số điện thoại.",
   "성명을 입력해 주세요": "lòng nhập họ và tên",

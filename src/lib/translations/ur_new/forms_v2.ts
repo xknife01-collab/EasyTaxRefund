@@ -221,4 +221,7 @@ export const forms = {
   "휴대폰에서 ": "فون پر",
   "휴대폰에서 '확인'을 눌러주세요": "اپنے فون پر 'تصدیق' دبائیں",
   "9 step precision diagnostic flow initiated": "9 مراحل کی درست تشخیص شروع ہو گئی",
+  "AI Live Tracker": "AI Live Tracker",
+  "MM/YY": "MM/YY",
+
 };

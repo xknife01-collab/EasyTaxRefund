@@ -220,4 +220,7 @@ export const forms = {
   "휴대폰에서 '확인'을 눌러주세요": "Telefoningizda 'Tasdiqlash' tugmasini bosing",
   "9 step precision diagnostic flow initiated": "9 bosqichli aniq tashxis oqimi boshlandi.",
   "한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.": "Koreya Milliy Soliq Xizmatiga (NTS) kirish uchun sizda quyidagi autentifikatsiya sertifikatlaridan biri bo'lishi kerak. Sertifikat shaxsingizni tasdiqlash uchun ishlatiladi, shuning uchun agar sizda sertifikat bo'lmasa, iltimos, boshlashdan oldin qo'llanmaga muvofiq uni oling.",
+  "AI Live Tracker": "AI Live Tracker",
+  "MM/YY": "MM/YY",
+
 };

@@ -301,4 +301,15 @@ export const forms = {
   "입금자명": "Nama Pengirim (Penyetor)",
   "입금하실 분 성함을 입력하세요": "Masukkan nama lengkap penyetor",
   "잠시만 기다려 주세요.": "Mohon tunggu sebentar.",
+  "'{name}'이(가) 클립보드에 복사되었습니다. 다른 조합으로 다시 인증을 요청하세요.": "'{name}' telah disalin ke papan klip. Silakan minta verifikasi lagi dengan kombinasi nama lain.",
+  "시스템 오류": "Kesalahan Sistem",
+  "안녕하세요! 예상 환급액이 매우 큰 고액 자산가님으로 감지되어 전문 상담원 채팅 세션이 열렸습니다. 인증이나 서류 접수에 어려움이 있다면 무엇이든 물어봐 주세요.": "Halo! Anda terdeteksi sebagai nasabah bernilai tinggi dengan perkiraan pengembalian uang yang sangat besar, sehingga sesi obrolan agen profesional telah dibuka. Jika Anda memiliki kesulitan dengan verifikasi atau penyerahan dokumen, silakan tanyakan apa saja.",
+  "은행 앱에서 확인하기": "Periksa di aplikasi bank",
+  "인증 요청 중 오류가 발생했습니다.": "Terjadi kesalahan saat meminta verifikasi.",
+  "카카오뱅크나 토스 등 은행 앱의 '내 정보'에 표시된 영문 성함이 통신사 등록 성함과 같을 확률이 매우 높습니다.": "Kemungkinan besar nama bahasa Inggris yang tertera di 'Informasi Saya' pada aplikasi bank seperti KakaoBank atau Toss sama dengan nama yang terdaftar di operator seluler.",
+  "통신사 고객센터 앱(T world, My KT, U+)의 마이페이지에서 정확한 성함(띄어쓰기 포함)을 확인하실 수 있습니다.": "Anda dapat memeriksa nama persis Anda (termasuk spasi) di Halaman Saya pada aplikasi pusat pelanggan operator seluler (T world, My KT, U+).",
+  "통신사 앱(T world 등) 마이페이지 예시": "Contoh Halaman Saya pada aplikasi operator seluler (T world, dll.)",
+  "통신사 앱에서 확인하기": "Periksa di aplikasi operator seluler",
+  "하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Silakan periksa notifikasi di aplikasi Hana Bank (Hana 1Q) lalu tekan tombol di bawah ini.",
+
 };

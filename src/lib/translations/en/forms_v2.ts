@@ -227,5 +227,8 @@ export const forms_v2 = {
   "제출 성공": "Submission Successful",
   "업로드 중": "Uploading...",
   "확인": "Confirm",
-  "취소": "Cancel"
+  "취소": "Cancel",
+  "AI Live Tracker": "AI Live Tracker",
+  "MM/YY": "MM/YY",
+  "하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Please check the notification on the Hana Bank app (Hana 1Q) and press the button below."
 };
