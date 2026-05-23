@@ -34,9 +34,30 @@ export async function sendOtpSms(phone: string) {
     params.append('msg', msg);
     // params.append('testmode_yn', 'Y'); // 실제 과금 방지 테스트용 모드
 
-    const res = await axios.post('https://apis.aligo.in/send/', params, {
+    const requestConfig: any = {
       headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' }
-    });
+    };
+
+    // Vercel 고정 IP 아웃바운드 프록시(Fixie 등) 자동 감지 및 연동
+    if (process.env.FIXIE_URL) {
+      try {
+        const parsedUrl = new URL(process.env.FIXIE_URL);
+        const username = parsedUrl.username;
+        const password = parsedUrl.password;
+        
+        requestConfig.proxy = {
+          protocol: parsedUrl.protocol.replace(':', ''),
+          host: parsedUrl.hostname,
+          port: parseInt(parsedUrl.port || '80'),
+          ...(username ? { auth: { username, password } } : {})
+        };
+        console.log(`[Aligo Proxy] Routing via Fixie proxy: ${parsedUrl.hostname}:${parsedUrl.port}`);
+      } catch (proxyError: any) {
+        console.error(`[Aligo Proxy Error] Failed to parse FIXIE_URL:`, proxyError.message);
+      }
+    }
+
+    const res = await axios.post('https://apis.aligo.in/send/', params, requestConfig);
 
     if (res.data.result_code === 1) {
       return { success: true };
