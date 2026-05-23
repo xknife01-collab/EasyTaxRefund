@@ -1397,6 +1397,55 @@ export default function EstimatePage() {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="p-6 sm:p-10 space-y-6 sm:space-y-8">
+                  {/* Security Assurance Card - Embedded in Step 3 */}
+                  <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-primary/10 transition-colors" />
+                    <div className="relative flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
+                      <div className="shrink-0 relative">
+                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
+                        <Image
+                          src="/certified_security_seal_premium_1774150786685.png"
+                          alt="Certified Security"
+                          width={80}
+                          height={80}
+                          className="relative transition-transform group-hover:scale-110"
+                        />
+                      </div>
+                      <div className="space-y-4 flex-1">
+                        <div className="space-y-1">
+                          <h4 className="text-xl font-black text-slate-800 flex items-center justify-center md:justify-start gap-2">
+                            {t('security_card_title')}
+                            <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20 leading-none py-0.5">{t('security_certified')}</Badge>
+                          </h4>
+                          <p className="text-sm font-bold text-slate-500">{t('security_card_subtitle')}</p>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
+                              <Lock className="h-3 w-3 text-primary" />
+                              {t('security_item_encryption_title')}
+                            </div>
+                            <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_encryption_desc')}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
+                              <Database className="h-3 w-3 text-primary" />
+                              {t('security_item_no_storage_title')}
+                            </div>
+                            <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_no_storage_desc')}</p>
+                          </div>
+                          <div className="space-y-1">
+                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
+                              <Shield className="h-3 w-3 text-primary" />
+                              {t('security_item_pippa_title')}
+                            </div>
+                            <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_pippa_desc')}</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   <form onSubmit={handleContactSubmit} className="space-y-8">
                     <div className="grid gap-6">
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -1550,55 +1599,6 @@ export default function EstimatePage() {
                       {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('조회 정보 확인 완료')}
                     </Button>
                   </form>
-
-                  {/* Security Assurance Card - Embedded in Step 3 */}
-                  <div className="mt-12 p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-primary/10 transition-colors" />
-                    <div className="relative flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-                      <div className="shrink-0 relative">
-                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
-                        <Image
-                          src="/certified_security_seal_premium_1774150786685.png"
-                          alt="Certified Security"
-                          width={80}
-                          height={80}
-                          className="relative transition-transform group-hover:scale-110"
-                        />
-                      </div>
-                      <div className="space-y-4 flex-1">
-                        <div className="space-y-1">
-                          <h4 className="text-xl font-black text-slate-800 flex items-center justify-center md:justify-start gap-2">
-                            {t('security_card_title')}
-                            <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20 leading-none py-0.5">{t('security_certified')}</Badge>
-                          </h4>
-                          <p className="text-sm font-bold text-slate-500">{t('security_card_subtitle')}</p>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
-                              <Lock className="h-3 w-3 text-primary" />
-                              {t('security_item_encryption_title')}
-                            </div>
-                            <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_encryption_desc')}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
-                              <Database className="h-3 w-3 text-primary" />
-                              {t('security_item_no_storage_title')}
-                            </div>
-                            <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_no_storage_desc')}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
-                              <Shield className="h-3 w-3 text-primary" />
-                              {t('security_item_pippa_title')}
-                            </div>
-                            <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_pippa_desc')}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
                 </CardContent>
               </Card>
             )}
@@ -1629,7 +1629,7 @@ export default function EstimatePage() {
                 </CardHeader>
                 <CardContent className="p-6 sm:p-10 space-y-6 sm:space-y-8">
                   {/* Guides Below Yellow Warning Alert (Top of CardContent) */}
-                  {language === 'ko' && authMethod && (
+                  {authMethod && (
                     <div className="mt-2 animate-in fade-in slide-in-from-top-4 duration-500">
                       <EmbeddedAuthGuide
                         authMethod={authMethod}
@@ -1716,102 +1716,6 @@ export default function EstimatePage() {
                     </div>
                   </div>
 
-                  {language !== 'ko' && (
-                    <div className="space-y-3 mt-4">
-                      <Button
-                        variant="outline"
-                        onClick={() => {
-                          setHanaGuideMode('full');
-                          setIsHanaGuideOpen(true);
-                        }}
-                        className="w-full h-14 sm:h-16 font-black text-[#008485] bg-emerald-50 border-emerald-200/60 hover:bg-emerald-100 transition-all flex items-center justify-center gap-2 rounded-2xl shadow-sm hover:shadow-md"
-                      >
-                        <Info className="h-4 w-4" />
-                        {t('하나은행 앱에서 어떻게 승인하나요? (가이드 보기)')}
-                      </Button>
-
-                      <div className="flex items-center justify-center gap-3 py-0.5">
-                        <a 
-                          href="https://play.google.com/store/search?q=%ED%95%98%EB%82%98%EC%9B%90%ED%81%90&c=apps" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group"
-                        >
-                          <Smartphone className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
-                          <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-700">Google Play</span>
-                        </a>
-                        <a 
-                          href="https://apps.apple.com/kr/iphone/search?term=%ED%95%98%EB%82%98%EC%9B%90%ED%81%90" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group relative z-10"
-                        >
-                          <Smartphone className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
-                          <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-700">App Store</span>
-                        </a>
-                      </div>
-
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsGuideOpen(true)}
-                        className="w-full h-14 sm:h-16 font-black text-emerald-700 bg-emerald-50 border-emerald-200/60 hover:bg-emerald-100 transition-all flex items-center justify-center gap-2 rounded-2xl shadow-sm hover:shadow-md"
-                      >
-                        <Info className="h-4 w-4" />
-                        {t('PASS 앱에서 어떻게 승인하나요? (가이드 보기)')}
-                      </Button>
-                      
-                      <div className="flex items-center justify-center gap-3 py-0.5">
-                        <a 
-                          href="https://play.google.com/store/search?q=PASS&c=apps" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group"
-                        >
-                          <Smartphone className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
-                          <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-700">Google Play</span>
-                        </a>
-                        <a 
-                          href="https://apps.apple.com/kr/iphone/search?term=%ED%8C%A8%EC%8A%A4" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group relative z-10"
-                        >
-                          <Smartphone className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
-                          <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-700">App Store</span>
-                        </a>
-                      </div>
-                      <Button
-                        variant="outline"
-                        onClick={() => setIsKakaoAuthGuideOpen(true)}
-                        className="w-full h-14 sm:h-16 font-black text-[#3C1E1E] bg-[#FEE500]/10 border-[#FEE500]/40 hover:bg-[#FEE500]/20 transition-all flex items-center justify-center gap-2 rounded-2xl shadow-sm hover:shadow-md"
-                      >
-                        <Info className="h-4 w-4" />
-                        {t('카카오톡 앱에서 어떻게 승인하나요? (가이드 보기)')}
-                      </Button>
-
-                      <div className="flex items-center justify-center gap-3 py-0.5">
-                        <a 
-                          href="https://play.google.com/store/search?q=%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1&c=apps" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group"
-                        >
-                          <Smartphone className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
-                          <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-700">Google Play</span>
-                        </a>
-                        <a 
-                          href="https://apps.apple.com/kr/iphone/search?term=%EC%B9%B4%EC%B9%B4%EC%98%A4%ED%86%A1" 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-1 px-2.5 py-1.5 bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-lg transition-colors group relative z-10"
-                        >
-                          <Smartphone className="w-3 h-3 text-slate-400 group-hover:text-slate-600" />
-                          <span className="text-[10px] font-bold text-slate-500 group-hover:text-slate-700">App Store</span>
-                        </a>
-                      </div>
-                    </div>
-                  )}
-
                   <Button onClick={handleInitiateAuth} className="w-full h-20 bg-primary text-2xl font-black rounded-3xl shadow-xl shadow-primary/20" disabled={loading}>
                     {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 요청하기')}
                   </Button>
@@ -1874,9 +1778,17 @@ export default function EstimatePage() {
                         </p>
 
                         <div className="pt-2 space-y-4">
-                          {language === 'ko' ? (
+                          {true ? (
                             <div className="space-y-4">
                               <EmbeddedAuthGuide authMethod={authMethod} />
+                              {language !== 'ko' && preFilterEstimate >= 400000 && (
+                                <div className="p-4 bg-amber-400/10 rounded-2xl border border-amber-400/20">
+                                  <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">{t('VIP 전용 라이브 헬프')}</p>
+                                  <p className="text-sm font-bold text-slate-600">
+                                    {t('예상 환급액이 {amount}원이나 됩니다! 인증이 막히셨다면 전문 상담원이 즉시 도와드려요.', { amount: preFilterEstimate.toLocaleString() })}
+                                  </p>
+                                </div>
+                              )}
                               {preFilterEstimate >= 400000 && (
                                 <Button
                                   onClick={() => setIsVipChatOpen(true)}
@@ -1886,44 +1798,7 @@ export default function EstimatePage() {
                                 </Button>
                               )}
                             </div>
-                          ) : preFilterEstimate >= 400000 ? (
-                            <div className="space-y-4">
-                              <div className="p-4 bg-amber-400/10 rounded-2xl border border-amber-400/20">
-                                <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">{t('VIP 전용 라이브 헬프')}</p>
-                                <p className="text-sm font-bold text-slate-600">
-                                  {t('예상 환급액이 {amount}원이나 됩니다! 인증이 막히셨다면 전문 상담원이 즉시 도와드려요.', { amount: preFilterEstimate.toLocaleString() })}
-                                </p>
-                              </div>
-                              <Button
-                                onClick={() => setIsVipChatOpen(true)}
-                                className="w-full h-16 bg-slate-900 text-white hover:bg-slate-800 text-lg font-black rounded-2xl shadow-xl flex items-center justify-center gap-2 group transition-all hover:scale-[1.02]"
-                              >
-                                <MessageSquare className="h-6 w-6 text-amber-400 animate-bounce" /> {t('실시간 전문 상담원 채팅 시작')}
-                              </Button>
-                            </div>
-                          ) : (
-                            <div className="space-y-4">
-                              <p className="text-sm font-bold text-slate-600">
-                                {t('인증 과정을 자세한 그림 가이드로 확인해 보세요.')}
-                              </p>
-                              <Button
-                                variant="outline"
-                                onClick={() => {
-                                  if (authMethod === 'hana') {
-                                    setHanaGuideMode('auth');
-                                    setIsHanaGuideOpen(true);
-                                  } else if (authMethod === 'kakao') {
-                                    setIsKakaoAuthGuideOpen(true);
-                                  } else {
-                                    setIsGuideOpen(true); // Open the full PASS guide
-                                  }
-                                }}
-                                className="w-full h-16 border-primary text-primary hover:bg-primary/5 text-lg font-black rounded-2xl flex items-center justify-center gap-2"
-                              >
-                                <Sparkles className="h-6 w-6" /> {t('AI 자가 해결 가이드 보기')}
-                              </Button>
-                            </div>
-                          )}
+                          ) : null}
 
                           {/* AI OCR 이름 추출 섹션 */}
                           <div className="p-6 bg-blue-50/50 rounded-3xl border border-blue-100 mt-4 space-y-4">
