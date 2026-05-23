@@ -238,8 +238,48 @@ export default function HomePage() {
                 <span className="text-primary">{t('평균 환급액 300만원이상!')}</span>
               </h1>
               
-              <div className="max-w-3xl mx-auto space-y-8 text-xl lg:text-2xl text-slate-500 font-medium leading-relaxed animate-fade-in-up delay-200">
+              <div className="max-w-5xl mx-auto space-y-8 text-xl lg:text-2xl text-slate-500 font-medium leading-relaxed animate-fade-in-up delay-200">
                 <p>{t(`대한민국 중소기업에서 근무하는 외국인 전문 인력 중 90% 이상이 자신의 당연한 권리를 놓치고 있다는 사실을 알고 계십니까? 청년 외국인 근로자(35번째 생일이 지나기 전에 한국에서 일을 시작했다면 OK!)는 소득세의 90%를 감면받을 수 있습니다.`)}</p>
+                
+                {/* Tax Exemption Explanation Cards */}
+                <div className="grid md:grid-cols-3 gap-6 text-left pt-4 pb-4">
+                  <div className="bg-white border border-slate-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.04)] rounded-2xl p-6 hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="h-10 w-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-500 shrink-0">
+                        <Coins className="h-5 w-5" />
+                      </div>
+                      <h4 className="font-bold text-slate-800 text-lg">{t("어떤 세금을 돌려받나요?")}</h4>
+                    </div>
+                    <p className="text-slate-500 text-sm md:text-base font-normal leading-relaxed">
+                      {t("매월 월급을 받으실 때 급여명세서의 '소득세(Income Tax)' 항목으로 이미 자동 공제되어 납부된 아까운 내 세금을 다시 돌려받는 것입니다.")}
+                    </p>
+                  </div>
+
+                  <div className="bg-white border border-slate-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.04)] rounded-2xl p-6 hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="h-10 w-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-500 shrink-0">
+                        <Sparkles className="h-5 w-5" />
+                      </div>
+                      <h4 className="font-bold text-slate-800 text-lg">{t("얼마나 감면받나요?")}</h4>
+                    </div>
+                    <p className="text-slate-500 text-sm md:text-base font-normal leading-relaxed">
+                      {t("중소기업에 근무하는 청년 외국인 근로자라면 소득세의 90%를 연간 최대 200만 원 한도로 5년 동안(총 최대 1,000만 원) 전액 감면받으실 수 있습니다.")}
+                    </p>
+                  </div>
+
+                  <div className="bg-white border border-slate-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.04)] rounded-2xl p-6 hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
+                    <div className="flex items-center gap-3 mb-3">
+                      <div className="h-10 w-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500 shrink-0">
+                        <ShieldCheck className="h-5 w-5" />
+                      </div>
+                      <h4 className="font-bold text-slate-800 text-lg">{t("비자에 불이익은 없나요?")}</h4>
+                    </div>
+                    <p className="text-slate-500 text-sm md:text-base font-normal leading-relaxed">
+                      {t("대한민국 세법(조세특례제한법 제30조)에 명시된 정당한 법적 혜택입니다. 세금 체납이 아닌 정상 환급이므로 비자 연장 시 전혀 문제되지 않습니다.")}
+                    </p>
+                  </div>
+                </div>
+
                 <div className="flex items-center justify-center gap-3 text-primary/80 font-bold bg-primary/5 py-4 px-8 rounded-3xl border border-primary/10 w-fit mx-auto">
                   <CheckCircle2 className="h-6 w-6" />
                   {t('언어의 장벽과 복잡한 절차 때문에 포기하지 마세요. 저희가 최적의 환급 경로를 찾아드립니다.')}
