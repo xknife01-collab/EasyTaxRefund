@@ -1602,7 +1602,27 @@ export default function EstimatePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-6 sm:p-10 space-y-6 sm:space-y-8">
-                  {/* Selection Cards on Top */}
+                  {/* Guides Below Yellow Warning Alert (Top of CardContent) */}
+                  {language === 'ko' && authMethod && (
+                    <div className="mt-2 animate-in fade-in slide-in-from-top-4 duration-500">
+                      <EmbeddedAuthGuide
+                        authMethod={authMethod}
+                        mode="registration"
+                        onClick={() => {
+                          if (authMethod === 'hana') {
+                            setHanaGuideMode('full');
+                            setIsHanaGuideOpen(true);
+                          } else if (authMethod === 'kakao') {
+                            setIsKakaoGuideOpen(true);
+                          } else {
+                            setIsGuideOpen(true);
+                          }
+                        }}
+                      />
+                    </div>
+                  )}
+
+                  {/* Selection Cards (Middle of CardContent) */}
                   <div className="grid grid-cols-1 gap-4">
                     {/* Hana Bank Card */}
                     <div
@@ -1669,26 +1689,6 @@ export default function EstimatePage() {
                       </div>
                     </div>
                   </div>
-
-                  {/* Guides Below Selection Cards */}
-                  {language === 'ko' && authMethod && (
-                    <div className="mt-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                      <EmbeddedAuthGuide
-                        authMethod={authMethod}
-                        mode="registration"
-                        onClick={() => {
-                          if (authMethod === 'hana') {
-                            setHanaGuideMode('full');
-                            setIsHanaGuideOpen(true);
-                          } else if (authMethod === 'kakao') {
-                            setIsKakaoGuideOpen(true);
-                          } else {
-                            setIsGuideOpen(true);
-                          }
-                        }}
-                      />
-                    </div>
-                  )}
 
                   {language !== 'ko' && (
                     <div className="space-y-3 mt-4">
