@@ -1,4 +1,6 @@
 export const forms = {
+  "국세청 시스템 점검 중 (00:00 ~ 06:00)": "Sistem NTS Sedang Pemeliharaan (00:00 ~ 06:00)",
+  "오전 6시 이후에 조회하시면 정상적으로 이용하실 수 있습니다.": "Silakan cari setelah pukul 06.00 pagi untuk menggunakan layanan secara normal.",
   "Process 1 / 8": "Proses 1 / 8",
   "Process {step} / {total}": "Proses {step} / {total}",
   "Step 1: 외국인등록증 인증": "Langkah 1: Verifikasi ARC",

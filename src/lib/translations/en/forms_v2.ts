@@ -1,4 +1,6 @@
 export const forms_v2 = {
+  "국세청 시스템 점검 중 (00:00 ~ 06:00)": "NTS System Maintenance (00:00 ~ 06:00)",
+  "오전 6시 이후에 조회하시면 정상적으로 이용하실 수 있습니다.": "Service resumes after 6:00 AM. Please try again then.",
   "'{name}'이(가) 클립보드에 복사되었습니다. PASS 앱에 그대로 붙여넣으세요.": "'{name}' has been copied to the clipboard. Paste it directly into the PASS app.",
   "'{name}'이(가) 클립보드에 복사되었습니다. 다른 조합으로 다시 인증을 요청하세요.": "'{name}' has been copied to the clipboard. Try requesting verification again with a different combination.",
   "* 실제 개인별 소득 공제 항목에 따라 차이가 발생할 수 있습니다.": "* Differences may occur depending on individual income tax deduction items.",
