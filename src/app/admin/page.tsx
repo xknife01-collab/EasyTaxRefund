@@ -894,7 +894,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                   </h3>
                   <div className="grid grid-cols-2 gap-x-8 gap-y-4 p-6 bg-slate-50/50 rounded-3xl border border-slate-100">
                     {[
-                      { label: "휴대폰 번호", value: selectedApp.phoneNo || "미입력" },
+                      { label: "휴대폰 번호", value: selectedApp.phoneNo || selectedApp.phone || "미입력" },
                       { label: "사용 언어", value: selectedApp.userLanguage?.toUpperCase() || "한국어" },
                       { label: "신청 일시", value: selectedApp.createdAt?.toDate ? selectedApp.createdAt.toDate().toLocaleString('ko-KR') : String(selectedApp.createdAt || "N/A") },
                       { label: "신청 채널 (UTM)", value: selectedApp.utmSource || "Direct / 기타" },
