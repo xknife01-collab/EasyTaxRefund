@@ -264,9 +264,10 @@ export default function HomePage() {
                       </div>
                       <h4 className="font-extrabold text-slate-800 text-xl">{t("얼마나 감면받나요?")}</h4>
                     </div>
-                    <p className="text-slate-500 text-sm md:text-base font-normal leading-relaxed">
-                      {t("중소기업에 근무하는 청년 외국인 근로자라면 소득세의 90%를 연간 최대 200만 원 한도로 5년 동안(총 최대 1,000만 원) 전액 감면받으실 수 있습니다.")}
-                    </p>
+                    <p 
+                      className="text-slate-500 text-sm md:text-base font-normal leading-relaxed"
+                      dangerouslySetInnerHTML={{ __html: t("중소기업에 근무하는 청년 외국인 근로자라면 소득세의 90%를 연간 최대 200만 원 한도로 5년 동안(총 최대 1,000만 원) 전액 감면받으실 수 있습니다.") }}
+                    />
                   </div>
 
                   {/* Card 3: Emerald Accent */}

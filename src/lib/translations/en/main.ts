@@ -111,7 +111,7 @@ export const main = {
   "어떤 세금을 돌려받나요?": "What kind of tax will I get back?",
   "매월 월급을 받으실 때 급여명세서의 '소득세(Income Tax)' 항목으로 이미 자동 공제되어 납부된 아까운 내 세금을 다시 돌려받는 것입니다.": "It is about getting back your income tax that was automatically deducted and paid each month under the 'Income Tax' item on your payslip when you received your salary.",
   "얼마나 감면받나요?": "How much is the tax reduction?",
-  "중소기업에 근무하는 청년 외국인 근로자라면 소득세의 90%를 연간 최대 200만 원 한도로 5년 동안(총 최대 1,000만 원) 전액 감면받으실 수 있습니다.": "As a young foreign worker employed by a small and medium-sized enterprise (SME), you are eligible for a full exemption of 90% of your income tax for 5 years, with an annual limit of up to KRW 2 million (up to a total of KRW 10 million).",
+  "중소기업에 근무하는 청년 외국인 근로자라면 소득세의 90%를 연간 최대 200만 원 한도로 5년 동안(총 최대 1,000만 원) 전액 감면받으실 수 있습니다.": "As a young foreign worker employed by a small and medium-sized enterprise (SME), you are eligible for a full exemption of 90% of your income tax <strong class='text-primary font-black bg-primary/5 px-2 py-0.5 rounded-lg border border-primary/10 inline-block'>for 5 years, with an annual limit of up to KRW 2 million (up to a total of KRW 10 million)</strong>.",
   "비자에 불이익은 없나요?": "Will this negatively affect my visa?",
   "대한민국 세법(조세특례제한법 제30조)에 명시된 정당한 법적 혜택입니다. 세금 체납이 아닌 정상 환급이므로 비자 연장 시 전혀 문제되지 않습니다.": "This is a legitimate legal benefit stipulated in the tax laws of the Republic of Korea (Article 30 of the Restriction of Special Taxation Act). Since this is a regular tax refund and not a tax delinquency, it will not cause any issues when extending your visa.",
 };
