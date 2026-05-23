@@ -252,6 +252,9 @@ export default function EstimatePage() {
     isHighValue?: boolean;
   } | null>(null);
 
+  const [isCameraActive, setIsCameraActive] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const signatureCanvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isSigned, setIsSigned] = useState(false);
@@ -497,37 +500,66 @@ export default function EstimatePage() {
     }
   }, []);
 
-  const handleOcrFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+  const startCamera = async () => {
+    setIsCameraActive(true);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: "environment",
+          width: { ideal: 1920 },
+          height: { ideal: 1080 }
+        }
+      });
+      if (videoRef.current) videoRef.current.srcObject = stream;
+    } catch (error: any) {
+      setIsCameraActive(false);
+      toast({ variant: 'destructive', title: t('카메라 접근 실패'), description: t('권한을 확인해 주세요.') });
+    }
+  };
+
+  const captureAndScan = async () => {
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+    if (!video || !canvas) return;
 
     setLoading(true);
-    try {
-      const reader = new FileReader();
-      const dataUri = await new Promise<string>((resolve, reject) => {
-        reader.onload = () => resolve(reader.result as string);
-        reader.onerror = reject;
-        reader.readAsDataURL(file);
-      });
+    const context = canvas.getContext('2d');
+    if (context) {
+      // Set canvas dimensions to match actual video stream dimensions (high resolution)
+      canvas.width = video.videoWidth || 1280;
+      canvas.height = video.videoHeight || 720;
 
-      const ocrResult = await extractIdInfo({ photoDataUri: dataUri });
-      setFormData(prev => ({
-        ...prev,
-        officialName: ocrResult.name,
-        authName: ocrResult.name,
-        registrationNumber: ocrResult.registrationNumber,
-        issueDate: ocrResult.issueDate
-      }));
-
-      // OCR 결과가 나오면 즉시 최적화 시작
-      if (ocrResult.name) {
-        prefetchNameOptimization(ocrResult.name);
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+      
+      // Compress to JPEG with 0.8 quality to keep size small but sharp (Vercel payload bypass)
+      const dataUri = canvas.toDataURL('image/jpeg', 0.8);
+      
+      try {
+        const ocrResult = await extractIdInfo({ photoDataUri: dataUri });
+        setFormData(prev => ({
+          ...prev,
+          officialName: ocrResult.name,
+          authName: ocrResult.name,
+          registrationNumber: ocrResult.registrationNumber,
+          issueDate: ocrResult.issueDate
+        }));
+        
+        // OCR 결과가 나오면 즉시 최적화 시작
+        if (ocrResult.name) {
+          prefetchNameOptimization(ocrResult.name);
+        }
+        
+        toast({ variant: "success", title: t("판독 완료"), description: t("신분증 정보가 자동 입력되었습니다.") });
+        
+        // Stop the camera stream
+        const stream = video.srcObject as MediaStream;
+        stream?.getTracks().forEach(track => track.stop());
+        setIsCameraActive(false);
+      } catch (error) {
+        toast({ variant: "destructive", title: t("판독 실패"), description: t("다시 촬영해 주세요.") });
+      } finally {
+        setLoading(false);
       }
-      toast({ variant: "success", title: t("판독 완료"), description: t("신분증 정보가 자동 입력되었습니다.") });
-    } catch (error) {
-      toast({ variant: "destructive", title: t("판독 실패"), description: t("다시 촬영해 주세요.") });
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -1202,29 +1234,54 @@ export default function EstimatePage() {
                     </div>
                   </div>
 
-                  <label className="border-2 border-dashed border-slate-200 rounded-[2.5rem] p-12 text-center bg-slate-50 cursor-pointer hover:bg-primary/5 transition-all group block">
-                    {loading ? (
-                      <div className="flex flex-col items-center justify-center py-4">
-                        <Loader2 className="animate-spin h-14 w-14 text-primary mb-4" />
-                        <h3 className="font-black text-lg text-slate-700">{t('외국인등록증 분석 중...')}</h3>
-                        <p className="text-xs font-bold text-slate-400 mt-2">{t('잠시만 기다려 주세요.')}</p>
+                  {!isCameraActive ? (
+                    <div onClick={startCamera} className="border-2 border-dashed border-slate-200 rounded-[2.5rem] p-12 text-center bg-slate-50 cursor-pointer hover:bg-primary/5 transition-all group">
+                      <Camera className="h-14 w-14 text-primary mx-auto mb-4 transition-transform group-hover:scale-110" />
+                      <h3 className="font-black text-lg">{t('외국인등록증 촬영하여 자동 입력')}</h3>
+                      <p className="text-xs font-bold text-slate-400 mt-2">{t('되도록 외국인 등록증을 촬영 해주세요. 그래야 정확한 정보가 입력 됩니다.')}</p>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl bg-black">
+                        <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+                        
+                        {/* Dotted ID Card Guide Box Overlay */}
+                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                          {/* Dotted Box: aspect ratio ~1.58 (standard ID card) */}
+                          <div className="w-[85%] aspect-[1.58] border-4 border-dashed border-white/80 rounded-2xl shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center">
+                            <span className="text-white text-xs font-black bg-black/60 px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm animate-pulse">
+                              {t('신분증을 점선에 맞춰주세요')}
+                            </span>
+                          </div>
+                        </div>
                       </div>
-                    ) : (
-                      <>
-                        <Camera className="h-14 w-14 text-primary mx-auto mb-4 transition-transform group-hover:scale-110" />
-                        <h3 className="font-black text-lg">{t('외국인등록증 촬영하여 자동 입력')}</h3>
-                        <p className="text-xs font-bold text-slate-400 mt-2">{t('카메라로 촬영하거나 앨범에서 사진을 선택할 수 있습니다.')}</p>
-                      </>
-                    )}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      capture="environment"
-                      className="hidden"
-                      onChange={handleOcrFileChange}
-                      disabled={loading}
-                    />
-                  </label>
+                      
+                      <div className="flex gap-4">
+                        <Button 
+                          type="button"
+                          onClick={() => {
+                            const stream = videoRef.current?.srcObject as MediaStream;
+                            stream?.getTracks().forEach(track => track.stop());
+                            setIsCameraActive(false);
+                          }}
+                          variant="outline"
+                          className="h-16 w-1/3 rounded-2xl font-bold border-slate-200 text-slate-500"
+                          disabled={loading}
+                        >
+                          {t('취소')}
+                        </Button>
+                        <Button 
+                          type="button"
+                          onClick={captureAndScan} 
+                          className="flex-1 h-16 bg-primary text-lg font-black rounded-2xl shadow-xl shadow-primary/20" 
+                          disabled={loading}
+                        >
+                          {loading ? <Loader2 className="animate-spin h-6 w-6" /> : t('촬영 및 정보 추출')}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                  <canvas ref={canvasRef} className="hidden" />
 
                   {/* 추가된 신분증 입력뷰 Trust Indicators */}
                   <div className="space-y-4 mb-2 mt-4">
