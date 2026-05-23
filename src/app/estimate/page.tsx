@@ -171,6 +171,20 @@ export default function EstimatePage() {
   const router = useRouter();
 
   const [step, setStep] = useState(0);
+
+  // 국세청 홀택스 점검 시간 체크 (KST 00:00 ~ 06:00)
+  const [isNtsMaintenance, setIsNtsMaintenance] = useState(false);
+  useEffect(() => {
+    const checkMaintenance = () => {
+      const kstHour = parseInt(
+        new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul', hour: 'numeric', hour12: false })
+      );
+      setIsNtsMaintenance(kstHour >= 0 && kstHour < 6);
+    };
+    checkMaintenance();
+    const timer = setInterval(checkMaintenance, 60000); // 1분마다 재확인
+    return () => clearInterval(timer);
+  }, []);
   const [isVipChatOpen, setIsVipChatOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
   const [chatMessages, setChatMessages] = useState<any[]>([]);
@@ -1121,6 +1135,18 @@ export default function EstimatePage() {
                     </div>
                     <div className="space-y-2">
                       <Badge variant="outline" className="text-emerald-600 bg-emerald-50 border-emerald-100 text-[10px] font-black uppercase tracking-widest">{t('safe_and_secure')}</Badge>
+                      {/* 국세청 홉택스 점검 시간 배너 (KST 00:00~06:00) - Step 1 상단 */}
+                      {isNtsMaintenance && (
+                        <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl p-4 text-left mt-3 animate-in fade-in duration-500">
+                          <div className="h-7 w-7 bg-amber-100 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                            <AlertCircle className="h-4 w-4 text-amber-600" />
+                          </div>
+                          <div>
+                            <p className="font-black text-amber-800 text-sm">{t('국세청 시스템 점검 중 (00:00 ~ 06:00)')}</p>
+                            <p className="text-amber-700 text-xs font-bold mt-0.5">{t('오전 6시 이후에 조회하시면 정상적으로 이용하실 수 있습니다.')}</p>
+                          </div>
+                        </div>
+                      )}
                       <h2 className="text-xl sm:text-2xl font-black text-slate-800">{t('nts_trust_title')}</h2>
                       <p className="text-[13px] font-bold text-slate-500 leading-tight max-w-[280px] mx-auto opacity-80">{t('nts_trust_message')}</p>
                     </div>
