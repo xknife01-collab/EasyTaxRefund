@@ -111,7 +111,7 @@ export const main = {
   "어떤 세금을 돌려받나요?": "Qaysi turdagi soliqlarni qaytarib olasiz?",
   "매월 월급을 받으실 때 급여명세서의 '소득세(Income Tax)' 항목으로 이미 자동 공제되어 납부된 아까운 내 세금을 다시 돌려받는 것입니다.": "Siz har oy maosh olganingizda, ish haqi varaqangizdagi 'Daromad solig'i' (Income Tax) bandi orqali avtomatik ravishda ushlab qolingan va to'langan soliq mablag'ingizni qaytarib olishdir.",
   "얼마나 감면받나요?": "Qancha soliq imtiyozi olasiz?",
-  "중소기업에 근무하는 청년 외국인 근로자라면 소득세의 90%를 연간 최대 200만 원 한도로 5년 동안(총 최대 1,000만 원) 전액 감면받으실 수 있습니다.": "Agar siz kichik va oʻrta korxonada ishlaydigan yosh xorijiy ishchi boʻlsangiz, daromad soligʻining 90 foizi uchun, yillik maksimal 2 million von chegarasi bilan, 5 yil davomida (jami maksimal 10 million von) toʻliq imtiyozga ega boʻlishingiz mumkin.",
+  "중소기업에 근무하는 청년 외국인 근로자라면 소득세의 90%를 연간 최대 200만 원 한도로 5년 동안(총 최대 1,000만 원) 전액 감면받으실 수 있습니다.": "Agar siz kichik va oʻrta korxonada ishlaydigan yosh xorijiy ishchi boʻlsangiz, daromad soligʻining 90 foizi uchun, <strong class='text-primary font-black bg-primary/5 px-2 py-0.5 rounded-lg border border-primary/10 inline-block'>yillik maksimal 2 million von chegarasi bilan, 5 yil davomida (jami maksimal 10 million von)</strong> toʻliq imtiyozga ega boʻlishingiz mumkin.",
   "비자에 불이익은 없나요?": "Viza bilan bog'liq hech qanday noqulayliklar yuzaga kelmaydimi?",
   "대한민국 세법(조세특례제한법 제30조)에 명시된 정당한 법적 혜택입니다. 세금 체납이 아닌 정상 환급이므로 비자 연장 시 전혀 문제되지 않습니다.": "Bu Janubiy Koreya soliq qonunchiligida (Soliq imtiyozlari to'g'risidagi qonunning 30-moddasi) belgilangan qonuniy imtiyozdir. Bu soliq to'lashdan bo'yin tovlash emas, balki oddiy qaytarishdir, shuning uchun vizani uzaytirishda hech qanday muammo tug'dirmaydi.",
 };
