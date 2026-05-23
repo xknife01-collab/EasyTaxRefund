@@ -916,8 +916,8 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                     {[
                       { label: "사업자명 (회사)", value: selectedApp.companyName || "미입력" },
                       { label: "사업자 등록번호", value: selectedApp.resCompanyIdentityNo1 || "미입력" },
-                      { label: "근무 연도 (귀속)", value: `${selectedApp.resAttrYear}년` || "미입력" },
-                      { label: "결정 세액", value: `₩ ${(selectedApp.resIncomeTax ?? 0).toLocaleString()}` },
+                      { label: "근무 연도 (귀속)", value: selectedApp.resAttrYear && selectedApp.resAttrYear !== 'N/A' ? `${selectedApp.resAttrYear}년` : "미입력" },
+                      { label: "결정 세액", value: selectedApp.resIncomeTax !== undefined && selectedApp.resIncomeTax !== null ? `₩ ${Number(selectedApp.resIncomeTax).toLocaleString()}` : "미입력" },
                     ].map((item, i) => (
                       <div key={i} className="space-y-1">
                         <p className="text-[10px] font-bold text-indigo-400 uppercase">{item.label}</p>
