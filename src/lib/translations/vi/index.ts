@@ -23,7 +23,6 @@ export const vi = {
 
   "방금 전": "Vừa xong",
   "실시간 업데이트": "Cập nhật thời gian thực",
-  "카카오 지갑 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Vui lòng kiểm tra thông báo ví Kakao\nsau đó nhấn nút bên dưới.",
 
   // Welcome Page
   "언어 선택": "Lựa chọn ngôn ngữ",
