@@ -39,12 +39,13 @@ const ocrPrompt = ai.definePrompt({
   name: 'ocrPrompt',
   input: {schema: ExtractIdInfoInputSchema},
   output: {schema: ExtractIdInfoOutputSchema},
-  prompt: `당신은 대한민국 외국인 등록증(ARC) 판독 전문가입니다.
+  prompt: `당신은 대한민국 신분증 판독 전문가입니다.
 첨부된 신분증 이미지에서 다음 3가지 필수 정보를 정확하게 추출하십시오:
 
-1. 성명 (NAME): 보통 상단에 영문 대문자로 기재되어 있습니다. 띄어쓰기를 포함하여 있는 그대로 추출하십시오.
-2. 외국인 등록번호 (Registration No.): 앞 6자리와 뒤 7자리를 찾아 13자리 숫자로 조합하십시오.
-3. 발급일자 (Date of Issue): 등록증 하단 혹은 사진 근처에 위치한 발급 연월일을 찾아 YYYY.MM.DD 형식으로 반환하십시오.
+1. 성명 (NAME): 영문 대문자 혹은 한글 성명을 띄어쓰기를 포함하여 있는 그대로 추출하십시오.
+   * 주의: 성명 필드(name)에는 이름(예: "KIM HONG IL", "김홍일") 단독 문자열만 들어가야 하며, "(영문성명을 찾을 수 없어...)" 같은 해설, 예외 문구, 또는 보조 텍스트를 절대 붙이거나 포함해서는 안 됩니다. 해당 안내 사항은 오직 message 필드에만 작성해야 합니다.
+2. 외국인 등록번호 / 주민등록번호 (Registration No. / Resident No.): 앞 6자리와 뒤 7자리를 찾아 13자리 숫자로 조합하십시오.
+3. 발급일자 (Date of Issue): 신분증 하단 혹은 사진 근처에 위치한 발급 연월일을 찾아 YYYY.MM.DD 형식으로 반환하십시오.
 
 이미지가 흐리거나 정보가 누락된 경우 가장 근접한 텍스트를 반환하되, confidence 점수를 낮게 설정하고 message에 주의 사항을 적어주십시오. 모든 메시지는 한국어로 작성하십시오.
 
