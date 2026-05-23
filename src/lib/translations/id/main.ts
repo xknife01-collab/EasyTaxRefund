@@ -107,4 +107,11 @@ export const main = {
   "1분안에 전문세무사 환급신청하기": "Ajukan pengembalian pajak dengan akuntan profesional dalam 1 menit",
   "내 환급액 확인후 환급 신청하기": "Ajukan pengembalian pajak setelah memeriksa jumlah pengembalian Anda",
   "개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.": "Apakah Anda ragu untuk memasukkan informasi pribadi? Coba bicara dengan manajer pajak khusus terlebih dahulu.",
+
+  "어떤 세금을 돌려받나요?": "Jenis pajak apa yang akan dikembalikan?",
+  "매월 월급을 받으실 때 급여명세서의 '소득세(Income Tax)' 항목으로 이미 자동 공제되어 납부된 아까운 내 세금을 다시 돌려받는 것입니다.": "Ini adalah pengembalian pajak Anda yang telah dipotong secara otomatis dan dibayarkan setiap bulan di bawah item 'Pajak Penghasilan (Income Tax)' pada slip gaji Anda.",
+  "얼마나 감면받나요?": "Berapa banyak pengurangan pajak yang akan saya dapatkan?",
+  "중소기업에 근무하는 청년 외국인 근로자라면 소득세의 90%를 연간 최대 200만 원 한도로 5년 동안(총 최대 1,000만 원) 전액 감면받으실 수 있습니다.": "Jika Anda adalah pekerja asing muda yang bekerja di Usaha Kecil Menengah (UKM), Anda dapat menerima pengurangan pajak penghasilan sebesar 90% dengan batas maksimal 2 juta KRW per tahun, selama 5 tahun (total maksimal 10 juta KRW).",
+  "비자에 불이익은 없나요?": "Apakah tidak akan ada masalah terkait visa?",
+  "대한민국 세법(조세특례제한법 제30조)에 명시된 정당한 법적 혜택입니다. 세금 체납이 아닌 정상 환급이므로 비자 연장 시 전혀 문제되지 않습니다.": "Ini adalah manfaat hukum yang sah, sebagaimana diatur dalam Undang-Undang Pajak Korea Selatan (Pasal 30 Undang-Undang Pembatasan Perlakuan Pajak Khusus). Karena ini adalah pengembalian pajak yang normal dan bukan tunggakan pajak, sama sekali tidak akan menimbulkan masalah saat Anda memperpanjang visa.",
 };

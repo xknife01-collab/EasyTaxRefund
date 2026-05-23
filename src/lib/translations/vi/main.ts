@@ -110,4 +110,11 @@ export const main = {
   "1분안에 전문세무사 환급신청하기": "Đăng ký hoàn thuế với kế toán chuyên nghiệp trong 1 phút",
   "내 환급액 확인후 환급 신청하기": "Đăng ký hoàn thuế sau khi kiểm tra số tiền hoàn lại",
   "개인정보 입력이 망설여지시나요? 전담 세무 매니저와 먼저 대화해 보세요.": "Bạn có ngần ngại khi nhập thông tin cá nhân không? Hãy thử nói chuyện với quản lý thuế chuyên dụng trước.",
+
+  "어떤 세금을 돌려받나요?": "Tôi sẽ nhận lại loại thuế nào?",
+  "매월 월급을 받으실 때 급여명세서의 '소득세(Income Tax)' 항목으로 이미 자동 공제되어 납부된 아까운 내 세금을 다시 돌려받는 것입니다.": "Đó là việc nhận lại số tiền thuế quý giá của bạn đã được tự động khấu trừ và nộp dưới mục 'Thuế thu nhập (Income Tax)' trên phiếu lương khi nhận lương hàng tháng.",
+  "얼마나 감면받나요?": "Tôi được giảm bao nhiêu thuế?",
+  "중소기업에 근무하는 청년 외국인 근로자라면 소득세의 90%를 연간 최대 200만 원 한도로 5년 동안(총 최대 1,000만 원) 전액 감면받으실 수 있습니다.": "Nếu là lao động nước ngoài trẻ tuổi làm việc tại doanh nghiệp vừa và nhỏ, bạn có thể được giảm tới 90% thuế thu nhập với hạn mức tối đa 2 triệu KRW mỗi năm trong 5 năm (tổng cộng tối đa 10 triệu KRW).",
+  "비자에 불이익은 없나요?": "Có ảnh hưởng xấu đến thị thực (visa) không?",
+  "대한민국 세법(조세특례제한법 제30조)에 명시된 정당한 법적 혜택입니다. 세금 체납이 아닌 정상 환급이므로 비자 연장 시 전혀 문제되지 않습니다.": "Đây là quyền lợi hợp pháp chính đáng được quy định rõ trong Luật Thuế Hàn Quốc (Điều 30 Đạo luật Hạn chế Thuế đặc biệt). Đây là khoản hoàn thuế thông thường chứ không phải nợ thuế, vì vậy hoàn toàn không ảnh hưởng đến việc gia hạn thị thực.",
 };
