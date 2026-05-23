@@ -14,7 +14,7 @@ const HYPHEN_CONFIG = {
   userId: process.env.HYPHEN_USER_ID || "zkfnth01",
   hKey: process.env.HYPHEN_HKEY || "bebc2c0dfab3266b",
   baseUrl: "https://api.hyphen.im",
-  gustation: process.env.HYPHEN_GUSTATION || "Y"
+  gustation: process.env.HYPHEN_GUSTATION || "N"
 };
 
 const NTS_CONFIG = {
