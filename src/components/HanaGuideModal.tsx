@@ -51,7 +51,7 @@ interface GuideStep {
   markers: GuideMarker[];
 }
 
-const HANA_GUIDE_STEPS: GuideStep[] = [
+export const HANA_GUIDE_STEPS: GuideStep[] = [
   ...Array.from({ length: 20 }, (_, i) => ({
     image: `/images/guide/hana/${i + 1}.jpg`,
     markers: []

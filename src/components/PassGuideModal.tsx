@@ -59,7 +59,7 @@ interface GuideStep {
 }
 
 // Fixed sequence 1-28 (Includes new step 24)
-const PASS_GUIDE_STEPS: GuideStep[] = [
+export const PASS_GUIDE_STEPS: GuideStep[] = [
   ...Array.from({ length: 23 }, (_, i) => ({
     image: `/images/guide/pass/pass_${String(i + 1).padStart(2, "0")}.jpg`,
     markers: [],

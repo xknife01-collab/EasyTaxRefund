@@ -65,6 +65,7 @@ import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import { PassGuideModal } from "@/components/PassGuideModal";
 import { KakaoGuideModal } from "@/components/KakaoGuideModal";
 import { HanaGuideModal } from "@/components/HanaGuideModal";
+import { EmbeddedAuthGuide } from "@/components/EmbeddedAuthGuide";
 import {
   Dialog,
   DialogContent,
@@ -1821,7 +1822,19 @@ export default function EstimatePage() {
                         </p>
 
                         <div className="pt-2 space-y-4">
-                          {preFilterEstimate >= 400000 ? (
+                          {language === 'ko' ? (
+                            <div className="space-y-4">
+                              <EmbeddedAuthGuide authMethod={authMethod} />
+                              {preFilterEstimate >= 400000 && (
+                                <Button
+                                  onClick={() => setIsVipChatOpen(true)}
+                                  className="w-full h-16 bg-slate-900 text-white hover:bg-slate-800 text-lg font-black rounded-2xl shadow-xl flex items-center justify-center gap-2 group transition-all hover:scale-[1.02]"
+                                >
+                                  <MessageSquare className="h-6 w-6 text-amber-400 animate-bounce" /> {t('실시간 전문 상담원 채팅 시작')}
+                                </Button>
+                              )}
+                            </div>
+                          ) : preFilterEstimate >= 400000 ? (
                             <div className="space-y-4">
                               <div className="p-4 bg-amber-400/10 rounded-2xl border border-amber-400/20">
                                 <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">{t('VIP 전용 라이브 헬프')}</p>

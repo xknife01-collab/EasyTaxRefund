@@ -65,7 +65,7 @@ interface GuideStep {
 
 // Fixed sequence 1-? (Will be updated as images are uploaded)
 // Keeping it simple for now, assuming at least one placeholder or first step
-const KAKAO_GUIDE_STEPS: GuideStep[] = [
+export const KAKAO_GUIDE_STEPS: GuideStep[] = [
   ...Array.from({ length: 32 }, (_, i) => ({
     image: `/images/guide/KakaoTalk/kakao_${i + 1}.jpg`,
     markers: [],
