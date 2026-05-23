@@ -22,7 +22,7 @@ export const forms = {
   "LGU+ 알뜰폰": "Mạng giá rẻ LGU+",
   "Legal Policy (결제 및 환불 안내)": "Chính sách pháp lý (Hướng dẫn thanh toán & Hoàn tiền)",
   "PASS 발급 가이드": "Hướng dẫn cấp PASS",
-  "PASS 앱 알림 또는 문자를 확인한 뒤\n아래 버튼을 눌러주세요.": "Vui lòng nhấn nút bên dưới\nsau khi kiểm tra tin nhắn hoặc thông báo ứng dụng PASS.",
+  "PASS 앱 알림 또는 문자를 확인한 뒤\n아래 버튼을 눌러주세요.": "Vui lòng kiểm tra yêu cầu xác thực và nhập mật khẩu trong ứng dụng PASS để hoàn tất xác thực.",
   "PASS 앱 인증 요청 중...": "Đang yêu cầu xác thực ứng dụng PASS...",
   "PASS 앱에서 어떻게 승인하나요? (가이드 보기)": "Làm thế nào để phê duyệt trên ứng dụng PASS? (Xem hướng dẫn)",
   "PASS 앱으로 간편하게": "Dễ dàng qua ứng dụng PASS",
@@ -222,5 +222,5 @@ export const forms = {
   "한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.": "Để đăng nhập vào Cơ quan Thuế Quốc gia Hàn Quốc, bạn bắt buộc phải có chứng chỉ xác thực dưới đây. Chứng chỉ được sử dụng để xác minh danh tính chính chủ, vì vậy nếu bạn chưa có chứng chỉ, vui lòng cấp mới theo hướng dẫn trước khi bắt đầu.",
   "AI Live Tracker": "AI Live Tracker",
   "MM/YY": "MM/YY",
-  "하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Vui lòng kiểm tra thông báo trên ứng dụng Hana Bank (Hana 1Q) và nhấn nút bên dưới."
+  "하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Vui lòng xác nhận thông tin xác thực và nhập mật khẩu trong ứng dụng Hana Bank để hoàn tất xác thực.",
 };

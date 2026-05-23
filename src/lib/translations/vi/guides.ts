@@ -225,7 +225,7 @@ export const guides: Guides = {
   "카메라 권한 팝업이 뜨면 '앱 사용 중에만 허용'을 눌러주세요.": "Nếu hiện thông báo quyền , hãy nhấn 'Chỉ phép dùng ứng dụng'.",
   "카카오 가이드": "Hướng dẫn Kakao",
   "카카오 인증서 사용 시 필요한 My 비밀번호 6자리를 만들어주세요.": "Hãy tạo mật khẩu 6 chữ số chứng nhận Kakao.",
-  "카카오 지갑 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "lòng kiểm thông báo Ví Kakao, đó nhấn nút bên dưới.",
+  "카카오 지갑 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Vui lòng kiểm tra yêu cầu xác thực và nhập mật khẩu trong ứng dụng KakaoTalk để hoàn tất xác thực.",
   "카카오톡 상세 가이드": "Hướng dẫn tiết",
   "카카오톡 시작": "Bắt đầu",
   "카카오톡 앱에서 어떻게 승인하나요? (가이드 보기)": "Làm thế nào để phê duyệt ứng dụng ? ( hướng dẫn)",
@@ -274,4 +274,8 @@ export const guides: Guides = {
   "🎉 축하합니다 🎉\n이제 카카오톡에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!": "🎉 Chúc mừng 🎉 Mọi tác trên đã hoàn tất! Đóng ứng dụng và lại 'Ứng dụng hoàn thuế' để nhấn 'Hoàn tất xác thực' cuối cùng!",
   "🎉 축하합니다 🎉\n이제 하나원큐에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!": "🎉 Chúc mừng! 🎉 Mọi bước tại Hana 1Q đã hoàn tất! Đóng các ứng dụng đang mở, quay lại ứng dụng Easy Tax Refund và nhấn 'Hoàn tất xác thực'!",
   "🎉 축하합니다! 하나인증서 발급이 완료되었습니다.\n\n'확인'을 눌러주세요.": "🎉 Chúc mừng! Việc cấp chứng nhận đã hoàn tất. lòng nhấn 'Xác nhận'.",
+  "인증서 발급/가입 미리보기": "Bản xem trước Cấp chứng chỉ/Đăng ký",
+  "인증 승인 따라하기 가이드": "Hướng dẫn thực hiện phê duyệt xác thực",
+  "이미지를 터치하여 넘기거나 화살표를 눌러 가이드를 확인해 보세요.": "Chạm vào hình ảnh để vuốt hoặc nhấn mũi tên để xem hướng dẫn.",
+  "이 영역을 누르시면 전체 단계 상세 가이드가 열립니다.": "Chạm vào khu vực này để mở hướng dẫn chi tiết từng bước đầy đủ.",
 };

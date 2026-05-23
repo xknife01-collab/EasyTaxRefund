@@ -194,7 +194,7 @@ export const guides: Guides = {
   "카메라 권한 팝업이 뜨면 '앱 사용 중에만 허용'을 눌러주세요.": "When the camera permission popup appears, press 'Allow only while using the app'.",
   "카카오 가이드": "Kakao Guide",
   "카카오 인증서 사용 시 필요한 My 비밀번호 6자리를 만들어주세요.": "Create a 6-digit My Password for using Kakao certificates.",
-  "카카오 지갑 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Please check the Kakao Wallet notification,\nthen press the button below.",
+  "카카오 지갑 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Please check the authentication request and enter your password in the KakaoTalk app to complete the authentication.",
   "카카오톡 상세 가이드": "KakaoTalk Detailed Guide",
   "카카오톡 시작": "Start KakaoTalk",
   "카카오톡 앱에서 어떻게 승인하나요? (가이드 보기)": "How to approve on KakaoTalk app? (View Guide)",
@@ -242,4 +242,8 @@ export const guides: Guides = {
   "🎉 축하합니다 🎉\n이제 카카오톡에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!": "🎉 Congratulations! 🎉\nWork in KakaoTalk is now complete!\n\nClose the app and return to the 'Tax Refund' app,\nthen press 'Verification Complete'!",
   "🎉 축하합니다 🎉\n이제 하나원큐에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!": "🎉 Congratulations! 🎉\nWork in Hana 1Q is now complete!\n\nClose the app and return to the 'Tax Refund' app,\nthen press 'Verification Complete'!",
   "🎉 축하합니다! 하나인증서 발급이 완료되었습니다.\n\n'확인'을 눌러주세요.": "🎉 Congratulations! Hana Certificate issuance is complete.\n\nPlease press 'Confirm'.",
+  "인증서 발급/가입 미리보기": "Certificate Issuance/Sign-up Preview",
+  "인증 승인 따라하기 가이드": "Authentication Approval Follow-along Guide",
+  "이미지를 터치하여 넘기거나 화살표를 눌러 가이드를 확인해 보세요.": "Touch the image to swipe or press the arrows to check the guide.",
+  "이 영역을 누르시면 전체 단계 상세 가이드가 열립니다.": "Tap this area to open the full step-by-step detailed guide.",
 };

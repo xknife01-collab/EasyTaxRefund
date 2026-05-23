@@ -242,4 +242,8 @@ export const guides: Guides = {
   "🎉 축하합니다 🎉\n이제 카카오톡에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!": "🎉 Selamat! 🎉\nPekerjaan di KakaoTalk kini selesai!\n\nTutup aplikasi dan kembali ke aplikasi 'Pengembalian Pajak',\nlalu tekan 'Verifikasi Selesai'!",
   "🎉 축하합니다 🎉\n이제 하나원큐에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!": "🎉 Selamat! 🎉\nPekerjaan di Hana 1Q kini selesai!\n\nTutup aplikasi dan kembali ke aplikasi 'Pengembalian Pajak',\nlalu tekan 'Verifikasi Selesai'!",
   "🎉 축하합니다! 하나인증서 발급이 완료되었습니다.\n\n'확인'을 눌러주세요.": "🎉 Selamat! Penerbitan Sertifikat Hana selesai.\n\nMohon tekan 'Konfirmasi'.",
+  "인증서 발급/가입 미리보기": "Pratinjau Penerbitan Sertifikat/Pendaftaran",
+  "인증 승인 따라하기 가이드": "Panduan Mengikuti Persetujuan Autentikasi",
+  "이미지를 터치하여 넘기거나 화살표를 눌러 가이드를 확인해 보세요.": "Sentuh gambar untuk menggeser atau tekan panah untuk melihat panduan.",
+  "이 영역을 누르시면 전체 단계 상세 가이드가 열립니다.": "Ketuk area ini untuk membuka panduan detail langkah demi langkah yang lengkap.",
 };

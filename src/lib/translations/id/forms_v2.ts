@@ -143,11 +143,11 @@ export const forms = {
   "인증서가 있습니다. 바로 시작하기": "Saya punya sertifikat. Mulai sekarang",
   "중요: 통신사(핸드폰)에 등록된 영문 이름과 외국인 등록증의 이름이 단 한 글자라도 다르면 조회가 불가능합니다.": "Penting: Jika nama bahasa Inggris yang terdaftar di operator seluler berbeda meski hanya satu huruf dari nama di ARC, pengecekan tidak mungkin dilakukan.",
   "나의 환급금 사전 진단": "Diagnosa Awal Pengembalian Saya",
-  "PASS 앱 알림 또는 문자를 확인한 뒤\n아래 버튼을 눌러주세요.": "Silakan periksa notifikasi aplikasi PASS atau SMS lalu tekan tombol di bawah ini.",
+  "PASS 앱 알림 또는 문자를 확인한 뒤\n아래 버튼을 눌러주세요.": "Silakan periksa permintaan autentikasi lalu masukkan kata sandi di aplikasi PASS untuk menyelesaikan autentikasi.",
   "PASS 앱 인증 요청 중...": "Sedang meminta verifikasi aplikasi PASS...",
   "PASS 앱에서 어떻게 승인하나요? (가이드 보기)": "Bagaimana cara menyetujui di aplikasi PASS? (Lihat Panduan)",
   "카카오톡 앱에서 어떻게 승인하나요? (가이드 보기)": "Bagaimana cara menyetujui di aplikasi KakaoTalk? (Lihat Panduan)",
-  "카카오 지갑 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Silakan periksa notifikasi Dompet Kakao lalu tekan tombol di bawah ini.",
+  "카카오 지갑 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Silakan periksa permintaan autentikasi lalu masukkan kata sandi di aplikasi KakaoTalk untuk menyelesaikan autentikasi.",
   "9 step precision diagnostic flow initiated": "Alur diagnostik presisi 9 langkah dimulai.",
   "한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.": "Untuk masuk ke Layanan Pajak Nasional Korea (NTS), Anda harus memiliki salah satu sertifikat autentikasi di bawah ini. Sertifikat ini digunakan untuk memverifikasi identitas Anda, jadi jika Anda belum memilikinya, pastikan untuk mendapatkan sertifikat dengan mengikuti panduan sebelum memulai.",
   "safe_and_secure": "Aman & Terjamin",
@@ -310,6 +310,6 @@ export const forms = {
   "통신사 고객센터 앱(T world, My KT, U+)의 마이페이지에서 정확한 성함(띄어쓰기 포함)을 확인하실 수 있습니다.": "Anda dapat memeriksa nama persis Anda (termasuk spasi) di Halaman Saya pada aplikasi pusat pelanggan operator seluler (T world, My KT, U+).",
   "통신사 앱(T world 등) 마이페이지 예시": "Contoh Halaman Saya pada aplikasi operator seluler (T world, dll.)",
   "통신사 앱에서 확인하기": "Periksa di aplikasi operator seluler",
-  "하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Silakan periksa notifikasi di aplikasi Hana Bank (Hana 1Q) lalu tekan tombol di bawah ini.",
+  "하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Silakan konfirmasi teks autentikasi lalu masukkan kata sandi di aplikasi Hana Bank untuk menyelesaikan autentikasi.",
 
 };

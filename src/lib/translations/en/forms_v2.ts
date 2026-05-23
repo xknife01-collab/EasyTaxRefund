@@ -22,7 +22,7 @@ export const forms_v2 = {
   "LGU+ 알뜰폰": "LGU+ MVNO",
   "Legal Policy (결제 및 환불 안내)": "Legal Policy (Payment & Refund Guide)",
   "PASS 발급 가이드": "PASS Issuance Guide",
-  "PASS 앱 알림 또는 문자를 확인한 뒤\n아래 버튼을 눌러주세요.": "Check the PASS app notification or text message,\nthen press the button below.",
+  "PASS 앱 알림 또는 문자를 확인한 뒤\n아래 버튼을 눌러주세요.": "Please check the authentication request and enter your password in the PASS app to complete the authentication.",
   "PASS 앱 인증 요청 중...": "Requesting PASS app verification...",
   "PASS 앱에서 어떻게 승인하나요? (가이드 보기)": "How to approve in the PASS app? (View Guide)",
   "PASS 앱으로 간편하게": "Easily with the PASS app",
@@ -230,5 +230,5 @@ export const forms_v2 = {
   "취소": "Cancel",
   "AI Live Tracker": "AI Live Tracker",
   "MM/YY": "MM/YY",
-  "하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Please check the notification on the Hana Bank app (Hana 1Q) and press the button below."
+  "하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Verify the authentication text and enter your password in the Hana Bank app to complete the authentication.",
 };

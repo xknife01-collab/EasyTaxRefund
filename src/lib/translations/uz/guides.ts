@@ -242,4 +242,8 @@ export const guides: Guides = {
   "🎉 축하합니다 🎉\n이제 카카오톡에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!": "🎉 Tabriklaymiz! 🎉\nKakaoTalkdagi ish yakunlandi!\n\nIlovani yoping va 'Soliq qaytarish' ilovasiga qayting,\nsoʻngra 'Tasdiqlash yakunlandi' tugmasini bosing!",
   "🎉 축하합니다 🎉\n이제 하나원큐에서의 모든 작업이 끝났습니다!\n\n열려있는 앱을 닫고 '텍스리펀 앱'으로 돌아가\n최종 '인증완료'를 누르세요!": "🎉 Tabriklaymiz! 🎉\nHana 1Qdagi ish yakunlandi!\n\nIlovani yoping va 'Soliq qaytarish' ilovasiga qayting,\nsoʻngra 'Tasdiqlash yakunlandi' tugmasini bosing!",
   "🎉 축하합니다! 하나인증서 발급이 완료되었습니다.\n\n'확인'을 눌러주세요.": "🎉 Tabriklaymiz! Hana sertifikatini chiqarish yakunlandi.\n\nIltimos, 'Tasdiqlash' tugmasini bosing.",
+  "인증서 발급/가입 미리보기": "Sertifikat berish/Ro'yxatdan o'tish ko'rinishi",
+  "인증 승인 따라하기 가이드": "Autentifikatsiyani tasdiqlash bo'yicha ko'rsatma",
+  "이미지를 터치하여 넘기거나 화살표를 눌러 가이드를 확인해 보세요.": "Ko'rsatmani ko'rish uchun rasmni suring yoki ko'rsatkichlarni bosing.",
+  "이 영역을 누르시면 전체 단계 상세 가이드가 열립니다.": "To'liq batafsil ko'rsatmani ochish uchun ushbu hududga bosing.",
 };
