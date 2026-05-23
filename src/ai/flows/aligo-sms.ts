@@ -1,17 +1,19 @@
 'use server';
 
 import axios from 'axios';
-
-// 간단한 인메모리 OTP 저장소 (실 서비스 시 Redis나 DB 사용 권장)
-const otpStore = new Map<string, { code: string, timestamp: number }>();
+import { db } from '@/lib/firebase';
+import { doc, setDoc, getDoc, deleteDoc } from 'firebase/firestore';
 
 export async function sendOtpSms(phone: string) {
   try {
     const cleanPhone = phone.replace(/[^0-9]/g, '');
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
     
-    // 3분 유효기간 저장
-    otpStore.set(cleanPhone, { code: otp, timestamp: Date.now() });
+    // Firestore에 OTP 저장 (서버리스 인스턴스 간 데이터 보존을 위해)
+    await setDoc(doc(db, "otps", cleanPhone), {
+      code: otp,
+      timestamp: Date.now()
+    });
 
     const msg = `[이지택스] 고객포털 로그인 인증번호는 [${otp}]입니다. 타인에게 알리지 마세요.`;
     
@@ -59,7 +61,7 @@ export async function sendOtpSms(phone: string) {
 
     const res = await axios.post('https://apis.aligo.in/send/', params, requestConfig);
 
-    if (res.data.result_code === 1) {
+    if (res.data.result_code === 1 || res.data.result_code === '1') {
       return { success: true };
     } else {
       return { success: false, error: res.data.message };
@@ -71,20 +73,30 @@ export async function sendOtpSms(phone: string) {
 }
 
 export async function verifyOtpSms(phone: string, inputCode: string) {
-  const cleanPhone = phone.replace(/[^0-9]/g, '');
-  const record = otpStore.get(cleanPhone);
-  
-  if (!record) return { success: false, error: '인증 번호를 다시 요청해 주세요.' };
-  
-  if (Date.now() - record.timestamp > 3 * 60 * 1000) { // 3분 초과 시 만료
-    otpStore.delete(cleanPhone);
-    return { success: false, error: '인증 시간이 만료되었습니다. 다시 시도해 주세요.' };
-  }
+  try {
+    const cleanPhone = phone.replace(/[^0-9]/g, '');
+    const docRef = doc(db, "otps", cleanPhone);
+    const docSnap = await getDoc(docRef);
+    
+    if (!docSnap.exists()) {
+      return { success: false, error: '인증 번호를 다시 요청해 주세요.' };
+    }
+    
+    const record = docSnap.data();
+    
+    if (Date.now() - record.timestamp > 3 * 60 * 1000) { // 3분 초과 시 만료
+      await deleteDoc(docRef);
+      return { success: false, error: '인증 시간이 만료되었습니다. 다시 시도해 주세요.' };
+    }
 
-  if (record.code === inputCode) {
-    otpStore.delete(cleanPhone);
-    return { success: true };
+    if (record.code === inputCode) {
+      await deleteDoc(docRef);
+      return { success: true };
+    }
+    
+    return { success: false, error: '인증번호가 일치하지 않습니다.' };
+  } catch (error: any) {
+    console.error('Verify OTP Error:', error.message);
+    return { success: false, error: '인증 확인 중 서버 오류가 발생했습니다.' };
   }
-  
-  return { success: false, error: '인증번호가 일치하지 않습니다.' };
 }
