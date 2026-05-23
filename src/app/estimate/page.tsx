@@ -17,6 +17,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { initiateRefundAuth, completeAuthAndEstimate } from "@/ai/flows/automated-refund-estimate";
 import { extractIdInfo } from "@/ai/flows/ocr-id-flow";
 import { optimizeName } from "@/ai/flows/name-optimization-flow";
+import { translateChatMessage } from "@/ai/flows/chat-translation-flow";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   Loader2,
@@ -392,7 +393,8 @@ export default function EstimatePage() {
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
           isDraft: true,
-          fullName: formData.officialName || '문의고객(익명)'
+          fullName: formData.officialName || '문의고객(익명)',
+          userLanguage: language || 'ko'
         });
         targetDraftId = newDoc.id;
         setDraftAppId(targetDraftId);
@@ -402,9 +404,24 @@ export default function EstimatePage() {
       const text = chatInput.trim();
       setChatInput("");
 
+      let translatedText = null;
+      if (language && language !== 'ko') {
+        try {
+          const res = await translateChatMessage({
+            message: text,
+            sourceLanguage: language,
+            targetLanguage: 'ko'
+          });
+          translatedText = res.translatedMessage;
+        } catch (err) {
+          console.error("Chat translation failed:", err);
+        }
+      }
+
       await addDoc(collection(db, 'applications', targetDraftId, 'chat_messages'), {
         text,
-        sender: 'user',
+        sender: 'User',
+        translatedText,
         timestamp: serverTimestamp()
       });
 
@@ -2546,14 +2563,24 @@ export default function EstimatePage() {
                 </div>
 
                 {chatMessages.map((msg, i) => (
-                  <div key={i} className={cn("flex", msg.sender === 'user' ? "justify-end" : "justify-start")}>
+                  <div key={i} className={cn("flex", msg.sender === 'User' ? "justify-end" : "justify-start")}>
                     <div className={cn(
-                      "p-5 rounded-2xl shadow-sm text-sm font-bold max-w-[85%] leading-relaxed",
-                      msg.sender === 'user'
+                      "relative p-5 rounded-2xl shadow-sm text-sm font-bold max-w-[85%] leading-relaxed",
+                      msg.sender === 'User'
                         ? "bg-slate-900 text-white rounded-tr-none"
                         : "bg-white text-slate-800 border border-slate-200 rounded-tl-none"
                     )}>
-                      {msg.text}
+                      {msg.sender === 'User' ? msg.text : (msg.translatedText || msg.text)}
+                      {msg.sender === 'User' && msg.translatedText && (
+                        <div className="mt-2 text-[10px] opacity-60 font-medium italic border-t border-white/20 pt-2">
+                          Admin see: {msg.translatedText}
+                        </div>
+                      )}
+                      {msg.sender !== 'User' && msg.translatedText && (
+                        <div className="mt-2 text-[10px] text-slate-400 font-medium italic border-t border-slate-50 pt-2">
+                          {t('원문')}: {msg.text}
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))}
