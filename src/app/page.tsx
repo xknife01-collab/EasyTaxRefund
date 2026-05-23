@@ -243,36 +243,39 @@ export default function HomePage() {
                 
                 {/* Tax Exemption Explanation Cards */}
                 <div className="grid md:grid-cols-3 gap-6 text-left pt-4 pb-4">
-                  <div className="bg-white border border-slate-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.04)] rounded-2xl p-6 hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="h-10 w-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-500 shrink-0">
-                        <Coins className="h-5 w-5" />
+                  {/* Card 1: Amber Accent */}
+                  <div className="bg-gradient-to-br from-white via-white to-amber-50/30 border border-amber-100/40 shadow-[0_10px_30px_-10px_rgba(245,158,11,0.05)] rounded-[2rem] p-6 lg:p-8 hover:shadow-[0_20px_40px_-15px_rgba(245,158,11,0.15)] hover:border-amber-200/60 transition-all hover:-translate-y-1 duration-300">
+                    <div className="flex items-center gap-3.5 mb-4">
+                      <div className="h-11 w-11 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-600 shrink-0">
+                        <Coins className="h-6 w-6" />
                       </div>
-                      <h4 className="font-bold text-slate-800 text-lg">{t("어떤 세금을 돌려받나요?")}</h4>
+                      <h4 className="font-extrabold text-slate-800 text-xl">{t("어떤 세금을 돌려받나요?")}</h4>
                     </div>
                     <p className="text-slate-500 text-sm md:text-base font-normal leading-relaxed">
                       {t("매월 월급을 받으실 때 급여명세서의 '소득세(Income Tax)' 항목으로 이미 자동 공제되어 납부된 아까운 내 세금을 다시 돌려받는 것입니다.")}
                     </p>
                   </div>
 
-                  <div className="bg-white border border-slate-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.04)] rounded-2xl p-6 hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="h-10 w-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-500 shrink-0">
-                        <Sparkles className="h-5 w-5" />
+                  {/* Card 2: Indigo Accent */}
+                  <div className="bg-gradient-to-br from-white via-white to-indigo-50/30 border border-indigo-100/40 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.05)] rounded-[2rem] p-6 lg:p-8 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.15)] hover:border-indigo-200/60 transition-all hover:-translate-y-1 duration-300">
+                    <div className="flex items-center gap-3.5 mb-4">
+                      <div className="h-11 w-11 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600 shrink-0">
+                        <Sparkles className="h-6 w-6" />
                       </div>
-                      <h4 className="font-bold text-slate-800 text-lg">{t("얼마나 감면받나요?")}</h4>
+                      <h4 className="font-extrabold text-slate-800 text-xl">{t("얼마나 감면받나요?")}</h4>
                     </div>
                     <p className="text-slate-500 text-sm md:text-base font-normal leading-relaxed">
                       {t("중소기업에 근무하는 청년 외국인 근로자라면 소득세의 90%를 연간 최대 200만 원 한도로 5년 동안(총 최대 1,000만 원) 전액 감면받으실 수 있습니다.")}
                     </p>
                   </div>
 
-                  <div className="bg-white border border-slate-100 shadow-[0_10px_30px_-10px_rgba(0,0,0,0.04)] rounded-2xl p-6 hover:shadow-lg transition-all hover:-translate-y-1 duration-300">
-                    <div className="flex items-center gap-3 mb-3">
-                      <div className="h-10 w-10 bg-emerald-50 rounded-xl flex items-center justify-center text-emerald-500 shrink-0">
-                        <ShieldCheck className="h-5 w-5" />
+                  {/* Card 3: Emerald Accent */}
+                  <div className="bg-gradient-to-br from-white via-white to-emerald-50/30 border border-emerald-100/40 shadow-[0_10px_30px_-10px_rgba(16,185,129,0.05)] rounded-[2rem] p-6 lg:p-8 hover:shadow-[0_20px_40px_-15px_rgba(16,185,129,0.15)] hover:border-emerald-200/60 transition-all hover:-translate-y-1 duration-300">
+                    <div className="flex items-center gap-3.5 mb-4">
+                      <div className="h-11 w-11 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-600 shrink-0">
+                        <ShieldCheck className="h-6 w-6" />
                       </div>
-                      <h4 className="font-bold text-slate-800 text-lg">{t("비자에 불이익은 없나요?")}</h4>
+                      <h4 className="font-extrabold text-slate-800 text-xl">{t("비자에 불이익은 없나요?")}</h4>
                     </div>
                     <p className="text-slate-500 text-sm md:text-base font-normal leading-relaxed">
                       {t("대한민국 세법(조세특례제한법 제30조)에 명시된 정당한 법적 혜택입니다. 세금 체납이 아닌 정상 환급이므로 비자 연장 시 전혀 문제되지 않습니다.")}
