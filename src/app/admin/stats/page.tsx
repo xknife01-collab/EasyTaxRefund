@@ -32,7 +32,8 @@ import {
   Trophy,
   Globe2,
   Target,
-  Zap
+  Zap,
+  Download
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -203,8 +204,11 @@ export default function AdminStatsPage() {
     });
     const nationalityRanking = Object.entries(nationalityRankMap).sort((a,b) => b[1] - a[1]);
 
+    const totalInstalls = dateFilteredDaily.reduce((acc, s) => acc + (s.pwaInstallCount || 0), 0);
+
     return {
       totalVisits,
+      totalInstalls,
       totalAppsGlobal: dateFilteredApps.length,
       countryApps,
       countryPaid,
@@ -292,6 +296,10 @@ export default function AdminStatsPage() {
                   <>
                     <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">전체 방문자 (Global)</p>
                     <p className="text-3xl font-black text-slate-900">{filteredData.totalVisits.toLocaleString()}명</p>
+                    <div className="mt-2 text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                      <Download className="w-3.5 h-3.5 text-indigo-500" />
+                      PWA 앱 설치: {filteredData.totalInstalls.toLocaleString()}건
+                    </div>
                   </>
                 ) : (
                   <>

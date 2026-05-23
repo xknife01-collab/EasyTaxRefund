@@ -96,12 +96,16 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const [apps, setApps] = useState<any[]>([]);
   const [appsLoading, setAppsLoading] = useState(true);
   const [todayVisits, setTodayVisits] = useState(0);
+  const [todayInstalls, setTodayInstalls] = useState(0);
 
   // Firestore 실시간 리스너
   useEffect(() => {
     const todayStr = new Date().toISOString().split('T')[0];
     const visitUnsubscribe = onSnapshot(doc(db, 'daily_stats', todayStr), (doc) => {
-      if (doc.exists()) setTodayVisits(doc.data().visitCount || 0);
+      if (doc.exists()) {
+        setTodayVisits(doc.data().visitCount || 0);
+        setTodayInstalls(doc.data().pwaInstallCount || 0);
+      }
     });
 
     console.log("Requesting Applications Snapshot...");
@@ -278,6 +282,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
 
     return [
       { label: "오늘 방문자", value: `${todayVisits}명`, icon: <RotateCcw className="h-5 w-5" /> },
+      { label: "오늘 PWA 설치", value: `${todayInstalls}건`, icon: <Download className="h-5 w-5 text-indigo-500" /> },
       { label: "오늘 신청 수", value: `${todayApps}건`, icon: <FileText className="h-5 w-5" /> },
       { label: "누적 예상 수수료", value: `₩ ${expectedRevenue.toLocaleString()}`, icon: <Wallet className="h-5 w-5" /> },
       { label: "결제 완료 수익", value: `₩ ${paidRevenue.toLocaleString()}`, icon: <ShieldCheck className="h-5 w-5 text-green-500" /> },
@@ -286,7 +291,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       { label: "파트너 정산 (건당 5만)", value: `₩ ${settlementTaxAccountant.toLocaleString()}`, icon: <Wallet className="h-5 w-5 text-slate-500" /> },
       { label: "환급 성공률", value: `${successRate}%`, icon: <Trophy className="h-5 w-5" /> },
     ];
-  }, [apps, todayVisits]);
+  }, [apps, todayVisits, todayInstalls]);
 
   const LANG_LABEL: Record<string, string> = {
     'ko': '🇰🇷 한국어', 'vi': '🇻🇳 베트남어', 'zh': '🇨🇳 중국어',

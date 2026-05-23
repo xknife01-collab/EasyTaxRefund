@@ -1,5 +1,5 @@
 import { db } from './firebase';
-import { doc, setDoc, increment } from 'firebase/firestore';
+import { doc, setDoc, increment, collection } from 'firebase/firestore';
 
 export interface TrackingData {
   utmSource?: string;
@@ -160,3 +160,34 @@ export async function logLanguageVisit(lang: string): Promise<void> {
     console.error('Error logging language visit:', error);
   }
 }
+
+/**
+ * PWA 설치 완료 이벤트를 기록합니다.
+ * daily_stats에 pwaInstallCount를 증가시키고, pwa_installs 컬렉션에 로그를 개별 생성합니다.
+ */
+export async function logPwaInstall(): Promise<void> {
+  if (typeof window === 'undefined') return;
+  
+  try {
+    const today = new Date().toISOString().split('T')[0];
+    const statRef = doc(db, 'daily_stats', today);
+    
+    // daily_stats 누적 카터 증가
+    await setDoc(statRef, { 
+      pwaInstallCount: increment(1)
+    }, { merge: true });
+
+    // 개별 설치 로그 기록
+    const installsRef = doc(collection(db, 'pwa_installs'));
+    await setDoc(installsRef, {
+      installedAt: new Date().toISOString(),
+      userAgent: navigator.userAgent || 'Unknown',
+      platform: navigator.platform || 'Unknown',
+      applicationId: sessionStorage.getItem('myApplicationId') || null,
+      utmSource: getEffectiveSource()
+    });
+  } catch (error) {
+    console.error('Error logging PWA install:', error);
+  }
+}
+
