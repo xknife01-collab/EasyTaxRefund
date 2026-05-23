@@ -13,7 +13,8 @@ import axios from 'axios';
 const HYPHEN_CONFIG = {
   userId: process.env.HYPHEN_USER_ID || "zkfnth01",
   hKey: process.env.HYPHEN_HKEY || "bebc2c0dfab3266b",
-  baseUrl: "https://api.hyphen.im"
+  baseUrl: "https://api.hyphen.im",
+  gustation: process.env.HYPHEN_GUSTATION || "Y"
 };
 
 const NTS_CONFIG = {
@@ -108,7 +109,7 @@ export async function initiateRefundAuth(input: { userName: string, registration
       headers: {
         "User-Id": HYPHEN_CONFIG.userId,
         "Hkey": HYPHEN_CONFIG.hKey,
-        "Hyphen-Gustation": "Y",
+        ...(HYPHEN_CONFIG.gustation === "Y" ? { "Hyphen-Gustation": "Y" } : {}),
         "Content-Type": "application/json"
       }
     });
@@ -167,7 +168,7 @@ export async function completeAuthAndEstimate(input: {id: string, twoWayInfo: an
       headers: {
         "User-Id": HYPHEN_CONFIG.userId,
         "Hkey": HYPHEN_CONFIG.hKey,
-        "Hyphen-Gustation": "Y",
+        ...(HYPHEN_CONFIG.gustation === "Y" ? { "Hyphen-Gustation": "Y" } : {}),
         "Content-Type": "application/json"
       }
     });
