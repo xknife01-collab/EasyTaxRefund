@@ -47,7 +47,7 @@ import Image from 'next/image';
 
 export default function HomePage() {
   const router = useRouter();
-  const { t, isReady, setLanguage } = useTranslation();
+  const { t, isReady, setLanguage, language } = useTranslation();
   const { toast } = useToast();
   const [question, setQuestion] = useState("");
   const [aiAnswer, setAiAnswer] = useState<string | null>(null);
@@ -91,7 +91,7 @@ export default function HomePage() {
     setAiAnswer(null);
     
     try {
-      const result = await askFaqQuestion({ question });
+      const result = await askFaqQuestion({ question, language });
       setAiAnswer(result.answer);
     } catch (error) {
       toast({
