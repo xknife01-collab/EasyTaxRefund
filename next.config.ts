@@ -8,6 +8,13 @@ const nextConfig: any = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  // Vercel 서버리스 함수 타임아웃 연장 (하이픈 API 간편인증 대기 시간 확보)
+  // Vercel Pro: 최대 300초, Hobby: 최대 60초
+  experimental: {
+    serverActions: {
+      bodySizeLimit: '2mb',
+    },
+  },
   images: {
     remotePatterns: [
       {

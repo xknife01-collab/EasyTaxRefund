@@ -96,6 +96,15 @@ export async function initiateRefundAuth(input: { userName: string, registration
 
     console.log(`[Hyphen] Step 1 Init for ${input.userName} via ${loginOrgCd}`);
 
+    const headers: Record<string, string> = {
+      "user-id": HYPHEN_CONFIG.userId,
+      "Hkey": HYPHEN_CONFIG.hKey,
+      "Content-Type": "application/json"
+    };
+    if (HYPHEN_CONFIG.gustation === "Y") {
+      headers["hyphen-gustation"] = "Y";
+    }
+
     const res = await axios.post(`${HYPHEN_CONFIG.baseUrl}/in0076000300`, {
       loginMethod: "EASY",
       loginOrgCd: loginOrgCd,
@@ -106,29 +115,36 @@ export async function initiateRefundAuth(input: { userName: string, registration
       stepMode: "step",
       step: "init"
     }, {
-      headers: {
-        "User-Id": HYPHEN_CONFIG.userId,
-        "Hkey": HYPHEN_CONFIG.hKey,
-        ...(HYPHEN_CONFIG.gustation === "Y" ? { "Hyphen-Gustation": "Y" } : {}),
-        "Content-Type": "application/json"
-      }
+      headers,
+      timeout: 90000 // 90초 타임아웃 (Vercel Pro 기준)
     });
 
+    console.log("[Hyphen Step1 Response]", JSON.stringify(res.data?.common));
+
     const common = res.data.common;
+    // errYn === 'N' 이면 에러 없음(정상), 'Y' 이면 에러
     if (common?.errYn === 'N') {
+      const stepData = res.data.data?.stepData;
       return {
         success: true,
         id: common.hyphenTrNo,
-        twoWayInfo: { stepData: res.data.data.stepData },
+        twoWayInfo: { stepData },
         message: "휴대폰 인증 요청이 발송되었습니다. 승인 후 로딩이 끝날 때까지 기다려주세요."
       };
     }
 
-    throw new Error(common?.errMsg || "인증 요청 실패");
+    // 에러인 경우 코드와 메시지를 모두 포함하여 throw
+    const errDetail = `[${common?.errCd || 'ERR'}] ${common?.errMsg || '인증 요청 실패'}`;
+    throw new Error(errDetail);
   } catch (error: any) {
-    console.error("[Hyphen Error]", error.message);
+    // axios 에러인 경우 response body도 로깅
+    if (error.response) {
+      console.error("[Hyphen Step1 HTTP Error]", error.response.status, JSON.stringify(error.response.data));
+    } else {
+      console.error("[Hyphen Step1 Error]", error.message);
+    }
     return {
-      success: false, // Changed from true to false to disable demo mode
+      success: false,
       id: "ERROR",
       twoWayInfo: null,
       message: `API 에러: ${error.message}`
@@ -153,6 +169,15 @@ export async function completeAuthAndEstimate(input: {id: string, twoWayInfo: an
 
     console.log(`[Hyphen] Step 2 Sign for ID: ${input.id} via ${loginOrgCd}`);
 
+    const headers2: Record<string, string> = {
+      "user-id": HYPHEN_CONFIG.userId,
+      "Hkey": HYPHEN_CONFIG.hKey,
+      "Content-Type": "application/json"
+    };
+    if (HYPHEN_CONFIG.gustation === "Y") {
+      headers2["hyphen-gustation"] = "Y";
+    }
+
     const res = await axios.post(`${HYPHEN_CONFIG.baseUrl}/in0076000300`, {
       loginMethod: "EASY",
       loginOrgCd: loginOrgCd,
@@ -165,18 +190,18 @@ export async function completeAuthAndEstimate(input: {id: string, twoWayInfo: an
       stepData: input.twoWayInfo.stepData,
       detailYn: "Y"
     }, {
-      headers: {
-        "User-Id": HYPHEN_CONFIG.userId,
-        "Hkey": HYPHEN_CONFIG.hKey,
-        ...(HYPHEN_CONFIG.gustation === "Y" ? { "Hyphen-Gustation": "Y" } : {}),
-        "Content-Type": "application/json"
-      }
+      headers: headers2,
+      timeout: 90000 // 90초 타임아웃
     });
+
+    console.log("[Hyphen Step2 Response]", JSON.stringify(res.data?.common));
 
     const common = res.data.common;
     if (common?.errYn !== 'N') {
+      // 에러 코드별 구체적 처리
       if (common?.errCd === '1201' || common?.errCd === '1202') throw new Error("NAME_MISMATCH");
-      throw new Error(common?.errMsg || "조회 실패");
+      const errDetail = `[${common?.errCd || 'ERR'}] ${common?.errMsg || '조회 실패'}`;
+      throw new Error(errDetail);
     }
 
     // 하이픈 데이터 파싱
