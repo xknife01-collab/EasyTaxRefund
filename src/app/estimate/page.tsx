@@ -1699,10 +1699,11 @@ export default function EstimatePage() {
                   )}
 
                   <div className="grid grid-cols-1 gap-4">
+                    {/* Hana Bank Card */}
                     <div
                       onClick={() => setAuthMethod('hana')}
                       className={cn(
-                        "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
+                        "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex flex-col gap-4 relative overflow-hidden",
                         authMethod === 'hana' ? "bg-emerald-50 border-[#008485] shadow-lg shadow-emerald-500/10" : "bg-white border-slate-100 hover:border-slate-200"
                       )}
                     >
@@ -1711,75 +1712,101 @@ export default function EstimatePage() {
                           {t('외국인 추천')}
                         </div>
                       )}
-                      <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden", authMethod === 'hana' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
-                        <Image src="/images/logo/hana_1q.png" alt="Hana" width={40} height={40} className="w-full h-full object-contain" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center mb-1">
-                          <h4 className={cn("font-black text-lg", authMethod === 'hana' ? "text-[#008485]" : "text-slate-900")}>{t('하나은행 인증서')}</h4>
-                          {authMethod === 'hana' && <CheckCircle2 className="h-5 w-5 text-[#008485]" />}
+                      <div className="flex items-center gap-5 w-full">
+                        <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0", authMethod === 'hana' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
+                          <Image src="/images/logo/hana_1q.png" alt="Hana" width={40} height={40} className="w-full h-full object-contain" />
                         </div>
-                        <p className="text-sm text-slate-500 font-medium">{t("하나은행 앱이 있다면 가장 간편해요")}</p>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center mb-1">
+                            <h4 className={cn("font-black text-lg", authMethod === 'hana' ? "text-[#008485]" : "text-slate-900")}>{t('하나은행 인증서')}</h4>
+                            {authMethod === 'hana' && <CheckCircle2 className="h-5 w-5 text-[#008485]" />}
+                          </div>
+                          <p className="text-sm text-slate-500 font-medium">{t("하나은행 앱이 있다면 가장 간편해요")}</p>
+                        </div>
                       </div>
+
+                      {language === 'ko' && authMethod === 'hana' && (
+                        <div className="mt-1 animate-in fade-in slide-in-from-top-4 duration-500 w-full" onClick={(e) => e.stopPropagation()}>
+                          <EmbeddedAuthGuide
+                            authMethod="hana"
+                            mode="registration"
+                            onClick={() => {
+                              setHanaGuideMode('full');
+                              setIsHanaGuideOpen(true);
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
 
+                    {/* PASS Card */}
                     <div
                       onClick={() => setAuthMethod('app')}
                       className={cn(
-                        "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5",
+                        "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex flex-col gap-4 relative overflow-hidden",
                         authMethod === 'app' ? "bg-red-50 border-red-500 shadow-lg shadow-red-500/10" : "bg-white border-slate-100 hover:border-slate-200"
                       )}
                     >
-                      <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden", authMethod === 'app' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
-                        <Image src="/images/logo/pass.png" alt="PASS" width={40} height={40} className="w-full h-full object-contain" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center mb-1">
-                          <h4 className={cn("font-black text-lg", authMethod === 'app' ? "text-red-700" : "text-slate-900")}>{t('PASS 앱 설치 유저')}</h4>
-                          {authMethod === 'app' && <CheckCircle2 className="h-5 w-5 text-red-600" />}
+                      <div className="flex items-center gap-5 w-full">
+                        <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0", authMethod === 'app' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
+                          <Image src="/images/logo/pass.png" alt="PASS" width={40} height={40} className="w-full h-full object-contain" />
                         </div>
-                        <p className="text-sm text-slate-500 font-medium">{t("SKT, KT, LG 유저 휴대폰인증")}</p>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center mb-1">
+                            <h4 className={cn("font-black text-lg", authMethod === 'app' ? "text-red-700" : "text-slate-900")}>{t('PASS 앱 설치 유저')}</h4>
+                            {authMethod === 'app' && <CheckCircle2 className="h-5 w-5 text-red-600" />}
+                          </div>
+                          <p className="text-sm text-slate-500 font-medium">{t("SKT, KT, LG 유저 휴대폰인증")}</p>
+                        </div>
                       </div>
+
+                      {language === 'ko' && authMethod === 'app' && (
+                        <div className="mt-1 animate-in fade-in slide-in-from-top-4 duration-500 w-full" onClick={(e) => e.stopPropagation()}>
+                          <EmbeddedAuthGuide
+                            authMethod="app"
+                            mode="registration"
+                            onClick={() => {
+                              setIsGuideOpen(true);
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
 
+                    {/* Kakao Card */}
                     <div
                       onClick={() => setAuthMethod('kakao')}
                       className={cn(
-                        "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5",
+                        "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex flex-col gap-4 relative overflow-hidden",
                         authMethod === 'kakao' ? "bg-yellow-50/50 border-[#FEE500] shadow-lg shadow-yellow-500/10" : "bg-white border-slate-100 hover:border-slate-200"
                       )}
                     >
-                      <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden", authMethod === 'kakao' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
-                        <Image src="/images/logo/kakao.png" alt="Kakao" width={40} height={40} className="w-full h-full object-contain" />
-                      </div>
-                      <div className="flex-1">
-                        <div className="flex justify-between items-center mb-1">
-                          <h4 className={cn("font-black text-lg", authMethod === 'kakao' ? "text-[#191919]" : "text-slate-900")}>{t('카카오톡 인증')}</h4>
-                          {authMethod === 'kakao' && <CheckCircle2 className="h-5 w-5 text-[#191919]" />}
+                      <div className="flex items-center gap-5 w-full">
+                        <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0", authMethod === 'kakao' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
+                          <Image src="/images/logo/kakao.png" alt="Kakao" width={40} height={40} className="w-full h-full object-contain" />
                         </div>
-                        <p className={cn("text-sm font-medium", authMethod === 'kakao' ? "text-slate-700" : "text-slate-500")}>{t("카카오페이 지갑 이용자 추천")}</p>
+                        <div className="flex-1">
+                          <div className="flex justify-between items-center mb-1">
+                            <h4 className={cn("font-black text-lg", authMethod === 'kakao' ? "text-[#191919]" : "text-slate-900")}>{t('카카오톡 인증')}</h4>
+                            {authMethod === 'kakao' && <CheckCircle2 className="h-5 w-5 text-[#191919]" />}
+                          </div>
+                          <p className={cn("text-sm font-medium", authMethod === 'kakao' ? "text-slate-700" : "text-slate-500")}>{t("카카오페이 지갑 이용자 추천")}</p>
+                        </div>
                       </div>
+
+                      {language === 'ko' && authMethod === 'kakao' && (
+                        <div className="mt-1 animate-in fade-in slide-in-from-top-4 duration-500 w-full" onClick={(e) => e.stopPropagation()}>
+                          <EmbeddedAuthGuide
+                            authMethod="kakao"
+                            mode="registration"
+                            onClick={() => {
+                              setIsKakaoGuideOpen(true);
+                            }}
+                          />
+                        </div>
+                      )}
                     </div>
                   </div>
-
-                  {language === 'ko' && authMethod && (
-                    <div className="mt-4 animate-in fade-in slide-in-from-top-4 duration-500">
-                      <EmbeddedAuthGuide
-                        authMethod={authMethod}
-                        mode="registration"
-                        onClick={() => {
-                          if (authMethod === 'hana') {
-                            setHanaGuideMode('full');
-                            setIsHanaGuideOpen(true);
-                          } else if (authMethod === 'kakao') {
-                            setIsKakaoGuideOpen(true);
-                          } else {
-                            setIsGuideOpen(true);
-                          }
-                        }}
-                      />
-                    </div>
-                  )}
 
                   <Button onClick={handleInitiateAuth} className="w-full h-20 bg-primary text-2xl font-black rounded-3xl shadow-xl shadow-primary/20" disabled={loading}>
                     {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 요청하기')}
