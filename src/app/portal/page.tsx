@@ -145,11 +145,12 @@ export default function ClientPortal() {
     try {
       let translatedText = null;
       // 사용자 메시지는 항상 관리자를 위해 한국어로 번역 요청
-      if (language !== 'ko') {
+      const userLanguage = currentApp?.userLanguage || language || 'ko';
+      if (userLanguage !== 'ko') {
         try {
           const res = await translateChatMessage({ 
             message: messageToSend, 
-            sourceLanguage: language, 
+            sourceLanguage: userLanguage, 
             targetLanguage: 'ko' 
           });
           translatedText = res.translatedMessage;

@@ -39,6 +39,24 @@ const notificationTranslationPrompt = ai.definePrompt({
 대상 언어: {{{targetLanguage}}}`,
 });
 
+const languageNames: Record<string, string> = {
+  ko: '한국어 (Korean)',
+  vi: '베트남어 (Vietnamese)',
+  zh: '중국어 (Chinese)',
+  km: '캄보디아어 (Khmer/Cambodian)',
+  ne: '네팔어 (Nepali)',
+  uz: '우즈베크어 (Uzbek)',
+  my: '미얀마어 (Burmese)',
+  id: '인도네시아어 (Indonesian)',
+  th: '태국어 (Thai)',
+  en: '영어 (English)',
+  si: '싱할라어 (Sinhala)',
+  mn: '몽골어 (Mongolian)',
+  bn: '벵골어 (Bengali)',
+  kk: '카자흐어 (Kazakh)',
+  ur: '우르두어 (Urdu)',
+};
+
 export const translateNotification = ai.defineFlow(
   {
     name: 'notificationTranslationFlow',
@@ -46,7 +64,11 @@ export const translateNotification = ai.defineFlow(
     outputSchema: TranslationOutputSchema,
   },
   async input => {
-    const {output} = await notificationTranslationPrompt(input);
+    const targetLanguageFull = languageNames[input.targetLanguage] || input.targetLanguage;
+    const {output} = await notificationTranslationPrompt({
+      message: input.message,
+      targetLanguage: targetLanguageFull,
+    });
     if (!output) {
       throw new Error('번역 결과를 생성하지 못했습니다.');
     }
