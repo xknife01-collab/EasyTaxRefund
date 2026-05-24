@@ -1,6 +1,4 @@
 export const forms = {
-  "국세청 시스템 점검 중 (00:00 ~ 06:00)": "NTS tizimi texnik xizmat ko'rsatmoqda (00:00 ~ 06:00)",
-  "오전 6시 이후에 조회하시면 정상적으로 이용하실 수 있습니다.": "Ertalab soat 6 dan keyin so'rov yuboring, xizmatdan odatdagidek foydalanishingiz mumkin bo'ladi.",
   "'{name}'이(가) 클립보드에 복사되었습니다. PASS 앱에 그대로 붙여넣으세요.": "'{name}' klipbordga nusxalandi. PASS ilovasiga xuddi shunday joylashtiring.",
   "'{name}'이(가) 클립보드에 복사되었습니다. 다른 조합으로 다시 인증을 요청하세요.": "'{name}' nusxalandi. Boshqa kombinatsiya bilan qayta urinib ko'ring.",
   "* 실제 개인별 소득 공제 항목에 따라 차이가 발생할 수 있습니다.": "* Farq shaxsiy soliq chegirmalariga bog'liq bo'lishi mumkin.",
@@ -224,6 +222,12 @@ export const forms = {
   "한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.": "Koreya Milliy Soliq Xizmatiga (NTS) kirish uchun sizda quyidagi autentifikatsiya sertifikatlaridan biri bo'lishi kerak. Sertifikat shaxsingizni tasdiqlash uchun ishlatiladi, shuning uchun agar sizda sertifikat bo'lmasa, iltimos, boshlashdan oldin qo'llanmaga muvofiq uni oling.",
   "AI Live Tracker": "AI Live Tracker",
   "MM/YY": "MM/YY",
+  "새로 시작하기": "Yangidan boshlash",
+  "이어서 진행할까요?": "Davom ettirasizmi?",
+  "이어서 하기": "Davom etish",
+  "이전에 진행하던 정보가 있습니다. 아까 하던 곳부터 바로 이어서 할 수 있어요.": "Oldin kiritilgan ma'lumotlar mavjud. Siz to'xtagan joyingizdan davom ettirishingiz mumkin.",
+  "국세청 시스템 점검 중 (00:00 ~ 06:00)": "NTS tizimi texnik xizmat ko'rsatmoqda (00:00 ~ 06:00)",
+  "오전 6시 이후에 조회하시면 정상적으로 이용하실 수 있습니다.": "Ertalab soat 6 dan keyin so'rov yuboring, xizmatdan odatdagidek foydalanishingiz mumkin bo'ladi.",
   "인증서 발급/가입 미리보기": "Sertifikat berish / Ro'yxatdan o'tishni oldindan ko'rish",
   "인증 승인 따라하기 가이드": "Tasdiqlashni tasdiqlash bo'yicha bosqichma-bosqich qo'llanma",
   "설치": "O'rnatish",
@@ -247,5 +251,21 @@ export const forms = {
   "본인 확인 및 로그인": "Shaxsni tasdiqlash va kirish",
   "비밀번호로 로그인": "Parol orqali kirish",
   "번호 수정하기": "Raqamni tahrirlash",
-};
+  "인증서가 스마트폰에 설치되어 있나요?": "Sertifikat smartfoningizga o'rnatilganmi?",
+  "국세청 조회를 위해서는 본인 명의의 인증서가 반드시 필요합니다. 현재 아래 인증서 중 가입된 인증서가 있으신가요?": "Milliy soliq xizmatidan qidirish uchun sizning nomingizdagi sertifikat talab qilinadi. Quyidagi sertifikatlardan birortasi ro'yxatdan o'tganmi?",
+  "💡 지원하는 인증서 종류": "💡 Qo'llab-quvvatlanadigan sertifikat turlari",
+  "네, 이미 가입된 인증서가 있습니다.": "Ha, menda allaqachon ro'yxatdan o'tgan sertifikat bor.",
+  "하나은행, PASS, 카카오톡 인증서 중 하나가 이미 휴대폰에 설치되어 있습니다.": "Hana Bank, PASS yoki KakaoTalk sertifikatlaridan biri telefoningizga o'rnatilgan.",
+  "아니오, 인증서가 없습니다 (설치/발급 필요)": "Yo'q, menda sertifikat yo'q (O'rnatish/Rasmiylashtirish kerak)",
+  "인증서가 없으신다면, 먼저 설치 및 발급을 진행하셔야 환급 조회가 가능합니다.": "Agar sizda sertifikat bo'lmasa, qaytarib beriladigan pulni tekshirish uchun avval uni o'rnatishingiz va rasmiylashtirishingiz kerak.",
+  "국세청 조회를 하려면 아래 인증서 중 하나가 반드시 설치되어 있어야 합니다. 안내에 따라 설치 및 발급을 완료해 주세요.": "Milliy soliq xizmatidan tekshirish uchun quyidagi sertifikatlardan biri o'rnatilgan bo'lishi kerak. O'rnatish va rasmiylashtirishni yakunlash uchun ko'rsatmalarga amal qiling.",
+  "인증서 설치 및 가입을 완료했습니다": "Sertifikat o'rnatish va ro'yxatdan o'tishni yakunladim",
 
+  "인증서가 없으시다면, 먼저 설치 및 발급을 진행하셔야 환급 조회가 가능합니다.": "Agar sizda sertifikat bo'lmasa, qaytarib beriladigan pulni tekshirish uchun avval uni o'rnatishingiz va rasmiylashtirishingiz kerak.",
+  "하나은행": "Hana Bank",
+  "카카오톡": "KakaoTalk",
+  "PASS": "PASS",
+
+  "신분증을 점선에 맞춰주세요": "Iltimos, shaxsiy guvohnomangizni chiziqli maydonga moslang",
+
+};

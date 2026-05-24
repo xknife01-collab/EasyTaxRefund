@@ -1,6 +1,4 @@
 export const forms = {
-  "국세청 시스템 점검 중 (00:00 ~ 06:00)": "Hệ thống NTS đang bảo trì (00:00 ~ 06:00)",
-  "오전 6시 이후에 조회하시면 정상적으로 이용하실 수 있습니다.": "Vui lòng tra cứu sau 6 giờ sáng để sử dụng dịch vụ bình thường.",
   "'{name}'이(가) 클립보드에 복사되었습니다. PASS 앱에 그대로 붙여넣으세요.": "'{name}' đã được sao chép vào bộ nhớ tạm. Vui lòng dán trực tiếp vào ứng dụng PASS.",
   "'{name}'이(가) 클립보드에 복사되었습니다. 다른 조합으로 다시 인증을 요청하세요.": "'{name}' đã được sao chép vào bộ nhớ tạm. Vui lòng thử xác thực lại với tổ hợp tên khác.",
   "* 실제 개인별 소득 공제 항목에 따라 차이가 발생할 수 있습니다.": "* Thực tế có thể có sự khác biệt tùy vào từng cá nhân.",
@@ -224,7 +222,12 @@ export const forms = {
   "한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.": "Để đăng nhập vào Cơ quan Thuế Quốc gia Hàn Quốc, bạn bắt buộc phải có chứng chỉ xác thực dưới đây. Chứng chỉ được sử dụng để xác minh danh tính chính chủ, vì vậy nếu bạn chưa có chứng chỉ, vui lòng cấp mới theo hướng dẫn trước khi bắt đầu.",
   "AI Live Tracker": "AI Live Tracker",
   "MM/YY": "MM/YY",
-  "하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Vui lòng xác nhận thông tin xác thực và nhập mật khẩu trong ứng dụng Hana Bank để hoàn tất xác thực.",
+  "새로 시작하기": "Bắt đầu mới",
+  "이어서 진행할까요?": "Bạn có muốn tiếp tục không?",
+  "이어서 하기": "Tiếp tục",
+  "이전에 진행하던 정보가 있습니다. 아까 하던 곳부터 바로 이어서 할 수 있어요.": "Có thông tin bạn đã làm trước đó. Bạn có thể tiếp tục ngay từ nơi bạn đã dừng lại.",
+  "국세청 시스템 점검 중 (00:00 ~ 06:00)": "Hệ thống NTS đang bảo trì (00:00 ~ 06:00)",
+  "오전 6시 이후에 조회하시면 정상적으로 이용하실 수 있습니다.": "Vui lòng tra cứu sau 6 giờ sáng để sử dụng dịch vụ bình thường.",
   "인증서 발급/가입 미리보기": "Xem trước cấp chứng chỉ / Đăng ký",
   "인증 승인 따라하기 가이드": "Hướng dẫn từng bước phê duyệt xác thực",
   "설치": "Cài đặt",
@@ -248,4 +251,22 @@ export const forms = {
   "본인 확인 및 로그인": "Xác minh danh tính và đăng nhập",
   "비밀번호로 로그인": "Đăng nhập bằng mật khẩu",
   "번호 수정하기": "Sửa số điện thoại",
+  "하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.": "Vui lòng xác nhận thông tin xác thực và nhập mật khẩu trong ứng dụng Hana Bank để hoàn tất xác thực.",
+  "인증서가 스마트폰에 설치되어 있나요?": "Chứng chỉ đã được cài đặt trên điện thoại thông minh của bạn chưa?",
+  "국세청 조회를 위해서는 본인 명의의 인증서가 반드시 필요합니다. 현재 아래 인증서 중 가입된 인증서가 있으신가요?": "Để tra cứu Cục Thuế Quốc gia, bạn bắt buộc phải có chứng chỉ đứng tên mình. Hiện tại bạn đã đăng ký chứng chỉ nào dưới đây chưa?",
+  "💡 지원하는 인증서 종류": "💡 Các loại chứng chỉ được hỗ trợ",
+  "네, 이미 가입된 인증서가 있습니다.": "Có, tôi đã có chứng chỉ đăng ký rồi.",
+  "하나은행, PASS, 카카오톡 인증서 중 하나가 이미 휴대폰에 설치되어 있습니다.": "Một trong các chứng chỉ Hana Bank, PASS, hoặc KakaoTalk đã được cài đặt trên điện thoại của bạn.",
+  "아니오, 인증서가 없습니다 (설치/발급 필요)": "Không, tôi chưa có chứng chỉ (Cần cài đặt/phát hành)",
+  "인증서가 없으신다면, 먼저 설치 및 발급을 진행하셔야 환급 조회가 가능합니다.": "Nếu chưa có chứng chỉ, bạn phải cài đặt và cấp chứng chỉ trước thì mới có thể tra cứu tiền hoàn thuế.",
+  "국세청 조회를 하려면 아래 인증서 중 하나가 반드시 설치되어 있어야 합니다. 안내에 따라 설치 및 발급을 완료해 주세요.": "Để tra cứu Cục Thuế Quốc gia, một trong các chứng chỉ dưới đây phải được cài đặt. Vui lòng làm theo hướng dẫn để hoàn tất cài đặt và cấp chứng chỉ.",
+  "인증서 설치 및 가입을 완료했습니다": "Tôi đã hoàn thành việc cài đặt và đăng ký chứng chỉ",
+
+  "인증서가 없으시다면, 먼저 설치 및 발급을 진행하셔야 환급 조회가 가능합니다.": "Nếu chưa có chứng chỉ, bạn phải cài đặt và cấp chứng chỉ trước thì mới có thể tra cứu tiền hoàn thuế.",
+  "하나은행": "Ngân hàng Hana",
+  "카카오톡": "KakaoTalk",
+  "PASS": "PASS",
+
+  "신분증을 점선에 맞춰주세요": "Vui lòng đặt thẻ cư trú của bạn vào khung nét đứt",
+
 };

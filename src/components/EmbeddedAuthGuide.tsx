@@ -116,7 +116,7 @@ export function EmbeddedAuthGuide({ authMethod, mode = "auth", onClick }: Embedd
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <span className={cn("text-[10px] font-black py-1 px-2.5 rounded-full uppercase tracking-wider", methodBadgeClass)}>
-            {authMethod === "kakao" ? "카카오톡" : authMethod === "hana" ? "하나은행" : "PASS"}
+            {authMethod === "kakao" ? t("카카오톡") : authMethod === "hana" ? t("하나은행") : t("PASS")}
           </span>
           <h4 className="text-sm font-black text-slate-800">
             {mode === "registration" ? t("인증서 발급/가입 미리보기") : t("인증 승인 따라하기 가이드")}
