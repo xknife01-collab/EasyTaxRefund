@@ -188,6 +188,8 @@ export default function EstimatePage() {
     return () => clearInterval(timer);
   }, []);
   const [isVipChatOpen, setIsVipChatOpen] = useState(false);
+  const [isChatInputVisible, setIsChatInputVisible] = useState(false);
+  const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
   const [chatMessages, setChatMessages] = useState<any[]>([]);
   const [chatInput, setChatInput] = useState("");
@@ -453,6 +455,92 @@ export default function EstimatePage() {
       console.error(err);
     } finally {
       setIsChatLoading(false);
+    }
+  };
+
+  const FAQ_REPLIES = [
+    {
+      title: "환급은 어떻게 받나요?",
+      content: "안녕하세요! 숨은 세금 환급금을 찾아 통장으로 받기까지의 전체 핵심 4단계 과정을 안내해 드릴게요. 🚀\n\n1️⃣ [가장 중요] 본인 인증서 설치 및 인증\n고객님의 정확한 환급액을 확인하려면 한국 국세청(NTS) 전산망과 안전하게 연결해야 합니다. 화면의 안내에 따라 카카오톡, PASS, 네이버 등의 인증서를 발급(설치) 하시고 본인 인증을 먼저 꼭 완료해 주세요! (고객님의 정보는 안전하게 보호됩니다.)\n\n2️⃣ 정확한 환급금 확인\n인증이 완료되면, 최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 화면에 즉시 나타납니다.\n\n3️⃣ 수수료 결제 및 계좌 입력 (Step 8 ~ Step 9)\n환급금이 있다면, 세무사 수임료(25%)를 먼저 결제하신 후 환급금을 입금받으실 본인 명의의 은행 계좌번호를 입력해 주세요. (환급이 불가능한 경우 수수료는 100% 환불됩니다.)\n\n4️⃣ 국세청 처리 및 입금 완료\n담당 세무사가 국세청에 신고를 완료하면, 약 1~2개월 뒤에 한국 국세청에서 직접 고객님의 계좌로 돈을 입금해 드립니다.\n\n💬 지금 해야 할 일!\n대화창을 닫고, 화면에 보이는 [인증 수단 선택] 버튼을 눌러 인증서를 먼저 설치해 보세요. 막히는 부분이 있다면 언제든 다시 질문해 주세요!"
+    },
+    {
+      title: "인증서는 꼭 발급받아야 하나요?",
+      content: "네, 선택이 아닌 필수입니다! 🚨\n\n한국 국세청(NTS)은 개인의 민감한 세금 및 금융 정보를 다루기 때문에, 보안이 가장 강력한 '간편 인증서(PASS, 카카오, 네이버 등)'가 없으면 그 누구도 고객님의 세금 기록을 열람할 수 없습니다.\n\n인증서는 국세청 금고를 열어 고객님의 숨은 돈을 확인하는 유일한 '디지털 열쇠'입니다. 🔑\n이 열쇠가 없으면 전문 세무사조차도 고객님의 환급금이 얼마인지 확인하거나 환급을 신청할 방법이 전혀 없습니다. \n\n조금 번거로우시더라도, 소중한 내 돈을 안전하게 돌려받기 위한 필수 정부 보안 절차이니 꼭 안내에 따라 인증서를 발급(설치)해 주시길 부탁드립니다!"
+    },
+    {
+      title: "이지택스, 믿을 수 있나요?",
+      content: "네, 안심하고 이용하셔도 좋습니다! 이지택스를 믿을 수 있는 3가지 확실한 이유를 말씀드릴게요. 🛡️\n\n1️⃣ 100% 한국 국세청(NTS)에서 직접 입금해 드립니다.\n가장 많이 걱정하시는 부분이죠! 저희는 고객님의 환급금에 절대 손대지 않습니다. 신고가 완료되면 환급금은 저희를 거치지 않고, 한국 국세청에서 고객님 본인 명의의 계좌로 직접 송금합니다.\n\n2️⃣ 국가 공인 전문 세무사가 전담합니다.\n모든 환급 절차는 엄격한 자격을 갖춘 대한민국 국가 공인 전문 세무사가 합법적이고 꼼꼼하게 처리합니다.\n\n3️⃣ 철저한 개인정보 보호\n본인 인증과 개인정보는 오직 정부(국세청) 시스템에 세금 환급을 신고하기 위한 목적으로만 사용되며, 철저한 보안 속에 안전하게 보호됩니다.\n\n매년 수많은 외국인 근로자분들이 잘 몰라서 놓치고 있는 '정당하게 돌려받아야 할 내 돈'을 안전하게 찾아드리고 있습니다. 안심하고 화면의 안내에 따라 조회를 시작해 보세요! 👍"
+    },
+    {
+      title: "수수료는 왜 내야 하나요?",
+      content: "수수료 25%는 고객님의 세금을 꼼꼼하게 다시 계산해서 국세청에 대신 신고해 주는 '전문 세무사'의 정당한 수임료(인건비)입니다. 👨‍💼💼\n\n세금 환급은 단순히 버튼만 누른다고 돈이 나오는 것이 아니라, 과거 5년 치의 복잡한 세금 기록을 세무사가 직접 분석하고 국세청에 신고 서류를 제출해야 하는 까다로운 법적 절차입니다. \n\n⚠️ 수수료를 미리 결제해야 하는 진짜 이유!\n고객님의 환급금은 저희를 거치지 않고 '한국 국세청'에서 '고객님의 계좌'로 100% 직접 입금됩니다. 따라서 저희가 환급금에서 수수료를 빼고 입금해 드릴 수가 시스템상 불가능합니다. \n(단, 세무사의 최종 검토 결과 환급이 불가능하다고 판정되면 결제하신 수수료는 100% 즉시 환불해 드립니다!)"
+    },
+    {
+      title: "언제 입금되나요?",
+      content: "환급 신청을 완료하신 후, 실제 통장으로 돈이 입금되기까지는 보통 45일에서 최대 60일 정도 소요됩니다. ⏳\n\n시간이 꽤 걸리는 이유는, 한국 국세청(NTS)의 공무원들이 고객님의 지난 5년 치 세금 기록을 하나하나 꼼꼼히 확인하고 승인하는 심사 기간이 필요하기 때문입니다. (관할 세무서의 업무량에 따라 조금 더 빠르거나 늦어질 수 있습니다.)\n\n환급 진행 상황은 언제든지 이지택스의 [나의 환급 진행사항] 메뉴에서 실시간으로 확인하실 수 있으니 안심하고 기다려 주세요!"
+    },
+    {
+      title: "신분증 사진, 안전한가요?",
+      content: "네, 100% 안전합니다! 신분증 사진이 혹시라도 나쁜 곳에 쓰일까 걱정하시는 마음, 충분히 이해합니다. 이지택스의 철저한 보안 원칙 3가지를 약속드립니다. 🔒\n\n1️⃣ 전송 즉시 영구 삭제 (저장 NO!)\n촬영하신 신분증 사진은 저희 서버나 휴대폰에 절대 '저장'되지 않습니다. 오직 세무서에 본인 확인용으로 제출되는 즉시 영구적으로 파기됩니다.\n\n2️⃣ 국세청(정부) 필수 제출 서류\n한국 국세청(NTS)에서 세금 환급을 승인하려면, '이 사람이 진짜 본인이 맞는지' 확인하기 위해 반드시 신분증 사본을 요구합니다. 저희는 이 필수 서류를 국세청에 대신 내드리는 역할만 할 뿐, 대출이나 휴대폰 개통 등 다른 어떤 목적으로도 절대 사용할 수 없습니다.\n\n3️⃣ 은행급 암호화 보안\n고객님의 모든 정보는 한국의 대형 은행들과 동일한 수준의 강력한 암호화 시스템을 통해 국세청으로만 바로 전송됩니다. \n\n내 소중한 개인정보가 유출될 일은 절대 없으니, 안심하고 안내에 따라 신분증을 촬영해 주세요!"
+    },
+    {
+      title: "환급액이 0원이라고 나오는데 왜 그런가요?",
+      content: "조회 결과 환급액이 0원으로 나오셨나요? 이는 정상적인 결과일 수 있습니다. 📊\n\n세금 환급은 '내가 낸 세금' 중에서 '돌려받을 자격이 있는 세금'을 돌려받는 것입니다. 만약 과거에 다니던 회사에서 연말정산을 완벽하게 잘 처리해주었거나, 납부한 세금 자체가 적었다면 돌려받을 추가 금액(숨은 세금)이 없을 수 있습니다. \n\n이번에는 환급액이 0원이더라도, 내년이나 이직 후에 다시 조회해 보시면 환급금이 발생할 수 있으니 내년에 이지택스를 다시 꼭 찾아주세요!"
+    },
+    {
+      title: "다른 사람 명의 은행 계좌로 받을 수 있나요?",
+      content: "아니요, 절대 불가능합니다! 🚫\n\n금융 사기 및 명의 도용을 방지하기 위해 한국 국세청(NTS)은 '환급을 신청한 본인 이름'과 정확히 일치하는 은행 계좌로만 돈을 입금합니다. \n\n따라서 반드시 환급자 본인 명의로 된 한국 은행 계좌를 입력해 주셔야 하며, 다른 일체의 계좌 번호를 입력하시면 국세청에서 환급금 송금을 거절하게 됩니다."
+    },
+    {
+      title: "이미 한국을 떠났는데 환급받을 수 있나요?",
+      content: "네, 조건만 맞으면 가능합니다! ✈️\n\n비록 현재 한국에 없더라도, 아래 두 가지 조건만 충족하신다면 이지택스를 통해 환급 신청이 가능합니다.\n\n1. 본인 인증 통과: 현재 가입되어 있는 한국 통신사(알뜰폰 포함) 번호를 통해 본인 인증(PASS 문자 등)을 받을 수 있어야 합니다.\n2. 한국 은행 계좌 유지: 환급금을 입금받을 수 있는 본인 명의의 '한국 은행 계좌'가 아직 정지되지 않고 열려 있어야 합니다.\n\n위 두 가지가 가능하시다면 타국에서도 문제없이 앱을 통해 환급을 신청하실 수 있습니다!"
+    }
+  ];
+
+  const handleQuickReply = (index: number) => {
+    setExpandedFaqIndex(prev => prev === index ? null : index);
+    setTimeout(() => {
+      if (chatScrollRef.current) {
+        chatScrollRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' });
+      }
+    }, 150);
+  };
+
+  const handleConnectAdmin = async () => {
+    setIsChatInputVisible(true);
+    let targetDraftId = draftAppId;
+    try {
+      if (!targetDraftId) {
+        const newDoc = await addDoc(collection(db, 'applications'), {
+          status: 'InquiryCompleted',
+          lastStep: step,
+          preFilterEstimate,
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp(),
+          isDraft: true,
+          fullName: formData.officialName || '문의고객(익명)',
+          userLanguage: language || 'ko'
+        });
+        targetDraftId = newDoc.id;
+        setDraftAppId(targetDraftId);
+        localStorage.setItem('currentDraftId', targetDraftId);
+      }
+
+      await addDoc(collection(db, 'applications', targetDraftId, 'chat_messages'), {
+        text: "상담원과 직접 채팅하기",
+        sender: 'User',
+        isAutoReply: true,
+        timestamp: serverTimestamp()
+      });
+
+      await addDoc(collection(db, 'applications', targetDraftId, 'chat_messages'), {
+        text: "전문 상담원으로 연결합니다. 무엇을 도와드릴까요?",
+        sender: 'System',
+        isAutoReply: true,
+        timestamp: serverTimestamp()
+      });
+    } catch (err) {
+      console.error(err);
     }
   };
   useEffect(() => {
@@ -2682,7 +2770,7 @@ export default function EstimatePage() {
                 {chatMessages.map((msg, i) => (
                   <div key={i} className={cn("flex", msg.sender === 'User' ? "justify-end" : "justify-start")}>
                     <div className={cn(
-                      "relative p-5 rounded-2xl shadow-sm text-sm font-bold max-w-[85%] leading-relaxed",
+                      "relative p-5 rounded-2xl shadow-sm text-sm font-bold max-w-[85%] leading-relaxed whitespace-pre-wrap",
                       msg.sender === 'User'
                         ? "bg-slate-900 text-white rounded-tr-none"
                         : "bg-white text-slate-800 border border-slate-200 rounded-tl-none"
@@ -2701,22 +2789,64 @@ export default function EstimatePage() {
                     </div>
                   </div>
                 ))}
+
+                {!isChatInputVisible && (
+                  <div className="mt-8 flex flex-col gap-2 pb-4">
+                    <div className="text-[11px] font-black text-slate-400 mb-1 px-2 uppercase tracking-wider">{t('자주 묻는 질문 (FAQ)')}</div>
+                    {FAQ_REPLIES.map((faq, i) => (
+                      <div key={i} className="flex flex-col">
+                        <button
+                          onClick={() => handleQuickReply(i)}
+                          className={cn(
+                            "bg-white border text-left p-4 text-sm font-bold shadow-sm transition-all flex justify-between items-center group w-full",
+                            expandedFaqIndex === i 
+                              ? "border-amber-400 text-amber-900 rounded-t-2xl rounded-b-none" 
+                              : "border-slate-200 text-slate-700 rounded-2xl hover:border-amber-400 hover:shadow-md active:scale-95"
+                          )}
+                        >
+                          <span className="flex-1 pr-4">{t(faq.title)}</span>
+                          <ChevronRight className={cn(
+                            "h-4 w-4 transition-transform duration-300 shrink-0",
+                            expandedFaqIndex === i ? "rotate-90 text-amber-500" : "text-slate-300 group-hover:text-amber-500"
+                          )} />
+                        </button>
+                        {expandedFaqIndex === i && (
+                          <div className="bg-slate-50 border border-t-0 border-amber-400 rounded-b-2xl p-5 text-sm font-bold text-slate-700 whitespace-pre-wrap leading-relaxed animate-in slide-in-from-top-2 fade-in duration-200 shadow-inner">
+                            {t(faq.content)}
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                    <div className="pt-2">
+                      <button
+                        onClick={handleConnectAdmin}
+                        className="bg-slate-900 border border-slate-900 text-white p-4 rounded-2xl text-left text-sm font-bold shadow-sm hover:bg-slate-800 transition-all active:scale-95 flex justify-between items-center w-full"
+                      >
+                        <span className="flex items-center"><MessageSquare className="h-4 w-4 mr-2" />{t('상담원과 직접 채팅하기')}</span>
+                        <ChevronRight className="h-4 w-4 text-slate-500 shrink-0" />
+                      </button>
+                    </div>
+                  </div>
+                )}
+
                 <div ref={chatScrollRef} />
               </div>
             </ScrollArea>
           </div>
 
-          <form onSubmit={handleSendVipMessage} className="p-6 bg-white border-t border-slate-100 flex gap-3">
-            <Input
-              value={chatInput}
-              onChange={(e) => setChatInput(e.target.value)}
-              placeholder={t('상담 내용을 입력하세요...')}
-              className="h-14 rounded-2xl bg-slate-50 border-none px-6 font-bold"
-            />
-            <Button type="submit" size="icon" className="h-14 w-14 rounded-2xl bg-amber-400 hover:bg-amber-500 shadow-lg shadow-amber-200" disabled={isChatLoading}>
-              <Send className="h-6 w-6 text-amber-950" />
-            </Button>
-          </form>
+          {isChatInputVisible && (
+            <form onSubmit={handleSendVipMessage} className="p-6 bg-white border-t border-slate-100 flex gap-3 z-20 relative">
+              <Input
+                value={chatInput}
+                onChange={(e) => setChatInput(e.target.value)}
+                placeholder={t('상담 내용을 입력하세요...')}
+                className="h-14 rounded-2xl bg-slate-50 border-none px-6 font-bold"
+              />
+              <Button type="submit" size="icon" className="h-14 w-14 rounded-2xl bg-amber-400 hover:bg-amber-500 shadow-lg shadow-amber-200" disabled={isChatLoading}>
+                <Send className="h-6 w-6 text-amber-950" />
+              </Button>
+            </form>
+          )}
         </DialogContent>
       </Dialog>
       <PassGuideModal
