@@ -458,10 +458,11 @@ export default function EstimatePage() {
     }
   };
 
+  // Recompile trigger for translations: 2026-05-29T21:28
   const FAQ_REPLIES = [
     {
       title: "환급은 어떻게 받나요?",
-      content: "안녕하세요! 숨은 세금 환급금을 찾아 통장으로 받기까지의 전체 핵심 4단계 과정을 안내해 드릴게요. 🚀\n\n1️⃣ [가장 중요] 본인 인증서 설치 및 인증\n고객님의 정확한 환급액을 확인하려면 한국 국세청(NTS) 전산망과 안전하게 연결해야 합니다. 화면의 안내에 따라 카카오톡, PASS, 네이버 등의 인증서를 발급(설치) 하시고 본인 인증을 먼저 꼭 완료해 주세요! (고객님의 정보는 안전하게 보호됩니다.)\n\n2️⃣ 정확한 환급금 확인\n인증이 완료되면, 최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 화면에 즉시 나타납니다.\n\n3️⃣ 수수료 결제 및 계좌 입력 (Step 8 ~ Step 9)\n환급금이 있다면, 세무사 수임료(25%)를 먼저 결제하신 후 환급금을 입금받으실 본인 명의의 은행 계좌번호를 입력해 주세요. (환급이 불가능한 경우 수수료는 100% 환불됩니다.)\n\n4️⃣ 국세청 처리 및 입금 완료\n담당 세무사가 국세청에 신고를 완료하면, 약 1~2개월 뒤에 한국 국세청에서 직접 고객님의 계좌로 돈을 입금해 드립니다.\n\n💬 지금 해야 할 일!\n대화창을 닫고, 화면에 보이는 [인증 수단 선택] 버튼을 눌러 인증서를 먼저 설치해 보세요. 막히는 부분이 있다면 언제든 다시 질문해 주세요!"
+      content: "안녕하세요! 숨은 세금 환급금을 찾아 통장으로 받기까지의 전체 핵심 4단계 과정을 안내해 드릴게요. 🚀\n\n1️⃣ [정부 필수] 신분증 확인 및 번호 입력 (Step 1~3)\n대한민국 국세청(NTS)에서 세금 환급 승인을 위해 법적으로 요구하는 필수 절차입니다. 제출하신 신분증 사진은 본인 확인 즉시 시스템에서 영구 파기(저장 NO!)되며, 금융권 수준의 강력한 암호화 보안 기술로 안전하게 보호되니 안심하고 촬영해 주세요.\n\n2️⃣ [가장 중요] 본인 인증서 설치 및 인증 (Step 4~5)\n한국 국세청(NTS) 전산망과 안전하게 연결하기 위해 카카오톡, PASS, 하나은행 등의 인증서로 본인 인증을 완료합니다. (인증서가 없으시면 1분 만에 발급받는 법을 친절히 안내해 드립니다.)\n\n3️⃣ 정확한 환급금 확인 및 결제 (Step 6~8)\n최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 즉시 확인합니다. 환급금이 있다면, 세무사 수임료(25%) 결제를 진행합니다. (환급액이 없으면 결제하신 수수료는 100% 즉시 환불됩니다.)\n\n4️⃣ 계약서 서명 및 입금 신청 (Step 9)\n결제 완료 후, 모바일 서명을 통해 정식 세무대리 수임계약서가 투명하고 안전하게 작성되며 환급금을 입금받으실 본인 통장 계좌번호를 입력합니다. 이후 약 1~2개월 뒤 한국 국세청에서 고객님의 통장으로 환급금을 직접 송금해 드립니다.\n\n💬 지금 해야 할 일!\n대화창을 닫고, 화면에 보이는 [인증 수단 선택] 버튼을 눌러 인증서를 먼저 설치해 보세요. 막히는 부분이 있다면 언제든 다시 질문해 주세요!"
     },
     {
       title: "인증서는 꼭 발급받아야 하나요?",
@@ -1082,11 +1083,17 @@ export default function EstimatePage() {
           <div className="space-y-4">
             <div className="flex justify-between items-end">
               <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5">
-                {step === 0 ? t('나의 환급금 사전 진단') : t('Process {step} / {total}', { step, total: 9 })}
+                {step === 0 
+                  ? t('나의 환급금 사전 진단') 
+                  : step === 0.5 
+                    ? t('세금 환급 절차 안내') 
+                    : t('Process {step} / {total}', { step, total: 9 })}
               </Badge>
-              <span className="text-2xl font-black">{step === 0 ? '0%' : `${Math.round(progressValue)}%`}</span>
+              <span className="text-2xl font-black">
+                {step === 0 ? '0%' : step === 0.5 ? '5%' : `${Math.round(progressValue)}%`}
+              </span>
             </div>
-            <Progress value={step === 0 ? 5 : progressValue} className="h-3" />
+            <Progress value={step === 0 ? 5 : step === 0.5 ? 8 : progressValue} className="h-3" />
           </div>
 
           <div className="relative">
@@ -1198,7 +1205,10 @@ export default function EstimatePage() {
                     </div>
 
                     <Button
-                      onClick={() => { setStep(1); saveProgress(1); }}
+                      onClick={() => {
+                        setStep(0.5);
+                        saveProgress(0.5);
+                      }}
                       className="w-full h-auto min-h-[6rem] py-4 px-6 bg-slate-900 text-2xl font-black rounded-3xl shadow-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98] group whitespace-normal break-words"
                     >
                       <span className="flex-1">{t('이어서 정밀 진단 시작하기')}</span> <ArrowRight className="h-8 w-8 transition-transform group-hover:translate-x-2 shrink-0" />
@@ -1210,6 +1220,103 @@ export default function EstimatePage() {
                 </CardContent>
               </Card>
             )}
+
+            {step === 0.5 && (
+              <Card className="premium-card rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-white animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <CardHeader className="text-center py-10 bg-slate-900 text-white relative">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => { setStep(0); saveProgress(0); }}
+                    className="absolute top-6 left-6 text-white/40 hover:text-white font-bold flex items-center"
+                  >
+                    <ChevronLeft className="h-4 w-4 mr-1" />
+                    {t('이전')}
+                  </Button>
+                  <div className="mx-auto h-20 w-20 bg-white/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-lg border border-white/15">
+                    <Sparkles className="h-10 w-10 text-white" />
+                  </div>
+                  <CardTitle className="text-3xl font-black font-headline tracking-tight">
+                    {t('숨은 세금 환급 과정 안내 🚀')}
+                  </CardTitle>
+                  <CardDescription className="text-slate-400 font-bold text-sm mt-3 leading-relaxed max-w-[340px] mx-auto">
+                    {t('안녕하세요! 숨은 세금 환급금을 찾아 통장으로 받기까지의 전체 핵심 4단계 과정을 안내해 드릴게요.')}
+                  </CardDescription>
+                </CardHeader>
+
+                <CardContent className="p-6 sm:p-10 space-y-8 bg-slate-50/50">
+                  <div className="space-y-6">
+                    {/* Step 1 */}
+                    <div className="flex gap-4 p-5 bg-white rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
+                      <div className="h-12 w-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                        <Camera className="h-6 w-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-[15px] font-black text-slate-900 text-left">
+                          {t('1️⃣ [정부 필수] 신분증 확인 및 번호 입력')} <span className="text-xs text-red-500 font-black ml-1">{t('(Step 1~3)')}</span>
+                        </h4>
+                        <p className="text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
+                          {t('대한민국 국세청(NTS)에서 세금 환급 승인을 위해 법적으로 요구하는 필수 절차입니다. 제출하신 신분증 사진은 본인 확인 즉시 시스템에서 영구 파기(저장 NO!)되며, 금융권 수준의 강력한 암호화 보안 기술로 안전하게 보호되니 안심하고 촬영해 주세요.')}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 2 */}
+                    <div className="flex gap-4 p-5 bg-white rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
+                      <div className="h-12 w-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                        <Lock className="h-6 w-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-[15px] font-black text-slate-900 text-left">
+                          {t('2️⃣ [가장 중요] 본인 인증서 설치 및 인증')} <span className="text-xs text-emerald-600 font-black ml-1">{t('(Step 4~5)')}</span>
+                        </h4>
+                        <p className="text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
+                          {t('한국 국세청(NTS) 전산망과 안전하게 연결하기 위해 카카오톡, PASS, 하나은행 등의 인증서로 본인 인증을 완료합니다. (인증서가 없으시면 1분 만에 발급받는 법을 친절히 안내해 드립니다.)')}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 3 */}
+                    <div className="flex gap-4 p-5 bg-white rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
+                      <div className="h-12 w-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                        <CreditCard className="h-6 w-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-[15px] font-black text-slate-900 text-left">
+                          {t('3️⃣ 정확한 환급금 확인 및 결제')} <span className="text-xs text-blue-600 font-black ml-1">{t('(Step 6~8)')}</span>
+                        </h4>
+                        <p className="text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
+                          {t('최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 즉시 확인합니다. 환급금이 있다면, 세무사 수임료(25%) 결제를 진행합니다. (환급액이 없으면 결제하신 수수료는 100% 즉시 환불됩니다.)')}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Step 4 */}
+                    <div className="flex gap-4 p-5 bg-white rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
+                      <div className="h-12 w-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                        <FileText className="h-6 w-6" />
+                      </div>
+                      <div className="space-y-1">
+                        <h4 className="text-[15px] font-black text-slate-900 text-left">
+                          {t('4️⃣ 계약서 서명 및 입금 신청')} <span className="text-xs text-amber-600 font-black ml-1">{t('(Step 9)')}</span>
+                        </h4>
+                        <p className="text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
+                          {t('결제 완료 후, 모바일 서명을 통해 정식 세무대리 수임계약서가 투명하고 안전하게 작성되며 환급금을 입금받으실 본인 통장 계좌번호를 입력합니다. 이후 약 1~2개월 뒤 한국 국세청에서 고객님의 통장으로 환급금을 직접 송금해 드립니다.')}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => { setStep(1); saveProgress(1); }}
+                    className="w-full h-20 bg-slate-900 hover:bg-slate-800 text-xl font-black rounded-3xl shadow-xl shadow-slate-900/10 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                  >
+                    {t('확인했습니다. 시작하기')} <ArrowRight className="h-6 w-6" />
+                  </Button>
+                </CardContent>
+              </Card>
+            )}
+
             {step === 1 && (
               <Card className="premium-card rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-white">
                 <CardHeader className="text-center py-6 sm:py-10 bg-slate-50/50 border-b border-slate-100">

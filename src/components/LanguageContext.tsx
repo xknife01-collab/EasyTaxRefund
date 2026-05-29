@@ -40,7 +40,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       
       if (res.ok) {
         const data = await res.json();
-        setTranslationMap(data);
+        const normalizedData: Record<string, string> = {};
+        Object.entries(data || {}).forEach(([k, v]) => {
+          normalizedData[k.replace(/\r\n/g, '\n')] = v as string;
+        });
+        setTranslationMap(normalizedData);
         return true;
       }
       return false;
@@ -122,7 +126,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   const t = React.useCallback((key: string, variables?: Record<string, string | number>): string => {
     if (!key || typeof key !== 'string') return '';
-    const trimmedKey = key.trim();
+    const trimmedKey = key.trim().replace(/\r\n/g, '\n');
     let text = translationMap[trimmedKey] || key;
     
     if (variables) {
