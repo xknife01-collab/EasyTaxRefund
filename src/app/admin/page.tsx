@@ -43,6 +43,7 @@ import { MessageSquare, Send, Trash2 } from "lucide-react";
 import { translateChatMessage } from "@/ai/flows/chat-translation-flow";
 import { useTranslation } from "@/components/LanguageContext";
 import { cn } from "@/lib/utils";
+import { getKstDateString } from "@/lib/tracking";
 
 
 import { useToast } from "@/hooks/use-toast";
@@ -100,7 +101,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
 
   // Firestore 실시간 리스너
   useEffect(() => {
-    const todayStr = new Date().toISOString().split('T')[0];
+    const todayStr = getKstDateString();
     const visitUnsubscribe = onSnapshot(doc(db, 'daily_stats', todayStr), (doc) => {
       if (doc.exists()) {
         setTodayVisits(doc.data().visitCount || 0);
@@ -241,19 +242,17 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
 
   const stats = useMemo(() => {
     if (!apps) return [];
-    const today = new Date().toISOString().split('T')[0];
+    const today = getKstDateString();
     
     // Safely extract string representation of dates
     const safeDateString = (dateVal: any) => {
       if (!dateVal) return "";
       if (typeof dateVal === 'string') return dateVal;
       if (dateVal.toDate && typeof dateVal.toDate === 'function') {
-        const d = dateVal.toDate();
-        // Return local YYYY-MM-DD instead of strict UTC ISO string
-        return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+        return getKstDateString(dateVal.toDate());
       }
       if (dateVal instanceof Date) {
-        return `${dateVal.getFullYear()}-${String(dateVal.getMonth() + 1).padStart(2, '0')}-${String(dateVal.getDate()).padStart(2, '0')}`;
+        return getKstDateString(dateVal);
       }
       return String(dateVal);
     };
@@ -610,7 +609,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement("a");
     link.href = url;
-    link.setAttribute("download", `이지텍스_추출자료_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute("download", `이지텍스_추출자료_${getKstDateString()}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
