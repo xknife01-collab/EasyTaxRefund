@@ -113,10 +113,10 @@ export async function logVisit(): Promise<void> {
   if (typeof window === 'undefined') return;
   
   try {
-    const sessionKey = 'etr_visit_logged';
-    if (sessionStorage.getItem(sessionKey)) return;
-
     const today = new Date().toISOString().split('T')[0];
+    const localKey = 'etr_last_visit_date';
+    if (localStorage.getItem(localKey) === today) return;
+
     const statRef = doc(db, 'daily_stats', today);
     
     // 최종 확정 채널명 사용
@@ -128,7 +128,7 @@ export async function logVisit(): Promise<void> {
       [`sourceVisits.${safeSource}`]: increment(1)
     }, { merge: true });
     
-    sessionStorage.setItem(sessionKey, 'true');
+    localStorage.setItem(localKey, today);
   } catch (error) {
     console.error('Error logging visit:', error);
   }
@@ -136,16 +136,16 @@ export async function logVisit(): Promise<void> {
 
 /**
  * 사용자가 언어를 선택했을 때 해당 언어의 방문을 기록합니다.
- * 한 세션에 한 번만 기록되도록 세션 스토리지 체크를 포함합니다.
+ * 하루에 한 번만 기록되도록 로컬 스토리지 체크를 포함합니다.
  */
 export async function logLanguageVisit(lang: string): Promise<void> {
   if (typeof window === 'undefined') return;
   
   try {
-    const sessionKey = `etr_lang_visit_${lang}_logged`;
-    if (sessionStorage.getItem(sessionKey)) return;
-
     const today = new Date().toISOString().split('T')[0];
+    const localKey = `etr_last_lang_visit_${lang}_date`;
+    if (localStorage.getItem(localKey) === today) return;
+
     const statRef = doc(db, 'daily_stats', today);
     
     // 언어 코드 안전화 (ko, vi, zh 등)
@@ -155,7 +155,7 @@ export async function logLanguageVisit(lang: string): Promise<void> {
       [`languageVisits.${safeLang}`]: increment(1)
     }, { merge: true });
 
-    sessionStorage.setItem(sessionKey, 'true');
+    localStorage.setItem(localKey, today);
   } catch (error) {
     console.error('Error logging language visit:', error);
   }
