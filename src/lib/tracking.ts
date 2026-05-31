@@ -1,6 +1,15 @@
 import { db } from './firebase';
 import { doc, setDoc, increment, collection } from 'firebase/firestore';
 
+/**
+ * 한국 시간(KST, UTC+9) 기준의 YYYY-MM-DD 날짜 문자열을 구합니다.
+ */
+export function getKstDateString(date = new Date()): string {
+  const kstOffset = 9 * 60 * 60 * 1000;
+  const kstDate = new Date(date.getTime() + kstOffset);
+  return kstDate.toISOString().split('T')[0];
+}
+
 export interface TrackingData {
   utmSource?: string;
   utmMedium?: string;
@@ -113,7 +122,7 @@ export async function logVisit(): Promise<void> {
   if (typeof window === 'undefined') return;
   
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getKstDateString();
     const localKey = 'etr_last_visit_date';
     if (localStorage.getItem(localKey) === today) return;
 
@@ -142,7 +151,7 @@ export async function logLanguageVisit(lang: string): Promise<void> {
   if (typeof window === 'undefined') return;
   
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getKstDateString();
     const localKey = `etr_last_lang_visit_${lang}_date`;
     if (localStorage.getItem(localKey) === today) return;
 
@@ -169,7 +178,7 @@ export async function logPwaInstall(): Promise<void> {
   if (typeof window === 'undefined') return;
   
   try {
-    const today = new Date().toISOString().split('T')[0];
+    const today = getKstDateString();
     const statRef = doc(db, 'daily_stats', today);
     
     // daily_stats 누적 카터 증가

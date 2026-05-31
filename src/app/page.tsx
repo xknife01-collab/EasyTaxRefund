@@ -231,9 +231,16 @@ export default function HomePage() {
                 <span className="text-sm font-bold text-slate-700 tracking-tight">{t('청년 외국인 세무 지원 • Certified System')}</span>
               </div>
               
+              <div className="bg-primary/5 border border-primary/10 rounded-3xl p-6 md:p-8 max-w-3xl mx-auto animate-fade-in-up">
+                <p 
+                  className="text-xl md:text-2xl font-black text-slate-800 break-keep leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: t('💡 대한민국 정부는 중소기업에서 일하는 청년을 위해, 막강한 세제 혜택을 지원합니다. 매달 월급에서 먼저 차감한 세금 중 소득세 부분을 환급해 주는 "중소기업 청년 소득세 감면"이라는 제도입니다.') }}
+                />
+              </div>
+
               <h1 className="text-4xl md:text-6xl lg:text-[5.5rem] font-black font-headline text-slate-900 text-gradient animate-fade-in-up delay-100 leading-[1.1] break-keep">
                 {t('한국에서 일하는 외국인 청년이라면')}<br />
-                <span className="text-primary">{t('1년에 200만원 한도,')}</span> {t('5년동안,')}<br />
+                <span className="text-primary">{t('1년에 200만원 한도,')}</span> {t('5년동안,')} <span className="text-primary">{t('최대 1000만원까지,')}</span><br />
                 <span className="text-primary">{t('월급에서 차감한 세금 90%')}</span>{t('를 환급을 받을 수 있습니다.')}<br />
                 <span className="text-primary">{t('평균 환급액 300만원이상!')}</span>
               </h1>
@@ -262,11 +269,11 @@ export default function HomePage() {
                       <div className="h-11 w-11 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600 shrink-0">
                         <Sparkles className="h-6 w-6" />
                       </div>
-                      <h4 className="font-extrabold text-slate-800 text-xl">{t("얼마나 감면받나요?")}</h4>
+                      <h4 className="font-extrabold text-slate-800 text-xl">{t("어떻게 돌려받나요?")}</h4>
                     </div>
                     <p 
                       className="text-slate-500 text-sm md:text-base font-normal leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: t("중소기업에 근무하는 청년 외국인 근로자라면 소득세의 90%를 연간 최대 200만 원 한도로 5년 동안(총 최대 1,000만 원) 전액 감면받으실 수 있습니다.") }}
+                      dangerouslySetInnerHTML={{ __html: t("대한민국 국세청 공식 제도인 '경정청구'를 통해 돌려받습니다. 국가 공인 세무사가 복잡한 서류 작성과 신청 과정을 모두 대행하여, 국세청으로부터 세금을 안전하고 확실하게 환급받아 드립니다.") }}
                     />
                   </div>
 
