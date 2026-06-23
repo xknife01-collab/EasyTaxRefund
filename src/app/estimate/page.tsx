@@ -483,29 +483,47 @@ export default function EstimatePage() {
           sendPointerToElement("#step3-carrier-select");
         }, 5800));
         subTimers.push(setTimeout(() => {
-          setFormData(prev => ({ ...prev, carrier: persona.carrier }));
+          sendPointerToElement("#step3-carrier-select", true);
+          const trigger = document.querySelector("#step3-carrier-select") as HTMLButtonElement;
+          if (trigger) trigger.click();
         }, 6700));
         subTimers.push(setTimeout(() => {
+          // Point to carrier option inside the Radix select dropdown
+          const carrierSelector = `[role="option"][data-value="${persona.carrier}"]`;
+          sendPointerToElement(carrierSelector);
+        }, 7700));
+        subTimers.push(setTimeout(() => {
+          const carrierSelector = `[role="option"][data-value="${persona.carrier}"]`;
+          sendPointerToElement(carrierSelector, true);
+          const option = document.querySelector(carrierSelector) as HTMLDivElement;
+          if (option) {
+            option.click();
+          } else {
+            // Fallback if not found in DOM
+            setFormData(prev => ({ ...prev, carrier: persona.carrier }));
+          }
+        }, 8500));
+        subTimers.push(setTimeout(() => {
           scrollToSelector("#step3-suggestion-0");
-        }, 7500));
+        }, 9500));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-suggestion-0");
-        }, 8300));
+        }, 10300));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-suggestion-0", true);
           setFormData(prev => ({ ...prev, authName: persona.name }));
-        }, 9200));
+        }, 11200));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step3-submit-btn");
-        }, 10000));
+        }, 12200));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-submit-btn");
-        }, 10800));
+        }, 13000));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-submit-btn", true);
           const btn = document.querySelector("#step3-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 12000));
+        }, 14200));
 
       } else if (step === 4) {
         // Step 4: Verification Method select
