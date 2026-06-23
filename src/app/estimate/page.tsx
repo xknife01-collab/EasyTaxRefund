@@ -464,37 +464,48 @@ export default function EstimatePage() {
       } else if (step === 3) {
         // Step 3: Identity & Telecom input
         const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
+        if (typeof window !== 'undefined') {
+          window.scrollTo({ top: 0, behavior: 'auto' });
+        }
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step3-phone-input");
+        }, 2500));
+        subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-phone-input");
-        }, 800));
+        }, 3300));
         subTimers.push(setTimeout(() => {
           setFormData(prev => ({ ...prev, phone: persona.phone }));
-        }, 1500));
+        }, 4200));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step3-carrier-select");
+        }, 5000));
+        subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-carrier-select");
-        }, 2300));
+        }, 5800));
         subTimers.push(setTimeout(() => {
           setFormData(prev => ({ ...prev, carrier: persona.carrier }));
-        }, 3000));
+        }, 6700));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step3-suggestion-0");
+        }, 7500));
+        subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-suggestion-0");
-        }, 3800));
+        }, 8300));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-suggestion-0", true);
           setFormData(prev => ({ ...prev, authName: persona.name }));
-        }, 4500));
+        }, 9200));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step3-submit-btn");
+        }, 10000));
+        subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-submit-btn");
-        }, 5300));
+        }, 10800));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-submit-btn", true);
           const btn = document.querySelector("#step3-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 6100));
+        }, 12000));
 
       } else if (step === 4) {
         // Step 4: Verification Method select
@@ -2133,7 +2144,7 @@ export default function EstimatePage() {
                         <div className="space-y-3">
                           <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('통신사')}</Label>
                           <Select onValueChange={(v) => setFormData({ ...formData, carrier: v })}>
-                            <SelectTrigger className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg">
+                            <SelectTrigger id="step3-carrier-select" className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg">
                               <SelectValue placeholder={t('통신사 선택')} />
                             </SelectTrigger>
                             <SelectContent>
