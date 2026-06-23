@@ -428,29 +428,38 @@ export default function EstimatePage() {
       } else if (step === 2) {
         // Step 2: Alien Registration Card Scan / manual input fallback
         const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
+        if (typeof window !== 'undefined') {
+          window.scrollTo({ top: 0, behavior: 'auto' });
+        }
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step2-name-input");
+        }, 2500));
+        subTimers.push(setTimeout(() => {
           sendPointerToElement("#step2-name-input");
-        }, 800));
+        }, 3300));
         subTimers.push(setTimeout(() => {
           setFormData(prev => ({ ...prev, officialName: persona.name }));
-        }, 1500));
+        }, 4200));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step2-reg-input");
+        }, 5000));
+        subTimers.push(setTimeout(() => {
           sendPointerToElement("#step2-reg-input");
-        }, 2300));
+        }, 5800));
         subTimers.push(setTimeout(() => {
           setFormData(prev => ({ ...prev, registrationNumber: "950101-5123456" }));
-        }, 3000));
+        }, 6700));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step2-submit-btn");
+        }, 7500));
+        subTimers.push(setTimeout(() => {
           sendPointerToElement("#step2-submit-btn");
-        }, 3800));
+        }, 8300));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step2-submit-btn", true);
           const btn = document.querySelector("#step2-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 4600));
+        }, 9500));
 
       } else if (step === 3) {
         // Step 3: Identity & Telecom input
@@ -2015,6 +2024,7 @@ export default function EstimatePage() {
                           <p className="text-[10px] text-amber-600 font-bold ml-1">{t('* 정확한 조회를 위해 성과 이름을 꼭 띄어서 입력해 주세요.')}</p>
                         </div>
                         <input
+                          id="step2-name-input"
                           placeholder={t("예: HONG GIL DONG")}
                           value={formData.officialName}
                           onChange={(e) => {
