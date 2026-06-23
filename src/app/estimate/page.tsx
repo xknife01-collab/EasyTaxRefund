@@ -497,11 +497,13 @@ export default function EstimatePage() {
           sendPointerToElement(carrierSelector, true);
           const option = document.querySelector(carrierSelector) as HTMLDivElement;
           if (option) {
+            option.dispatchEvent(new PointerEvent('pointerdown', { bubbles: true, cancelable: true }));
+            option.dispatchEvent(new MouseEvent('mousedown', { bubbles: true, cancelable: true }));
+            option.dispatchEvent(new PointerEvent('pointerup', { bubbles: true, cancelable: true }));
+            option.dispatchEvent(new MouseEvent('mouseup', { bubbles: true, cancelable: true }));
             option.click();
-          } else {
-            // Fallback if not found in DOM
-            setFormData(prev => ({ ...prev, carrier: persona.carrier }));
           }
+          setFormData(prev => ({ ...prev, carrier: persona.carrier }));
         }, 8500));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step3-suggestion-0");
@@ -2161,7 +2163,7 @@ export default function EstimatePage() {
                         </div>
                         <div className="space-y-3">
                           <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('통신사')}</Label>
-                          <Select onValueChange={(v) => setFormData({ ...formData, carrier: v })}>
+                          <Select value={formData.carrier || undefined} onValueChange={(v) => setFormData({ ...formData, carrier: v })}>
                             <SelectTrigger id="step3-carrier-select" className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg">
                               <SelectValue placeholder={t('통신사 선택')} />
                             </SelectTrigger>
