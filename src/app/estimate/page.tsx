@@ -410,17 +410,20 @@ export default function EstimatePage() {
 
       } else if (step === 1) {
         // Step 1: Pre-requisites Checklist
+        if (typeof window !== 'undefined') {
+          window.scrollTo({ top: 0, behavior: 'auto' });
+        }
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step1-submit-btn");
-        }, 1500));
+        }, 2500));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step1-submit-btn");
-        }, 2300));
+        }, 3500));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step1-submit-btn", true);
           const btn = document.querySelector("#step1-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 3500));
+        }, 5000));
 
       } else if (step === 2) {
         // Step 2: Alien Registration Card Scan / manual input fallback
@@ -1849,6 +1852,7 @@ export default function EstimatePage() {
                   <div className="space-y-6">
                     <div className="pt-2">
                       <Button
+                        id="step1-submit-btn"
                         variant="default"
                         onClick={() => { setStep(2); saveProgress(2); }}
                         className="w-full h-16 bg-emerald-600 text-white font-black rounded-2xl hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-2 group"
