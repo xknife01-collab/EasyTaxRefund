@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import dynamic from "next/dynamic";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
@@ -44,6 +45,11 @@ import { logLanguageVisit } from "@/lib/tracking";
 import { useRouter } from "next/navigation";
 import { languages } from '@/lib/translations/config';
 import Image from 'next/image';
+
+const TaxRefundSimulator = dynamic(
+  () => import("@/components/TaxRefundSimulator"),
+  { ssr: false }
+);
 
 export default function HomePage() {
   const router = useRouter();
@@ -305,6 +311,13 @@ export default function HomePage() {
                 </Button>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* 10단계 시뮬레이터 쇼케이스 */}
+        <section className="py-12 bg-slate-50/50">
+          <div className="container mx-auto px-4">
+            <TaxRefundSimulator />
           </div>
         </section>
 

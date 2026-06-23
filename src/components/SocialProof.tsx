@@ -18,9 +18,19 @@ interface Notification {
 
 export function SocialProof() {
   const { t } = useTranslation();
+  const [isSimulation, setIsSimulation] = useState(false);
   const [notification, setNotification] = useState<Notification | null>(null);
   const [isVisible, setIsVisible] = useState(false);
   const [isForcedHidden, setIsForcedHidden] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('simulation') === 'true') {
+        setIsSimulation(true);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     const handleHide = () => setIsForcedHidden(true);
@@ -92,7 +102,7 @@ export function SocialProof() {
     };
   }, [generateNotification]);
 
-  if (!notification || isForcedHidden) return null;
+  if (isSimulation || !notification || isForcedHidden) return null;
 
   return (
     <div

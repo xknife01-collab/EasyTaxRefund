@@ -16,6 +16,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 
 import { initiateRefundAuth, completeAuthAndEstimate } from "@/ai/flows/automated-refund-estimate";
 import { extractIdInfo } from "@/ai/flows/ocr-id-flow";
+import { Language } from "@/lib/translations/config";
+import { PERSONAS } from "@/lib/personas";
 import { optimizeName } from "@/ai/flows/name-optimization-flow";
 import { translateChatMessage } from "@/ai/flows/chat-translation-flow";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -278,6 +280,16 @@ export default function EstimatePage() {
   const signatureCanvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isSigned, setIsSigned] = useState(false);
+  const [bankSelectOpen, setBankSelectOpen] = useState(false);
+  const [isSimulation, setIsSimulation] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('simulation') === 'true';
+    }
+    return false;
+  });
+  const [selectedPersona, setSelectedPersona] = useState<Language>('ko');
+  const [isPlaying, setIsPlaying] = useState(true);
 
   const [authSession, setAuthSession] = useState<{ id: string, twoWayInfo: any } | null>(null);
   const [authMethod, setAuthMethod] = useState<'app' | 'kakao' | 'hana'>('hana');
@@ -305,6 +317,403 @@ export default function EstimatePage() {
     accountHolder: ""
   });
   const [draftAppId, setDraftAppId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      setIsSimulation(searchParams.get('simulation') === 'true');
+      const p = searchParams.get('persona') as Language;
+      if (p) setSelectedPersona(p);
+    }
+  }, []);
+
+  // Autoplay and virtual pointer coordination for simulation mode
+  useEffect(() => {
+    if (!isSimulation || !isPlaying) return;
+
+    let subTimers: NodeJS.Timeout[] = [];
+
+    const runStepAnimation = () => {
+      // Clear any previous timers
+      subTimers.forEach(clearTimeout);
+      subTimers = [];
+
+      if (step === 0) {
+        // Step 0: months selection & salary input simulation
+        // Ensure we start scrolled to the absolute top of the iframe window
+        if (typeof window !== 'undefined') {
+          window.scrollTo({ top: 0, behavior: 'auto' });
+        }
+        // The user wants Step 0 to start at the top of the viewport with a grand animation:
+        // virtual cursor moves to Sparkles icon/Title first, clicks it, then smooth-scrolls to the slider/salary input.
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step0-sparkles");
+        }, 1500));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step0-sparkles", true);
+          // Highlight it/simulate click
+          const sparkles = document.querySelector("#step0-sparkles");
+          if (sparkles) {
+            sparkles.classList.add("scale-125", "rotate-12");
+            setTimeout(() => sparkles.classList.remove("scale-125", "rotate-12"), 500);
+          }
+        }, 3000));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step0-months-slider");
+        }, 4200));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step0-months-slider");
+        }, 5000));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step0-months-slider", true);
+          // Set simulated value for months
+          setPreFilterData(prev => ({ ...prev, workMonths: 12 }));
+        }, 6500));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step0-salary-container");
+        }, 7800));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step0-salary-2"); // Click middle button (e.g. index 2 is 250)
+        }, 8600));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step0-salary-2", true);
+          setPreFilterData(prev => ({ ...prev, avgSalary: 250 }));
+        }, 10200));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step0-submit-btn");
+        }, 11400));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step0-submit-btn");
+        }, 12200));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step0-submit-btn", true);
+          const btn = document.querySelector("#step0-submit-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 14000));
+
+      } else if (step === 0.5) {
+        // Step 0.5: Process Flow Guide
+        if (typeof window !== 'undefined') {
+          window.scrollTo({ top: 0, behavior: 'auto' });
+        }
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step05-submit-btn");
+        }, 2500));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step05-submit-btn");
+        }, 3500));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step05-submit-btn", true);
+          const btn = document.querySelector("#step05-submit-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 5000));
+
+      } else if (step === 1) {
+        // Step 1: Pre-requisites Checklist
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step1-submit-btn");
+        }, 1500));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step1-submit-btn");
+        }, 2300));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step1-submit-btn", true);
+          const btn = document.querySelector("#step1-submit-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 3500));
+
+      } else if (step === 2) {
+        // Step 2: Alien Registration Card Scan / manual input fallback
+        const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step2-name-input");
+          sendPointerToElement("#step2-name-input");
+        }, 800));
+        subTimers.push(setTimeout(() => {
+          setFormData(prev => ({ ...prev, officialName: persona.name }));
+        }, 1500));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step2-reg-input");
+          sendPointerToElement("#step2-reg-input");
+        }, 2300));
+        subTimers.push(setTimeout(() => {
+          setFormData(prev => ({ ...prev, registrationNumber: "950101-5123456" }));
+        }, 3000));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step2-submit-btn");
+          sendPointerToElement("#step2-submit-btn");
+        }, 3800));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step2-submit-btn", true);
+          const btn = document.querySelector("#step2-submit-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 4600));
+
+      } else if (step === 3) {
+        // Step 3: Identity & Telecom input
+        const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step3-phone-input");
+          sendPointerToElement("#step3-phone-input");
+        }, 800));
+        subTimers.push(setTimeout(() => {
+          setFormData(prev => ({ ...prev, phone: persona.phone }));
+        }, 1500));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step3-carrier-select");
+          sendPointerToElement("#step3-carrier-select");
+        }, 2300));
+        subTimers.push(setTimeout(() => {
+          setFormData(prev => ({ ...prev, carrier: persona.carrier }));
+        }, 3000));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step3-suggestion-0");
+          sendPointerToElement("#step3-suggestion-0");
+        }, 3800));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step3-suggestion-0", true);
+          setFormData(prev => ({ ...prev, authName: persona.name }));
+        }, 4500));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step3-submit-btn");
+          sendPointerToElement("#step3-submit-btn");
+        }, 5300));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step3-submit-btn", true);
+          const btn = document.querySelector("#step3-submit-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 6100));
+
+      } else if (step === 4) {
+        // Step 4: Verification Method select
+        const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
+        const methodId = persona.carrier.includes("SKT") || persona.carrier.includes("KT") || persona.carrier.includes("LGU+") ? "pass" : "kakao";
+        let targetId = "step4-method-pass";
+        let targetMethod: 'app' | 'kakao' | 'hana' = 'app';
+        if (persona.bank === "하나은행") {
+          targetId = "step4-method-hana";
+          targetMethod = 'hana';
+        } else if (methodId === "kakao") {
+          targetId = "step4-method-kakao";
+          targetMethod = 'kakao';
+        }
+
+        if (hasCertificate === null) {
+          subTimers.push(setTimeout(() => {
+            scrollToSelector("#step4-cert-yes");
+            sendPointerToElement("#step4-cert-yes");
+          }, 800));
+          subTimers.push(setTimeout(() => {
+            sendPointerToElement("#step4-cert-yes", true);
+            setHasCertificate(true);
+          }, 1600));
+        } else {
+          subTimers.push(setTimeout(() => {
+            scrollToSelector(`#${targetId}`);
+            sendPointerToElement(`#${targetId}`);
+          }, 800));
+          subTimers.push(setTimeout(() => {
+            sendPointerToElement(`#${targetId}`, true);
+            setAuthMethod(targetMethod);
+          }, 1600));
+          subTimers.push(setTimeout(() => {
+            scrollToSelector("#step4-submit-btn");
+            sendPointerToElement("#step4-submit-btn");
+          }, 2400));
+          subTimers.push(setTimeout(() => {
+            sendPointerToElement("#step4-submit-btn", true);
+            const btn = document.querySelector("#step4-submit-btn") as HTMLButtonElement;
+            if (btn) btn.click();
+          }, 3200));
+        }
+
+      } else if (step === 5) {
+        // Step 5: Verification confirm wait state
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step5-submit-btn");
+        }, 1500));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step5-submit-btn");
+        }, 2300));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step5-submit-btn", true);
+          const btn = document.querySelector("#step5-submit-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 3500));
+
+      } else if (step === 6) {
+        // Step 6: Processing / loading screen
+        sendPointerUpdate("50%", "50%", false, 0);
+
+      } else if (step === 7) {
+        // Step 7: Expected Refund Report
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step7-submit-btn");
+        }, 2000));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step7-submit-btn");
+        }, 2800));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step7-submit-btn", true);
+          const btn = document.querySelector("#step7-submit-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 4000));
+
+      } else if (step === 8) {
+        // Step 8: Fee payment / deposit bank transfer selection
+        const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step8-tab-bank");
+        }, 1000));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-tab-bank");
+        }, 1800));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-tab-bank", true);
+          const tab = document.querySelector("#step8-tab-bank") as HTMLButtonElement;
+          if (tab) tab.click();
+        }, 2600));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("input[placeholder='입금자명은 성명과 동일하게 입력']");
+        }, 3400));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("input[placeholder='입금자명은 성명과 동일하게 입력']");
+        }, 4200));
+        subTimers.push(setTimeout(() => {
+          setFormData(prev => ({ ...prev, depositorName: persona.name }));
+        }, 5000));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step8-submit-btn");
+        }, 5800));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-submit-btn");
+        }, 6600));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-submit-btn", true);
+          const btn = document.querySelector("#step8-submit-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 7600));
+
+      } else if (step === 9) {
+        // Step 9: Bank account selection and mobile signature
+        const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step9-bank-select");
+        }, 1000));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step9-bank-select");
+        }, 1800));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step9-bank-select", true);
+          setFormData(prev => ({ ...prev, bankName: persona.bank }));
+        }, 2600));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step9-account-input");
+        }, 3400));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step9-account-input");
+        }, 4200));
+        subTimers.push(setTimeout(() => {
+          setFormData(prev => ({ ...prev, accountNumber: persona.account }));
+        }, 5000));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step9-holder-input");
+        }, 5800));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step9-holder-input");
+        }, 6600));
+        subTimers.push(setTimeout(() => {
+          setFormData(prev => ({ ...prev, accountHolder: persona.name }));
+        }, 7400));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step9-signature-canvas");
+        }, 8200));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step9-signature-canvas");
+        }, 9000));
+        subTimers.push(setTimeout(() => {
+          // Programmatically draw signature
+          const canvas = document.querySelector("#step9-signature-canvas") as HTMLCanvasElement;
+          if (canvas) {
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+              ctx.strokeStyle = "#000000";
+              ctx.lineWidth = 3;
+              ctx.beginPath();
+              ctx.moveTo(50, 100);
+              ctx.quadraticCurveTo(150, 50, 250, 100);
+              ctx.quadraticCurveTo(350, 150, 450, 100);
+              ctx.stroke();
+            }
+          }
+          setIsSigned(true);
+        }, 9800));
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step9-submit-btn");
+        }, 10800));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step9-submit-btn");
+        }, 11600));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step9-submit-btn", true);
+          const btn = document.querySelector("#step9-submit-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 12600));
+      }
+    };
+
+    runStepAnimation();
+
+    return () => {
+      subTimers.forEach(clearTimeout);
+    };
+  }, [step, isPlaying, isSimulation, hasCertificate, selectedPersona]);
+
+  const sendPointerUpdate = (left: string, top: string, click = false, opacity = 1) => {
+    if (typeof window !== 'undefined' && window.parent) {
+      window.parent.postMessage({ type: 'UPDATE_POINTER', left, top, click, opacity }, '*');
+    }
+  };
+
+  const sendPointerToElement = (selector: string, click = false, opacity = 1) => {
+    if (typeof window === 'undefined') return;
+    const el = document.querySelector(selector);
+    if (!el) return;
+    const rect = el.getBoundingClientRect();
+    const left = `${((rect.left + rect.width / 2) / window.innerWidth) * 100}%`;
+    const top = `${((rect.top + rect.height / 2) / window.innerHeight) * 100}%`;
+    sendPointerUpdate(left, top, click, opacity);
+  };
+
+  const scrollToSelector = (selector: string) => {
+    if (typeof window === 'undefined') return;
+    const el = document.querySelector(selector);
+    if (!el) return;
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
+
+  // Sync step change to parent
+  useEffect(() => {
+    if (isSimulation && typeof window !== 'undefined' && window.parent) {
+      window.parent.postMessage({ type: 'STEP_CHANGED', step }, '*');
+    }
+  }, [step, isSimulation]);
+
+  // Listen to parent commands
+  useEffect(() => {
+    if (!isSimulation) return;
+    const handleParentMessage = (event: MessageEvent) => {
+      const data = event.data;
+      if (!data) return;
+      if (data.type === 'SET_PLAYING') {
+        setIsPlaying(data.isPlaying);
+      } else if (data.type === 'JUMP_STEP') {
+        setStep(data.step);
+      }
+    };
+    window.addEventListener('message', handleParentMessage);
+    return () => window.removeEventListener('message', handleParentMessage);
+  }, [isSimulation]);
 
   const progressValue = (step / 9) * 100; // VIP 채팅 실시간 감시 및 동기화
   useEffect(() => {
@@ -335,6 +744,7 @@ export default function EstimatePage() {
 
   // Session Persistence: Auto-save
   useEffect(() => {
+    if (isSimulation) return; // Do not auto-save in simulation mode
     // Only save if we have at least started OCR or entered some info
     if (step > 0 || formData.officialName || formData.phone) {
       const dataToSave = {
@@ -354,6 +764,12 @@ export default function EstimatePage() {
 
   // Session Persistence: Load on mount
   useEffect(() => {
+    // Check URL parameters directly to avoid React state initialization lag
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('simulation') === 'true') return;
+    }
+    if (isSimulation) return;
     const saved = localStorage.getItem("easy_tax_refund_persistence");
     if (saved) {
       try {
@@ -367,7 +783,7 @@ export default function EstimatePage() {
         console.error("Failed to parse resume data:", err);
       }
     }
-  }, []);
+  }, [isSimulation]);
 
   const handleResume = () => {
     if (resumeData) {
@@ -703,6 +1119,7 @@ export default function EstimatePage() {
   };
 
   const saveProgress = async (nextStep: number, isFinal: boolean = false) => {
+    if (isSimulation) return; // Do not save progress in simulation mode
     try {
       const trackingData = getStoredTrackingData();
       const appData = {
@@ -763,6 +1180,12 @@ export default function EstimatePage() {
   };
 
   const handleInitiateAuth = async () => {
+    if (isSimulation) {
+      setStep(5);
+      setAuthSession({ id: "sim-session-id", twoWayInfo: {} });
+      toast({ title: t("인증 요청 성공"), description: t("인증 요청이 성공적으로 전송되었습니다.") });
+      return;
+    }
     // Step 5로 즉시 전환하여 '요청 중' 상태를 보여줌
     setStep(5);
     setLoading(true);
@@ -835,6 +1258,33 @@ export default function EstimatePage() {
     });
   };
   const handleFinalVerifyAndAnalyze = async () => {
+    if (isSimulation) {
+      setStep(6);
+      setAnalysisError(null);
+      setLoading(true);
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      const persona = PERSONAS[selectedPersona || 'ko'] || PERSONAS['ko'];
+      setResult({
+        refundEstimate: persona.refund,
+        resIncomeTax: persona.refund / 1.1,
+        resCompanyIdentityNo1: "123-45-67890",
+        resAttrYear: "2024",
+        resIncomeSpecList: JSON.stringify(persona.breakdown),
+        caseType: "D",
+        details: persona.breakdown.map(b => ({
+          year: b.year,
+          companyName: "(주)가상상사",
+          incomeAmount: 30000000,
+          taxAmount: b.amount / 0.9,
+          deductedAmount: b.amount,
+          isEligible: true
+        }))
+      });
+      setStep(7);
+      saveProgress(7);
+      setLoading(false);
+      return;
+    }
     if (!authSession) return;
     setStep(6);
     setAnalysisError(null);
@@ -952,6 +1402,13 @@ export default function EstimatePage() {
     }
     if (!formData.bankName || !formData.accountNumber.trim() || !formData.accountHolder.trim()) {
       toast({ variant: "destructive", title: t("정보 입력 필요"), description: t("환급 받으실 은행명, 계좌번호, 예금주명을 모두 입력해 주세요.") });
+      return;
+    }
+    if (isSimulation) {
+      setStep(10);
+      if (typeof window !== 'undefined' && window.parent) {
+        window.parent.postMessage({ type: 'STEP_CHANGED', step: 10 }, '*');
+      }
       return;
     }
     setLoading(true);
@@ -1077,9 +1534,9 @@ export default function EstimatePage() {
           </button>
         </div>
       )}
-      <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-8 lg:py-24">
-        <div className="max-w-2xl mx-auto space-y-6 sm:space-y-8">
+      {!isSimulation && <Navbar />}
+      <main className={`flex-1 container mx-auto ${isSimulation ? 'px-2 py-2' : 'px-4 py-8 lg:py-24'}`}>
+        <div className={`max-w-2xl mx-auto ${isSimulation ? 'space-y-3' : 'space-y-6 sm:space-y-8'}`}>
           <div className="space-y-4">
             <div className="flex justify-between items-end">
               <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5">
@@ -1098,19 +1555,19 @@ export default function EstimatePage() {
 
           <div className="relative">
             {step === 0 && (
-              <Card className="premium-card rounded-[3rem] border-none shadow-2xl overflow-hidden bg-white animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <CardHeader className="text-center py-12 bg-slate-900 text-white relative">
+              <Card className="premium-card rounded-2xl sm:rounded-[3rem] border-none shadow-2xl overflow-hidden bg-white animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <CardHeader className="text-center py-6 sm:py-12 bg-slate-900 text-white relative">
                   <div className="absolute top-0 right-0 p-12 opacity-10"><Banknote className="h-64 w-64 text-primary" /></div>
-                  <div className="mx-auto h-16 w-16 bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-primary/20">
+                  <div id="step0-sparkles" className="mx-auto h-16 w-16 bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-primary/20 transition-transform duration-500">
                     <Sparkles className="h-10 w-10 text-white" />
                   </div>
                   <CardTitle className="text-3xl sm:text-4xl font-black font-headline tracking-tight px-4 leading-tight">
                     {t('나의 잠재 환급액')}<br />{t('10초 만에 확인하기')}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-8 sm:p-12 space-y-12">
+                <CardContent className="p-4 sm:p-12 space-y-6 sm:space-y-12">
                   {/* AI Real-time Age Eligibility Display */}
-                  <div className="p-6 bg-primary/5 rounded-[2.5rem] border border-primary/20 relative overflow-hidden animate-in fade-in zoom-in duration-700">
+                  <div className="p-4 sm:p-6 bg-primary/5 rounded-2xl sm:rounded-[2.5rem] border border-primary/20 relative overflow-hidden animate-in fade-in zoom-in duration-700">
                     <div className="absolute top-0 right-0 p-4">
                       <div className="flex items-center gap-2">
                         <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
@@ -1122,14 +1579,14 @@ export default function EstimatePage() {
                         <Sparkles className="h-8 w-8 text-primary" />
                       </div>
                       <div className="space-y-3 text-left">
-                        <p className="font-black text-slate-800 text-[22px] leading-tight">{t('대상 연령 안내 (실시간 업데이트)')}</p>
+                        <p className="font-black text-slate-800 text-lg sm:text-[22px] leading-tight">{t('대상 연령 안내 (실시간 업데이트)')}</p>
                         <div className="flex flex-wrap items-center gap-y-3 gap-x-4">
-                          <Badge className="bg-primary text-white border-none font-black text-[18px] px-6 py-2.5 rounded-2xl shadow-xl shadow-primary/20">
+                          <Badge className="bg-primary text-white border-none font-black text-sm sm:text-[18px] px-3 py-1.5 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-xl shadow-primary/20">
                             {t('만 15세 ~ 34세')}
                           </Badge>
-                          <div className="flex items-center gap-3 bg-white/90 backdrop-blur-sm px-6 py-2.5 rounded-2xl border-2 border-primary/10 shadow-sm">
+                          <div className="flex items-center gap-2 sm:gap-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl border-2 border-primary/10 shadow-sm">
                             <FileText className="h-6 w-6 text-primary/60" />
-                            <p className="text-[20px] font-black text-slate-700 leading-none mt-0.5">
+                            <p className="text-sm sm:text-[20px] font-black text-slate-700 leading-none mt-0.5">
                               {eligibilityRange.start} ~ {eligibilityRange.end}
                             </p>
                           </div>
@@ -1146,7 +1603,7 @@ export default function EstimatePage() {
                       </div>
                       <input
                         type="range" min="1" max="60" step="1"
-                        value={preFilterData.workMonths}
+                        id="step0-months-slider" value={preFilterData.workMonths}
                         onChange={(e) => setPreFilterData({ ...preFilterData, workMonths: parseInt(e.target.value) })}
                         className="w-full h-3 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
                       />
@@ -1162,10 +1619,11 @@ export default function EstimatePage() {
                         <Label className="text-lg font-black text-slate-800">{t('평균 월 급여 (세전)')}</Label>
                         <span className="text-2xl font-black text-primary">{preFilterData.avgSalary}{t('만 원')}</span>
                       </div>
-                      <div className="grid grid-cols-4 gap-2">
-                        {[150, 200, 250, 300, 350, 400, 500, 600].map((val) => (
+                      <div id="step0-salary-container" className="grid grid-cols-4 gap-2">
+                        {[150, 200, 250, 300, 350, 400, 500, 600].map((val, idx) => (
                           <Button
                             key={val}
+                            id={`step0-salary-${idx}`}
                             variant={preFilterData.avgSalary === val ? 'default' : 'outline'}
                             onClick={() => setPreFilterData({ ...preFilterData, avgSalary: val })}
                             className={cn(
@@ -1205,6 +1663,7 @@ export default function EstimatePage() {
                     </div>
 
                     <Button
+                      id="step0-submit-btn"
                       onClick={() => {
                         setStep(0.5);
                         saveProgress(0.5);
@@ -1222,8 +1681,8 @@ export default function EstimatePage() {
             )}
 
             {step === 0.5 && (
-              <Card className="premium-card rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-white animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <CardHeader className="text-center py-10 bg-slate-900 text-white relative">
+              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-white animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <CardHeader className="text-center py-5 sm:py-10 bg-slate-900 text-white relative">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -1236,7 +1695,7 @@ export default function EstimatePage() {
                   <div className="mx-auto h-20 w-20 bg-white/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-lg border border-white/15">
                     <Sparkles className="h-10 w-10 text-white" />
                   </div>
-                  <CardTitle className="text-3xl font-black font-headline tracking-tight">
+                  <CardTitle className="text-2xl sm:text-3xl font-black font-headline tracking-tight">
                     {t('숨은 세금 환급 과정 안내 🚀')}
                   </CardTitle>
                   <CardDescription className="text-slate-400 font-bold text-sm mt-3 leading-relaxed max-w-[340px] mx-auto">
@@ -1244,63 +1703,63 @@ export default function EstimatePage() {
                   </CardDescription>
                 </CardHeader>
 
-                <CardContent className="p-6 sm:p-10 space-y-8 bg-slate-50/50">
-                  <div className="space-y-6">
+                <CardContent className="p-4 sm:p-10 space-y-6 sm:space-y-8 bg-slate-50/50">
+                  <div className="space-y-4 sm:space-y-6">
                     {/* Step 1 */}
-                    <div className="flex gap-4 p-5 bg-white rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
-                      <div className="h-12 w-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
-                        <Camera className="h-6 w-6" />
+                    <div className="flex gap-3 sm:gap-4 p-4 sm:p-5 bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
+                      <div className="h-10 w-10 sm:h-12 sm:w-12 bg-red-50 text-red-500 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                        <Camera className="h-5 w-5 sm:h-6 sm:w-6" />
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-[15px] font-black text-slate-900 text-left">
-                          {t('1️⃣ [정부 필수] 신분증 확인 및 번호 입력')} <span className="text-xs text-red-500 font-black ml-1">{t('(Step 1~3)')}</span>
+                        <h4 className="text-sm sm:text-[15px] font-black text-slate-900 text-left">
+                          {t('1️⃣ [정부 필수] 신분증 확인 및 번호 입력')} <span className="text-[10px] sm:text-xs text-red-500 font-black ml-1">{t('(Step 1~3)')}</span>
                         </h4>
-                        <p className="text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
+                        <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
                           {t('대한민국 국세청(NTS)에서 세금 환급 승인을 위해 법적으로 요구하는 필수 절차입니다. 제출하신 신분증 사진은 본인 확인 즉시 시스템에서 영구 파기(저장 NO!)되며, 금융권 수준의 강력한 암호화 보안 기술로 안전하게 보호되니 안심하고 촬영해 주세요.')}
                         </p>
                       </div>
                     </div>
 
                     {/* Step 2 */}
-                    <div className="flex gap-4 p-5 bg-white rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
-                      <div className="h-12 w-12 bg-emerald-50 text-emerald-500 rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
-                        <Lock className="h-6 w-6" />
+                    <div className="flex gap-3 sm:gap-4 p-4 sm:p-5 bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
+                      <div className="h-10 w-10 sm:h-12 sm:w-12 bg-emerald-50 text-emerald-500 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                        <Lock className="h-5 w-5 sm:h-6 sm:w-6" />
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-[15px] font-black text-slate-900 text-left">
-                          {t('2️⃣ [가장 중요] 본인 인증서 설치 및 인증')} <span className="text-xs text-emerald-600 font-black ml-1">{t('(Step 4~5)')}</span>
+                        <h4 className="text-sm sm:text-[15px] font-black text-slate-900 text-left">
+                          {t('2️⃣ [가장 중요] 본인 인증서 설치 및 인증')} <span className="text-[10px] sm:text-xs text-emerald-600 font-black ml-1">{t('(Step 4~5)')}</span>
                         </h4>
-                        <p className="text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
+                        <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
                           {t('한국 국세청(NTS) 전산망과 안전하게 연결하기 위해 카카오톡, PASS, 하나은행 등의 인증서로 본인 인증을 완료합니다. (인증서가 없으시면 1분 만에 발급받는 법을 친절히 안내해 드립니다.)')}
                         </p>
                       </div>
                     </div>
 
                     {/* Step 3 */}
-                    <div className="flex gap-4 p-5 bg-white rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
-                      <div className="h-12 w-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
-                        <CreditCard className="h-6 w-6" />
+                    <div className="flex gap-3 sm:gap-4 p-4 sm:p-5 bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
+                      <div className="h-10 w-10 sm:h-12 sm:w-12 bg-blue-50 text-blue-500 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                        <CreditCard className="h-5 w-5 sm:h-6 sm:w-6" />
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-[15px] font-black text-slate-900 text-left">
-                          {t('3️⃣ 정확한 환급금 확인 및 결제')} <span className="text-xs text-blue-600 font-black ml-1">{t('(Step 6~8)')}</span>
+                        <h4 className="text-sm sm:text-[15px] font-black text-slate-900 text-left">
+                          {t('3️⃣ 정확한 환급금 확인 및 결제')} <span className="text-[10px] sm:text-xs text-blue-600 font-black ml-1">{t('(Step 6~8)')}</span>
                         </h4>
-                        <p className="text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
+                        <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
                           {t('최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 즉시 확인합니다. 환급금이 있다면, 세무사 수임료(25%) 결제를 진행합니다. (환급액이 없으면 결제하신 수수료는 100% 즉시 환불됩니다.)')}
                         </p>
                       </div>
                     </div>
 
                     {/* Step 4 */}
-                    <div className="flex gap-4 p-5 bg-white rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
-                      <div className="h-12 w-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
-                        <FileText className="h-6 w-6" />
+                    <div className="flex gap-3 sm:gap-4 p-4 sm:p-5 bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
+                      <div className="h-10 w-10 sm:h-12 sm:w-12 bg-amber-50 text-amber-500 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
+                        <FileText className="h-5 w-5 sm:h-6 sm:w-6" />
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-[15px] font-black text-slate-900 text-left">
-                          {t('4️⃣ 계약서 서명 및 입금 신청')} <span className="text-xs text-amber-600 font-black ml-1">{t('(Step 9)')}</span>
+                        <h4 className="text-sm sm:text-[15px] font-black text-slate-900 text-left">
+                          {t('4️⃣ 계약서 서명 및 입금 신청')} <span className="text-[10px] sm:text-xs text-amber-600 font-black ml-1">{t('(Step 9)')}</span>
                         </h4>
-                        <p className="text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
+                        <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
                           {t('결제 완료 후, 모바일 서명을 통해 정식 세무대리 수임계약서가 투명하고 안전하게 작성되며 환급금을 입금받으실 본인 통장 계좌번호를 입력합니다. 이후 약 1~2개월 뒤 한국 국세청에서 고객님의 통장으로 환급금을 직접 송금해 드립니다.')}
                         </p>
                       </div>
@@ -1308,6 +1767,7 @@ export default function EstimatePage() {
                   </div>
 
                   <Button
+                    id="step05-submit-btn"
                     onClick={() => { setStep(1); saveProgress(1); }}
                     className="w-full h-20 bg-slate-900 hover:bg-slate-800 text-xl font-black rounded-3xl shadow-xl shadow-slate-900/10 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98]"
                   >
@@ -1318,8 +1778,8 @@ export default function EstimatePage() {
             )}
 
             {step === 1 && (
-              <Card className="premium-card rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-white">
-                <CardHeader className="text-center py-6 sm:py-10 bg-slate-50/50 border-b border-slate-100">
+              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-white">
+                <CardHeader className="text-center py-4 sm:py-10 bg-slate-50/50 border-b border-slate-100">
                   <div className="mx-auto flex flex-col items-center gap-4">
                     <div className="relative group">
                       <div className="absolute -inset-4 bg-primary/10 rounded-full blur-xl opacity-50" />
@@ -1351,7 +1811,7 @@ export default function EstimatePage() {
                   </div>
                 </CardHeader>
 
-                <CardHeader className="text-center py-8 sm:py-12 bg-white">
+                <CardHeader className="text-center py-4 sm:py-12 bg-white">
                   <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-slate-900 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg">
                     <Sparkles className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
                   </div>
@@ -1362,7 +1822,7 @@ export default function EstimatePage() {
                     {t('성공적인 환급 조회를 위해 아래 사항을 준비해 주세요.')}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="p-6 sm:p-10 space-y-8">
+                <CardContent className="p-4 sm:p-10 space-y-6 sm:space-y-8">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="p-5 bg-emerald-50 rounded-3xl border border-emerald-100 flex items-center gap-4">
                       <div className="h-10 w-10 bg-emerald-500 rounded-xl flex items-center justify-center shrink-0">
@@ -1411,8 +1871,8 @@ export default function EstimatePage() {
             )}
 
             {step === 2 && (
-              <Card className="premium-card rounded-[2.5rem] border-none shadow-sm overflow-hidden">
-                <CardHeader className="text-center bg-slate-50/50 py-6 sm:py-10 border-b border-slate-100 relative">
+              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-sm overflow-hidden">
+                <CardHeader className="text-center bg-slate-50/50 py-4 sm:py-10 border-b border-slate-100 relative">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -1426,7 +1886,7 @@ export default function EstimatePage() {
                   <CardTitle className="text-2xl sm:text-3xl font-black break-keep">{t('Step 2: 외국인등록증 인증')}</CardTitle>
                   <CardDescription className="font-bold text-slate-400 text-xs sm:text-sm">{t('신분증 정보를 확인하여 감면 대상을 판별합니다.')}</CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6 sm:space-y-8 p-6 sm:p-10">
+                <CardContent className="space-y-4 sm:space-y-8 p-4 sm:p-10">
                   {/* Security Assurance Card - Embedded in Step 2 */}
                   <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-primary/10 transition-colors" />
@@ -1566,18 +2026,18 @@ export default function EstimatePage() {
                       </div>
                       <div className="space-y-3">
                         <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('외국인 등록번호')}</Label>
-                        <input value={formData.registrationNumber} maxLength={13} onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })} className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg w-full outline-none focus:ring-2 focus:ring-primary/20" />
+                        <input id="step2-reg-input" value={formData.registrationNumber} maxLength={13} onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })} className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg w-full outline-none focus:ring-2 focus:ring-primary/20" />
                       </div>
                     </div>
-                    <Button type="submit" className="w-full h-16 sm:h-20 bg-slate-900 text-lg sm:text-xl font-black rounded-2xl sm:rounded-3xl shadow-2xl" disabled={loading}>{t('다음 단계로 이동')}</Button>
+                    <Button id="step2-submit-btn" type="submit" className="w-full h-16 sm:h-20 bg-slate-900 text-lg sm:text-xl font-black rounded-2xl sm:rounded-3xl shadow-2xl" disabled={loading}>{t('다음 단계로 이동')}</Button>
                   </form>
                 </CardContent>
               </Card>
             )}
 
             {step === 3 && (
-              <Card className="premium-card rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                <CardHeader className="text-center bg-slate-50/50 py-6 sm:py-10 border-b border-slate-100 relative">
+              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
+                <CardHeader className="text-center bg-slate-50/50 py-4 sm:py-10 border-b border-slate-100 relative">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -1594,7 +2054,7 @@ export default function EstimatePage() {
                     {t('Step 3: 본인 인증 정보 입력')}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-6 sm:p-10 space-y-6 sm:space-y-8">
+                <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8">
                   {/* Security Assurance Card - Embedded in Step 3 */}
                   <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-primary/10 transition-colors" />
@@ -1650,7 +2110,7 @@ export default function EstimatePage() {
                         <div className="space-y-3">
                           <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('휴대폰 번호')}</Label>
                           <input
-                            placeholder="01012345678"
+                            id="step3-phone-input" placeholder="01012345678"
                             className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg w-full outline-none focus:ring-2 focus:ring-primary/20"
                             value={formData.phone}
                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -1735,6 +2195,7 @@ export default function EstimatePage() {
                               {nameSuggestions.map((item, i) => (
                                 <div
                                   key={i}
+                                  id={`step3-suggestion-${i}`}
                                   onClick={() => {
                                     setFormData({ ...formData, authName: item.name });
                                     navigator.clipboard.writeText(item.name);
@@ -1793,7 +2254,7 @@ export default function EstimatePage() {
                         <p className="text-slate-400 text-xs font-bold leading-relaxed">{t('환급금 결과 및 진행 상황을 안전하게 안내해 드립니다.')}</p>
                       </div>
                     </div>
-                    <Button type="submit" className="w-full h-20 sm:h-24 bg-primary text-xl sm:text-2xl font-black rounded-3xl shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all" disabled={loading}>
+                    <Button id="step3-submit-btn" type="submit" className="w-full h-20 sm:h-24 bg-primary text-xl sm:text-2xl font-black rounded-3xl shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all" disabled={loading}>
                       {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('조회 정보 확인 완료')}
                     </Button>
                   </form>
@@ -1802,10 +2263,10 @@ export default function EstimatePage() {
             )}
 
             {step === 4 && (
-              <Card className="premium-card rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
+              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
                 {hasCertificate === null ? (
                   <>
-                    <CardHeader className="text-center py-8 sm:py-12 bg-slate-50/50 relative">
+                    <CardHeader className="text-center py-4 sm:py-12 bg-slate-50/50 relative">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -1844,10 +2305,10 @@ export default function EstimatePage() {
                         </div>
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6 sm:p-10 space-y-6">
+                    <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-6">
                       <div className="grid grid-cols-1 gap-4">
                         <div
-                          onClick={() => setHasCertificate(true)}
+                          id="step4-cert-yes" onClick={() => setHasCertificate(true)}
                           className="p-6 rounded-[2rem] border-2 border-slate-100 hover:border-primary/50 cursor-pointer transition-all flex items-center gap-5 bg-white hover:bg-slate-50/50 shadow-sm hover:shadow"
                         >
                           <div className="h-14 w-14 bg-emerald-50 rounded-2xl flex items-center justify-center shrink-0">
@@ -1864,7 +2325,7 @@ export default function EstimatePage() {
                         </div>
 
                         <div
-                          onClick={() => setHasCertificate(false)}
+                          id="step4-cert-no" onClick={() => setHasCertificate(false)}
                           className="p-6 rounded-[2rem] border-2 border-slate-100 hover:border-amber-500/50 cursor-pointer transition-all flex items-center gap-5 bg-white hover:bg-slate-50/50 shadow-sm hover:shadow"
                         >
                           <div className="h-14 w-14 bg-amber-50 rounded-2xl flex items-center justify-center shrink-0">
@@ -1884,7 +2345,7 @@ export default function EstimatePage() {
                   </>
                 ) : hasCertificate === false ? (
                   <>
-                    <CardHeader className="text-center py-8 sm:py-12 bg-slate-50/50 relative">
+                    <CardHeader className="text-center py-4 sm:py-12 bg-slate-50/50 relative">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -1909,7 +2370,7 @@ export default function EstimatePage() {
                         </div>
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6 sm:p-10 space-y-6 sm:space-y-8">
+                    <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8">
                       {/* Selection Tabs in Guide Mode */}
                       <div className="grid grid-cols-3 gap-2">
                         {/* Hana */}
@@ -1986,7 +2447,7 @@ export default function EstimatePage() {
                   </>
                 ) : (
                   <>
-                    <CardHeader className="text-center py-8 sm:py-12 bg-slate-50/50 relative">
+                    <CardHeader className="text-center py-4 sm:py-12 bg-slate-50/50 relative">
                       <Button
                         variant="ghost"
                         size="sm"
@@ -2008,12 +2469,12 @@ export default function EstimatePage() {
                         </div>
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="p-6 sm:p-10 space-y-6 sm:space-y-8">
+                    <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8">
                       {/* Selection Cards (Middle of CardContent) */}
                       <div className="grid grid-cols-1 gap-4">
                         {/* Hana Bank Card */}
                         <div
-                          onClick={() => setAuthMethod('hana')}
+                          id="step4-method-hana" onClick={() => setAuthMethod('hana')}
                           className={cn(
                             "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
                             authMethod === 'hana' ? "bg-emerald-50 border-[#008485] shadow-lg shadow-emerald-500/10" : "bg-white border-slate-100 hover:border-slate-200"
@@ -2038,7 +2499,7 @@ export default function EstimatePage() {
 
                         {/* PASS Card */}
                         <div
-                          onClick={() => setAuthMethod('app')}
+                          id="step4-method-pass" onClick={() => setAuthMethod('app')}
                           className={cn(
                             "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
                             authMethod === 'app' ? "bg-red-50 border-red-500 shadow-lg shadow-red-500/10" : "bg-white border-slate-100 hover:border-slate-200"
@@ -2058,7 +2519,7 @@ export default function EstimatePage() {
 
                         {/* Kakao Card */}
                         <div
-                          onClick={() => setAuthMethod('kakao')}
+                          id="step4-method-kakao" onClick={() => setAuthMethod('kakao')}
                           className={cn(
                             "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
                             authMethod === 'kakao' ? "bg-yellow-50/50 border-[#FEE500] shadow-lg shadow-yellow-500/10" : "bg-white border-slate-100 hover:border-slate-200"
@@ -2077,7 +2538,7 @@ export default function EstimatePage() {
                         </div>
                       </div>
 
-                      <Button onClick={handleInitiateAuth} className="w-full h-20 bg-primary text-2xl font-black rounded-3xl shadow-xl shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all" disabled={loading}>
+                      <Button id="step4-submit-btn" onClick={handleInitiateAuth} className="w-full h-20 bg-primary text-2xl font-black rounded-3xl shadow-xl shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all" disabled={loading}>
                         {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 요청하기')}
                       </Button>
 
@@ -2096,7 +2557,7 @@ export default function EstimatePage() {
             )}
 
             {step === 5 && (
-              <Card className="premium-card rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
+              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
                 <CardHeader className="text-center py-12 bg-slate-50/50 relative">
                   <Button
                     variant="ghost"
@@ -2118,7 +2579,7 @@ export default function EstimatePage() {
                   </div>
                   <CardTitle className="text-3xl font-black text-slate-900">{t('Step 5: 인증 확인')}</CardTitle>
                 </CardHeader>
-                <CardContent className="p-10 space-y-10">
+                <CardContent className="p-4 sm:p-10 space-y-6 sm:space-y-10">
                   <div className="text-center space-y-8 py-4">
                     {!authSession ? (
                       <div className="space-y-6">
@@ -2225,7 +2686,7 @@ export default function EstimatePage() {
                     </div>
                   )}
 
-                  <Button onClick={handleFinalVerifyAndAnalyze} className="w-full h-20 bg-primary text-2xl font-black rounded-3xl shadow-xl shadow-primary/20" disabled={loading}>
+                  <Button id="step5-submit-btn" onClick={handleFinalVerifyAndAnalyze} className="w-full h-20 bg-primary text-2xl font-black rounded-3xl shadow-xl shadow-primary/20" disabled={loading}>
                     {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 완료 및 데이터 분석')}
                   </Button>
                 </CardContent>
@@ -2233,7 +2694,7 @@ export default function EstimatePage() {
             )}
 
             {step === 6 && !analysisError && (
-              <Card className="premium-card rounded-[3rem] border-none shadow-2xl py-32 text-center bg-slate-900 text-white relative overflow-hidden">
+              <Card className="premium-card rounded-2xl sm:rounded-[3rem] border-none shadow-2xl py-12 sm:py-32 text-center bg-slate-900 text-white relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-2 bg-white/5">
                   <div className="h-full bg-primary animate-[loading_3s_ease-in-out_infinite]" style={{ width: '60%' }} />
                 </div>
@@ -2323,14 +2784,14 @@ export default function EstimatePage() {
 
             {step === 6 && analysisError && (
               <Card className="premium-card rounded-[3rem] border-none shadow-2xl overflow-hidden bg-white">
-                <CardHeader className="text-center py-12 bg-red-50/50 border-b border-red-100">
+                <CardHeader className="text-center py-6 sm:py-12 bg-red-50/50 border-b border-red-100">
                   <div className="mx-auto h-20 w-20 bg-red-100 rounded-3xl flex items-center justify-center mb-6 shadow-sm">
                     <SearchX className="h-10 w-10 text-red-500" />
                   </div>
                   <CardTitle className="text-3xl font-black text-slate-900">{t('AI 오류 진단 리포트')}</CardTitle>
                   <CardDescription className="font-bold text-red-500">{analysisError.title}</CardDescription>
                 </CardHeader>
-                <CardContent className="p-10 space-y-10">
+                <CardContent className="p-4 sm:p-10 space-y-6 sm:space-y-10">
                   <div className="space-y-8">
                     {analysisError.code === "NAME_MISMATCH" && (
                       <div className="grid grid-cols-2 gap-4">
@@ -2442,7 +2903,7 @@ export default function EstimatePage() {
 
             {step === 7 && result && (
               <Card className="premium-card rounded-[3rem] border-none shadow-2xl overflow-hidden bg-white">
-                <CardHeader className="text-center py-16 bg-slate-50/50 relative">
+                <CardHeader className="text-center py-8 sm:py-16 bg-slate-50/50 relative">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -2455,11 +2916,11 @@ export default function EstimatePage() {
                   <div className={`mx-auto h-24 w-24 rounded-[2.5rem] flex items-center justify-center mb-8 shadow-xl ${result.caseType === 'A' ? 'bg-yellow-400' : 'bg-slate-400'}`}>
                     {result.caseType === 'A' ? <Trophy className="h-12 w-12 text-white" /> : <Info className="h-12 w-12 text-white" />}
                   </div>
-                  <CardTitle className="text-4xl lg:text-[2.5rem] font-black font-headline text-slate-900 leading-tight">
+                  <CardTitle className="text-2xl sm:text-4xl lg:text-[2.5rem] font-black font-headline text-slate-900 leading-tight">
                     {t(result.message, { amount: `₩${result.refundEstimate?.toLocaleString()}` })}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-16 py-16 px-10">
+                <CardContent className="space-y-8 sm:space-y-16 py-8 sm:py-16 px-4 sm:px-10">
                   {result.caseType === 'A' && (
                     <div className="text-center space-y-10">
                       <div className="space-y-4">
@@ -2494,7 +2955,7 @@ export default function EstimatePage() {
                       </Button>
                     </div>
                   ) : (
-                    <Button onClick={() => setStep(8)} className="w-full h-24 bg-slate-900 text-2xl lg:text-3xl font-black rounded-[2rem] shadow-2xl flex items-center justify-center gap-4 transition-transform active:scale-95">
+                    <Button id="step7-submit-btn" onClick={() => setStep(8)} className="w-full h-24 bg-slate-900 text-2xl lg:text-3xl font-black rounded-[2rem] shadow-2xl flex items-center justify-center gap-4 transition-transform active:scale-95">
                       {t('지금 환급 신청하기')} <ArrowRight className="h-10 w-10 text-white" />
                     </Button>
                   )}
@@ -2503,8 +2964,8 @@ export default function EstimatePage() {
             )}
 
             {step === 8 && (
-              <Card className="premium-card rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
-                <CardHeader className="text-center py-12 bg-slate-900 text-white relative">
+              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
+                <CardHeader className="text-center py-6 sm:py-12 bg-slate-900 text-white relative">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -2516,7 +2977,7 @@ export default function EstimatePage() {
                   </Button>
                   <CardTitle className="text-3xl font-black font-headline">{t('Step 8: 수수료 결제')}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-10 p-10">
+                <CardContent className="space-y-6 sm:space-y-10 p-4 sm:p-10">
                   <div className="p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 shadow-inner space-y-6">
                     <div className="flex justify-between items-center"><span className="font-bold text-slate-400">{t('총 환급 예정액')}</span><span className="text-2xl font-black text-slate-900">₩ {result?.refundEstimate?.toLocaleString() || 0}</span></div>
                     <Separator className="bg-slate-200" />
@@ -2539,7 +3000,7 @@ export default function EstimatePage() {
                       <Tabs defaultValue="card" className="w-full">
                         <TabsList className="grid w-full grid-cols-2 h-16 bg-slate-100 p-1 rounded-2xl">
                           <TabsTrigger value="card" className="rounded-xl font-bold">{t('신용/체크카드')}</TabsTrigger>
-                          <TabsTrigger value="bank" className="rounded-xl font-bold">{t('무통장 입금')}</TabsTrigger>
+                          <TabsTrigger id="step8-tab-bank" value="bank" className="rounded-xl font-bold">{t('무통장 입금')}</TabsTrigger>
                         </TabsList>
                         <TabsContent value="card" className="pt-8 space-y-8">
                           <div className="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-6">
@@ -2618,7 +3079,7 @@ export default function EstimatePage() {
                               </div>
                             </div>
                           </div>
-                          <Button onClick={() => handlePayment('bank')} className="w-full h-24 bg-slate-900 text-3xl font-black rounded-[2rem] shadow-xl transition-all hover:scale-[1.02]">
+                          <Button id="step8-submit-btn" onClick={() => handlePayment('bank')} className="w-full h-24 bg-slate-900 text-3xl font-black rounded-[2rem] shadow-xl transition-all hover:scale-[1.02]">
                             {t('입금 완료 후 최종 신청하기')}
                           </Button>
                         </TabsContent>
@@ -2630,8 +3091,8 @@ export default function EstimatePage() {
             )}
 
             {step === 9 && (
-              <Card className="premium-card rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
-                <CardHeader className="text-center py-12 bg-slate-900 text-white relative">
+              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
+                <CardHeader className="text-center py-6 sm:py-12 bg-slate-900 text-white relative">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -2641,9 +3102,9 @@ export default function EstimatePage() {
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     {t('이전')}
                   </Button>
-                  <CardTitle className="text-3xl font-black font-headline">{t('Step 9: 최종 신청')}</CardTitle>
+                  <CardTitle className="text-2xl sm:text-3xl font-black font-headline">{t('Step 9: 최종 신청')}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-10 p-10">
+                <CardContent className="space-y-6 sm:space-y-10 p-4 sm:p-10">
                   <Alert className="bg-primary/5 border-primary/20 rounded-[2rem] p-8 shadow-sm">
                     <div className="flex gap-4">
                       <div className="h-12 w-12 bg-primary/10 rounded-2xl flex items-center justify-center shrink-0">
@@ -2662,8 +3123,8 @@ export default function EstimatePage() {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                       <div className="space-y-3">
                         <Label className="text-xs font-black text-primary uppercase tracking-widest ml-1">{t('은행명(대한민국 에서 만든 계좌의 은행명을 꼭 입력해주세요)')}</Label>
-                        <Select onValueChange={(v) => setFormData({ ...formData, bankName: v })} value={formData.bankName}>
-                          <SelectTrigger className="h-16 rounded-2xl font-bold bg-slate-50 border-none px-6 text-lg w-full outline-none focus:ring-2 focus:ring-primary/20">
+                        <Select open={bankSelectOpen} onOpenChange={setBankSelectOpen} onValueChange={(v) => setFormData({ ...formData, bankName: v })} value={formData.bankName}>
+                          <SelectTrigger id="step9-bank-select" className="h-16 rounded-2xl font-bold bg-slate-50 border-none px-6 text-lg w-full outline-none focus:ring-2 focus:ring-primary/20">
                             <SelectValue placeholder={t("은행 선택")} />
                           </SelectTrigger>
                           <SelectContent>
@@ -2733,7 +3194,7 @@ export default function EstimatePage() {
                       <div className="space-y-3">
                         <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('계좌번호')}</Label>
                         <input
-                          placeholder={t('계좌번호를 입력하세요')}
+                          id="step9-account-input" placeholder={t('계좌번호를 입력하세요')}
                           value={formData.accountNumber}
                           onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
                           className="h-16 rounded-2xl font-bold bg-slate-50 border-none px-6 text-lg w-full outline-none focus:ring-2 focus:ring-primary/20"
@@ -2744,7 +3205,7 @@ export default function EstimatePage() {
                     <div className="space-y-3">
                       <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('예금주명')}</Label>
                       <input
-                        placeholder={t('계좌의 예금주 성함을 입력하세요')}
+                        id="step9-holder-input" placeholder={t('계좌의 예금주 성함을 입력하세요')}
                         value={formData.accountHolder}
                         onChange={(e) => setFormData({ ...formData, accountHolder: e.target.value })}
                         className="h-16 rounded-2xl font-bold bg-slate-50 border-none px-6 text-lg w-full outline-none focus:ring-2 focus:ring-primary/20"
@@ -2755,6 +3216,7 @@ export default function EstimatePage() {
                       <Label className="text-xl font-black text-slate-900">{t('전자서명 (세무 대리 수임 동의)')}</Label>
                       <div className="border-2 border-dashed border-slate-200 rounded-[2.5rem] p-6 bg-white shadow-inner">
                         <canvas
+                          id="step9-signature-canvas"
                           ref={signatureCanvasRef}
                           width={500}
                           height={200}
@@ -2770,10 +3232,53 @@ export default function EstimatePage() {
                       {!isSigned && <p className="text-xs font-bold text-red-500 animate-pulse">{t('위 상자에 서명을 완료해야 신청이 가능합니다.')}</p>}
                     </div>
 
-                    <Button type="submit" className="w-full h-24 bg-slate-900 text-3xl font-black rounded-[2rem] shadow-2xl transition-all hover:scale-[1.02]" disabled={loading}>
+                    <Button id="step9-submit-btn" type="submit" className="w-full h-24 bg-slate-900 text-2xl lg:text-3xl font-black rounded-[2rem] shadow-2xl transition-all hover:scale-[1.02]" disabled={loading}>
                       {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('최종 신청 완료')}
                     </Button>
                   </form>
+                </CardContent>
+              </Card>
+            )}
+
+            {step === 10 && (
+              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-white animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <CardHeader className="text-center py-6 sm:py-12 bg-slate-900 text-white relative">
+                  <div className="absolute top-0 right-0 p-12 opacity-10"><ShieldCheck className="h-64 w-64 text-primary" /></div>
+                  <div className="mx-auto h-16 w-16 bg-emerald-500 rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-emerald-500/20">
+                    <CheckCircle2 className="h-10 w-10 text-white" />
+                  </div>
+                  <CardTitle className="text-3xl sm:text-4xl font-black font-headline tracking-tight px-4 leading-tight">
+                    {t('신청이 성공적으로 접수되었습니다')}
+                  </CardTitle>
+                  <CardDescription className="text-slate-400 font-bold text-sm mt-3">
+                    {t('전문 세무사가 검토를 시작합니다. 1~2개월 이내에 환급금이 지급됩니다.')}
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-4 sm:p-12 text-center space-y-4 sm:space-y-6">
+                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
+                    <p className="text-lg font-black text-slate-800">{t('환급금 신청 내역 확인')}</p>
+                    <div className="mt-4 space-y-2 text-left text-sm text-slate-600 font-bold">
+                      <div className="flex justify-between">
+                        <span>{t('신청인')}</span>
+                        <span>{formData.officialName}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>{t('지급 은행')}</span>
+                        <span>{formData.bankName}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>{t('계좌 번호')}</span>
+                        <span>{formData.accountNumber}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span>{t('예상 환급금')}</span>
+                        <span className="text-primary font-black">₩ {result?.refundEstimate?.toLocaleString() || preFilterEstimate.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  </div>
+                  <Button onClick={() => setStep(0)} className="w-full h-16 bg-slate-900 text-white font-black rounded-2xl">
+                    {t('시뮬레이션 다시 하기')}
+                  </Button>
                 </CardContent>
               </Card>
             )}
@@ -3057,7 +3562,7 @@ export default function EstimatePage() {
         </div>
       )}
 
-      <Dialog open={showResumeDialog} onOpenChange={setShowResumeDialog}>
+      <Dialog open={showResumeDialog && !isSimulation} onOpenChange={setShowResumeDialog}>
         <DialogContent className="max-w-[400px] rounded-[2.5rem] p-8 border-none shadow-2xl bg-white overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-indigo-500" />
           <DialogHeader className="space-y-4 pt-4">

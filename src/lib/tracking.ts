@@ -120,6 +120,7 @@ export function clearTrackingData(): void {
  */
 export async function logVisit(): Promise<void> {
   if (typeof window === 'undefined') return;
+  if (window.location.search.includes('simulation=true')) return;
   
   try {
     const today = getKstDateString();
@@ -149,6 +150,7 @@ export async function logVisit(): Promise<void> {
  */
 export async function logLanguageVisit(lang: string): Promise<void> {
   if (typeof window === 'undefined') return;
+  if (window.location.search.includes('simulation=true')) return;
   
   try {
     const today = getKstDateString();
@@ -176,6 +178,7 @@ export async function logLanguageVisit(lang: string): Promise<void> {
  */
 export async function logPwaInstall(): Promise<void> {
   if (typeof window === 'undefined') return;
+  if (window.location.search.includes('simulation=true')) return;
   
   try {
     const today = getKstDateString();
