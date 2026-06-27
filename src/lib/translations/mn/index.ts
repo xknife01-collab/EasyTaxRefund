@@ -7,8 +7,10 @@ import { main } from './main';
 import { notifications } from './notifications';
 import { portal } from './portal';
 import { reviews } from './reviews';
+import { simulator } from './simulator';
 
 export const mn = {
+  ...simulator,
   ...common,
   ...faq,
   ...forms,

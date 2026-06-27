@@ -8,8 +8,10 @@ import { guides } from './guides';
 import { notifications } from './notifications';
 import { reviews } from './reviews';
 import { security } from './security';
+import { simulator } from './simulator';
 
 export const vi = {
+  ...simulator,
   ...common,
   ...main,
   ...faq,

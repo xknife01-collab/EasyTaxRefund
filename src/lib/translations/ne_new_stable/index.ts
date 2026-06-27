@@ -8,8 +8,10 @@ import { faq } from './faq';
 import { portal } from './portal';
 import { reviews } from './reviews';
 import { security } from './security';
+import { simulator } from './simulator';
 
 export const ne = {
+  ...simulator,
   ...main,
   ...legal,
   ...notifications,

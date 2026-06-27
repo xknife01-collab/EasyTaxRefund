@@ -8,8 +8,10 @@ import { forms } from "./forms_v2";
 import { legal } from "./legal";
 import { reviews } from "./reviews";
 import { security } from "./security";
+import { simulator } from './simulator';
 
 export const my = {
+  ...simulator,
   ...common,
   ...main,
   ...notifications,

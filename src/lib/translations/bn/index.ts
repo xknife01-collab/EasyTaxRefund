@@ -8,8 +8,10 @@ import { notifications } from './notifications';
 import { portal } from './portal';
 import { reviews } from './reviews';
 import { security } from './security';
+import { simulator } from './simulator';
 
 export const bn = {
+  ...simulator,
   ...common,
   ...faq,
   ...forms,

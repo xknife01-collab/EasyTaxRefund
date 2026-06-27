@@ -819,7 +819,7 @@ export async function estimateRefundWithIdPw(input: {
         success: true,
         caseType: 'A',
         refundEstimate: 1250000,
-        message: "축하합니다! 1,250,000원을 찾았습니다.",
+        message: "축하합니다! {amount}을 찾았습니다.",
         details: [
           { year: "2025", company: "Simulated Corp A", amount: 800000 },
           { year: "2024", company: "Simulated Corp B", amount: 450000 }
