@@ -509,6 +509,7 @@ export function HanaGuideModal({
       <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white/95 border-none h-[95vh] flex flex-col sm:rounded-[2.5rem]">
         <DialogHeader className="p-6 bg-white shrink-0 border-b z-50 relative pr-12">
           <button
+            id="hana-guide-close-btn"
             onClick={onClose}
             className="absolute top-4 right-4 p-2 rounded-full hover:bg-slate-100 text-slate-400 hover:text-slate-600 transition-colors"
             aria-label={t("가이드 닫기")}
@@ -682,6 +683,7 @@ export function HanaGuideModal({
               </div>
 
               <Button
+                id="hana-guide-next-btn"
                 variant="outline"
                 size="icon"
                 onClick={(e) => { e.stopPropagation(); api?.scrollNext(); }}

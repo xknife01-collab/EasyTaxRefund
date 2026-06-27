@@ -292,3 +292,644 @@ function formatResult(totalRefundSum: number, anyAlreadyReduced: boolean, detail
     serviceFee: Math.floor(totalRefundSum * 0.25)
   };
 }
+
+// --- NEW HOMETAX SIGNUP & ID/PW QUERY ACTIONS ---
+
+import crypto from 'crypto';
+
+// Encryption configuration
+const ENCRYPTION_KEY = process.env.ENCRYPTION_KEY || '63a56e7293b48274d756ef8291a27e366113b2849e7b282711d2e38c7b841a22';
+const IV_LENGTH = 16;
+
+function encryptText(text: string): string {
+  try {
+    let keyBuffer: Buffer;
+    try {
+      keyBuffer = Buffer.from(ENCRYPTION_KEY, 'hex');
+      if (keyBuffer.length !== 32) {
+        keyBuffer = crypto.scryptSync(ENCRYPTION_KEY, 'salt', 32);
+      }
+    } catch (e) {
+      keyBuffer = crypto.scryptSync(ENCRYPTION_KEY || 'default-fallback-key', 'salt', 32);
+    }
+    const iv = crypto.randomBytes(IV_LENGTH);
+    const cipher = crypto.createCipheriv('aes-256-cbc', keyBuffer, iv);
+    let encrypted = cipher.update(text);
+    encrypted = Buffer.concat([encrypted, cipher.final()]);
+    return iv.toString('hex') + ':' + encrypted.toString('hex');
+  } catch (err: any) {
+    console.error("Encryption failed:", err.message);
+    return text;
+  }
+}
+
+function decryptText(text: string): string {
+  try {
+    let keyBuffer: Buffer;
+    try {
+      keyBuffer = Buffer.from(ENCRYPTION_KEY, 'hex');
+      if (keyBuffer.length !== 32) {
+        keyBuffer = crypto.scryptSync(ENCRYPTION_KEY, 'salt', 32);
+      }
+    } catch (e) {
+      keyBuffer = crypto.scryptSync(ENCRYPTION_KEY || 'default-fallback-key', 'salt', 32);
+    }
+    const textParts = text.split(':');
+    const iv = Buffer.from(textParts.shift()!, 'hex');
+    const encryptedText = Buffer.from(textParts.join(':'), 'hex');
+    const decipher = crypto.createDecipheriv('aes-256-cbc', keyBuffer, iv);
+    let decrypted = decipher.update(encryptedText);
+    decrypted = Buffer.concat([decrypted, decipher.final()]);
+    return decrypted.toString();
+  } catch (err: any) {
+    console.error("Decryption failed:", err.message);
+    return text;
+  }
+}
+
+function getCleanRegNo(regNo: string): string {
+  return regNo.replace(/[^0-9]/g, '');
+}
+
+function getTelecomSignupCode(telecom: string): string {
+  const telMap: Record<string, string> = { "0": "SKT", "1": "KTF", "2": "LGT" };
+  return telMap[telecom] || telecom;
+}
+
+// 1. 아이디 중복 체크
+export async function checkHometaxIdDuplicate(userId: string, isSimulation?: boolean) {
+  try {
+    console.log(`[Hometax ID Check] Checking userId: ${userId} (Simulation: ${isSimulation})`);
+    if (isSimulation) {
+      if (['admin', 'duplicate', 'user123'].includes(userId.toLowerCase())) {
+        return { success: false, message: "이미 사용 중인 아이디입니다." };
+      }
+      return { success: true, message: "사용 가능한 아이디입니다." };
+    }
+
+    const headers: Record<string, string> = {
+      "user-id": HYPHEN_CONFIG.userId,
+      "Hkey": HYPHEN_CONFIG.hKey,
+      "Content-Type": "application/json"
+    };
+    if (HYPHEN_CONFIG.gustation === "Y") headers["hyphen-gustation"] = "Y";
+
+    const res = await axios.post(`${HYPHEN_CONFIG.baseUrl}/in0076000354`, {
+      userId
+    }, { headers, timeout: 30000 });
+
+    console.log("[Hometax ID Check Response]", JSON.stringify(res.data?.common));
+    const common = res.data.common;
+    if (common?.errYn === 'N') {
+      return { success: true, message: "사용 가능한 아이디입니다." };
+    }
+    return { success: false, message: common?.errMsg || "이미 가입되었거나 사용할 수 없는 아이디입니다." };
+  } catch (error: any) {
+    console.error("[Hometax ID Check Error]", error.message);
+    return { success: false, message: `오류: ${error.message}` };
+  }
+}
+
+// 2. 회원가입 문자 요청 (Step 1)
+export async function requestHometaxSignupSms(input: {
+  userName: string;
+  registrationNumber: string;
+  phoneNo: string;
+  telecom: string;
+  userId: string;
+  userPw: string;
+  email: string;
+  isSimulation?: boolean;
+}) {
+  try {
+    console.log(`[Hometax SignUp Step 1] Requesting SMS for ${input.userName} (Simulation: ${input.isSimulation})`);
+    if (input.isSimulation) {
+      return {
+        success: true,
+        id: "SIM-TR-SIGNUP-" + Math.floor(Math.random() * 100000),
+        twoWayInfo: { stepData: "SIM-STEP-DATA-SIGNUP" },
+        message: "인증 문자가 발송되었습니다."
+      };
+    }
+
+    const mobileCo = getTelecomSignupCode(input.telecom);
+    const headers: Record<string, string> = {
+      "user-id": HYPHEN_CONFIG.userId,
+      "Hkey": HYPHEN_CONFIG.hKey,
+      "Content-Type": "application/json"
+    };
+    if (HYPHEN_CONFIG.gustation === "Y") headers["hyphen-gustation"] = "Y";
+
+    const res = await axios.post(`${HYPHEN_CONFIG.baseUrl}/in0076000353`, {
+      mobileYn: "Y",
+      resNo: getCleanRegNo(input.registrationNumber),
+      resNm: input.userName,
+      userId: input.userId,
+      userPw: input.userPw,
+      email: input.email,
+      step: "captcha",
+      mobileCo: mobileCo,
+      mobileNo: input.phoneNo,
+      sOption: "02"
+    }, { headers, timeout: 60000 });
+
+    console.log("[Hometax SignUp Step 1 Response]", JSON.stringify(res.data?.common));
+    const common = res.data.common;
+    if (common?.errYn === 'N') {
+      const stepData = res.data.data?.step_data || res.data.data?.stepData;
+      return {
+        success: true,
+        id: common.hyphenTrNo,
+        twoWayInfo: { stepData },
+        message: "인증 문자가 발송되었습니다."
+      };
+    }
+
+    throw new Error(`[${common?.errCd}] ${common?.errMsg}`);
+  } catch (error: any) {
+    console.error("[Hometax SignUp Step 1 Error]", error.message);
+    return { success: false, message: error.message || "인증 문자 발송에 실패했습니다." };
+  }
+}
+
+// 3. 회원가입 승인 및 최종 가입 완료 (Step 2)
+export async function completeHometaxSignup(input: {
+  id: string;
+  twoWayInfo: any;
+  smsCode: string;
+  userName: string;
+  registrationNumber: string;
+  phoneNo: string;
+  telecom: string;
+  userId: string;
+  userPw: string;
+  email: string;
+  applicationId: string;
+  isSimulation?: boolean;
+}) {
+  try {
+    console.log(`[Hometax SignUp Step 2] Verifying SMS for ${input.userName} (Simulation: ${input.isSimulation})`);
+    
+    if (input.isSimulation) {
+      if (input.smsCode === "000000") {
+        throw new Error("인증번호가 일치하지 않습니다. 다시 입력해 주세요.");
+      }
+      // Save simulated credentials to Supabase
+      try {
+        const { supabaseAdmin } = await import('@/lib/supabase');
+        const encryptedPw = encryptText(input.userPw);
+        const encryptedReg = encryptText(input.registrationNumber);
+        const { error } = await supabaseAdmin.from('hometax_credentials').upsert({
+          application_id: input.applicationId,
+          hometax_id: input.userId,
+          hometax_pw_encrypted: encryptedPw,
+          registration_number_encrypted: encryptedReg,
+          full_name: input.userName,
+          phone: input.phoneNo
+        }, { onConflict: 'application_id' });
+        if (error) console.error("Supabase Save Warning (Simulated):", error.message);
+      } catch (dbErr: any) {
+        console.warn("Supabase bypass (Simulated environment):", dbErr.message);
+      }
+
+      return { success: true, message: "회원가입이 완료되었습니다!" };
+    }
+
+    const mobileCo = getTelecomSignupCode(input.telecom);
+    const headers: Record<string, string> = {
+      "user-id": HYPHEN_CONFIG.userId,
+      "Hkey": HYPHEN_CONFIG.hKey,
+      "Content-Type": "application/json"
+    };
+    if (HYPHEN_CONFIG.gustation === "Y") headers["hyphen-gustation"] = "Y";
+
+    const res = await axios.post(`${HYPHEN_CONFIG.baseUrl}/in0076000353`, {
+      mobileYn: "Y",
+      resNo: getCleanRegNo(input.registrationNumber),
+      resNm: input.userName,
+      userId: input.userId,
+      userPw: input.userPw,
+      email: input.email,
+      step: "identityCheck",
+      step_input: input.smsCode,
+      step_data: input.twoWayInfo.stepData,
+      mobileCo: mobileCo,
+      mobileNo: input.phoneNo,
+      sOption: "02"
+    }, { headers, timeout: 60000 });
+
+    console.log("[Hometax SignUp Step 2 Response]", JSON.stringify(res.data?.common));
+    const common = res.data.common;
+    if (common?.errYn === 'N') {
+      // Save credentials in Supabase
+      try {
+        const { supabaseAdmin } = await import('@/lib/supabase');
+        const encryptedPw = encryptText(input.userPw);
+        const encryptedReg = encryptText(input.registrationNumber);
+        await supabaseAdmin.from('hometax_credentials').upsert({
+          application_id: input.applicationId,
+          hometax_id: input.userId,
+          hometax_pw_encrypted: encryptedPw,
+          registration_number_encrypted: encryptedReg,
+          full_name: input.userName,
+          phone: input.phoneNo
+        }, { onConflict: 'application_id' });
+      } catch (dbErr: any) {
+        console.error("Failed to save credentials to Supabase:", dbErr.message);
+      }
+
+      return { success: true, message: "회원가입이 완료되었습니다!" };
+    }
+
+    throw new Error(`[${common?.errCd}] ${common?.errMsg}`);
+  } catch (error: any) {
+    console.error("[Hometax SignUp Step 2 Error]", error.message);
+    return { success: false, message: error.message || "회원가입 완료에 실패했습니다." };
+  }
+}
+
+// 4. 아이디 찾기 문자 요청 (Step 1)
+export async function findHometaxIdSms(input: {
+  userName: string;
+  registrationNumber: string;
+  phoneNo: string;
+  telecom: string;
+  isSimulation?: boolean;
+}) {
+  try {
+    console.log(`[Hometax Find ID Step 1] (Simulation: ${input.isSimulation})`);
+    if (input.isSimulation) {
+      return {
+        success: true,
+        id: "SIM-TR-FINDID-" + Math.floor(Math.random() * 100000),
+        twoWayInfo: { stepData: "SIM-STEP-DATA-FINDID" },
+        message: "인증 문자가 발송되었습니다."
+      };
+    }
+
+    const mobileCo = getTelecomSignupCode(input.telecom);
+    const headers: Record<string, string> = {
+      "user-id": HYPHEN_CONFIG.userId,
+      "Hkey": HYPHEN_CONFIG.hKey,
+      "Content-Type": "application/json"
+    };
+    if (HYPHEN_CONFIG.gustation === "Y") headers["hyphen-gustation"] = "Y";
+
+    const res = await axios.post(`${HYPHEN_CONFIG.baseUrl}/in0076000357`, {
+      mobileYn: "Y",
+      resNo: getCleanRegNo(input.registrationNumber),
+      resNm: input.userName,
+      step: "captcha",
+      mobileCo: mobileCo,
+      mobileNo: input.phoneNo
+    }, { headers, timeout: 60000 });
+
+    console.log("[Hometax Find ID Step 1 Response]", JSON.stringify(res.data?.common));
+    const common = res.data.common;
+    if (common?.errYn === 'N') {
+      const stepData = res.data.data?.stepData || res.data.data?.step_data;
+      return {
+        success: true,
+        id: common.hyphenTrNo,
+        twoWayInfo: { stepData },
+        message: "인증 문자가 발송되었습니다."
+      };
+    }
+
+    throw new Error(`[${common?.errCd}] ${common?.errMsg}`);
+  } catch (error: any) {
+    console.error("[Hometax Find ID Step 1 Error]", error.message);
+    return { success: false, message: error.message || "인증 문자 발송에 실패했습니다." };
+  }
+}
+
+// 5. 아이디 찾기 승인 및 조회 완료 (Step 2)
+export async function verifyFindHometaxId(input: {
+  id: string;
+  twoWayInfo: any;
+  smsCode: string;
+  userName: string;
+  registrationNumber: string;
+  phoneNo: string;
+  telecom: string;
+  isSimulation?: boolean;
+}) {
+  try {
+    console.log(`[Hometax Find ID Step 2] (Simulation: ${input.isSimulation})`);
+    if (input.isSimulation) {
+      if (input.smsCode === "000000") throw new Error("인증번호가 일치하지 않습니다.");
+      return { success: true, userId: "foreignUser99" };
+    }
+
+    const mobileCo = getTelecomSignupCode(input.telecom);
+    const headers: Record<string, string> = {
+      "user-id": HYPHEN_CONFIG.userId,
+      "Hkey": HYPHEN_CONFIG.hKey,
+      "Content-Type": "application/json"
+    };
+    if (HYPHEN_CONFIG.gustation === "Y") headers["hyphen-gustation"] = "Y";
+
+    const res = await axios.post(`${HYPHEN_CONFIG.baseUrl}/in0076000357`, {
+      mobileYn: "Y",
+      resNo: getCleanRegNo(input.registrationNumber),
+      resNm: input.userName,
+      step: "identityCheck",
+      stepInput: input.smsCode,
+      stepData: input.twoWayInfo.stepData,
+      mobileCo: mobileCo,
+      mobileNo: input.phoneNo
+    }, { headers, timeout: 60000 });
+
+    console.log("[Hometax Find ID Step 2 Response]", JSON.stringify(res.data?.common));
+    const common = res.data.common;
+    if (common?.errYn === 'N') {
+      return { success: true, userId: res.data.data?.userId || "아이디 조회 결과 없음" };
+    }
+
+    throw new Error(`[${common?.errCd}] ${common?.errMsg}`);
+  } catch (error: any) {
+    console.error("[Hometax Find ID Step 2 Error]", error.message);
+    return { success: false, message: error.message || "아이디 찾기에 실패했습니다." };
+  }
+}
+
+// 6. 비밀번호 재발급 문자 요청 (Step 1)
+export async function resetHometaxPasswordSms(input: {
+  hometaxId: string;
+  userName: string;
+  registrationNumber: string;
+  phoneNo: string;
+  telecom: string;
+  isSimulation?: boolean;
+}) {
+  try {
+    console.log(`[Hometax Reset PW Step 1] (Simulation: ${input.isSimulation})`);
+    if (input.isSimulation) {
+      return {
+        success: true,
+        id: "SIM-TR-RESETPW-" + Math.floor(Math.random() * 100000),
+        twoWayInfo: { stepData: "SIM-STEP-DATA-RESETPW" },
+        message: "인증 문자가 발송되었습니다."
+      };
+    }
+
+    const mobileCo = getTelecomSignupCode(input.telecom);
+    const headers: Record<string, string> = {
+      "user-id": HYPHEN_CONFIG.userId,
+      "Hkey": HYPHEN_CONFIG.hKey,
+      "Content-Type": "application/json"
+    };
+    if (HYPHEN_CONFIG.gustation === "Y") headers["hyphen-gustation"] = "Y";
+
+    const res = await axios.post(`${HYPHEN_CONFIG.baseUrl}/in0076000358`, {
+      mobileYn: "Y",
+      userId: input.hometaxId,
+      resNo: getCleanRegNo(input.registrationNumber),
+      resNm: input.userName,
+      step: "captcha",
+      mobileCo: mobileCo,
+      mobileNo: input.phoneNo
+    }, { headers, timeout: 60000 });
+
+    console.log("[Hometax Reset PW Step 1 Response]", JSON.stringify(res.data?.common));
+    const common = res.data.common;
+    if (common?.errYn === 'N') {
+      const stepData = res.data.data?.stepData || res.data.data?.step_data;
+      return {
+        success: true,
+        id: common.hyphenTrNo,
+        twoWayInfo: { stepData },
+        message: "인증 문자가 발송되었습니다."
+      };
+    }
+
+    throw new Error(`[${common?.errCd}] ${common?.errMsg}`);
+  } catch (error: any) {
+    console.error("[Hometax Reset PW Step 1 Error]", error.message);
+    return { success: false, message: error.message || "인증 문자 발송에 실패했습니다." };
+  }
+}
+
+// 7. 비밀번호 재발급 완료 (Step 2)
+export async function verifyResetHometaxPassword(input: {
+  id: string;
+  twoWayInfo: any;
+  smsCode: string;
+  hometaxId: string;
+  newPw: string;
+  userName: string;
+  registrationNumber: string;
+  phoneNo: string;
+  telecom: string;
+  applicationId: string;
+  isSimulation?: boolean;
+}) {
+  try {
+    console.log(`[Hometax Reset PW Step 2] (Simulation: ${input.isSimulation})`);
+    if (input.isSimulation) {
+      if (input.smsCode === "000000") throw new Error("인증번호가 일치하지 않습니다.");
+      
+      // Save simulated credentials to Supabase
+      try {
+        const { supabaseAdmin } = await import('@/lib/supabase');
+        const encryptedPw = encryptText(input.newPw);
+        const encryptedReg = encryptText(input.registrationNumber);
+        await supabaseAdmin.from('hometax_credentials').upsert({
+          application_id: input.applicationId,
+          hometax_id: input.hometaxId,
+          hometax_pw_encrypted: encryptedPw,
+          registration_number_encrypted: encryptedReg,
+          full_name: input.userName,
+          phone: input.phoneNo
+        }, { onConflict: 'application_id' });
+      } catch (dbErr: any) {
+        console.warn("Supabase bypass (Simulated environment):", dbErr.message);
+      }
+
+      return { success: true, message: "비밀번호가 성공적으로 재설정되었습니다!" };
+    }
+
+    const mobileCo = getTelecomSignupCode(input.telecom);
+    const headers: Record<string, string> = {
+      "user-id": HYPHEN_CONFIG.userId,
+      "Hkey": HYPHEN_CONFIG.hKey,
+      "Content-Type": "application/json"
+    };
+    if (HYPHEN_CONFIG.gustation === "Y") headers["hyphen-gustation"] = "Y";
+
+    const res = await axios.post(`${HYPHEN_CONFIG.baseUrl}/in0076000358`, {
+      mobileYn: "Y",
+      userId: input.hometaxId,
+      userPw: input.newPw,
+      resNo: getCleanRegNo(input.registrationNumber),
+      resNm: input.userName,
+      step: "identityCheck",
+      stepInput: input.smsCode,
+      stepData: input.twoWayInfo.stepData,
+      mobileCo: mobileCo,
+      mobileNo: input.phoneNo
+    }, { headers, timeout: 60000 });
+
+    console.log("[Hometax Reset PW Step 2 Response]", JSON.stringify(res.data?.common));
+    const common = res.data.common;
+    if (common?.errYn === 'N') {
+      // Save updated credentials in Supabase
+      try {
+        const { supabaseAdmin } = await import('@/lib/supabase');
+        const encryptedPw = encryptText(input.newPw);
+        const encryptedReg = encryptText(input.registrationNumber);
+        await supabaseAdmin.from('hometax_credentials').upsert({
+          application_id: input.applicationId,
+          hometax_id: input.hometaxId,
+          hometax_pw_encrypted: encryptedPw,
+          registration_number_encrypted: encryptedReg,
+          full_name: input.userName,
+          phone: input.phoneNo
+        }, { onConflict: 'application_id' });
+      } catch (dbErr: any) {
+        console.error("Failed to save credentials to Supabase:", dbErr.message);
+      }
+
+      return { success: true, message: "비밀번호가 성공적으로 재설정되었습니다!" };
+    }
+
+    throw new Error(`[${common?.errCd}] ${common?.errMsg}`);
+  } catch (error: any) {
+    console.error("[Hometax Reset PW Step 2 Error]", error.message);
+    return { success: false, message: error.message || "비밀번호 재설정에 실패했습니다." };
+  }
+}
+
+// 8. ID/PW 기반 세션공유 및 환급액 산정
+export async function estimateRefundWithIdPw(input: {
+  hometaxId: string;
+  hometaxPw: string;
+  userName: string;
+  registrationNumber: string;
+  phoneNo: string;
+  applicationId: string;
+  isSimulation?: boolean;
+}) {
+  try {
+    console.log(`[Hometax ID/PW Estimate] Running query for ${input.userName} (Simulation: ${input.isSimulation})`);
+    
+    if (input.isSimulation) {
+      // Mock result matching formatResult structure
+      return {
+        success: true,
+        caseType: 'A',
+        refundEstimate: 1250000,
+        message: "축하합니다! 1,250,000원을 찾았습니다.",
+        details: [
+          { year: "2025", company: "Simulated Corp A", amount: 800000 },
+          { year: "2024", company: "Simulated Corp B", amount: 450000 }
+        ],
+        deductionsConsidered: ["중소기업 취업자 소득세 감면 (90%)", "국세청 사업자 시계열 상태 검증 완료"],
+        serviceFee: 312500,
+        resIncomeTax: 1500000,
+        resCompanyIdentityNo1: "120-81-12345",
+        resAttrYear: "2025",
+        resIncomeSpecList: "[]"
+      };
+    }
+
+    // --- Step 1: Get Session Cookie from /in0076000244 ---
+    const headers: Record<string, string> = {
+      "user-id": HYPHEN_CONFIG.userId,
+      "Hkey": HYPHEN_CONFIG.hKey,
+      "Content-Type": "application/json"
+    };
+    if (HYPHEN_CONFIG.gustation === "Y") headers["hyphen-gustation"] = "Y";
+
+    // 2차 인증 번호는 주민등록번호 앞 7자리 (YYMMDDG)
+    const userValidNo = getCleanRegNo(input.registrationNumber).substring(0, 7);
+
+    console.log("[Hometax ID/PW Estimate] Step 1: Logging in via member-info api...");
+    const loginRes = await axios.post(`${HYPHEN_CONFIG.baseUrl}/in0076000244`, {
+      loginMethod: "ID",
+      userId: input.hometaxId,
+      userPw: input.hometaxPw,
+      userVaildNo: userValidNo,
+      showCookie: "Y"
+    }, { headers, timeout: 60000 });
+
+    console.log("[Hometax ID/PW Login Response]", JSON.stringify(loginRes.data?.common));
+    const loginCommon = loginRes.data.common;
+    if (loginCommon?.errYn !== 'N') {
+      throw new Error(`로그인 실패: [${loginCommon?.errCd}] ${loginCommon?.errMsg}`);
+    }
+
+    const cookieData = loginRes.data.data?.cookie || loginRes.data.data?.cookieData;
+    if (!cookieData) {
+      throw new Error("로그인에는 성공했으나 세션 정보를 받아오지 못했습니다.");
+    }
+
+    // Save/Update credentials in Supabase
+    try {
+      const { supabaseAdmin } = await import('@/lib/supabase');
+      const encryptedPw = encryptText(input.hometaxPw);
+      const encryptedReg = encryptText(input.registrationNumber);
+      await supabaseAdmin.from('hometax_credentials').upsert({
+        application_id: input.applicationId,
+        hometax_id: input.hometaxId,
+        hometax_pw_encrypted: encryptedPw,
+        registration_number_encrypted: encryptedReg,
+        full_name: input.userName,
+        phone: input.phoneNo
+      }, { onConflict: 'application_id' });
+    } catch (dbErr: any) {
+      console.error("Failed to save/update credentials to Supabase:", dbErr.message);
+    }
+
+    // --- Step 2: Fetch Payment Statements (MyNTS) via /in0076000300 ---
+    console.log("[Hometax ID/PW Estimate] Step 2: Querying MyNTS statements using cookie...");
+    const ntsRes = await axios.post(`${HYPHEN_CONFIG.baseUrl}/in0076000300`, {
+      cookieData: cookieData,
+      loginMethod: "SMS", // Format value required by schema
+      detailYn: "Y"
+    }, { headers, timeout: 90000 });
+
+    console.log("[Hometax ID/PW MyNTS Response]", JSON.stringify(ntsRes.data?.common));
+    const ntsCommon = ntsRes.data.common;
+    if (ntsCommon?.errYn !== 'N') {
+      throw new Error(`MyNTS 조회 실패: [${ntsCommon?.errCd}] ${ntsCommon?.errMsg}`);
+    }
+
+    // Run original tax analysis logic on the retrieved list
+    const rawList = ntsRes.data.data?.list || ntsRes.data.data?.resPayList || [];
+    const settlementPromises = rawList.map((item: any) => analyzeYearlyTax(item));
+    const analyses = await Promise.all(settlementPromises);
+    
+    let totalRefundSum = 0;
+    let totalDecidedTax = 0;
+    let anyAlreadyReduced = false;
+    let recordsFoundCount = 0;
+    let details: any[] = [];
+    let latestFoundAnalysis: any = null;
+
+    for (const analysis of analyses) {
+      if (analysis) {
+        recordsFoundCount++;
+        totalDecidedTax += analysis.decidedTax;
+        if (analysis.isAlreadyReduced) anyAlreadyReduced = true;
+        totalRefundSum += analysis.potentialRefund;
+        if (!latestFoundAnalysis || parseInt(analysis.year) > parseInt(latestFoundAnalysis.year)) latestFoundAnalysis = analysis;
+        if (analysis.potentialRefund > 0) details.push({ year: analysis.year, company: analysis.company, amount: analysis.potentialRefund });
+      }
+    }
+
+    return {
+      success: true,
+      ...formatResult(totalRefundSum, anyAlreadyReduced, details, totalDecidedTax, recordsFoundCount),
+      resIncomeTax: latestFoundAnalysis?.decidedTax ?? 0,
+      resCompanyIdentityNo1: latestFoundAnalysis?.businessNo ?? "N/A",
+      resAttrYear: latestFoundAnalysis?.year || "N/A",
+      resIncomeSpecList: latestFoundAnalysis?.incomeSpecsJSON || "조회된 내역이 없습니다."
+    };
+
+  } catch (error: any) {
+    console.error("[Hometax ID/PW Estimate Error]", error.message);
+    return { success: false, message: error.message };
+  }
+}
+

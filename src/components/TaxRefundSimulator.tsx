@@ -46,7 +46,9 @@ const enBase = {
   step_6: "AI Refund Precision Report",
   step_7: "Fee (25%) Bank Payout",
   step_8: "Account Info & E-Signature",
-  step_9: "Final Application Submission"
+  step_9: "Final Application Submission",
+  waiting_banner_title: "💡 Direct Selection Pending (Simulation Paused)",
+  waiting_banner_desc: "Please click one of the [two options] on the phone screen below! The simulation will resume based on your choice."
 };
 
 // 시뮬레이터 내부 단계별 번역 텍스트
@@ -66,7 +68,9 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     step_6: "환급액 정밀 분석 보고서",
     step_7: "수수료(25%) 무통장 입금",
     step_8: "계좌 입력 및 계약 전자서명",
-    step_9: "최종 신청 및 접수 완료"
+    step_9: "최종 신청 및 접수 완료",
+    waiting_banner_title: "💡 직접 선택 대기 중 (시뮬레이션 일시정지)",
+    waiting_banner_desc: "가상 핸드폰 화면 속의 [두 가지 선택지] 중 하나를 마우스로 클릭해 주세요! 선택에 따라 각기 다른 시나리오로 데모가 자동 재개됩니다."
   },
   vi: {
     sim_title: "Trình mô phỏng thời gian thực 10 bước",
@@ -83,7 +87,9 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     step_6: "Báo cáo hoàn thuế chi tiết AI",
     step_7: "Nộp phí dịch vụ (25%)",
     step_8: "Nhập tài khoản & Chữ ký điện tử",
-    step_9: "Hoàn tất đăng ký cuối cùng"
+    step_9: "Hoàn tất đăng ký cuối cùng",
+    waiting_banner_title: "💡 Đang chờ chọn trực tiếp (Tạm dừng mô phỏng)",
+    waiting_banner_desc: "Vui lòng click chọn 1 trong [2 lựa chọn] trên màn hình điện thoại! Trình mô phỏng sẽ tự động tiếp tục theo từng kịch bản tương ứng."
   },
   zh: {
     sim_title: "10步全流程实时模拟器",
@@ -100,7 +106,9 @@ const TRANSLATIONS: Record<Language, Record<string, string>> = {
     step_6: "AI退税金额精算报告",
     step_7: "支付税务服务费 (25%)",
     step_8: "账户输入及电子签名",
-    step_9: "最终申请提交成功"
+    step_9: "最终申请提交成功",
+    waiting_banner_title: "💡 等待手动选择 (模拟已暂停)",
+    waiting_banner_desc: "请点击虚拟手机屏幕中的 [两个选项] 之一！模拟将根据选择的场景自动继续播放。"
   },
   en: enBase,
   th: {
@@ -129,6 +137,7 @@ export default function TaxRefundSimulator() {
   // Virtual Pointer States
   const [pointer, setPointer] = useState({ top: '50%', left: '50%', opacity: 0 });
   const [isClicking, setIsClicking] = useState(false);
+  const [pointerEventsEnabled, setPointerEventsEnabled] = useState(false);
 
   const tSim = TRANSLATIONS[language] || TRANSLATIONS['en'];
 
@@ -161,6 +170,8 @@ export default function TaxRefundSimulator() {
           setIsClicking(true);
           setTimeout(() => setIsClicking(false), 200);
         }
+      } else if (data.type === 'SET_POINTER_EVENTS') {
+        setPointerEventsEnabled(data.enabled);
       }
     };
     window.addEventListener('message', handleMessage);
@@ -222,9 +233,9 @@ export default function TaxRefundSimulator() {
       <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
         
         {/* 왼쪽: 베젤이 들어간 가상 스마트폰 목업 (5 cols) */}
-        <div className="lg:col-span-5 flex justify-center relative select-none w-full">
+        <div className="lg:col-span-5 flex flex-col items-center justify-center relative select-none w-full gap-4">
           
-          <div className="relative w-full max-w-[385px] aspect-[385/780] bg-slate-900 rounded-[2.5rem] sm:rounded-[3rem] p-[8px] sm:p-[10px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),_0_0_0_1px_rgba(255,255,255,0.15)] border-4 border-slate-800 flex flex-col overflow-hidden">
+          <div className="relative w-full max-w-[385px] h-[680px] sm:h-[780px] bg-slate-900 rounded-[2.5rem] sm:rounded-[3rem] p-[8px] sm:p-[10px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),_0_0_0_1px_rgba(255,255,255,0.15)] border-4 border-slate-800 flex flex-col overflow-hidden">
             
             {/* 상단 다이나믹 아일랜드 노치 */}
             <div className="absolute top-3.5 left-1/2 -translate-x-1/2 w-28 h-6 bg-black rounded-full z-50 flex items-center justify-end px-4 gap-1">
@@ -269,7 +280,7 @@ export default function TaxRefundSimulator() {
                   ref={iframeRef}
                   src={`/estimate?simulation=true&persona=${selectedPersona}&lang=${language}`}
                   className="w-full h-full border-0 select-none bg-white"
-                  style={{ pointerEvents: 'none' }}
+                  style={{ pointerEvents: pointerEventsEnabled ? 'auto' : 'none' }}
                 />
 
                 {/* 가상 마우스 포인터 */}
@@ -288,6 +299,13 @@ export default function TaxRefundSimulator() {
                   <div className={`w-6 h-6 rounded-full border-2 border-white bg-amber-400/80 shadow-lg flex items-center justify-center transition-transform ${isClicking ? 'scale-75 bg-amber-500' : 'scale-100'}`}>
                     <div className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
                   </div>
+
+                  {/* 4단계 선택 대기 말풍선 툴팁 */}
+                  {activeStep === 4 && pointerEventsEnabled && (
+                    <div className="absolute left-8 top-0 bg-slate-900 text-white text-[10px] font-black px-2.5 py-1.5 rounded-xl shadow-xl flex items-center gap-1.5 whitespace-nowrap animate-bounce border border-slate-700">
+                      <span>👈 클릭하여 시나리오 선택</span>
+                    </div>
+                  )}
                 </div>
 
               </div>
@@ -295,6 +313,24 @@ export default function TaxRefundSimulator() {
             </div>
 
           </div>
+
+          {/* 4단계 선택 대기 시각 가이드 배너 (핸드폰 외부 배치) */}
+          {activeStep === 4 && pointerEventsEnabled && (
+            <div className="w-full max-w-[385px] p-5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-2 border-amber-500/80 rounded-3xl text-center space-y-2 animate-pulse shadow-[0_0_30px_rgba(245,158,11,0.3)] z-10 relative">
+              <div className="flex items-center justify-center gap-2">
+                <span className="flex h-3 w-3 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
+                </span>
+                <span className="text-sm font-black text-amber-300 tracking-wide uppercase">
+                  {tSim.waiting_banner_title}
+                </span>
+              </div>
+              <p className="text-xs font-bold text-slate-200 leading-relaxed break-keep">
+                {tSim.waiting_banner_desc}
+              </p>
+            </div>
+          )}
 
         </div>
 
