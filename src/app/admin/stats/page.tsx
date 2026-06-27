@@ -33,11 +33,15 @@ import {
   Globe2,
   Target,
   Zap,
-  Download
+  Download,
+  LayoutDashboard,
+  ShieldCheck
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { cn } from "@/lib/utils";
+import { useToast } from "@/hooks/use-toast";
+import { getKstDateString } from "@/lib/tracking";
 import { Separator } from "@/components/ui/separator";
 import {
   Select,
@@ -80,7 +84,50 @@ export default function AdminStatsPage() {
   const [timeRange, setTimeRange] = useState<TimeRange>('total');
   const [selectedCountry, setSelectedCountry] = useState<string>('all');
   const [isMounted, setIsMounted] = useState(false);
+  const { toast } = useToast();
   const [adminVerified, setAdminVerified] = useState(false);
+
+  const handleExportCsv = () => {
+    if (!apps.length) {
+      toast({ variant: "destructive", title: "추출할 자료가 없습니다." });
+      return;
+    }
+    
+    const headers = ["신청ID", "성명", "사업자명", "사업자번호", "근무연도", "결정세액", "지급처", "지급계좌", "상태", "휴대폰번호", "신청일"];
+    
+    const rows = apps.map(app => [
+      app.id,
+      app.fullName || "N/A",
+      app.companyName || "N/A",
+      app.resCompanyIdentityNo1 || "N/A",
+      app.resAttrYear || "N/A",
+      app.estimatedRefundAmount || 0,
+      app.bankName || "N/A",
+      app.bankAccount || app.accountNumber || "N/A",
+      app.status || "InquiryCompleted",
+      app.phone || app.phoneNo || "N/A",
+      app.updatedAt?.toDate ? app.updatedAt.toDate().toLocaleString('ko-KR') : String(app.updatedAt || app.createdAt || "")
+    ]);
+
+    const csvContent = [
+      headers.join(","),
+      ...rows.map(r => r.map(v => {
+        const val = String(v).replace(/"/g, '""');
+        return `"${val}"`;
+      }).join(","))
+    ].join("\n");
+
+    const blob = new Blob(["\ufeff" + csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", `이지텍스_추출자료_${getKstDateString()}.csv`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    toast({ title: "자료 추출 성공", description: "세무사 제출용 CSV 자료가 다운로드되었습니다." });
+  };
 
   useEffect(() => {
     setIsMounted(true);
@@ -234,238 +281,306 @@ export default function AdminStatsPage() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50/50">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-12 lg:py-24 max-w-7xl">
-        <div className="space-y-10">
-          {/* Header & Filter */}
-          <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 space-y-8">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
-              <div className="space-y-2">
-                <Button onClick={() => router.push('/admin')} variant="ghost" className="pl-0 hover:bg-transparent text-slate-500 font-bold gap-2">
-                  <ArrowLeft className="h-4 w-4" /> 대시보드로 돌아가기
+      <main className="flex-1 w-full px-4 sm:px-6 lg:px-12 py-8 lg:py-16">
+        <div className="w-full mx-auto space-y-10 animate-fade-in-up">
+          <div className="flex flex-col lg:flex-row gap-8">
+            {/* Left Sidebar Menu */}
+            <div className="w-full lg:w-64 shrink-0 bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 h-fit space-y-6">
+              <div className="space-y-1">
+                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">이지텍스 관리자</p>
+                <h2 className="text-lg font-black text-slate-900">메뉴 바로가기</h2>
+              </div>
+              
+              <div className="flex flex-col gap-1.5">
+                <Button
+                  variant="ghost"
+                  onClick={() => router.push('/admin?view=dashboard')}
+                  className="w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 text-slate-600 hover:bg-slate-50"
+                >
+                  <LayoutDashboard className="h-4 w-4" /> 대시보드 홈
                 </Button>
-                <h1 className="text-3xl font-black text-slate-900">Advanced Marketing Intel</h1>
-              </div>
-              <div className="flex bg-slate-100 p-1 rounded-2xl">
-                {['today', 'week', 'month', 'total'].map(range => (
-                  <Button 
-                    key={range}
-                    onClick={() => setTimeRange(range as TimeRange)}
-                    variant={timeRange === range ? 'default' : 'ghost'}
-                    className={`rounded-xl px-5 font-bold ${timeRange === range ? 'bg-slate-900 text-white' : 'text-slate-500'}`}
-                  >
-                    {range === 'today' ? '오늘' : range === 'week' ? '주간' : range === 'month' ? '월간' : '전체'}
-                  </Button>
-                ))}
+
+                <Button
+                  variant="ghost"
+                  onClick={() => router.push('/admin?view=hometax')}
+                  className="w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 text-slate-600 hover:bg-slate-50"
+                >
+                  <ShieldCheck className="h-4 w-4 text-emerald-600" /> 고객 홈택스 정보
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  onClick={() => router.push('/admin/stats')}
+                  className="w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 bg-primary/10 text-primary hover:bg-primary/15"
+                >
+                  📊 통계 분석
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  onClick={handleExportCsv}
+                  className="w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 text-slate-600 hover:bg-slate-50"
+                >
+                  <Download className="h-4 w-4 text-emerald-600" /> CSV 자료 추출
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  onClick={() => window.location.reload()}
+                  className="w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 text-slate-600 hover:bg-slate-50"
+                >
+                  <RefreshCw className="h-4 w-4" /> 화면 새로고침
+                </Button>
               </div>
             </div>
 
-            <Separator className="bg-slate-100" />
-
-            <div className="flex flex-col sm:flex-row items-center gap-6 text-sm">
-               <div className="flex items-center gap-3 shrink-0">
-                  <div className="h-10 w-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
-                    <Globe2 className="h-5 w-5" />
+            {/* Right Main Content Area */}
+            <div className="flex-1 min-w-0 space-y-10">
+              {/* Header & Filter */}
+              <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100 space-y-8">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+                  <div className="space-y-2">
+                    <Button onClick={() => router.push('/admin')} variant="ghost" className="pl-0 hover:bg-transparent text-slate-500 font-bold gap-2">
+                      <ArrowLeft className="h-4 w-4" /> 대시보드로 돌아가기
+                    </Button>
+                    <h1 className="text-3xl font-black text-slate-900">Advanced Marketing Intel</h1>
                   </div>
-                  <span className="font-black text-slate-900">분석 대상 명단 분리:</span>
-               </div>
-               <Select value={selectedCountry} onValueChange={setSelectedCountry}>
-                  <SelectTrigger className="w-full sm:w-[300px] h-14 rounded-2xl bg-white border border-slate-200 font-black text-indigo-600 shadow-sm transition-all hover:border-indigo-300">
-                    <SelectValue placeholder="모든 국가 (Global)" />
-                  </SelectTrigger>
-                  <SelectContent className="rounded-2xl border-none shadow-2xl">
-                    <SelectItem value="all" className="font-bold py-3 cursor-pointer">모든 국가 (Global)</SelectItem>
-                    {availableCountries.map(c => (
-                      <SelectItem key={c} value={c} className="font-bold py-3 cursor-pointer">{c}</SelectItem>
+                  <div className="flex bg-slate-100 p-1 rounded-2xl">
+                    {['today', 'week', 'month', 'total'].map(range => (
+                      <Button 
+                        key={range}
+                        onClick={() => setTimeRange(range as TimeRange)}
+                        variant={timeRange === range ? 'default' : 'ghost'}
+                        className={`rounded-xl px-5 font-bold ${timeRange === range ? 'bg-slate-900 text-white' : 'text-slate-500'}`}
+                      >
+                        {range === 'today' ? '오늘' : range === 'week' ? '주간' : range === 'month' ? '월간' : '전체'}
+                      </Button>
                     ))}
-                  </SelectContent>
-               </Select>
-               {selectedCountry !== 'all' && (
-                 <Badge className="bg-indigo-600 text-white border-none py-2 px-4 rounded-xl font-black animate-in fade-in zoom-in">
-                   {selectedCountry} 집중 분석 중
-                 </Badge>
-               )}
-            </div>
-          </div>
+                  </div>
+                </div>
 
-          {/* Quick Stats Grid */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
-            <Card className="premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 space-y-4">
-              <div className="h-12 w-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600"><Users /></div>
-              <div>
-                {selectedCountry === 'all' ? (
-                  <>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">전체 방문자 (Global)</p>
-                    <p className="text-3xl font-black text-slate-900">{filteredData.totalVisits.toLocaleString()}명</p>
-                    <div className="mt-2 text-xs font-bold text-slate-500 flex items-center gap-1.5">
-                      <Download className="w-3.5 h-3.5 text-indigo-500" />
-                      PWA 앱 설치: {filteredData.totalInstalls.toLocaleString()}건
+                <Separator className="bg-slate-100" />
+
+                <div className="flex flex-col sm:flex-row items-center gap-6 text-sm">
+                   <div className="flex items-center gap-3 shrink-0">
+                      <div className="h-10 w-10 bg-indigo-50 rounded-xl flex items-center justify-center text-indigo-600">
+                        <Globe2 className="h-5 w-5" />
+                      </div>
+                      <span className="font-black text-slate-900">분석 대상 명단 분리:</span>
+                   </div>
+                   <Select value={selectedCountry} onValueChange={setSelectedCountry}>
+                      <SelectTrigger className="w-full sm:w-[300px] h-14 rounded-2xl bg-white border border-slate-200 font-black text-indigo-600 shadow-sm transition-all hover:border-indigo-300">
+                        <SelectValue placeholder="모든 국가 (Global)" />
+                      </SelectTrigger>
+                      <SelectContent className="rounded-2xl border-none shadow-2xl">
+                        <SelectItem value="all" className="font-bold py-3 cursor-pointer">모든 국가 (Global)</SelectItem>
+                        {availableCountries.map(c => (
+                          <SelectItem key={c} value={c} className="font-bold py-3 cursor-pointer">{c}</SelectItem>
+                        ))}
+                      </SelectContent>
+                   </Select>
+                   {selectedCountry !== 'all' && (
+                     <Badge className="bg-indigo-600 text-white border-none py-2 px-4 rounded-xl font-black animate-in fade-in zoom-in">
+                       {selectedCountry} 집중 분석 중
+                     </Badge>
+                   )}
+                </div>
+              </div>
+
+              {/* Quick Stats Grid */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-6">
+                <Card className="premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 space-y-4">
+                  <div className="h-12 w-12 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-600"><Users /></div>
+                  <div>
+                    {selectedCountry === 'all' ? (
+                      <>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">전체 방문자 (Global)</p>
+                        <p className="text-3xl font-black text-slate-900">{filteredData.totalVisits.toLocaleString()}명</p>
+                        <div className="mt-2 text-xs font-bold text-slate-500 flex items-center gap-1.5">
+                          <Download className="w-3.5 h-3.5 text-indigo-500" />
+                          PWA 앱 설치: {filteredData.totalInstalls.toLocaleString()}건
+                        </div>
+                      </>
+                    ) : (
+                      <>
+                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{selectedCountry} 신청자</p>
+                        <p className="text-3xl font-black text-slate-900">{filteredData.countryApps.toLocaleString()}명</p>
+                        <p className="text-[10px] font-bold text-slate-400 mt-1">※ 방문자 통계는 국가별 분리 불가 (전체 기준)</p>
+                      </>
+                    )}
+                  </div>
+                </Card>
+                <Card className="premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 space-y-4">
+                   <div className="h-12 w-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600"><FileText /></div>
+                   <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">총 신청 건수</p>
+                    <div className="flex items-baseline gap-2">
+                        <span className="text-3xl font-black text-slate-900">{filteredData.countryApps.toLocaleString()}건</span>
                     </div>
-                  </>
-                ) : (
-                  <>
-                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">{selectedCountry} 신청자</p>
-                    <p className="text-3xl font-black text-slate-900">{filteredData.countryApps.toLocaleString()}명</p>
-                    <p className="text-[10px] font-bold text-slate-400 mt-1">※ 방문자 통계는 국가별 분리 불가 (전체 기준)</p>
-                  </>
-                )}
+                    {selectedCountry !== 'all' && (
+                      <p className="text-xs font-bold text-slate-400 mt-1">Global 점유율: {((filteredData.countryApps / (filteredData.totalAppsGlobal || 1)) * 100).toFixed(1)}%</p>
+                    )}
+                  </div>
+                </Card>
+                <Card className="premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 border-l-4 border-l-emerald-500">
+                   <div className="h-12 w-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600"><Target /></div>
+                   <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">최종 전환율 (Paid)</p>
+                    <p className="text-3xl font-black text-emerald-600">
+                      {filteredData.countryApps > 0 ? ((filteredData.countryPaid / filteredData.countryApps) * 100).toFixed(1) : 0}%
+                    </p>
+                  </div>
+                </Card>
+                <Card className="premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 border-l-4 border-l-indigo-500">
+                   <div className="h-12 w-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600"><Wallet /></div>
+                   <div>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">기여 예상 수익</p>
+                    <p className="text-3xl font-black text-indigo-600">₩ {filteredData.countryRevenue.toLocaleString()}</p>
+                  </div>
+                </Card>
               </div>
-            </Card>
-            <Card className="premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 space-y-4">
-               <div className="h-12 w-12 bg-purple-50 rounded-2xl flex items-center justify-center text-purple-600"><FileText /></div>
-               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">총 신청 건수</p>
-                <div className="flex items-baseline gap-2">
-                    <span className="text-3xl font-black text-slate-900">{filteredData.countryApps.toLocaleString()}건</span>
-                </div>
-                {selectedCountry !== 'all' && (
-                  <p className="text-xs font-bold text-slate-400 mt-1">Global 점유율: {((filteredData.countryApps / (filteredData.totalAppsGlobal || 1)) * 100).toFixed(1)}%</p>
-                )}
-              </div>
-            </Card>
-            <Card className="premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 border-l-4 border-l-emerald-500">
-               <div className="h-12 w-12 bg-emerald-50 rounded-2xl flex items-center justify-center text-emerald-600"><Target /></div>
-               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">최종 전환율 (Paid)</p>
-                <p className="text-3xl font-black text-emerald-600">
-                  {filteredData.countryApps > 0 ? ((filteredData.countryPaid / filteredData.countryApps) * 100).toFixed(1) : 0}%
-                </p>
-              </div>
-            </Card>
-            <Card className="premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 border-l-4 border-l-indigo-500">
-               <div className="h-12 w-12 bg-indigo-50 rounded-2xl flex items-center justify-center text-indigo-600"><Wallet /></div>
-               <div>
-                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">기여 예상 수익</p>
-                <p className="text-3xl font-black text-indigo-600">₩ {filteredData.countryRevenue.toLocaleString()}</p>
-              </div>
-            </Card>
-          </div>
 
-          {/* Ranking & Regional Charts */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <Card className="lg:col-span-1 premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 space-y-6">
-                <div className="flex items-center gap-3">
-                    <Trophy className="text-amber-500 h-6 w-6" />
-                    <h3 className="text-xl font-black">글로벌 국가 순위</h3>
-                </div>
-                <div className="space-y-4">
-                    {filteredData.nationalityRanking.slice(0, 5).map(([name, count], i) => (
-                        <div key={name} className={cn("flex justify-between items-center p-4 rounded-2xl border transition-all", selectedCountry === name ? "bg-indigo-600 text-white border-indigo-600" : "bg-slate-50 border-slate-100 hover:bg-slate-100")}>
-                            <div className="flex items-center gap-3">
-                                <span className={cn("font-black text-xs w-6 h-6 rounded-lg flex items-center justify-center", i === 0 ? "bg-amber-400 text-white" : i === 1 ? "bg-slate-300 text-slate-600" : "bg-slate-200 text-slate-500")}>{i + 1}</span>
-                                <span className="font-bold">{name}</span>
+              {/* Ranking & Regional Charts */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <Card className="lg:col-span-1 premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 space-y-6">
+                    <div className="flex items-center gap-3">
+                        <Trophy className="text-amber-500 h-6 w-6" />
+                        <h3 className="text-xl font-black">글로벌 국가 순위</h3>
+                    </div>
+                    <div className="space-y-4">
+                        {filteredData.nationalityRanking.slice(0, 5).map(([name, count], i) => (
+                            <div key={name} className={cn("flex justify-between items-center p-4 rounded-2xl border transition-all", selectedCountry === name ? "bg-indigo-600 text-white border-indigo-600" : "bg-slate-50 border-slate-100 hover:bg-slate-100")}>
+                                <div className="flex items-center gap-3">
+                                    <span className={cn("font-black text-xs w-6 h-6 rounded-lg flex items-center justify-center", i === 0 ? "bg-amber-400 text-white" : i === 1 ? "bg-slate-300 text-slate-600" : "bg-slate-200 text-slate-500")}>{i + 1}</span>
+                                    <span className="font-bold">{name}</span>
+                                </div>
+                                <span className="font-black">{count}건</span>
                             </div>
-                            <span className="font-black">{count}건</span>
-                        </div>
-                    ))}
-                </div>
-                {filteredData.nationalityRanking.length > 5 && (
-                    <div className="pt-4 border-t border-slate-100 text-center">
-                        <p className="text-xs font-bold text-slate-400">최저 신청 국가: <span className="text-red-500">{filteredData.nationalityRanking[filteredData.nationalityRanking.length-1][0]}</span></p>
+                        ))}
                     </div>
-                )}
-            </Card>
+                    {filteredData.nationalityRanking.length > 5 && (
+                        <div className="pt-4 border-t border-slate-100 text-center">
+                            <p className="text-xs font-bold text-slate-400">최저 신청 국가: <span className="text-red-500">{filteredData.nationalityRanking[filteredData.nationalityRanking.length-1][0]}</span></p>
+                        </div>
+                    )}
+                </Card>
 
-            <Card className="lg:col-span-2 premium-card rounded-[2.5rem] border-none shadow-sm bg-white flex flex-col">
-                <CardHeader className="p-8 pb-4">
-                    <CardTitle className="text-xl font-black flex items-center gap-2">
-                        <Zap className="text-amber-500 h-5 w-5" /> {selectedCountry === 'all' ? 'Global Strategy Insight' : `${selectedCountry} 특화 마케팅 인사이트`}
-                    </CardTitle>
-                </CardHeader>
-                <CardContent className="p-8 pt-0 flex-1 flex flex-col justify-between">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-3">
-                            <p className="text-xs font-black text-slate-400 uppercase">최다 유입 채널 (Volume)</p>
-                            <p className="text-2xl font-black text-slate-900">{filteredData.topVolumeChannel}</p>
-                            <p className="text-[10px] text-slate-400">가장 많은 유입을 유도하고 있습니다.</p>
+                <Card className="lg:col-span-2 premium-card rounded-[2.5rem] border-none shadow-sm bg-white flex flex-col">
+                    <CardHeader className="p-8 pb-4">
+                        <CardTitle className="text-xl font-black flex items-center gap-2">
+                            <Zap className="text-amber-500 h-5 w-5" /> {selectedCountry === 'all' ? 'Global Strategy Insight' : `${selectedCountry} 특화 마케팅 인사이트`}
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-8 pt-0 flex-1 flex flex-col justify-between">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                            <div className="p-6 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-3">
+                                <p className="text-xs font-black text-slate-400 uppercase">최다 유입 채널 (Volume)</p>
+                                <p className="text-2xl font-black text-slate-900">{filteredData.topVolumeChannel}</p>
+                                <p className="text-[10px] text-slate-400">가장 많은 유입을 유도하고 있습니다.</p>
+                            </div>
+                            <div className="p-6 bg-indigo-50 rounded-[2rem] border border-indigo-100 space-y-3">
+                                <p className="text-xs font-black text-indigo-400 uppercase">최고 효율 채널 (Yield)</p>
+                                <p className="text-2xl font-black text-indigo-600">{filteredData.topYieldChannel}</p>
+                                <p className="text-[10px] text-indigo-400">가장 높은 결제 전환 및 수익을 내고 있습니다.</p>
+                            </div>
                         </div>
-                        <div className="p-6 bg-indigo-50 rounded-[2rem] border border-indigo-100 space-y-3">
-                            <p className="text-xs font-black text-indigo-400 uppercase">최고 효율 채널 (Yield)</p>
-                            <p className="text-2xl font-black text-indigo-600">{filteredData.topYieldChannel}</p>
-                            <p className="text-[10px] text-indigo-400">가장 높은 결제 전환 및 수익을 내고 있습니다.</p>
+                        
+                        <div className="mt-8 p-8 bg-slate-900 rounded-[2rem] text-white">
+                            <h4 className="font-black text-lg mb-2">💡 마케팅 전략 제언</h4>
+                            <p className="text-sm text-slate-400 leading-relaxed font-bold">
+                                {selectedCountry === 'all' 
+                                    ? "현재 글로벌 시장에서 가장 효율적인 채널은 " + filteredData.topYieldChannel + "입니다. 전반적인 캠페인을 이 채널 위주로 재편하세요."
+                                    : selectedCountry + " 국가의 사용자들은 " + filteredData.topYieldChannel + " 채널에서 환불 신청에 대한 신뢰도가 가장 높습니다. " + selectedCountry + " 전용 광고 카피를 이 채널에 집중 배치하세요."
+                                }
+                            </p>
                         </div>
-                    </div>
-                    
-                    <div className="mt-8 p-8 bg-slate-900 rounded-[2rem] text-white">
-                        <h4 className="font-black text-lg mb-2">💡 마케팅 전략 제언</h4>
-                        <p className="text-sm text-slate-400 leading-relaxed font-bold">
-                            {selectedCountry === 'all' 
-                                ? "현재 글로벌 시장에서 가장 효율적인 채널은 " + filteredData.topYieldChannel + "입니다. 전반적인 캠페인을 이 채널 위주로 재편하세요."
-                                : selectedCountry + " 국가의 사용자들은 " + filteredData.topYieldChannel + " 채널에서 환불 신청에 대한 신뢰도가 가장 높습니다. " + selectedCountry + " 전용 광고 카피를 이 채널에 집중 배치하세요."
-                            }
-                        </p>
-                    </div>
-                </CardContent>
-            </Card>
-          </div>
+                    </CardContent>
+                </Card>
+              </div>
 
-          {/* Detailed Tables */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-             <Card className="lg:col-span-2 premium-card rounded-[2.5rem] border-none shadow-sm bg-white overflow-hidden">
-                <CardHeader className="bg-slate-50/50 p-8">
-                    <CardTitle className="text-lg font-black">{selectedCountry === 'all' ? '글로벌' : selectedCountry} 채널별 세부 성과</CardTitle>
-                </CardHeader>
-                <CardContent className="p-0">
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead className="pl-8">매체(UTM Source)</TableHead>
-                                <TableHead className="text-center">신청(건)</TableHead>
-                                <TableHead className="text-center">전환율(%)</TableHead>
-                                <TableHead className="text-right pr-8">기여 수익</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredData.byUtm.map(([name, stat]) => (
-                                <TableRow key={name}>
-                                    <TableCell className="pl-8 font-bold">{name}</TableCell>
-                                    <TableCell className="text-center font-black">{stat.applicants}</TableCell>
-                                    <TableCell className="text-center font-bold text-emerald-600">
-                                        {((stat.paid / (stat.applicants || 1)) * 100).toFixed(1)}%
-                                    </TableCell>
-                                    <TableCell className="text-right pr-8 font-black">₩ {stat.revenue.toLocaleString()}</TableCell>
+              {/* Detailed Tables */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                 <Card className="lg:col-span-2 premium-card rounded-[2.5rem] border-none shadow-sm bg-white overflow-hidden">
+                    <CardHeader className="bg-slate-50/50 p-8">
+                        <CardTitle className="text-lg font-black">{selectedCountry === 'all' ? '글로벌' : selectedCountry} 채널별 세부 성과</CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-0">
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead className="pl-8">매체(UTM Source)</TableHead>
+                                    <TableHead className="text-center">신청(건)</TableHead>
+                                    <TableHead className="text-center">전환율(%)</TableHead>
+                                    <TableHead className="text-right pr-8">기여 수익</TableHead>
                                 </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-             </Card>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredData.byUtm.map(([name, stat]) => (
+                                    <TableRow key={name}>
+                                        <TableCell className="pl-8 font-bold">{name}</TableCell>
+                                        <TableCell className="text-center font-black">{stat.applicants}</TableCell>
+                                        <TableCell className="text-center font-bold text-emerald-600">
+                                            {((stat.paid / (stat.applicants || 1)) * 100).toFixed(1)}%
+                                        </TableCell>
+                                        <TableCell className="text-right pr-8 font-black">₩ {stat.revenue.toLocaleString()}</TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                 </Card>
 
-             <Card className="lg:col-span-1 premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-10 space-y-8">
-                <h3 className="text-xl font-black">사용자 퍼널 (Conversion)</h3>
-                <div className="space-y-10">
-                    {[
-                        { step: 0, label: '0단계: 사전 진단 (전체 유입)', color: 'bg-slate-400' },
-                        { step: 1, label: '1단계: 인증 시작', color: 'bg-blue-400' },
-                        { step: 2, label: '2단계: 신분증 판독', color: 'bg-blue-500' },
-                        { step: 3, label: '3단계: 성명/정보 확인', color: 'bg-cyan-500' },
-                        { step: 4, label: '4단계: 연락처/인증 선택', color: 'bg-indigo-400' },
-                        { step: 5, label: '5단계: 간편인증 요청', color: 'bg-indigo-500' },
-                        { step: 6, label: '6단계: 데이터 수집 중', color: 'bg-purple-500' },
-                        { step: 7, label: '7단계: 환급액 결과 확인', color: 'bg-emerald-500' },
-                        { step: 8, label: '8단계: 서비스 신청/결제', color: 'bg-amber-500' },
-                        { step: 9, label: '9단계: 최종 신청 완료', color: 'bg-rose-500' }
-                    ].map((item) => {
-                        const count = filteredData.funnel[item.step] || 0;
-                        const total = filteredData.funnel[0] || 1;
-                        const pct = Math.round((count / total) * 100);
-                        return (
-                            <div key={item.step} className="space-y-2">
-                                <div className="flex justify-between items-center">
-                                    <span className="text-[11px] font-bold text-slate-500">{item.label}</span>
-                                    <span className="text-[11px] font-black text-slate-700">{count.toLocaleString()}명 ({pct}%)</span>
+                 <Card className="lg:col-span-1 premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-10 space-y-8">
+                    <h3 className="text-xl font-black">사용자 퍼널 (Conversion)</h3>
+                    <div className="space-y-10">
+                        {[
+                            { step: 0, label: '0단계: 사전 진단 (전체 유입)', color: 'bg-slate-400' },
+                            { step: 1, label: '1단계: 인증 시작', color: 'bg-blue-400' },
+                            { step: 2, label: '2단계: 신분증 판독', color: 'bg-blue-500' },
+                            { step: 3, label: '3단계: 성명/정보 확인', color: 'bg-cyan-500' },
+                            { step: 4, label: '4단계: 연락처/인증 선택', color: 'bg-indigo-400' },
+                            { step: 5, label: '5단계: 간편인증 요청', color: 'bg-indigo-500' },
+                            { step: 6, label: '6단계: 데이터 수집 중', color: 'bg-purple-500' },
+                            { step: 7, label: '7단계: 환급액 결과 확인', color: 'bg-emerald-500' },
+                            { step: 8, label: '8단계: 서비스 신청/결제', color: 'bg-amber-500' },
+                            { step: 9, label: '9단계: 최종 신청 완료', color: 'bg-rose-500' }
+                        ].map((item) => {
+                            const count = filteredData.funnel[item.step] || 0;
+                            const total = filteredData.funnel[0] || 1;
+                            const startCount = filteredData.funnel[1] || 1;
+                            
+                            // 전체 유입(0단계) 대비 백분율
+                            const pctOfTotal = (count / total) * 100;
+                            // 신청 시작(1단계) 대비 백분율 (시각적 게이지 및 상대 전환율용)
+                            const pctOfStart = item.step === 0 ? 100 : (count / startCount) * 100;
+                            
+                            const displayPercent = item.step === 0 
+                              ? `${pctOfTotal.toFixed(0)}%`
+                              : `${pctOfTotal.toFixed(1)}% (시작대비 ${Math.round(pctOfStart)}%)`;
+
+                            // 시각적 게이지바 가로폭은 0단계면 100%, 1단계 이상이면 신청 시작(1단계) 대비 비율을 활용
+                            const progressWidth = item.step === 0 ? 100 : pctOfStart;
+
+                            return (
+                                <div key={item.step} className="space-y-2">
+                                    <div className="flex justify-between items-center">
+                                        <span className="text-[11px] font-bold text-slate-500">{item.label}</span>
+                                        <span className="text-[11px] font-black text-slate-700">{count.toLocaleString()}명 ({displayPercent})</span>
+                                    </div>
+                                    <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
+                                        <div 
+                                          className={cn("h-full transition-all duration-700 rounded-full", item.color)} 
+                                          style={{ width: `${progressWidth}%` }} 
+                                        />
+                                    </div>
                                 </div>
-                                <div className="h-2 bg-slate-50 rounded-full overflow-hidden">
-                                    <div 
-                                      className={cn("h-full transition-all duration-700 rounded-full", item.color)} 
-                                      style={{ width: `${pct}%` }} 
-                                    />
-                                </div>
-                            </div>
-                        );
-                    })}
-                </div>
-             </Card>
-          </div>
+                            );
+                        })}
+                    </div>
+                 </Card>
+              </div>
+            </div> {/* Closes right main content area */}
+          </div> {/* Closes flex-col lg:flex-row gap-8 */}
         </div>
       </main>
       <Footer />

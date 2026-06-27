@@ -39,7 +39,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { translateNotification } from "@/ai/flows/notification-translation-flow";
-import { MessageSquare, Send, Trash2 } from "lucide-react";
+import { MessageSquare, Send, Trash2, Copy, Key, PenTool } from "lucide-react";
 import { translateChatMessage } from "@/ai/flows/chat-translation-flow";
 import { useTranslation } from "@/components/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -77,6 +77,8 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<any>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
+  const [activeView, setActiveView] = useState<'dashboard' | 'hometax'>('dashboard');
+  const [isHardDelete, setIsHardDelete] = useState(false);
 
   // Chat States
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -94,12 +96,25 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const [searchId, setSearchId] = useState("");
   const [searchName, setSearchName] = useState("");
   const [searchPhone, setSearchPhone] = useState("");
+  const [sortBy, setSortBy] = useState<'dateDesc' | 'dateAsc' | 'nationality' | 'amountDesc' | 'amountAsc'>('dateDesc');
   const [apps, setApps] = useState<any[]>([]);
   const [appsLoading, setAppsLoading] = useState(true);
   const [todayVisits, setTodayVisits] = useState(0);
   const [todayInstalls, setTodayInstalls] = useState(0);
 
   // Firestore 실시간 리스너
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const view = params.get("view");
+      if (view === "hometax") {
+        setActiveView("hometax");
+      } else if (view === "dashboard") {
+        setActiveView("dashboard");
+      }
+    }
+  }, []);
+
   useEffect(() => {
     const todayStr = getKstDateString();
     const visitUnsubscribe = onSnapshot(doc(db, 'daily_stats', todayStr), (doc) => {
@@ -127,7 +142,10 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   }, []);
 
   const filteredApps = useMemo(() => {
-    let result = apps;
+    let result = [...apps];
+    if (activeView === 'dashboard') {
+      result = result.filter(app => app.deletedFromDashboard !== true);
+    }
     if (searchId.trim()) {
       const low = searchId.toLowerCase();
       result = result.filter(app => (app.id || "").toLowerCase().includes(low));
@@ -140,8 +158,39 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       const low = searchPhone.toLowerCase();
       result = result.filter(app => (app.phone || app.phoneNo || "").includes(low));
     }
+
+    // Apply sorting
+    result.sort((a, b) => {
+      if (sortBy === 'dateDesc') {
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt || 0).getTime();
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt || 0).getTime();
+        return timeB - timeA;
+      }
+      if (sortBy === 'dateAsc') {
+        const timeA = a.createdAt?.toDate ? a.createdAt.toDate().getTime() : new Date(a.createdAt || 0).getTime();
+        const timeB = b.createdAt?.toDate ? b.createdAt.toDate().getTime() : new Date(b.createdAt || 0).getTime();
+        return timeA - timeB;
+      }
+      if (sortBy === 'nationality') {
+        const langA = (a.userLanguage || "").toLowerCase();
+        const langB = (b.userLanguage || "").toLowerCase();
+        return langA.localeCompare(langB);
+      }
+      if (sortBy === 'amountDesc') {
+        const amtA = a.estimatedRefundAmount ?? 0;
+        const amtB = b.estimatedRefundAmount ?? 0;
+        return amtB - amtA;
+      }
+      if (sortBy === 'amountAsc') {
+        const amtA = a.estimatedRefundAmount ?? 0;
+        const amtB = b.estimatedRefundAmount ?? 0;
+        return amtA - amtB;
+      }
+      return 0;
+    });
+
     return result;
-  }, [apps, searchId, searchName, searchPhone]);
+  }, [apps, searchId, searchName, searchPhone, activeView, sortBy]);
 
   // Pagination Logic
   const [currentPage, setCurrentPage] = useState(1);
@@ -473,15 +522,21 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
 
   const handleDeleteApplicant = async (appId: string) => {
     try {
-      console.log("Deleting applicant:", appId);
-      await deleteDoc(doc(db, 'applications', appId));
-      toast({ title: "삭제 완료", description: "신청자 데이터가 시스템에서 영구적으로 제거되었습니다." });
+      if (isHardDelete) {
+        console.log("Permanently deleting applicant:", appId);
+        await deleteDoc(doc(db, 'applications', appId));
+        toast({ title: "영구 삭제 완료", description: "신청자 데이터가 시스템에서 완전히 삭제되었습니다." });
+      } else {
+        console.log("Soft deleting applicant from dashboard:", appId);
+        await updateDoc(doc(db, 'applications', appId), { deletedFromDashboard: true });
+        toast({ title: "숨김 처리 완료", description: "대시보드 목록에서 숨김 처리되었습니다. 고객 홈택스 정보 뷰에서 계속 확인 가능합니다." });
+      }
       setIsDeleteDialogOpen(false);
       setIsDetailOpen(false);
       setSelectedApp(null);
     } catch (error) {
-      console.error("삭제 오류:", error);
-      toast({ variant: "destructive", title: "삭제 실패", description: "권한이 없거나 서버 오류가 발생했습니다." });
+      console.error("삭제/숨김 오류:", error);
+      toast({ variant: "destructive", title: "처리 실패", description: "권한이 없거나 서버 오류가 발생했습니다." });
     }
   };
 
@@ -618,243 +673,699 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   };
 
 
+  const copyToClipboard = (text: string, label: string) => {
+    if (!text) return;
+    navigator.clipboard.writeText(text);
+    toast({ title: `${label} 복사 완료`, description: `클립보드에 복사되었습니다: ${text}` });
+  };
+
   return (
     <div className="space-y-10 animate-fade-in-up">
-      <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
-        <div>
-          <div className="flex items-center gap-2 mb-2">
-            <Badge className="bg-primary/10 text-primary border-none font-black">ADMIN LIVE CONTROL</Badge>
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Left Sidebar Menu */}
+        <div className="w-full lg:w-64 shrink-0 bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 h-fit space-y-6">
+          <div className="space-y-1">
+            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">이지텍스 관리자</p>
+            <h2 className="text-lg font-black text-slate-900">메뉴 바로가기</h2>
           </div>
-          <h1 className="text-3xl font-black font-headline text-slate-900">대표님 대시보드</h1>
-        </div>
-        <div className="flex flex-wrap lg:justify-end gap-2">
-          <Button onClick={handleExportCsv} variant="default" className="h-12 rounded-xl font-bold gap-2 bg-emerald-600 hover:bg-emerald-700 shadow-md">
-            <Download className="h-4 w-4" /> CSV 추출
-          </Button>
-          <Button onClick={() => router.push('/admin/stats')} variant="outline" className="h-12 rounded-xl font-bold gap-2 text-indigo-600 border-indigo-100 hover:bg-indigo-50">
-            📊 통계
-          </Button>
-          <Button onClick={() => {
-            setSearchId("");
-            setSearchName("");
-            setSearchPhone("");
-            window.location.reload();
-          }} variant="outline" className="h-12 w-12 rounded-xl font-bold">
-            <RefreshCw className={cn("h-4 w-4", appsLoading && "animate-spin")} />
-          </Button>
-        </div>
-      </div>
+          
+          <div className="flex flex-col gap-1.5">
+            <Button
+              variant="ghost"
+              onClick={() => setActiveView('dashboard')}
+              className={cn(
+                "w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 transition-all",
+                activeView === 'dashboard'
+                  ? "bg-primary/10 text-primary hover:bg-primary/15"
+                  : "text-slate-600 hover:bg-slate-50"
+              )}
+            >
+              <LayoutDashboard className="h-4 w-4" /> 대시보드 홈
+            </Button>
 
-      <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-4 sm:gap-6">
-        {stats.map((stat, i) => (
-          <Card key={i} className="premium-card rounded-2xl sm:rounded-3xl border-none shadow-sm bg-white overflow-hidden transition-all hover:-translate-y-1 hover:shadow-md">
-            <CardContent className="p-6 sm:p-8 space-y-3 sm:space-y-4">
-              <div className="h-10 w-10 sm:h-12 sm:w-12 bg-slate-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-primary">{stat.icon}</div>
-              <div className="space-y-1">
-                <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">{stat.label}</div>
-                <div className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">{stat.value}</div>
+            <Button
+              variant="ghost"
+              onClick={() => setActiveView('hometax')}
+              className={cn(
+                "w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 transition-all",
+                activeView === 'hometax'
+                  ? "bg-primary/10 text-primary hover:bg-primary/15"
+                  : "text-slate-600 hover:bg-slate-50"
+              )}
+            >
+              <ShieldCheck className="h-4 w-4 text-emerald-600" /> 고객 홈택스 정보
+            </Button>
+
+            <Button
+              variant="ghost"
+              onClick={() => router.push('/admin/stats')}
+              className="w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 text-slate-600 hover:bg-slate-50"
+            >
+              📊 통계 분석
+            </Button>
+
+            <Button
+              variant="ghost"
+              onClick={handleExportCsv}
+              className="w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 text-slate-600 hover:bg-slate-50"
+            >
+              <Download className="h-4 w-4 text-emerald-600" /> CSV 자료 추출
+            </Button>
+
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setSearchId("");
+                setSearchName("");
+                setSearchPhone("");
+                setSortBy("dateDesc");
+                window.location.reload();
+              }}
+              className="w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 text-slate-600 hover:bg-slate-50"
+            >
+              <RefreshCw className={cn("h-4 w-4", appsLoading && "animate-spin")} /> 화면 새로고침
+            </Button>
+          </div>
+        </div>
+
+        {/* Right Main Content Area */}
+        <div className="flex-1 min-w-0 space-y-10">
+          {activeView === 'dashboard' ? (
+            <>
+              <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge className="bg-primary/10 text-primary border-none font-black">ADMIN LIVE CONTROL</Badge>
+                  </div>
+                  <h1 className="text-3xl font-black font-headline text-slate-900">대표님 대시보드</h1>
+                </div>
+                <div className="text-slate-400 font-bold text-xs">
+                  실시간 통계 및 실시간 신청 현황
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-      
-      {/* Search & Filter Bar - Directly above the table */}
-      <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 mb-[-1.5rem] relative z-10 transition-all hover:shadow-md">
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="relative group">
-            <ShieldCheck className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-            <input 
-              type="text" 
-              placeholder="고객번호 (ID) 검색" 
-              className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all"
-              value={searchId}
-              onChange={(e) => setSearchId(e.target.value)}
-            />
-          </div>
-          <div className="relative group">
-            <UsersIcon className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-            <input 
-              type="text" 
-              placeholder="고객 이름 검색" 
-              className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all"
-              value={searchName}
-              onChange={(e) => setSearchName(e.target.value)}
-            />
-          </div>
-          <div className="relative group">
-            <BellRing className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
-            <input 
-              type="text" 
-              placeholder="연락처 검색" 
-              className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all"
-              value={searchPhone}
-              onChange={(e) => setSearchPhone(e.target.value)}
-            />
-          </div>
-        </div>
-      </div>
 
-      <Card className="premium-card rounded-[2.5rem] border-none overflow-hidden bg-white shadow-sm">
-        <CardContent className="p-0">
-          <Table>
-            <TableHeader className="bg-slate-50/50">
-              <TableRow>
-                <TableHead className="font-bold pl-8 py-5">신청번호 / 고객</TableHead>
-                <TableHead className="font-bold">예상 환급액</TableHead>
-                <TableHead className="font-bold">진행 단계</TableHead>
-                <TableHead className="font-bold">사전 진단액</TableHead>
-                <TableHead className="font-bold text-indigo-600">리포트</TableHead>
-                <TableHead className="font-bold text-emerald-600">문서 / 연락처</TableHead>
-                <TableHead className="font-bold pr-8 text-right">상태 제어</TableHead>
-              </TableRow>
-            </TableHeader>
-                      <TableBody>
-                        {paginatedApps?.map((app) => {
-                          const statusBadge = getStatusBadge(app.status);
-                          return (
-                            <TableRow key={app.id} className="hover:bg-slate-50 border-b border-slate-50 transition-colors">
-                              <TableCell 
-                                className="pl-8 py-5 cursor-pointer hover:bg-slate-100/50 transition-all group"
-                                onClick={() => openAppDetail(app)}
-                              >
-                                <div className="font-black text-slate-900 group-hover:text-primary flex items-center gap-2 transition-colors">
-                                  {app.id.substring(0, 8)}...
-                                  <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0" />
+              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-4 gap-4 sm:gap-6">
+                {stats.map((stat, i) => (
+                  <Card key={i} className="premium-card rounded-2xl sm:rounded-3xl border-none shadow-sm bg-white overflow-hidden transition-all hover:-translate-y-1 hover:shadow-md">
+                    <CardContent className="p-6 sm:p-8 space-y-3 sm:space-y-4">
+                      <div className="h-10 w-10 sm:h-12 sm:w-12 bg-slate-50 rounded-xl sm:rounded-2xl flex items-center justify-center text-primary">{stat.icon}</div>
+                      <div className="space-y-1">
+                        <div className="text-[10px] sm:text-xs font-bold text-slate-400 uppercase tracking-wider">{stat.label}</div>
+                        <div className="text-xl sm:text-2xl font-black text-slate-900 leading-tight">{stat.value}</div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+              
+              {/* Search & Filter Bar - Directly above the table */}
+              <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 mb-[-1.5rem] relative z-10 transition-all hover:shadow-md">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="relative group">
+                    <ShieldCheck className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                    <input 
+                      type="text" 
+                      placeholder="고객번호 (ID) 검색" 
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all"
+                      value={searchId}
+                      onChange={(e) => setSearchId(e.target.value)}
+                    />
+                  </div>
+                  <div className="relative group">
+                    <UsersIcon className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                    <input 
+                      type="text" 
+                      placeholder="고객 이름 검색" 
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all"
+                      value={searchName}
+                      onChange={(e) => setSearchName(e.target.value)}
+                    />
+                  </div>
+                  <div className="relative group">
+                    <BellRing className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                    <input 
+                      type="text" 
+                      placeholder="연락처 검색" 
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all"
+                      value={searchPhone}
+                      onChange={(e) => setSearchPhone(e.target.value)}
+                    />
+                  </div>
+                  <div className="relative group">
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold pointer-events-none text-xs">정렬</span>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as any)}
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-10 h-14 font-black text-slate-900 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all appearance-none cursor-pointer text-sm"
+                    >
+                      <option value="dateDesc">📅 최신 등록순</option>
+                      <option value="dateAsc">📅 과거 등록순</option>
+                      <option value="nationality">🇺🇳 국적순</option>
+                      <option value="amountDesc">💰 환급금 높은순</option>
+                      <option value="amountAsc">🪙 환급금 낮은순</option>
+                    </select>
+                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                      <ChevronRight className="h-4 w-4 rotate-90" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Card className="premium-card rounded-[2.5rem] border-none overflow-hidden bg-white shadow-sm">
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader className="bg-slate-50/50">
+                      <TableRow>
+                        <TableHead className="font-bold pl-8 py-5">신청번호 / 고객</TableHead>
+                        <TableHead className="font-bold">신청 일자</TableHead>
+                        <TableHead className="font-bold">국적</TableHead>
+                        <TableHead className="font-bold">예상 환급액</TableHead>
+                        <TableHead className="font-bold text-amber-600">수수료 (25%)</TableHead>
+                        <TableHead className="font-bold">진행 단계</TableHead>
+                        <TableHead className="font-bold">사전 진단액</TableHead>
+                        <TableHead className="font-bold text-indigo-600">리포트</TableHead>
+                        <TableHead className="font-bold text-emerald-600">연락처 / 서류</TableHead>
+                        <TableHead className="font-bold pr-8 text-right">상태 제어</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paginatedApps?.map((app) => {
+                        const statusBadge = getStatusBadge(app.status);
+                        return (
+                          <TableRow key={app.id} className="hover:bg-slate-50 border-b border-slate-50 transition-colors">
+                            {/* 신청번호 / 고객 */}
+                            <TableCell 
+                              className="pl-8 py-5 cursor-pointer hover:bg-slate-100/50 transition-all group"
+                              onClick={() => openAppDetail(app)}
+                            >
+                              <div className="font-black text-slate-900 group-hover:text-primary flex items-center gap-2 transition-colors">
+                                {app.id.substring(0, 8)}...
+                                <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0" />
+                              </div>
+                              <div className="text-xs text-slate-400 font-bold">{app.fullName || "이름 없음"}</div>
+                            </TableCell>
+
+                            {/* 신청 일자 */}
+                            <TableCell className="font-bold text-slate-600 text-xs">
+                              {app.createdAt?.toDate ? app.createdAt.toDate().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : String(app.createdAt || "N/A")}
+                            </TableCell>
+
+                            {/* 국적 */}
+                            <TableCell>
+                              {app.userLanguage ? (
+                                <Badge variant="outline" className="text-[10px] px-2 h-5 border-slate-200 text-slate-600 font-black bg-slate-100 uppercase">
+                                  {app.userLanguage === 'ko' ? '한국 (KO)' : 
+                                   app.userLanguage === 'en' ? '미국 (EN)' : 
+                                   app.userLanguage === 'vi' ? '베트남 (VI)' : 
+                                   app.userLanguage === 'uz' ? '우즈벡 (UZ)' : 
+                                   app.userLanguage === 'zh' ? '중국 (ZH)' : 
+                                   app.userLanguage.toUpperCase()}
+                                </Badge>
+                              ) : (
+                                <span className="text-xs font-bold text-slate-400">N/A</span>
+                              )}
+                            </TableCell>
+
+                            {/* 예상 환급액 */}
+                            <TableCell className="font-black">₩ {app.estimatedRefundAmount?.toLocaleString()}</TableCell>
+
+                            {/* 수수료 (25%) */}
+                            <TableCell className="font-black text-amber-600">
+                              ₩ {Math.round((app.estimatedRefundAmount ?? 0) * 0.25).toLocaleString()}
+                            </TableCell>
+
+                            {/* 진행 단계 */}
+                            <TableCell><Badge className={`rounded-lg font-bold ${statusBadge.class}`}>{statusBadge.label}</Badge></TableCell>
+
+                            {/* 사전 진단액 */}
+                            <TableCell>
+                              <div className="font-bold text-slate-900">₩ {(app.preFilterEstimate || 0).toLocaleString()}</div>
+                            </TableCell>
+
+                            {/* 리포트 */}
+                            <TableCell>
+                              <Button variant="outline" size="sm" className="rounded-xl font-black text-indigo-600 bg-indigo-50 border-indigo-100" onClick={() => { setReportApp(app); setIsTaxReportOpen(true); }}>
+                                <FileSearch className="h-4 w-4 mr-2" /> 자료
+                              </Button>
+                            </TableCell>
+
+                            {/* 연락처 / 서류 */}
+                            <TableCell>
+                              <div className="flex flex-col gap-1">
+                                <div className="text-[11px] font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100 w-fit">
+                                   {app.phoneNo || app.phone || "No Phone"}
                                 </div>
-                                <div className="flex items-center gap-1">
-                                  <div className="text-xs text-slate-400 font-bold">{app.fullName || "이름 없음"}</div>
-                                  {app.userLanguage && (
-                                    <Badge variant="outline" className="text-[9px] px-1 h-4 border-slate-200 text-slate-400 font-bold bg-slate-50 uppercase">
-                                      {app.userLanguage}
-                                    </Badge>
+                                <Button variant="outline" size="sm" className="h-7 w-fit rounded-lg font-black text-[10px] text-emerald-600 bg-emerald-50 border-emerald-100" onClick={async () => {
+                                  setIsDocsLoading(true);
+                                  try { setIsDocsViewerOpen(true); } finally { setIsDocsLoading(false); }
+                                }}>
+                                  현장 서류
+                                </Button>
+                              </div>
+                            </TableCell>
+
+                            {/* 상태 제어 */}
+                            <TableCell className="pr-8 text-right">
+                              <div className="flex justify-end gap-2">
+                                <div className="flex flex-col items-end gap-1.5">
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="rounded-xl text-indigo-500 hover:bg-indigo-50 relative group"
+                                    onClick={async () => {
+                                      setChatAppId(app.id);
+                                      setIsChatOpen(true);
+                                      if (app.unreadChatCountAdmin > 0) {
+                                        await updateDoc(doc(db, 'applications', app.id), { unreadChatCountAdmin: 0 });
+                                      }
+                                    }}
+                                  >
+                                    <MessageSquare className={cn("h-4 w-4 mr-1", app.unreadChatCountAdmin > 0 && "animate-bounce")} />
+                                    상담
+                                    {app.unreadChatCountAdmin > 0 && (
+                                      <span className="absolute -top-2 -right-2 h-8 w-8 bg-red-500 text-white rounded-full border-2 border-white flex items-center justify-center text-[11px] font-black animate-bounce shadow-lg z-10">
+                                        {app.unreadChatCountAdmin > 9 ? '9+' : app.unreadChatCountAdmin}
+                                      </span>
+                                    )}
+                                  </Button>
+                                  {app.unreadChatCountAdmin > 0 && app.lastMessageAt && (
+                                    <div className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-100 flex items-center gap-1 max-w-[150px]">
+                                      <Clock className="w-3.5 h-3.5 shrink-0" />
+                                      <span className="shrink-0">{app.lastMessageAt?.toDate ? app.lastMessageAt.toDate().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : "방금 전"}</span>
+                                    </div>
                                   )}
                                 </div>
-                              </TableCell>
-                              <TableCell className="font-black">₩ {app.estimatedRefundAmount?.toLocaleString()}</TableCell>
-                              <TableCell><Badge className={`rounded-lg font-bold ${statusBadge.class}`}>{statusBadge.label}</Badge></TableCell>
-                              <TableCell>
-                                <div className="font-bold text-slate-900">₩ {(app.preFilterEstimate || 0).toLocaleString()}</div>
-                              </TableCell>
-                              <TableCell>
-                                <Button variant="outline" size="sm" className="rounded-xl font-black text-indigo-600 bg-indigo-50 border-indigo-100" onClick={() => { setReportApp(app); setIsTaxReportOpen(true); }}>
-                                  <FileSearch className="h-4 w-4 mr-2" /> 자료
+                                <Button variant="outline" size="sm" className="rounded-xl font-black" onClick={() => handleStatusChange(app, 1)}>
+                                  단계 제어 <ChevronRight className="h-4 w-4 ml-1" />
                                 </Button>
-                              </TableCell>
-                              <TableCell>
-                                <div className="flex flex-col gap-1">
-                                  <div className="text-[11px] font-bold text-slate-500 bg-slate-50 px-2 py-0.5 rounded border border-slate-100 w-fit">
-                                     {app.phoneNo || app.phone || "No Phone"}
-                                  </div>
-                                  <Button variant="outline" size="sm" className="h-7 w-fit rounded-lg font-black text-[10px] text-emerald-600 bg-emerald-50 border-emerald-100" onClick={async () => {
-                                    setIsDocsLoading(true);
-                                    try { setIsDocsViewerOpen(true); } finally { setIsDocsLoading(false); }
-                                  }}>
-                                    현장 서류
-                                  </Button>
-                                </div>
-                              </TableCell>
-                              <TableCell className="pr-8 text-right">
-                                <div className="flex justify-end gap-2">
-                                  <div className="flex flex-col items-end gap-1.5">
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      className="rounded-xl text-indigo-500 hover:bg-indigo-50 relative group"
-                                      onClick={async () => {
-                                        setChatAppId(app.id);
-                                        setIsChatOpen(true);
-                                        if (app.unreadChatCountAdmin > 0) {
-                                          await updateDoc(doc(db, 'applications', app.id), { unreadChatCountAdmin: 0 });
-                                        }
-                                      }}
-                                    >
-                                      <MessageSquare className={cn("h-4 w-4 mr-1", app.unreadChatCountAdmin > 0 && "animate-bounce")} />
-                                      상담
-                                      {app.unreadChatCountAdmin > 0 && (
-                                        <span className="absolute -top-2 -right-2 h-8 w-8 bg-red-500 text-white rounded-full border-2 border-white flex items-center justify-center text-[11px] font-black animate-bounce shadow-lg z-10">
-                                          {app.unreadChatCountAdmin > 9 ? '9+' : app.unreadChatCountAdmin}
-                                        </span>
-                                      )}
-                                    </Button>
-                                    {app.unreadChatCountAdmin > 0 && app.lastMessageAt && (
-                                      <div className="text-[10px] font-bold text-red-600 bg-red-50 px-2 py-0.5 rounded border border-red-100 flex items-center gap-1 max-w-[150px]">
-                                        <Clock className="w-3 h-3 shrink-0" />
-                                        <span className="shrink-0">{app.lastMessageAt?.toDate ? app.lastMessageAt.toDate().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : "방금 전"}</span>
-                                      </div>
-                                    )}
-                                  </div>
-                                  <Button variant="outline" size="sm" className="rounded-xl font-black" onClick={() => handleStatusChange(app, 1)}>
-                                    단계 제어 <ChevronRight className="h-4 w-4 ml-1" />
-                                  </Button>
-                                </div>
-                              </TableCell>
-                            </TableRow>
+                              </div>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
+                    </TableBody>
+                  </Table>
+                  
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 py-8 border-t border-slate-50 bg-white/50">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl font-bold h-10 px-4"
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" /> 이전
+                      </Button>
+                      
+                      <div className="flex items-center gap-1">
+                        {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
+                          // Only show 5 pages around current page if there are many pages
+                          const shouldShow = totalPages <= 7 || 
+                                            Math.abs(page - currentPage) <= 2 || 
+                                            page === 1 || 
+                                            page === totalPages;
+                          
+                          if (!shouldShow) {
+                            if (page === 2 || page === totalPages - 1) {
+                              return <span key={page} className="text-slate-300 px-1">...</span>;
+                            }
+                            return null;
+                          }
+
+                          return (
+                            <Button
+                              key={page}
+                              variant={currentPage === page ? "default" : "outline"}
+                              size="sm"
+                              className={cn(
+                                "rounded-xl font-bold w-10 h-10 transition-all",
+                                currentPage === page 
+                                  ? "bg-primary text-white shadow-lg shadow-primary/20 scale-110" 
+                                  : "text-slate-500 hover:text-primary hover:border-primary/30"
+                              )}
+                              onClick={() => setCurrentPage(page)}
+                            >
+                              {page}
+                            </Button>
                           );
                         })}
-                      </TableBody>
-          </Table>
-          
-          {/* Pagination Controls */}
-          {totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 py-8 border-t border-slate-50 bg-white/50">
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-xl font-bold h-10 px-4"
-                onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-                disabled={currentPage === 1}
-              >
-                <ChevronLeft className="h-4 w-4 mr-1" /> 이전
-              </Button>
-              
-              <div className="flex items-center gap-1">
-                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => {
-                  // Only show 5 pages around current page if there are many pages
-                  const shouldShow = totalPages <= 7 || 
-                                    Math.abs(page - currentPage) <= 2 || 
-                                    page === 1 || 
-                                    page === totalPages;
-                  
-                  if (!shouldShow) {
-                    if (page === 2 || page === totalPages - 1) {
-                      return <span key={page} className="text-slate-300 px-1">...</span>;
-                    }
-                    return null;
-                  }
+                      </div>
 
-                  return (
-                    <Button
-                      key={page}
-                      variant={currentPage === page ? "default" : "outline"}
-                      size="sm"
-                      className={cn(
-                        "rounded-xl font-bold w-10 h-10 transition-all",
-                        currentPage === page 
-                          ? "bg-primary text-white shadow-lg shadow-primary/20 scale-110" 
-                          : "text-slate-500 hover:text-primary hover:border-primary/30"
-                      )}
-                      onClick={() => setCurrentPage(page)}
-                    >
-                      {page}
-                    </Button>
-                  );
-                })}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl font-bold h-10 px-4"
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                      >
+                        다음 <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* VIP Priority Monitoring Section */}
+              <div className="pt-10 border-t border-slate-100 mt-10">
+                <div className="flex items-center gap-4 mb-8">
+                  <div className="h-14 w-14 bg-amber-400 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-200 shrink-0">
+                     <Trophy className="h-8 w-8 text-amber-950" />
+                  </div>
+                  <div>
+                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-headline tracking-tight">🔥 VIP 실시간 우선 모니터링 (집중 관리)</h2>
+                    <p className="text-slate-500 font-bold text-sm sm:text-base">잠재 환급액 40만 원 이상의 고액 대상자 우선 순위 리스트입니다.</p>
+                  </div>
+                </div>
+
+                <Card className="premium-card rounded-[2.5rem] border-4 border-amber-400 shadow-2xl overflow-hidden bg-white">
+                  <CardContent className="p-0">
+                    <Table>
+                      <TableHeader className="bg-amber-400/10">
+                        <TableRow className="hover:bg-amber-400/5 transition-colors border-b border-amber-400/20">
+                          <TableHead className="font-black text-amber-950 pl-8 py-6">VIP 고객 정보</TableHead>
+                          <TableHead className="font-black text-amber-950">잠재 환급액</TableHead>
+                          <TableHead className="font-black text-amber-950">현재 단계</TableHead>
+                          <TableHead className="font-black text-amber-950">연락처</TableHead>
+                          <TableHead className="font-black text-amber-950 pr-8 text-right">실시간 우선 상담</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                         {apps.filter(app => (app.preFilterEstimate || 0) >= 400000).slice(0, 50).map((app) => {
+                           const statusBadge = getStatusBadge(app.status);
+                           return (
+                             <TableRow key={app.id} className="hover:bg-amber-400/5 transition-colors border-b border-amber-400/10">
+                                <TableCell className="pl-8 py-6 cursor-pointer" onClick={() => openAppDetail(app)}>
+                                  <div className="flex items-center gap-3">
+                                    <div className="h-10 w-10 bg-amber-400 text-amber-950 rounded-xl flex items-center justify-center font-black shadow-sm shrink-0">VIP</div>
+                                    <div>
+                                       <div className="font-black text-slate-900 text-lg leading-none mb-1">{app.fullName || "이름 없음"}</div>
+                                       <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">ID: {app.id.substring(0, 8)}</div>
+                                    </div>
+                                  </div>
+                                </TableCell>
+                                <TableCell>
+                                  <div className="text-2xl font-black text-amber-600 tracking-tighter">₩ {(app.preFilterEstimate || 0).toLocaleString()}</div>
+                                </TableCell>
+                                <TableCell>
+                                   <Badge className={`rounded-xl px-3 font-black ${statusBadge.class} border-none shadow-sm`}>{statusBadge.label}</Badge>
+                                </TableCell>
+                                <TableCell>
+                                   <div className="font-black text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 inline-block text-sm">
+                                     {app.phoneNo || app.phone || "No Phone"}
+                                   </div>
+                                </TableCell>
+                                <TableCell className="pr-8 text-right">
+                                  <div className="flex justify-end items-center gap-4">
+                                    <Button
+                                      variant="ghost"
+                                      size="lg"
+                                      className="rounded-2xl text-amber-600 hover:bg-amber-50 h-16 w-16"
+                                      onClick={() => {
+                                        setNoteAppId(app.id);
+                                        setIsNoteDrawerOpen(true);
+                                      }}
+                                    >
+                                      <BellRing className="h-7 w-7" />
+                                    </Button>
+                                    <div className="flex flex-col items-end gap-2">
+                                      <Button 
+                                        className="rounded-2xl h-16 px-8 bg-amber-400 text-amber-950 font-black shadow-lg shadow-amber-200 hover:bg-amber-500 scale-100 hover:scale-105 transition-all relative overflow-hidden group"
+                                        onClick={async () => {
+                                          setChatAppId(app.id);
+                                          setIsChatOpen(true);
+                                          if (app.unreadChatCountAdmin > 0) {
+                                            await updateDoc(doc(db, 'applications', app.id), { unreadChatCountAdmin: 0 });
+                                          }
+                                        }}
+                                      >
+                                         <MessageSquare className="h-6 w-6 mr-3 animate-bounce" />
+                                         VIP 우선 상담 시작하기
+                                         {app.unreadChatCountAdmin > 0 && (
+                                            <span className="absolute -top-3 -right-3 h-[42px] w-[42px] bg-red-600 text-white rounded-full border-4 border-white flex items-center justify-center text-sm font-black shadow-2xl animate-bounce z-10 transition-all">
+                                              {app.unreadChatCountAdmin > 99 ? '99+' : app.unreadChatCountAdmin}
+                                            </span>
+                                         )}
+                                      </Button>
+                                      {app.unreadChatCountAdmin > 0 && app.lastMessageAt && (
+                                        <div className="text-[12px] font-black text-red-600 bg-red-50/80 px-3 py-1.5 rounded-xl border border-red-200 flex items-center gap-1.5 animate-pulse max-w-[240px] shadow-sm">
+                                          <Clock className="w-3.5 h-3.5 shrink-0" />
+                                          <span className="shrink-0">{app.lastMessageAt?.toDate ? app.lastMessageAt.toDate().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : "방금 전"}</span>
+                                          <span className="text-slate-500 truncate block border-l border-red-200 pl-2 ml-0.5">"{app.lastMessageText || '새로 받은 메시지'}"</span>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </div>
+                                </TableCell>
+                             </TableRow>
+                           );
+                         })}
+                      </TableBody>
+                    </Table>
+                    {apps.filter(app => (app.preFilterEstimate || 0) >= 400000).length === 0 && (
+                      <div className="py-32 text-center bg-slate-50/50">
+                        <p className="text-2xl font-black text-slate-300">현재 집중 모니터링 대상인 VIP가 없습니다.</p>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
+                <div>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge className="bg-emerald-600/10 text-emerald-700 border-none font-black">HOMETAX CREDENTIALS</Badge>
+                  </div>
+                  <h1 className="text-3xl font-black font-headline text-slate-900">고객 홈택스 정보</h1>
+                </div>
+                <div className="text-slate-400 font-bold text-xs">
+                  홈택스 로그인 계정 및 외국인등록번호 조회
+                </div>
               </div>
 
-              <Button
-                variant="outline"
-                size="sm"
-                className="rounded-xl font-bold h-10 px-4"
-                onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-                disabled={currentPage === totalPages}
-              >
-                다음 <ChevronRight className="h-4 w-4 ml-1" />
-              </Button>
-            </div>
+              {/* Search & Filter Bar - Reuse same search state for Hometax view */}
+              <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 mb-[-1.5rem] relative z-10 transition-all hover:shadow-md">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                  <div className="relative group">
+                    <ShieldCheck className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                    <input 
+                      type="text" 
+                      placeholder="고객번호 (ID) 검색" 
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all"
+                      value={searchId}
+                      onChange={(e) => setSearchId(e.target.value)}
+                    />
+                  </div>
+                  <div className="relative group">
+                    <UsersIcon className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                    <input 
+                      type="text" 
+                      placeholder="고객 이름 검색" 
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all"
+                      value={searchName}
+                      onChange={(e) => setSearchName(e.target.value)}
+                    />
+                  </div>
+                  <div className="relative group">
+                    <BellRing className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
+                    <input 
+                      type="text" 
+                      placeholder="연락처 검색" 
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all"
+                      value={searchPhone}
+                      onChange={(e) => setSearchPhone(e.target.value)}
+                    />
+                  </div>
+                  <div className="relative group">
+                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold pointer-events-none text-xs">정렬</span>
+                    <select
+                      value={sortBy}
+                      onChange={(e) => setSortBy(e.target.value as any)}
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-10 h-14 font-black text-slate-900 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all appearance-none cursor-pointer text-sm"
+                    >
+                      <option value="dateDesc">📅 최신 등록순</option>
+                      <option value="dateAsc">📅 과거 등록순</option>
+                      <option value="nationality">🇺🇳 국적순</option>
+                      <option value="amountDesc">💰 환급금 높은순</option>
+                      <option value="amountAsc">🪙 환급금 낮은순</option>
+                    </select>
+                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                      <ChevronRight className="h-4 w-4 rotate-90" />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <Card className="premium-card rounded-[2.5rem] border-none overflow-hidden bg-white shadow-sm">
+                <CardContent className="p-0">
+                  <Table>
+                    <TableHeader className="bg-slate-50/50">
+                      <TableRow>
+                        <TableHead className="font-bold pl-8 py-5">고객명 / ID</TableHead>
+                        <TableHead className="font-bold">신청 일자</TableHead>
+                        <TableHead className="font-bold">국적</TableHead>
+                        <TableHead className="font-bold">연락처</TableHead>
+                        <TableHead className="font-bold text-indigo-600">홈택스 ID</TableHead>
+                        <TableHead className="font-bold text-indigo-600">홈택스 PW</TableHead>
+                        <TableHead className="font-bold">외국인 등록번호</TableHead>
+                        <TableHead className="font-bold">수령 계좌</TableHead>
+                        <TableHead className="font-bold">예상 환급액</TableHead>
+                        <TableHead className="font-bold text-amber-600">수수료 (25%)</TableHead>
+                        <TableHead className="font-bold pr-8 text-right">상세</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {paginatedApps?.map((app) => (
+                        <TableRow key={app.id} className="hover:bg-slate-50 border-b border-slate-50 transition-colors">
+                          <TableCell 
+                            className="pl-8 py-5 cursor-pointer hover:bg-slate-100/50 transition-all group font-black text-slate-900"
+                            onClick={() => openAppDetail(app)}
+                          >
+                            <div className="font-black text-slate-900 group-hover:text-primary flex items-center gap-2 transition-colors">
+                              {app.fullName || "이름 없음"}
+                              <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0" />
+                            </div>
+                            <div className="text-[10px] text-slate-400 font-bold uppercase">{app.id.substring(0, 8)}...</div>
+                          </TableCell>
+
+                          {/* 신청 일자 */}
+                          <TableCell className="font-bold text-slate-600 text-xs">
+                            {app.createdAt?.toDate ? app.createdAt.toDate().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : String(app.createdAt || "N/A")}
+                          </TableCell>
+
+                          {/* 국적 */}
+                          <TableCell>
+                            {app.userLanguage ? (
+                              <Badge variant="outline" className="text-[10px] px-2 h-5 border-slate-200 text-slate-600 font-black bg-slate-100 uppercase">
+                                {app.userLanguage === 'ko' ? '한국 (KO)' : 
+                                 app.userLanguage === 'en' ? '미국 (EN)' : 
+                                 app.userLanguage === 'vi' ? '베트남 (VI)' : 
+                                 app.userLanguage === 'uz' ? '우즈벡 (UZ)' : 
+                                 app.userLanguage === 'zh' ? '중국 (ZH)' : 
+                                 app.userLanguage.toUpperCase()}
+                              </Badge>
+                            ) : (
+                              <span className="text-xs font-bold text-slate-400">N/A</span>
+                            )}
+                          </TableCell>
+
+                          <TableCell className="font-bold text-slate-600">{app.phone || app.phoneNo || "N/A"}</TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-bold text-slate-800">{app.hometaxId || "N/A"}</span>
+                              {app.hometaxId && (
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-6 w-6 p-0 text-slate-400 hover:text-primary" 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    copyToClipboard(app.hometaxId, "홈택스 ID");
+                                  }}
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-mono font-bold text-slate-800">{app.hometaxPw || "N/A"}</span>
+                              {app.hometaxPw && (
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-6 w-6 p-0 text-slate-400 hover:text-primary" 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    copyToClipboard(app.hometaxPw, "홈택스 PW");
+                                  }}
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell>
+                            <div className="flex items-center gap-1.5">
+                              <span className="font-bold text-slate-800">{app.registrationNumber || "N/A"}</span>
+                              {app.registrationNumber && (
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-6 w-6 p-0 text-slate-400 hover:text-primary" 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    copyToClipboard(app.registrationNumber, "외국인 등록번호");
+                                  }}
+                                >
+                                  <Copy className="h-3 w-3" />
+                                </Button>
+                              )}
+                            </div>
+                          </TableCell>
+                          <TableCell className="font-bold text-slate-700">
+                            {app.bankName ? `${app.bankName} (${app.bankAccount || app.accountNumber || '계좌미지정'})` : "N/A"}
+                          </TableCell>
+                          <TableCell className="font-black text-slate-900">
+                            ₩ {(app.estimatedRefundAmount ?? 0).toLocaleString()}
+                          </TableCell>
+
+                          {/* 수수료 (25%) */}
+                          <TableCell className="font-black text-amber-600">
+                            ₩ {Math.round((app.estimatedRefundAmount ?? 0) * 0.25).toLocaleString()}
+                          </TableCell>
+
+                          <TableCell className="pr-8 text-right">
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="rounded-xl font-bold" 
+                              onClick={() => openAppDetail(app)}
+                            >
+                              보기
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  
+                  {/* Pagination Controls */}
+                  {totalPages > 1 && (
+                    <div className="flex items-center justify-center gap-2 py-8 border-t border-slate-50 bg-white/50">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl font-bold h-10 px-4"
+                        onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
+                        disabled={currentPage === 1}
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" /> 이전
+                      </Button>
+                      <div className="text-sm font-bold text-slate-500 px-4">
+                        {currentPage} / {totalPages} 페이지
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="rounded-xl font-bold h-10 px-4"
+                        onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
+                        disabled={currentPage === totalPages}
+                      >
+                        다음 <ChevronRight className="h-4 w-4 ml-1" />
+                      </Button>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </>
           )}
-        </CardContent>
-      </Card>
+        </div>
+      </div>
 
       {/* Applicant Detail Dialog */}
       <Dialog open={isDetailOpen} onOpenChange={setIsDetailOpen}>
@@ -948,6 +1459,63 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                   </div>
                 </div>
 
+                {/* E-Signature / Contract Agreement Section */}
+                <div className="space-y-4 pt-4 border-t border-slate-100">
+                  <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                    <PenTool className="h-4 w-4 text-indigo-600" /> 모바일 서명 위임 계약서
+                  </h3>
+                  <div className="bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-6 text-xs text-slate-700 leading-relaxed font-sans">
+                    <div className="text-center border-b border-slate-200 pb-4">
+                      <h4 className="text-base font-black text-slate-900">세무대리 수임 동의서 / 위임계약서</h4>
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Consent for Tax Representation</p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">1. 위임인 (신청인) 및 계약 정보</p>
+                      <div className="grid grid-cols-2 gap-2 text-slate-600">
+                        <div>• 성명: <span className="font-bold text-slate-900">{selectedApp.fullName || "미입력"}</span></div>
+                        <div>• 휴대폰: <span className="font-bold text-slate-900">{selectedApp.phoneNo || selectedApp.phone || "미입력"}</span></div>
+                        <div>• 국적: <span className="font-bold text-slate-900">{selectedApp.userLanguage?.toUpperCase() || "KO"}</span></div>
+                        <div>• 신청 날짜: <span className="font-bold text-slate-900">{selectedApp.createdAt?.toDate ? selectedApp.createdAt.toDate().toLocaleDateString('ko-KR') : "N/A"}</span></div>
+                        <div>• 예상 환급액: <span className="font-bold text-slate-900">₩ {(selectedApp.estimatedRefundAmount ?? 0).toLocaleString()}</span></div>
+                        <div>• 수수료 금액 (25%): <span className="font-black text-amber-600">₩ {Math.round((selectedApp.estimatedRefundAmount ?? 0) * 0.25).toLocaleString()}</span></div>
+                        <div className="col-span-2">• 서명 상태: <span className={cn("font-bold", selectedApp.signatureDataUri ? "text-green-600" : "text-amber-600")}>{selectedApp.signatureDataUri ? "서명 완료" : "미서명"}</span></div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">2. 수임인 (세무대리인) 정보</p>
+                      <div className="grid grid-cols-2 gap-2 text-slate-600">
+                        <div>• 상호: (주)이지택스 세무회계</div>
+                        <div>• 대표 세무사: 김홍일</div>
+                        <div>• 등록번호: 283-50-22337</div>
+                        <div>• 소재지: 서울특별시 강남구 테헤란로 123</div>
+                      </div>
+                    </div>
+
+                    <div className="space-y-2">
+                      <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">3. 위임 내용</p>
+                      <p className="text-slate-500 text-[10px] leading-relaxed text-justify">
+                        본인(위임인)은 대한민국 「조세특례제한법」 제30조에 따른 '중소기업 취업자에 대한 소득세 감면' 적용 및 이에 따른 과거 납부 세액의 환급(경정청구) 절차를 진행함에 있어, 상기 수임인을 법정 대리인으로 선임합니다. 이에 따라 국세청(Hometax) 데이터 조회, 서류 작성 및 제출, 환급금 수령 계좌 등록 등 일체의 권한을 위임합니다.
+                      </p>
+                    </div>
+
+                    <div className="pt-4 border-t border-slate-200 flex flex-col items-center gap-3">
+                      <p className="font-bold text-slate-400 text-[9px]">
+                        위임 날짜: {selectedApp.createdAt?.toDate ? selectedApp.createdAt.toDate().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : "N/A"}
+                      </p>
+                      <div className="flex items-center gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm w-full justify-center">
+                        <span className="font-bold text-slate-500">위임인 (인/서명) :</span>
+                        {selectedApp.signatureDataUri ? (
+                          <img src={selectedApp.signatureDataUri} alt="User Signature" className="h-12 max-w-[150px] object-contain bg-white" />
+                        ) : (
+                          <span className="text-slate-300 font-bold italic">서명 데이터 없음</span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Internal Admin Memo */}
                 <div className="space-y-4 pt-4 border-t border-slate-100">
                   <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
@@ -1035,19 +1603,24 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                           <AlertTriangle className="h-4 w-4 text-white" />
                         </div>
                         <div>
-                          <p className="text-sm font-black text-red-900">Danger Zone</p>
-                          <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest">데이터 영구 삭제 처리</p>
+                          <p className="text-sm font-black text-red-900">{activeView === 'hometax' ? "Danger Zone" : "대시보드 정리"}</p>
+                          <p className="text-[10px] font-bold text-red-400 uppercase tracking-widest">{activeView === 'hometax' ? "데이터 영구 삭제 처리" : "대시보드 목록에서 제외"}</p>
                         </div>
                       </div>
                       <p className="text-xs font-bold text-red-600/70 leading-relaxed">
-                        신청자를 삭제하면 복구가 불가능합니다. 모든 채팅 내역과 개인정보가 즉시 파기됩니다.
+                        {activeView === 'hometax' 
+                          ? "신청자를 영구적으로 삭제하면 복구가 불가능합니다. 모든 개인정보와 계정 데이터가 파기됩니다." 
+                          : "이 목록에서 제외하면 메인 대시보드 화면에서는 보이지 않게 되지만, '고객 홈택스 정보' 탭에서는 언제든지 조회할 수 있습니다."}
                       </p>
                       <Button 
                         variant="destructive" 
-                        onClick={() => setIsDeleteDialogOpen(true)}
+                        onClick={() => {
+                          setIsHardDelete(activeView === 'hometax');
+                          setIsDeleteDialogOpen(true);
+                        }}
                         className="w-full h-14 rounded-xl font-black bg-red-500 hover:bg-red-600 shadow-lg shadow-red-200"
                       >
-                        <Trash2 className="h-4 w-4 mr-2" /> 신청자 영구 삭제하기
+                        <Trash2 className="h-4 w-4 mr-2" /> {activeView === 'hometax' ? "신청자 영구 삭제하기" : "대시보드 목록에서 숨기기"}
                       </Button>
                     </div>
                   </div>
@@ -1064,22 +1637,37 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
             <div className="h-16 w-16 bg-red-100 rounded-2xl flex items-center justify-center mb-4">
               <AlertTriangle className="h-8 w-8 text-red-600" />
             </div>
-            <DialogTitle className="text-2xl font-black text-slate-900">정말로 삭제하시겠습니까?</DialogTitle>
+            <DialogTitle className="text-2xl font-black text-slate-900">
+              {isHardDelete ? "정말로 영구 삭제하시겠습니까?" : "목록에서 숨기시겠습니까?"}
+            </DialogTitle>
           </DialogHeader>
           <div className="space-y-6">
             <p className="text-slate-500 font-bold leading-relaxed">
-              이 작업은 즉시 실행되며 되돌릴 수 없습니다.<br />
-              <span className="text-red-600 font-black">신청번호: {selectedApp?.id}</span><br />
-              모든 신청 내역과 개인정보가 시스템에서 영구적으로 파기됩니다.
+              {isHardDelete ? (
+                <>
+                  이 작업은 즉시 실행되며 되돌릴 수 없습니다.<br />
+                  <span className="text-red-600 font-black">신청번호: {selectedApp?.id}</span><br />
+                  모든 신청 내역과 개인정보가 시스템에서 영구적으로 파기됩니다.
+                </>
+              ) : (
+                <>
+                  대시보드 화면 목록에서 숨김 처리합니다.<br />
+                  <span className="text-primary font-black">신청번호: {selectedApp?.id}</span><br />
+                  데이터는 유실되지 않으며 '고객 홈택스 정보' 뷰에서 언제든지 다시 확인하실 수 있습니다.
+                </>
+              )}
             </p>
             <div className="flex gap-4">
               <Button variant="ghost" className="flex-1 h-14 rounded-xl font-bold" onClick={() => setIsDeleteDialogOpen(false)}>취소</Button>
               <Button 
                 variant="destructive" 
-                className="flex-[2] h-14 rounded-xl font-black bg-red-500 text-white shadow-lg" 
+                className={cn(
+                  "flex-[2] h-14 rounded-xl font-black text-white shadow-lg",
+                  isHardDelete ? "bg-red-500 hover:bg-red-600" : "bg-slate-900 hover:bg-slate-800"
+                )} 
                 onClick={() => handleDeleteApplicant(selectedApp.id)}
               >
-                네, 영구 삭제합니다
+                {isHardDelete ? "네, 영구 삭제합니다" : "네, 숨김 처리합니다"}
               </Button>
             </div>
           </div>
@@ -1286,110 +1874,6 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
           </div>
         </DialogContent>
       </Dialog>
-      {/* VIP Priority Monitoring Section */}
-      <div className="pt-20 border-t-2 border-slate-100 pb-20">
-        <div className="flex items-center gap-4 mb-10">
-          <div className="h-14 w-14 bg-amber-400 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-200">
-             <Trophy className="h-8 w-8 text-amber-950" />
-          </div>
-          <div>
-            <h2 className="text-4xl font-black text-slate-900 font-headline tracking-tight">🔥 VIP 실시간 우선 모니터링 (집중 관리)</h2>
-            <p className="text-slate-500 font-bold text-lg">잠재 환급액 40만 원 이상의 고액 대상자 우선 순위 리스트입니다.</p>
-          </div>
-        </div>
-
-        <Card className="premium-card rounded-[2.5rem] border-4 border-amber-400 shadow-2xl overflow-hidden bg-white">
-          <CardContent className="p-0">
-            <Table>
-              <TableHeader className="bg-amber-400/10">
-                <TableRow className="hover:bg-amber-400/5 transition-colors border-b border-amber-400/20">
-                  <TableHead className="font-black text-amber-950 pl-8 py-6">VIP 고객 정보</TableHead>
-                  <TableHead className="font-black text-amber-950">잠재 환급액</TableHead>
-                  <TableHead className="font-black text-amber-950">현재 단계</TableHead>
-                  <TableHead className="font-black text-amber-950">연락처</TableHead>
-                  <TableHead className="font-black text-amber-950 pr-8 text-right">실시간 우선 상담</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                 {apps.filter(app => (app.preFilterEstimate || 0) >= 400000).slice(0, 50).map((app) => {
-                   const statusBadge = getStatusBadge(app.status);
-                   return (
-                     <TableRow key={app.id} className="hover:bg-amber-400/5 transition-colors border-b border-amber-400/10">
-                        <TableCell className="pl-8 py-6 cursor-pointer" onClick={() => openAppDetail(app)}>
-                          <div className="flex items-center gap-3">
-                            <div className="h-10 w-10 bg-amber-400 text-amber-950 rounded-xl flex items-center justify-center font-black shadow-sm shrink-0">VIP</div>
-                            <div>
-                               <div className="font-black text-slate-900 text-lg leading-none mb-1">{app.fullName || "이름 없음"}</div>
-                               <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">ID: {app.id.substring(0, 8)}</div>
-                            </div>
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <div className="text-2xl font-black text-amber-600 tracking-tighter">₩ {(app.preFilterEstimate || 0).toLocaleString()}</div>
-                        </TableCell>
-                        <TableCell>
-                           <Badge className={`rounded-xl px-3 font-black ${statusBadge.class} border-none shadow-sm`}>{statusBadge.label}</Badge>
-                        </TableCell>
-                        <TableCell>
-                           <div className="font-black text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 inline-block text-sm">
-                             {app.phoneNo || app.phone || "No Phone"}
-                           </div>
-                        </TableCell>
-                        <TableCell className="pr-8 text-right">
-                          <div className="flex justify-end items-center gap-4">
-                            <Button
-                              variant="ghost"
-                              size="lg"
-                              className="rounded-2xl text-amber-600 hover:bg-amber-50 h-16 w-16"
-                              onClick={() => {
-                                setNoteAppId(app.id);
-                                setIsNoteDrawerOpen(true);
-                              }}
-                            >
-                              <BellRing className="h-7 w-7" />
-                            </Button>
-                            <div className="flex flex-col items-end gap-2">
-                              <Button 
-                                className="rounded-2xl h-16 px-8 bg-amber-400 text-amber-950 font-black shadow-lg shadow-amber-200 hover:bg-amber-500 scale-100 hover:scale-105 transition-all relative overflow-hidden group"
-                                onClick={async () => {
-                                  setChatAppId(app.id);
-                                  setIsChatOpen(true);
-                                  if (app.unreadChatCountAdmin > 0) {
-                                    await updateDoc(doc(db, 'applications', app.id), { unreadChatCountAdmin: 0 });
-                                  }
-                                }}
-                              >
-                                 <MessageSquare className="h-6 w-6 mr-3 animate-bounce" />
-                                 VIP 우선 상담 시작하기
-                                 {app.unreadChatCountAdmin > 0 && (
-                                    <span className="absolute -top-3 -right-3 h-[42px] w-[42px] bg-red-600 text-white rounded-full border-4 border-white flex items-center justify-center text-sm font-black shadow-2xl animate-bounce z-10 transition-all">
-                                      {app.unreadChatCountAdmin > 99 ? '99+' : app.unreadChatCountAdmin}
-                                    </span>
-                                 )}
-                              </Button>
-                              {app.unreadChatCountAdmin > 0 && app.lastMessageAt && (
-                                <div className="text-[12px] font-black text-red-600 bg-red-50/80 px-3 py-1.5 rounded-xl border border-red-200 flex items-center gap-1.5 animate-pulse max-w-[240px] shadow-sm">
-                                  <Clock className="w-3.5 h-3.5 shrink-0" />
-                                  <span className="shrink-0">{app.lastMessageAt?.toDate ? app.lastMessageAt.toDate().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : "방금 전"}</span>
-                                  <span className="text-slate-500 truncate block border-l border-red-200 pl-2 ml-0.5">"{app.lastMessageText || '새로 받은 메시지'}"</span>
-                                </div>
-                              )}
-                            </div>
-                          </div>
-                        </TableCell>
-                     </TableRow>
-                   );
-                 })}
-              </TableBody>
-            </Table>
-            {apps.filter(app => (app.preFilterEstimate || 0) >= 400000).length === 0 && (
-              <div className="py-32 text-center bg-slate-50/50">
-                <p className="text-2xl font-black text-slate-300">현재 집중 모니터링 대상인 VIP가 없습니다.</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      </div>
     </div>
   );
 }
@@ -1425,8 +1909,8 @@ function AdminDashboardWrapper() {
   return (
     <div className="min-h-screen flex flex-col font-body bg-slate-50/50">
       <Navbar />
-      <main className="flex-1 container mx-auto px-4 py-8 lg:py-16">
-        <div className="max-w-7xl mx-auto">
+      <main className="flex-1 w-full px-4 sm:px-6 lg:px-12 py-8 lg:py-16">
+        <div className="w-full mx-auto">
           {!adminVerified ? (
              <div className="min-h-[400px] flex items-center justify-center">
                 <Loader2 className="h-10 w-10 animate-spin text-primary" />
