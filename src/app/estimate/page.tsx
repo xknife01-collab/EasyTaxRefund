@@ -1691,6 +1691,19 @@ export default function EstimatePage() {
         // Wait at least 4 seconds for progress animations to look professional
         await new Promise(resolve => setTimeout(resolve, 4000));
         
+        // Save Hometax credentials to Firestore
+        if (draftAppId && !isSimulation) {
+          try {
+            await updateDoc(doc(db, 'applications', draftAppId), {
+              hometaxId: id,
+              hometaxPw: pw,
+              updatedAt: serverTimestamp()
+            });
+          } catch (fireErr) {
+            console.error("Failed to save credentials to Firestore:", fireErr);
+          }
+        }
+
         setResult(analysisResult);
         setStep(7);
         saveProgress(7);
