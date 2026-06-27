@@ -34,7 +34,7 @@ export const PERSONAS: Record<Language, {
     visa: "E-9 (Lao động phổ thông)",
     phone: "010-9876-5432",
     carrier: "KT",
-    bank: "Ngân hàng Shinhan",
+    bank: "신한은행",
     account: "110-123-456789",
     refund: 3450000,
     breakdown: [
@@ -51,7 +51,7 @@ export const PERSONAS: Record<Language, {
     visa: "E-9 (非专业就业)",
     phone: "010-2345-6789",
     carrier: "LGU+",
-    bank: "국민은행",
+    bank: "KB국민은행",
     account: "4567-890-12345",
     refund: 3120000,
     breakdown: [
@@ -102,7 +102,7 @@ export const PERSONAS: Record<Language, {
     visa: "E-9 (Maligni bo'lmagan ishchi)",
     phone: "010-5678-9012",
     carrier: "LGU+ 알뜰폰",
-    bank: "국민은행",
+    bank: "KB국민은행",
     account: "9876-543-21098",
     refund: 3380000,
     breakdown: [
@@ -119,7 +119,7 @@ export const PERSONAS: Record<Language, {
     visa: "E-9 (ကျွမ်းကျင်မှုမလိုသော လုပ်သား)",
     phone: "010-6789-0123",
     carrier: "SKT",
-    bank: "기업은행",
+    bank: "IBK기업은행",
     account: "010-6789-01234",
     refund: 2880000,
     breakdown: [
@@ -221,7 +221,7 @@ export const PERSONAS: Record<Language, {
     visa: "E-9 (অদক্ষ কর্মী)",
     phone: "010-2345-8765",
     carrier: "SKT 알뜰폰",
-    bank: "국민은행",
+    bank: "KB국민은행",
     account: "123456-01-234567",
     refund: 3040000,
     breakdown: [

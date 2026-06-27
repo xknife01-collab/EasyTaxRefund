@@ -300,12 +300,6 @@ export default function TaxRefundSimulator() {
                     <div className="w-1.5 h-1.5 rounded-full bg-white animate-ping" />
                   </div>
 
-                  {/* 4단계 선택 대기 말풍선 툴팁 */}
-                  {activeStep === 4 && pointerEventsEnabled && (
-                    <div className="absolute left-8 top-0 bg-slate-900 text-white text-[10px] font-black px-2.5 py-1.5 rounded-xl shadow-xl flex items-center gap-1.5 whitespace-nowrap animate-bounce border border-slate-700">
-                      <span>👈 클릭하여 시나리오 선택</span>
-                    </div>
-                  )}
                 </div>
 
               </div>
@@ -313,24 +307,6 @@ export default function TaxRefundSimulator() {
             </div>
 
           </div>
-
-          {/* 4단계 선택 대기 시각 가이드 배너 (핸드폰 외부 배치) */}
-          {activeStep === 4 && pointerEventsEnabled && (
-            <div className="w-full max-w-[385px] p-5 bg-gradient-to-r from-amber-500/20 to-orange-500/20 border-2 border-amber-500/80 rounded-3xl text-center space-y-2 animate-pulse shadow-[0_0_30px_rgba(245,158,11,0.3)] z-10 relative">
-              <div className="flex items-center justify-center gap-2">
-                <span className="flex h-3 w-3 relative">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-amber-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-amber-500"></span>
-                </span>
-                <span className="text-sm font-black text-amber-300 tracking-wide uppercase">
-                  {tSim.waiting_banner_title}
-                </span>
-              </div>
-              <p className="text-xs font-bold text-slate-200 leading-relaxed break-keep">
-                {tSim.waiting_banner_desc}
-              </p>
-            </div>
-          )}
 
         </div>
 

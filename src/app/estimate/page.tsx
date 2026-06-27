@@ -332,6 +332,7 @@ export default function EstimatePage() {
 
   // --- New Hometax states ---
   const [authTab, setAuthTab] = useState<'signup' | 'login'>('signup');
+  const [paymentTab, setPaymentTab] = useState<'card' | 'bank'>('card');
   const [hometaxId, setHometaxId] = useState("");
   const [hometaxPw, setHometaxPw] = useState("");
   const [hometaxPwConfirm, setHometaxPwConfirm] = useState("");
@@ -438,6 +439,36 @@ export default function EstimatePage() {
       subTimers.forEach(clearTimeout);
       subTimers = [];
 
+      const simulateTyping = (
+        field: keyof typeof formData | 'workMonths' | 'avgSalary' | 'hometaxId' | 'hometaxPw' | 'hometaxPwConfirm' | 'hometaxEmail' | 'smsCode',
+        text: string,
+        startDelay: number,
+        charInterval = 100
+      ) => {
+        const chars = Array.from(text);
+        let currentText = "";
+        chars.forEach((char, index) => {
+          subTimers.push(setTimeout(() => {
+            currentText += char;
+            if (field === 'workMonths' || field === 'avgSalary') {
+              setPreFilterData(prev => ({ ...prev, [field]: Number(currentText) }));
+            } else if (field === 'hometaxId') {
+              setHometaxId(currentText);
+            } else if (field === 'hometaxPw') {
+              setHometaxPw(currentText);
+            } else if (field === 'hometaxPwConfirm') {
+              setHometaxPwConfirm(currentText);
+            } else if (field === 'hometaxEmail') {
+              setHometaxEmail(currentText);
+            } else if (field === 'smsCode') {
+              setSmsCode(currentText);
+            } else {
+              setFormData(prev => ({ ...prev, [field]: currentText }));
+            }
+          }, startDelay + index * charInterval));
+        });
+      };
+
       if (step === 0) {
         // Step 0: months selection & salary input simulation
         // Ensure we start scrolled to the absolute top of the iframe window
@@ -448,7 +479,7 @@ export default function EstimatePage() {
         // virtual cursor moves to Sparkles icon/Title first, clicks it, then smooth-scrolls to the slider/salary input.
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step0-sparkles");
-        }, 1500));
+        }, 1000));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step0-sparkles", true);
           // Highlight it/simulate click
@@ -457,39 +488,39 @@ export default function EstimatePage() {
             sparkles.classList.add("scale-125", "rotate-12");
             setTimeout(() => sparkles.classList.remove("scale-125", "rotate-12"), 500);
           }
-        }, 3000));
+        }, 2200));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step0-months-slider");
-        }, 4200));
+        }, 3200));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step0-months-slider");
-        }, 5000));
+        }, 4600)); // 1400ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step0-months-slider", true);
           // Set simulated value for months
           setPreFilterData(prev => ({ ...prev, workMonths: 12 }));
-        }, 6500));
+        }, 5600));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step0-salary-container");
-        }, 7800));
+        }, 6800));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step0-salary-2"); // Click middle button (e.g. index 2 is 250)
-        }, 8600));
+        }, 8200)); // 1400ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step0-salary-2", true);
           setPreFilterData(prev => ({ ...prev, avgSalary: 250 }));
-        }, 10200));
+        }, 9200));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step0-submit-btn");
-        }, 11400));
+        }, 10200));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step0-submit-btn");
-        }, 12200));
+        }, 11600)); // 1400ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step0-submit-btn", true);
           const btn = document.querySelector("#step0-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 14000));
+        }, 12600));
 
       } else if (step === 0.5) {
         // Step 0.5: Process Flow Guide
@@ -498,15 +529,15 @@ export default function EstimatePage() {
         }
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step05-submit-btn");
-        }, 2500));
+        }, 1500));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step05-submit-btn");
-        }, 3500));
+        }, 2900)); // 1400ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step05-submit-btn", true);
           const btn = document.querySelector("#step05-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 5000));
+        }, 3900));
 
       } else if (step === 1) {
         // Step 1: Pre-requisites Checklist
@@ -515,15 +546,15 @@ export default function EstimatePage() {
         }
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step1-submit-btn");
-        }, 2500));
+        }, 1500));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step1-submit-btn");
-        }, 3500));
+        }, 2900)); // 1400ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step1-submit-btn", true);
           const btn = document.querySelector("#step1-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 5000));
+        }, 3900));
 
       } else if (step === 2) {
         // Step 2: Alien Registration Card Scan / manual input fallback
@@ -533,33 +564,35 @@ export default function EstimatePage() {
         }
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step2-name-input");
-        }, 2500));
+        }, 1500));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step2-name-input");
-        }, 3300));
-        subTimers.push(setTimeout(() => {
-          setFormData(prev => ({ ...prev, officialName: persona.name }));
-        }, 4200));
+        }, 2900)); // 1400ms delay after scroll start
+        
+        // Typing name starts at 3500ms. Since names are e.g. 10 chars, it takes ~1000ms.
+        simulateTyping('officialName', persona.name, 3500, 100);
+
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step2-reg-input");
-        }, 5000));
+        }, 5100)); // 600ms after name typing finished
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step2-reg-input");
-        }, 5800));
-        subTimers.push(setTimeout(() => {
-          setFormData(prev => ({ ...prev, registrationNumber: "950101-5123456" }));
-        }, 6700));
+        }, 6500)); // 1400ms delay after scroll start
+        
+        // Typing registration number starts at 7100ms. Since it has 14 chars, it takes ~1400ms.
+        simulateTyping('registrationNumber', "950101-5123456", 7100, 100);
+
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step2-submit-btn");
-        }, 7500));
+        }, 9100)); // 600ms after reg number typing finished
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step2-submit-btn");
-        }, 8300));
+        }, 10500)); // 1400ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step2-submit-btn", true);
           const btn = document.querySelector("#step2-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 9500));
+        }, 11500));
 
       } else if (step === 3) {
         // Step 3: Identity & Telecom input
@@ -569,29 +602,29 @@ export default function EstimatePage() {
         }
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step3-phone-input");
-        }, 2500));
+        }, 1500));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-phone-input");
-        }, 3300));
+        }, 2900)); // 1400ms delay after scroll start
         subTimers.push(setTimeout(() => {
           setFormData(prev => ({ ...prev, phone: persona.phone }));
-        }, 4200));
+        }, 3500));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step3-carrier-select");
-        }, 5000));
+        }, 4100));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-carrier-select");
-        }, 5800));
+        }, 5500)); // 1400ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-carrier-select", true);
           const trigger = document.querySelector("#step3-carrier-select") as HTMLButtonElement;
           if (trigger) trigger.click();
-        }, 6700));
+        }, 6300));
         subTimers.push(setTimeout(() => {
           // Point to carrier option inside the Radix select dropdown
           const carrierSelector = `[role="option"][data-value="${persona.carrier}"]`;
           sendPointerToElement(carrierSelector);
-        }, 7700));
+        }, 7100));
         subTimers.push(setTimeout(() => {
           const carrierSelector = `[role="option"][data-value="${persona.carrier}"]`;
           sendPointerToElement(carrierSelector, true);
@@ -604,185 +637,187 @@ export default function EstimatePage() {
             option.click();
           }
           setFormData(prev => ({ ...prev, carrier: persona.carrier }));
-        }, 8500));
+        }, 7900));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step3-suggestion-0");
-        }, 9500));
+        }, 8700));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-suggestion-0");
-        }, 10300));
+        }, 10100)); // 1400ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-suggestion-0", true);
           setFormData(prev => ({ ...prev, authName: persona.name }));
-        }, 11200));
+        }, 10900));
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step3-submit-btn");
-        }, 12200));
+        }, 11700));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-submit-btn");
-        }, 13000));
+        }, 13100)); // 1400ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step3-submit-btn", true);
           const btn = document.querySelector("#step3-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 14200));
+        }, 14900));
 
       } else if (step === 4) {
-        // Step 4: Verification Method select
-        const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
-        const methodId = persona.carrier.includes("SKT") || persona.carrier.includes("KT") || persona.carrier.includes("LGU+") ? "pass" : "kakao";
-        let targetId = "step4-method-pass";
-        let targetMethod: 'app' | 'kakao' | 'hana' = 'app';
-        if (persona.bank === "하나은행") {
-          targetId = "step4-method-hana";
-          targetMethod = 'hana';
-        } else if (methodId === "kakao") {
-          targetId = "step4-method-kakao";
-          targetMethod = 'kakao';
+        // Step 4: Hometax 1-minute Signup & Query simulation
+        if (typeof window !== 'undefined') {
+          window.scrollTo({ top: 0, behavior: 'auto' });
         }
+        
+        // Ensure we are on the 'signup' tab
+        setAuthTab('signup');
 
-        if (hasCertificate === null) {
-          // 4.0: Choice page - Scroll down to show choices and pause for user interaction
-          subTimers.push(setTimeout(() => {
-            scrollToSelector("#step4-top-anchor");
-          }, 800));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step4-top-anchor");
-          }, 1500));
-          subTimers.push(setTimeout(() => {
-            scrollToSelector("#step4-cert-no");
-          }, 2300));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step4-cert-no");
-          }, 3100));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step4-cert-no", true);
-            const certNoBtn = document.querySelector("#step4-cert-no") as HTMLDivElement;
-            if (certNoBtn) certNoBtn.click();
-          }, 3900));
+        // 1. Scroll to top anchor of step 4
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step4-top-anchor");
+        }, 800));
 
-        } else if (hasCertificate === false) {
-          // 4.5: Guide Mode (Hana Bank path)
-          subTimers.push(setTimeout(() => {
-            scrollToSelector("#step4-top-anchor-guide", "start");
-          }, 800));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step4-top-anchor-guide");
-          }, 1500));
+        // 2. Select ID field and type ID
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-id");
+        }, 2000)); // 1200ms delay after scroll start
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-id", true);
+        }, 2600));
+        
+        // Simulate typing ID: "taxpayer123" (11 chars)
+        simulateTyping('hometaxId' as any, 'taxpayer123', 2900, 100);
 
-          // Scroll down exactly right below the certificate issuance screen (to show the install-done button at the bottom of the viewport)
-          subTimers.push(setTimeout(() => {
-            scrollToSelector("#step4-cert-install-done", "end");
-          }, 3000));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step4-cert-install-done");
-          }, 3800));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step4-cert-install-done", true);
-            const doneBtn = document.querySelector("#step4-cert-install-done") as HTMLButtonElement;
-            if (doneBtn) doneBtn.click();
-          }, 4800));
+        // 3. Click Duplicate Check Button
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-id-check");
+        }, 4400));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-id-check", true);
+          const checkBtn = document.querySelector("#step4-signup-id-check") as HTMLButtonElement;
+          if (checkBtn) checkBtn.click();
+        }, 5100));
 
-        } else if (hasCertificate === true) {
-          // 4.5: Selection Mode
-          subTimers.push(setTimeout(() => {
-            scrollToSelector("#step4-top-anchor-select");
-          }, 800));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step4-top-anchor-select");
-          }, 1500));
+        // 4. Scroll to PW field, select it, and type PW
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step4-signup-pw");
+        }, 6100));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-pw");
+        }, 7300)); // 1200ms delay after scroll start
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-pw", true);
+        }, 8000));
 
-          subTimers.push(setTimeout(() => {
-            scrollToSelector("#step4-submit-btn");
-          }, 2500));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step4-submit-btn");
-          }, 3200));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step4-submit-btn", true);
-            const btn = document.querySelector("#step4-submit-btn") as HTMLButtonElement;
-            if (btn) btn.click();
-          }, 4000));
-        }
+        // Simulate typing PW: "SecurePass12!" (13 chars)
+        simulateTyping('hometaxPw' as any, 'SecurePass12!', 8300, 100);
+
+        // 5. Scroll to PW Confirm field, select it, and type PW Confirm
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step4-signup-pw-confirm");
+        }, 10200));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-pw-confirm");
+        }, 11400)); // 1200ms delay after scroll start
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-pw-confirm", true);
+        }, 12100));
+
+        // Simulate typing PW Confirm: "SecurePass12!" (13 chars)
+        simulateTyping('hometaxPwConfirm' as any, 'SecurePass12!', 12400, 100);
+
+        // 6. Scroll to Email field, select it, and type Email
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step4-signup-email");
+        }, 14300));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-email");
+        }, 15500)); // 1200ms delay after scroll start
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-email", true);
+        }, 16200));
+
+        // Simulate typing Email: "user@example.com" (16 chars)
+        simulateTyping('hometaxEmail' as any, 'user@example.com', 16500, 100);
+
+        // 7. Scroll to Request SMS Button and click it
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step4-signup-request-sms-btn");
+        }, 19000));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-request-sms-btn");
+        }, 20200)); // 1200ms delay after scroll start
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-request-sms-btn", true);
+          const reqBtn = document.querySelector("#step4-signup-request-sms-btn") as HTMLButtonElement;
+          if (reqBtn) reqBtn.click();
+        }, 20900));
+
+        // 8. Scroll to SMS Verification code field, select it, and type SMS Code
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step4-signup-sms-code");
+        }, 21900));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-sms-code");
+        }, 23100)); // 1200ms delay after scroll start
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-sms-code", true);
+        }, 23800));
+
+        // Simulate typing SMS Code: "123456" (6 chars)
+        simulateTyping('smsCode' as any, '123456', 24100, 100);
+
+        // 9. Scroll to Complete Signup Button and click it
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step4-signup-complete-btn");
+        }, 25300));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-complete-btn");
+        }, 26500)); // 1200ms delay after scroll start
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step4-signup-complete-btn", true);
+          const doneBtn = document.querySelector("#step4-signup-complete-btn") as HTMLButtonElement;
+          if (doneBtn) doneBtn.click();
+        }, 27200));
 
       } else if (step === 5) {
-        // Step 5: Verification confirm wait state
-        if (hadCertificateInitially === true) {
-          // Open the guide modal in 'auth' mode (slides 28 to 32)
-          subTimers.push(setTimeout(() => {
-            setHanaGuideMode('auth');
-            setIsHanaGuideOpen(true);
-          }, 800));
-
-          // Click the next button to slide through the auth guide (slides 28 to 32)
-          for (let i = 0; i < 5; i++) {
-            subTimers.push(setTimeout(() => {
-              const nextBtn = document.querySelector("#hana-guide-next-btn") as HTMLButtonElement;
-              if (nextBtn && !nextBtn.disabled) {
-                sendPointerToElement("#hana-guide-next-btn");
-                setTimeout(() => {
-                  sendPointerToElement("#hana-guide-next-btn", true);
-                  nextBtn.click();
-                }, 100);
-              }
-            }, 2000 + i * 400));
-          }
-
-          // Point to and click close button
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#hana-guide-close-btn");
-          }, 4500));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#hana-guide-close-btn", true);
-            const closeBtn = document.querySelector("#hana-guide-close-btn") as HTMLButtonElement;
-            if (closeBtn) closeBtn.click();
-          }, 5300));
-
-          // Scroll to the submit button
-          subTimers.push(setTimeout(() => {
-            scrollToSelector("#step5-submit-btn");
-          }, 6300));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step5-submit-btn");
-          }, 7000));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step5-submit-btn", true);
-            const btn = document.querySelector("#step5-submit-btn") as HTMLButtonElement;
-            if (btn) btn.click();
-          }, 7800));
-
-        } else {
-          // If hasCertificate === false, they already saw the guide in Step 4. Just proceed.
-          subTimers.push(setTimeout(() => {
-            scrollToSelector("#step5-submit-btn");
-          }, 800));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step5-submit-btn");
-          }, 1500));
-          subTimers.push(setTimeout(() => {
-            sendPointerToElement("#step5-submit-btn", true);
-            const btn = document.querySelector("#step5-submit-btn") as HTMLButtonElement;
-            if (btn) btn.click();
-          }, 2300));
-        }
+        // Step 5: Verification confirm wait state (legacy/unused, auto-proceeds to step 6)
+        subTimers.push(setTimeout(() => {
+          setStep(6);
+        }, 100));
 
       } else if (step === 6) {
         // Step 6: Processing / loading screen
         sendPointerUpdate("50%", "50%", false, 0);
+        
+        // Scroll to top first
+        if (typeof window !== 'undefined') {
+          window.scrollTo({ top: 0, behavior: 'auto' });
+        }
+        
+        // Wait 1.5 seconds to show NTS Database animation at the top, then scroll down to checklist
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step6-loading-checklist");
+        }, 1500));
 
       } else if (step === 7) {
         // Step 7: Expected Refund Report
+        // Scroll to top of report first to show results
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step7-top-anchor");
+        }, 200));
+        
+        // Wait 6.5 seconds to let the user read the top report, then scroll down to the bottom
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step7-submit-btn");
-        }, 2000));
+        }, 6700));
+        
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step7-submit-btn");
-        }, 2800));
+        }, 8300)); // 1600ms delay after scroll start
+        
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step7-submit-btn", true);
           const btn = document.querySelector("#step7-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 4000));
+        }, 9500));
 
       } else if (step === 8) {
         // Step 8: Fee payment / deposit bank transfer selection
@@ -792,70 +827,97 @@ export default function EstimatePage() {
         }, 1000));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step8-tab-bank");
-        }, 1800));
+        }, 2600)); // 1600ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step8-tab-bank", true);
-          const tab = document.querySelector("#step8-tab-bank") as HTMLButtonElement;
-          if (tab) tab.click();
-        }, 2600));
+          setPaymentTab('bank');
+        }, 3600));
+        
+        // Scroll to depositor name input
         subTimers.push(setTimeout(() => {
-          scrollToSelector("input[placeholder='입금자명은 성명과 동일하게 입력']");
-        }, 3400));
+          scrollToSelector("#step8-depositor-input");
+        }, 4400));
         subTimers.push(setTimeout(() => {
-          sendPointerToElement("input[placeholder='입금자명은 성명과 동일하게 입력']");
-        }, 4200));
+          sendPointerToElement("#step8-depositor-input");
+        }, 6000)); // 1600ms delay after scroll start
         subTimers.push(setTimeout(() => {
-          setFormData(prev => ({ ...prev, depositorName: persona.name }));
-        }, 5000));
+          sendPointerToElement("#step8-depositor-input", true);
+        }, 6800));
+        
+        // Simulate typing depositor name
+        simulateTyping('depositorName', persona.name, 7200, 100);
+        
+        // Scroll to submit button and click
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step8-submit-btn");
-        }, 5800));
+        }, 8800));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step8-submit-btn");
-        }, 6600));
+        }, 10400)); // 1600ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step8-submit-btn", true);
           const btn = document.querySelector("#step8-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 7600));
+        }, 11400));
 
       } else if (step === 9) {
         // Step 9: Bank account selection and mobile signature
         const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
+        
+        // 1. Scroll to bank dropdown
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step9-bank-select");
-        }, 1000));
+        }, 800));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step9-bank-select");
-        }, 1800));
+        }, 2400)); // 1600ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step9-bank-select", true);
+          // Set bank select trigger state to open the dropdown
+          setBankSelectOpen(true);
+        }, 3200));
+        
+        // 2. Select Bank from dropdown (Hana Bank)
+        subTimers.push(setTimeout(() => {
           setFormData(prev => ({ ...prev, bankName: persona.bank }));
-        }, 2600));
+          setBankSelectOpen(false);
+        }, 4400)); // Give 1.2s buffer to see dropdown
+        
+        // 3. Scroll to account input
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step9-account-input");
-        }, 3400));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step9-account-input");
-        }, 4200));
-        subTimers.push(setTimeout(() => {
-          setFormData(prev => ({ ...prev, accountNumber: persona.account }));
         }, 5000));
         subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step9-account-input");
+        }, 6600)); // 1600ms delay after scroll start
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step9-account-input", true);
+        }, 7400));
+        
+        // Simulate typing account number
+        simulateTyping('accountNumber', persona.account, 7800, 100);
+        
+        // 4. Scroll to depositor name input
+        subTimers.push(setTimeout(() => {
           scrollToSelector("#step9-holder-input");
-        }, 5800));
+        }, 9800)); // 600ms buffer after typing
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step9-holder-input");
-        }, 6600));
+        }, 11400)); // 1600ms delay after scroll start
         subTimers.push(setTimeout(() => {
-          setFormData(prev => ({ ...prev, accountHolder: persona.name }));
-        }, 7400));
+          sendPointerToElement("#step9-holder-input", true);
+        }, 12200));
+        
+        // Simulate typing account holder name
+        simulateTyping('accountHolder', persona.name, 12600, 100);
+        
+        // 5. Scroll to signature canvas
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step9-signature-canvas");
-        }, 8200));
+        }, 14300));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step9-signature-canvas");
-        }, 9000));
+        }, 15900)); // 1600ms delay after scroll start
         subTimers.push(setTimeout(() => {
           // Programmatically draw signature
           const canvas = document.querySelector("#step9-signature-canvas") as HTMLCanvasElement;
@@ -872,18 +934,20 @@ export default function EstimatePage() {
             }
           }
           setIsSigned(true);
-        }, 9800));
+        }, 16700));
+        
+        // 6. Scroll to complete button and click
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step9-submit-btn");
-        }, 10800));
+        }, 17700));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step9-submit-btn");
-        }, 11600));
+        }, 19300)); // 1600ms delay after scroll start
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step9-submit-btn", true);
           const btn = document.querySelector("#step9-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 12600));
+        }, 20300));
       }
     };
 
@@ -939,12 +1003,8 @@ export default function EstimatePage() {
   // Enable/disable pointer events in simulator host based on interactive state
   useEffect(() => {
     if (!isSimulation || typeof window === 'undefined' || !window.parent) return;
-    if (step === 4 && hasCertificate === null) {
-      window.parent.postMessage({ type: 'SET_POINTER_EVENTS', enabled: true }, '*');
-    } else {
-      window.parent.postMessage({ type: 'SET_POINTER_EVENTS', enabled: false }, '*');
-    }
-  }, [step, hasCertificate, isSimulation]);
+    window.parent.postMessage({ type: 'SET_POINTER_EVENTS', enabled: false }, '*');
+  }, [step, isSimulation]);
 
   const sendPointerUpdate = (left: string, top: string, click = false, opacity = 1) => {
     if (typeof window !== 'undefined' && window.parent) {
@@ -966,13 +1026,52 @@ export default function EstimatePage() {
     if (typeof window === 'undefined') return;
     const el = document.querySelector(selector);
     if (!el) return;
-    el.scrollIntoView({ behavior: 'auto', block });
+    
+    const rect = el.getBoundingClientRect();
+    const elementTop = rect.top + window.scrollY;
+    
+    let targetY = elementTop;
+    if (block === 'center') {
+      targetY = elementTop - window.innerHeight / 2 + rect.height / 2;
+    } else if (block === 'end') {
+      targetY = elementTop - window.innerHeight + rect.height;
+    }
+    
+    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    targetY = Math.max(0, Math.min(targetY, maxScroll));
+    
+    const startY = window.scrollY;
+    const distance = targetY - startY;
+    const duration = 1200; // 1.2 seconds for a premium, slower slide down
+    let startTime: number | null = null;
+    
+    const easeInOutCubic = (t: number) => {
+      return t < 0.5 ? 4 * t * t * t : (t - 1) * (2 * t - 2) * (2 * t - 2) + 1;
+    };
+    
+    const animation = (currentTime: number) => {
+      if (startTime === null) startTime = currentTime;
+      const timeElapsed = currentTime - startTime;
+      const progress = Math.min(timeElapsed / duration, 1);
+      const easedProgress = easeInOutCubic(progress);
+      
+      window.scrollTo(0, startY + distance * easedProgress);
+      
+      if (timeElapsed < duration) {
+        requestAnimationFrame(animation);
+      }
+    };
+    
+    requestAnimationFrame(animation);
   };
 
   // Sync step change to parent
   useEffect(() => {
     if (isSimulation && typeof window !== 'undefined' && window.parent) {
       window.parent.postMessage({ type: 'STEP_CHANGED', step }, '*');
+    }
+    if (step < 8) {
+      setPaymentTab('card');
     }
   }, [step, isSimulation]);
 
@@ -996,6 +1095,20 @@ export default function EstimatePage() {
           setIsKakaoGuideOpen(false);
           setIsKakaoAuthGuideOpen(false);
           setIsAuthGuideOpen(false);
+          
+          // Reset Hometax signup states
+          setAuthTab('signup');
+          setHometaxId("");
+          setHometaxPw("");
+          setHometaxPwConfirm("");
+          setHometaxEmail("");
+          setSmsCode("");
+          setIsIdDuplicateChecked(false);
+          setIsSmsRequested(false);
+        }
+        if (data.step <= 7) {
+          setPaymentTab('card');
+          setFormData(prev => ({ ...prev, depositorName: "", bankName: "", accountNumber: "", accountHolder: "" }));
         }
       }
     };
@@ -1970,7 +2083,7 @@ export default function EstimatePage() {
       setStep(6);
       setAnalysisError(null);
       setLoading(true);
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise(resolve => setTimeout(resolve, 3500));
       const persona = PERSONAS[selectedPersona || 'ko'] || PERSONAS['ko'];
       setResult({
         refundEstimate: persona.refund,
@@ -3017,6 +3130,7 @@ export default function EstimatePage() {
                   {/* Tab Selector */}
                   <div className="flex bg-slate-100 p-1.5 rounded-2xl max-w-md mx-auto shadow-inner">
                     <button
+                      id="step4-tab-signup"
                       onClick={() => setAuthTab('signup')}
                       className={cn(
                         "flex-1 py-3 text-sm font-black rounded-xl transition-all flex items-center justify-center gap-2",
@@ -3027,6 +3141,7 @@ export default function EstimatePage() {
                       {t("1분 가입 후 조회")}
                     </button>
                     <button
+                      id="step4-tab-login"
                       onClick={() => setAuthTab('login')}
                       className={cn(
                         "flex-1 py-3 text-sm font-black rounded-xl transition-all flex items-center justify-center gap-2",
@@ -3056,6 +3171,7 @@ export default function EstimatePage() {
                           <div className="flex gap-2">
                             <div className="relative flex-1">
                               <Input
+                                id="step4-signup-id"
                                 value={hometaxId}
                                 onChange={(e) => {
                                   setHometaxId(e.target.value.replace(/[^A-Za-z0-9]/g, ''));
@@ -3067,6 +3183,7 @@ export default function EstimatePage() {
                               <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
                             </div>
                             <Button
+                              id="step4-signup-id-check"
                               onClick={handleCheckIdDuplicate}
                               disabled={isIdChecking || !hometaxId}
                               className={cn(
@@ -3092,6 +3209,7 @@ export default function EstimatePage() {
                           <div className="space-y-2">
                             <Label className="text-xs font-bold text-slate-500">{t("비밀번호")}</Label>
                             <Input
+                              id="step4-signup-pw"
                               type="password"
                               value={hometaxPw}
                               onChange={(e) => setHometaxPw(e.target.value)}
@@ -3102,6 +3220,7 @@ export default function EstimatePage() {
                           <div className="space-y-2">
                             <Label className="text-xs font-bold text-slate-500">{t("비밀번호 확인")}</Label>
                             <Input
+                              id="step4-signup-pw-confirm"
                               type="password"
                               value={hometaxPwConfirm}
                               onChange={(e) => setHometaxPwConfirm(e.target.value)}
@@ -3119,6 +3238,7 @@ export default function EstimatePage() {
                           <Label className="text-xs font-bold text-slate-500">{t("이메일 주소")}</Label>
                           <div className="relative">
                             <Input
+                              id="step4-signup-email"
                               type="email"
                               value={hometaxEmail}
                               onChange={(e) => setHometaxEmail(e.target.value)}
@@ -3138,6 +3258,7 @@ export default function EstimatePage() {
                             </div>
                             <div className="flex gap-2">
                               <Input
+                                id="step4-signup-sms-code"
                                 value={smsCode}
                                 onChange={(e) => setSmsCode(e.target.value.replace(/[^0-9]/g, ''))}
                                 placeholder="000000"
@@ -3153,6 +3274,7 @@ export default function EstimatePage() {
                               </Button>
                             </div>
                             <Button
+                              id="step4-signup-complete-btn"
                               onClick={handleCompleteSignup}
                               disabled={isVerifyingSms || smsCode.length !== 6}
                               className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg rounded-xl shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2 mt-2"
@@ -3167,6 +3289,7 @@ export default function EstimatePage() {
                       {/* Request SMS Button if not requested */}
                       {!isSmsRequested && (
                         <Button
+                          id="step4-signup-request-sms-btn"
                           onClick={handleRequestSignupSms}
                           disabled={loading}
                           className="w-full h-16 bg-primary text-white hover:bg-primary/95 text-lg font-black rounded-2xl shadow-xl shadow-primary/10 flex items-center justify-center gap-2 mt-4"
@@ -3192,6 +3315,7 @@ export default function EstimatePage() {
                           <Label className="text-xs font-bold text-slate-500">{t("홈택스 아이디")}</Label>
                           <div className="relative">
                             <Input
+                              id="step4-login-id"
                               value={hometaxId}
                               onChange={(e) => setHometaxId(e.target.value)}
                               placeholder={t("아이디 입력")}
@@ -3205,6 +3329,7 @@ export default function EstimatePage() {
                           <Label className="text-xs font-bold text-slate-500">{t("홈택스 비밀번호")}</Label>
                           <div className="relative">
                             <Input
+                              id="step4-login-pw"
                               type="password"
                               value={hometaxPw}
                               onChange={(e) => setHometaxPw(e.target.value)}
@@ -3217,6 +3342,7 @@ export default function EstimatePage() {
                       </div>
 
                       <Button
+                        id="step4-login-submit-btn"
                         type="submit"
                         disabled={loading}
                         className="w-full h-16 bg-slate-900 text-white hover:bg-slate-800 text-lg font-black rounded-2xl shadow-xl flex items-center justify-center gap-2 mt-4"
@@ -3299,7 +3425,7 @@ export default function EstimatePage() {
                       <p className="text-slate-400 font-bold">{t('잠시만 기다려 주세요.')}</p>
                     </div>
 
-                    <div className="max-w-[360px] mx-auto space-y-6 text-left border-l-2 border-primary/20 pl-8 py-2">
+                    <div id="step6-loading-checklist" className="max-w-[360px] mx-auto space-y-6 text-left border-l-2 border-primary/20 pl-8 py-2">
                       {/* Step 1: 국세청 홈택스 보안 터널 연결 */}
                       <div className={cn(
                         "flex items-center gap-4 font-bold transition-all duration-300",
@@ -3493,7 +3619,7 @@ export default function EstimatePage() {
 
             {step === 7 && result && (
               <Card className="premium-card rounded-[3rem] border-none shadow-2xl overflow-hidden bg-white">
-                <CardHeader className="text-center py-8 sm:py-16 bg-slate-50/50 relative">
+                <CardHeader id="step7-top-anchor" className="text-center py-8 sm:py-16 bg-slate-50/50 relative">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -3587,7 +3713,7 @@ export default function EstimatePage() {
 
                     <div className="space-y-8">
                       <Label className="text-xl font-black text-slate-900">{t('결제 수단 선택')}</Label>
-                      <Tabs defaultValue="card" className="w-full">
+                      <Tabs value={paymentTab} onValueChange={(v) => setPaymentTab(v as 'card' | 'bank')} className="w-full">
                         <TabsList className="grid w-full grid-cols-2 h-16 bg-slate-100 p-1 rounded-2xl">
                           <TabsTrigger value="card" className="rounded-xl font-bold">{t('신용/체크카드')}</TabsTrigger>
                           <TabsTrigger id="step8-tab-bank" value="bank" className="rounded-xl font-bold">{t('무통장 입금')}</TabsTrigger>
@@ -3660,6 +3786,7 @@ export default function EstimatePage() {
                                 <div className="relative">
                                   <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
                                   <input
+                                    id="step8-depositor-input"
                                     placeholder={t('입금하실 분 성함을 입력하세요')}
                                     value={formData.depositorName}
                                     onChange={(e) => setFormData({ ...formData, depositorName: e.target.value })}
