@@ -22,5 +22,5 @@ export const th = {
   ...portal,
   ...reviews,
   ...security,
-  "{year}년 {month}월 {day}일": "วันที่ {day} เดือน {month} ปี {year}"
+  "{year}년 {month}월 {day}일": "วันที่ {day} เดือน {month} ปี {year}",
 };

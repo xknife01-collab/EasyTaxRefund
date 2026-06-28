@@ -32,5 +32,5 @@ export const vi = {
   "welcome_desc": "Để nhận được sự hỗ trợ về thuế chuyên nghiệp bằng ngôn ngữ mẹ đẻ của bạn.",
 
   // Custom Date
-  "{year}년 {month}월 {day}일": "Ngày {day} tháng {month} năm {year}"
+  "{year}년 {month}월 {day}일": "Ngày {day} tháng {month} năm {year}",
 };

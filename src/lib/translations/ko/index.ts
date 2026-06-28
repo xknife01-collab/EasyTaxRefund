@@ -24,5 +24,5 @@ export const ko = {
   ...security,
 
   // Custom Date
-  "{year}년 {month}월 {day}일": "{year}년 {month}월 {day}일"
+  "{year}년 {month}월 {day}일": "{year}년 {month}월 {day}일",
 };

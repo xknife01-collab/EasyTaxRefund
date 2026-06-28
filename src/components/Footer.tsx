@@ -6,6 +6,7 @@ import Link from "next/link";
 import { AiChatDialog } from "@/components/AiChatDialog";
 import { useTranslation } from "@/components/LanguageContext";
 import { LegalDialog } from "@/components/LegalDialog";
+import Image from "next/image";
 
 export function Footer() {
   const { t } = useTranslation();
@@ -15,7 +16,17 @@ export function Footer() {
       <div className="container mx-auto px-4 py-16 lg:py-24">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 lg:gap-24">
           <div className="col-span-1 md:col-span-2 space-y-6">
-            <h3 className="text-2xl font-black font-headline tracking-tighter">Easy Tax Refund</h3>
+            <Link href="/" className="flex items-center gap-3 group">
+              <div className="relative h-10 w-10 shrink-0 transition-transform duration-300 group-hover:scale-105">
+                <Image 
+                  src="/sophisticated_gradient_globe_icon_1774153957587.png" 
+                  alt="Easy Tax Refund Logo" 
+                  fill
+                  className="object-contain mix-blend-multiply"
+                />
+              </div>
+              <span className="text-2xl font-black font-headline tracking-tighter text-slate-900">Easy Tax Refund</span>
+            </Link>
             <p className="text-slate-500 text-sm font-medium max-sm leading-relaxed">
               {t('대한민국에 있는 외국인들이 정당한 권리를 찾을 수 있도록 돕습니다. 외국인을 위한 쉽고 빠르며 안전한 세금 환급 서비스입니다.')}
             </p>
@@ -69,6 +80,9 @@ export function Footer() {
               <p>{t('통신판매업 번호: 제 2023-진접오남-0680호')}</p>
               <p>{t('주소: 경기도 남양주시 부평로 48번길 140, 107-1102')}</p>
               <p>{t('연락처: 010-4885-8575 | 이메일: zkfnth01@naver.com')}</p>
+              <p className="mt-4 text-[10px] text-slate-400/80 font-medium leading-relaxed max-w-2xl">
+                {t('이지택스환급(Easy Tax Refund)은 세무대리 신고를 직접 수행하지 않으며, 본 플랫폼에서 작성된 신청 서류는 제휴된 대한민국 국가공인 전문 세무법인 및 협력 세무사를 통해 최종 검토 및 제출됩니다.')}
+              </p>
             </div>
             <div className="text-center md:text-right">
               <p className="text-xs font-bold text-slate-400">

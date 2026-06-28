@@ -73,7 +73,9 @@ import {
   X,
   HelpCircle,
   Send,
-  Download
+  Download,
+  Printer,
+  Stamp
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -86,7 +88,9 @@ import {
   Dialog,
   DialogContent,
   DialogHeader,
-  DialogTitle
+  DialogTitle,
+  DialogDescription,
+  DialogFooter
 } from "@/components/ui/dialog";
 import { ScrollArea } from "@/components/ui/scroll-area";
 
@@ -296,6 +300,9 @@ export default function EstimatePage() {
   const signatureCanvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [isSigned, setIsSigned] = useState(false);
+  const printRef = useRef<HTMLDivElement>(null);
+  const [isDocumentOpen, setIsDocumentOpen] = useState(false);
+  const [signatureDataUrl, setSignatureDataUrl] = useState<string | null>(null);
   const [bankSelectOpen, setBankSelectOpen] = useState(false);
   const [isSimulation, setIsSimulation] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
@@ -346,6 +353,12 @@ export default function EstimatePage() {
   const [smsTimer, setSmsTimer] = useState(0);
   const [isVerifyingSms, setIsVerifyingSms] = useState(false);
 
+  // 1-Won Verification States
+  const [is1WonSent, setIs1WonSent] = useState(false);
+  const [is1WonVerified, setIs1WonVerified] = useState(false);
+  const [verificationCode, setVerificationCode] = useState("");
+  const [is1WonLoading, setIs1WonLoading] = useState(false);
+
   // Find ID states
   const [findIdOpen, setFindIdOpen] = useState(false);
   const [findIdStep, setFindIdStep] = useState<1 | 2>(1);
@@ -381,7 +394,11 @@ export default function EstimatePage() {
     setIsMounted(true);
     if (typeof window !== 'undefined') {
       const searchParams = new URLSearchParams(window.location.search);
-      setIsSimulation(searchParams.get('simulation') === 'true');
+      const sim = searchParams.get('simulation') === 'true';
+      setIsSimulation(sim);
+      if (sim && searchParams.get('play') === 'false') {
+        setIsPlaying(false);
+      }
       const p = searchParams.get('persona') as Language;
       if (p) setSelectedPersona(p);
     }
@@ -440,7 +457,7 @@ export default function EstimatePage() {
       subTimers = [];
 
       const simulateTyping = (
-        field: keyof typeof formData | 'workMonths' | 'avgSalary' | 'hometaxId' | 'hometaxPw' | 'hometaxPwConfirm' | 'hometaxEmail' | 'smsCode',
+        field: keyof typeof formData | 'workMonths' | 'avgSalary' | 'hometaxId' | 'hometaxPw' | 'hometaxPwConfirm' | 'hometaxEmail' | 'smsCode' | 'verificationCode',
         text: string,
         startDelay: number,
         charInterval = 100
@@ -462,6 +479,8 @@ export default function EstimatePage() {
               setHometaxEmail(currentText);
             } else if (field === 'smsCode') {
               setSmsCode(currentText);
+            } else if (field === 'verificationCode') {
+              setVerificationCode(currentText);
             } else {
               setFormData(prev => ({ ...prev, [field]: currentText }));
             }
@@ -806,12 +825,7 @@ export default function EstimatePage() {
         
         // Wait 6.5 seconds to let the user read the top report, then scroll down to the bottom
         subTimers.push(setTimeout(() => {
-          scrollToSelector("#step7-submit-btn");
-        }, 6700));
-        
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step7-submit-btn");
-        }, 8300)); // 1600ms delay after scroll start
+        }, 8300));
         
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step7-submit-btn", true);
@@ -820,104 +834,117 @@ export default function EstimatePage() {
         }, 9500));
 
       } else if (step === 8) {
-        // Step 8: Fee payment / deposit bank transfer selection
-        const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step8-tab-bank");
-        }, 1000));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-tab-bank");
-        }, 2600)); // 1600ms delay after scroll start
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-tab-bank", true);
-          setPaymentTab('bank');
-        }, 3600));
-        
-        // Scroll to depositor name input
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step8-depositor-input");
-        }, 4400));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-depositor-input");
-        }, 6000)); // 1600ms delay after scroll start
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-depositor-input", true);
-        }, 6800));
-        
-        // Simulate typing depositor name
-        simulateTyping('depositorName', persona.name, 7200, 100);
-        
-        // Scroll to submit button and click
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step8-submit-btn");
-        }, 8800));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-submit-btn");
-        }, 10400)); // 1600ms delay after scroll start
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-submit-btn", true);
-          const btn = document.querySelector("#step8-submit-btn") as HTMLButtonElement;
-          if (btn) btn.click();
-        }, 11400));
-
-      } else if (step === 9) {
-        // Step 9: Bank account selection and mobile signature
+        // Step 8: Bank account entry & 1-won verification
         const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
         
         // 1. Scroll to bank dropdown
         subTimers.push(setTimeout(() => {
-          scrollToSelector("#step9-bank-select");
-        }, 800));
+          scrollToSelector("#step8-bank-select");
+        }, 1000));
         subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step9-bank-select");
-        }, 2400)); // 1600ms delay after scroll start
+          sendPointerToElement("#step8-bank-select");
+        }, 2600));
         subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step9-bank-select", true);
-          // Set bank select trigger state to open the dropdown
+          sendPointerToElement("#step8-bank-select", true);
           setBankSelectOpen(true);
-        }, 3200));
+        }, 3600));
         
-        // 2. Select Bank from dropdown (Hana Bank)
+        // 2. Select Bank from dropdown
         subTimers.push(setTimeout(() => {
           setFormData(prev => ({ ...prev, bankName: persona.bank }));
           setBankSelectOpen(false);
-        }, 4400)); // Give 1.2s buffer to see dropdown
+        }, 4800));
         
         // 3. Scroll to account input
         subTimers.push(setTimeout(() => {
-          scrollToSelector("#step9-account-input");
-        }, 5000));
+          scrollToSelector("#step8-account-input");
+        }, 5600));
         subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step9-account-input");
-        }, 6600)); // 1600ms delay after scroll start
+          sendPointerToElement("#step8-account-input");
+        }, 7200));
         subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step9-account-input", true);
-        }, 7400));
+          sendPointerToElement("#step8-account-input", true);
+        }, 8000));
         
         // Simulate typing account number
-        simulateTyping('accountNumber', persona.account, 7800, 100);
+        simulateTyping('accountNumber', persona.account, 8400, 100);
         
         // 4. Scroll to depositor name input
         subTimers.push(setTimeout(() => {
-          scrollToSelector("#step9-holder-input");
-        }, 9800)); // 600ms buffer after typing
+          scrollToSelector("#step8-holder-input");
+        }, 10600));
         subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step9-holder-input");
-        }, 11400)); // 1600ms delay after scroll start
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step9-holder-input", true);
+          sendPointerToElement("#step8-holder-input");
         }, 12200));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-holder-input", true);
+        }, 13000));
         
         // Simulate typing account holder name
-        simulateTyping('accountHolder', persona.name, 12600, 100);
+        simulateTyping('accountHolder', persona.name, 13400, 100);
         
-        // 5. Scroll to signature canvas
+        // 5. Scroll to 1-won send button and click
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step8-send-1won-btn");
+        }, 15200));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-send-1won-btn");
+        }, 16800));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-send-1won-btn", true);
+          const btn = document.querySelector("#step8-send-1won-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 17800));
+        
+        // 6. After 1-won is sent (mock latency 1.5s), scroll to code input and type "이지12"
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step8-1won-code-input");
+        }, 20000));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-1won-code-input");
+        }, 21600));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-1won-code-input", true);
+        }, 22400));
+        
+        // Simulate typing the code "이지12"
+        simulateTyping('verificationCode', '이지12', 22800, 100);
+        
+        // 7. Scroll to verify button and click
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step8-verify-btn");
+        }, 24200));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-verify-btn");
+        }, 25800));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-verify-btn", true);
+          const btn = document.querySelector("#step8-verify-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 26800));
+        
+        // 8. Scroll to next button and click
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step8-next-btn");
+        }, 28500));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-next-btn");
+        }, 30100));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step8-next-btn", true);
+          const btn = document.querySelector("#step8-next-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 31100));
+        
+      } else if (step === 9) {
+        // Step 9: Final consent - mobile signature
+        // 1. Scroll to signature canvas
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step9-signature-canvas");
-        }, 14300));
+        }, 1000));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step9-signature-canvas");
-        }, 15900)); // 1600ms delay after scroll start
+        }, 2600));
         subTimers.push(setTimeout(() => {
           // Programmatically draw signature
           const canvas = document.querySelector("#step9-signature-canvas") as HTMLCanvasElement;
@@ -934,20 +961,20 @@ export default function EstimatePage() {
             }
           }
           setIsSigned(true);
-        }, 16700));
+        }, 3600));
         
-        // 6. Scroll to complete button and click
+        // 2. Scroll to complete button and click
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step9-submit-btn");
-        }, 17700));
+        }, 5000));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step9-submit-btn");
-        }, 19300)); // 1600ms delay after scroll start
+        }, 6600));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step9-submit-btn", true);
           const btn = document.querySelector("#step9-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 20300));
+        }, 7600));
       }
     };
 
@@ -2196,23 +2223,140 @@ export default function EstimatePage() {
     ctx.lineTo(x, y); ctx.stroke(); ctx.beginPath(); ctx.moveTo(x, y);
   };
 
-  const handlePayment = (method: 'card' | 'bank') => {
-    if (method === 'bank' && !formData.depositorName.trim()) {
-      toast({
-        variant: "destructive",
-        title: t("정보 입력 필요"),
-        description: t("입금하실 분의 성함을 입력해 주세요.")
-      });
+  const handleSend1Won = async () => {
+    if (!formData.bankName || !formData.accountNumber.trim() || !formData.accountHolder.trim()) {
+      toast({ variant: "destructive", title: t("정보 입력 필요"), description: t("은행명, 계좌번호, 예금주명을 모두 입력해 주세요.") });
       return;
     }
-    setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      setIsPaid(true);
-      toast({ title: t("결제 완료 안내"), description: t("환급 받으실 계좌 정보를 입력해 주세요.") });
-      setStep(9);
-      saveProgress(9);
-    }, 1500);
+    setIs1WonLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1500));
+    setIs1WonSent(true);
+    setIs1WonLoading(false);
+    toast({ title: t("1원 송금 완료"), description: t("입력하신 계좌로 1원을 보냈습니다. 입금자명 앞 4자리(예: 이지12)를 입력해 주세요.") });
+  };
+
+  const handleVerify1Won = async () => {
+    if (verificationCode.trim().length !== 4) {
+      toast({ variant: "destructive", title: t("인증코드 확인"), description: t("입금자명 앞 4자리를 정확히 입력해 주세요.") });
+      return;
+    }
+    setIs1WonLoading(true);
+    await new Promise(resolve => setTimeout(resolve, 1000));
+    setIs1WonVerified(true);
+    setIs1WonLoading(false);
+    toast({ title: t("계좌 인증 성공"), description: t("환급 계좌 및 후불 CMS 정산 수단 등록이 완료되었습니다.") });
+  };
+
+  const handleGoToStep9 = () => {
+    if (!is1WonVerified) {
+      toast({ variant: "destructive", title: t("인증 필요"), description: t("계좌 1원 인증을 완료해 주세요.") });
+      return;
+    }
+    setStep(9);
+    saveProgress(9);
+  };
+
+  const handleOpenDocument = () => {
+    const dataUri = getSignatureDataUri();
+    setSignatureDataUrl(dataUri);
+    setIsDocumentOpen(true);
+  };
+
+  const getSignatureDataUri = () => {
+    if (!signatureCanvasRef.current) return null;
+    const canvas = signatureCanvasRef.current;
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return null;
+    const buffer = new Uint32Array(ctx.getImageData(0, 0, canvas.width, canvas.height).data.buffer);
+    const hasDrawing = buffer.some(color => color !== 0);
+    return hasDrawing ? canvas.toDataURL() : null;
+  };
+
+  const formatDocumentDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return t("{year}년 {month}월 {day}일", {
+      year: date.getFullYear(),
+      month: date.getMonth() + 1,
+      day: date.getDate()
+    });
+  };
+
+  const handlePrint = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (!printRef.current) return;
+
+    const printWindow = window.open('', '_blank', 'width=1000,height=900');
+    if (printWindow) {
+      const headStyles = Array.from(document.querySelectorAll('link[rel="stylesheet"], style'))
+        .map(s => s.outerHTML)
+        .join('\n');
+
+      const content = printRef.current.innerHTML;
+
+      printWindow.document.write(`
+        <!DOCTYPE html>
+        <html lang="ko">
+          <head>
+            <meta charset="utf-8">
+            <title>\${t('소득세 환급 자동 분석 솔루션 이용 및 후불 정산 계약서')} - Easy Tax Refund</title>
+            \${headStyles}
+            <style>
+              body { 
+                background: white !important; 
+                margin: 0 !important; 
+                padding: 40px !important; 
+                font-family: 'Inter', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif !important; 
+                color: #0f172a !important;
+                overflow: visible !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+              }
+              .print-wrapper { 
+                display: block !important; 
+                visibility: visible !important; 
+                opacity: 1 !important; 
+                width: 100% !important;
+                max-width: 800px !important;
+                margin: 0 auto !important;
+              }
+              .flex { display: flex !important; }
+              .grid { display: grid !important; }
+              .hidden { display: none !important; }
+              img { display: inline-block !important; max-height: 120px; object-fit: contain; }
+              .print-hidden, .no-print, button { display: none !important; }
+              @page { margin: 1cm; size: A4; }
+              [role="dialog"], [data-state] { 
+                position: static !important; 
+                transform: none !important; 
+                box-shadow: none !important;
+                border: none !important;
+              }
+            </style>
+          </head>
+          <body>
+            <div class="print-wrapper">
+              \${content}
+            </div>
+            <script>
+              window.onload = function() {
+                setTimeout(function() {
+                  window.print();
+                }, 1000);
+              };
+            </script>
+          </body>
+        </html>
+      `);
+      printWindow.document.close();
+    } else {
+      toast({
+        variant: "destructive",
+        title: t("팝업 차단됨"),
+        description: t("인쇄창을 띄우기 위해 브라우저 설정에서 팝업을 허용해주세요.")
+      });
+    }
   };
 
   const handleFinalSubmit = async (e: React.FormEvent) => {
@@ -2563,10 +2707,10 @@ export default function EstimatePage() {
                       </div>
                       <div className="space-y-1">
                         <h4 className="text-sm sm:text-[15px] font-black text-slate-900 text-left">
-                          {t('3️⃣ 정확한 환급금 확인 및 결제')} <span className="text-[10px] sm:text-xs text-blue-600 font-black ml-1">{t('(Step 6~8)')}</span>
+                          {t('3️⃣ 정확한 환급금 확인 및 후불 정산 등록')} <span className="text-[10px] sm:text-xs text-blue-600 font-black ml-1">{t('(Step 6~8)')}</span>
                         </h4>
                         <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
-                          {t('최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 즉시 확인합니다. 환급금이 있다면, 세무사 수임료(25%) 결제를 진행합니다. (환급액이 없으면 결제하신 수수료는 100% 즉시 환불됩니다.)')}
+                          {t('최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 즉시 확인합니다. 환급금이 확인되면, 국세청에서 고객님 통장으로 환급금이 입금된 후에만 출금되는 후불제 정산(플랫폼 이용료 25%) 등록을 진행합니다. 환급 거절/실패 시 청구되는 금액은 0원입니다.')}
                         </p>
                       </div>
                     </div>
@@ -2581,7 +2725,7 @@ export default function EstimatePage() {
                           {t('4️⃣ 계약서 서명 및 입금 신청')} <span className="text-[10px] sm:text-xs text-amber-600 font-black ml-1">{t('(Step 9)')}</span>
                         </h4>
                         <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
-                          {t('결제 완료 후, 모바일 서명을 통해 정식 세무대리 수임계약서가 투명하고 안전하게 작성되며 환급금을 입금받으실 본인 통장 계좌번호를 입력합니다. 이후 약 1~2개월 뒤 한국 국세청에서 고객님의 통장으로 환급금을 직접 송금해 드립니다.')}
+                          {t('후불 정산 등록 완료 후, 모바일 서명을 통해 정식 세무대리 수임계약서가 투명하고 안전하게 작성되며 환급금을 입금받으실 본인 통장 계좌번호를 입력합니다. 이후 약 1~2개월 뒤 한국 국세청에서 고객님의 통장으로 환급금을 직접 송금해 드립니다.')}
                         </p>
                       </div>
                     </div>
@@ -3691,118 +3835,144 @@ export default function EstimatePage() {
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     {t('이전')}
                   </Button>
-                  <CardTitle className="text-3xl font-black font-headline">{t('Step 8: 수수료 결제')}</CardTitle>
+                  <CardTitle className="text-3xl font-black font-headline">{t('Step 8: 환급 계좌 등록 및 1원 인증')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6 sm:space-y-10 p-4 sm:p-10">
                   <div className="p-10 bg-slate-50 rounded-[2.5rem] border border-slate-100 shadow-inner space-y-6">
                     <div className="flex justify-between items-center"><span className="font-bold text-slate-400">{t('총 환급 예정액')}</span><span className="text-2xl font-black text-slate-900">₩ {result?.refundEstimate?.toLocaleString() || 0}</span></div>
                     <Separator className="bg-slate-200" />
-                    <div className="flex justify-between items-center"><span className="font-black text-slate-900 text-xl">{t('수수료 (선임료 25%)')}</span><span className="text-3xl font-black text-primary">₩ {(Math.floor((result?.refundEstimate || 0) * 0.25)).toLocaleString()}</span></div>
+                    <div className="flex justify-between items-center"><span className="font-black text-slate-900 text-xl">{t('환급액 입금후 수수료(성과보수 25%)')}</span><span className="text-3xl font-black text-primary">₩ {(Math.floor((result?.refundEstimate || 0) * 0.25)).toLocaleString()}</span></div>
                   </div>
 
-                  <div className="space-y-10">
-                    <Alert className="bg-amber-50 border-amber-200 rounded-3xl p-8 shadow-sm">
-                      <AlertCircle className="h-6 w-6 text-amber-600 shrink-0" />
-                      <div className="ml-4">
-                        <AlertTitle className="text-amber-800 font-black text-lg mb-2">{t('Legal Policy (결제 및 환불 안내)')}</AlertTitle>
-                        <AlertDescription className="text-amber-700 font-bold text-base leading-relaxed">
-                          {t("수수료 25%는 전문세무사의 수임료입니다. 대한민국 국세청(NTS)은 환급금을 사용자 본인의 계좌로 직접 입금합니다. 따라서 시스템상 환급액 중 수수료를 사전에 차감할 수 없습니다. 전문 세무사의 선임을 위해 수수료 선결제가 필요하며, 환급이 불가능한 경우 100% 즉시 환불됩니다.")}
-                        </AlertDescription>
-                      </div>
-                    </Alert>
+                  <Alert className="bg-amber-50 border-amber-200 rounded-3xl p-8 shadow-sm">
+                    <AlertCircle className="h-6 w-6 text-amber-600 shrink-0" />
+                    <div className="ml-4">
+                      <AlertTitle className="text-amber-800 font-black text-lg mb-2">{t('Legal Policy (후불 정산 및 CMS 자동 출금 동의)')}</AlertTitle>
+                      <AlertDescription className="text-amber-700 font-bold text-base leading-relaxed">
+                        {t("지금 결제되는 금액은 0원입니다. 25% 이용료는 고객님 통장으로 국세청 환급금이 입금된 것이 확인된 이후에만 등록하신 이 계좌에서 출금(정산)됩니다. 환급금이 없거나 거절되는 경우 청구 금액은 0원이며 수수료는 발생하지 않습니다. 국세청 환급계좌 유효성 검증 및 CMS 출금 동의를 위해 본인 계좌 1원 송금 인증이 필요합니다.")}
+                      </AlertDescription>
+                    </div>
+                  </Alert>
 
-                    <div className="space-y-8">
-                      <Label className="text-xl font-black text-slate-900">{t('결제 수단 선택')}</Label>
-                      <Tabs value={paymentTab} onValueChange={(v) => setPaymentTab(v as 'card' | 'bank')} className="w-full">
-                        <TabsList className="grid w-full grid-cols-2 h-16 bg-slate-100 p-1 rounded-2xl">
-                          <TabsTrigger value="card" className="rounded-xl font-bold">{t('신용/체크카드')}</TabsTrigger>
-                          <TabsTrigger id="step8-tab-bank" value="bank" className="rounded-xl font-bold">{t('무통장 입금')}</TabsTrigger>
-                        </TabsList>
-                        <TabsContent value="card" className="pt-8 space-y-8">
-                          <div className="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-6">
-                            <div className="flex items-center gap-3 text-primary mb-2">
-                              <CreditCard className="h-6 w-6" />
-                              <span className="font-black">{t('카드 결제 정보 입력')}</span>
-                            </div>
-                            <div className="grid gap-6">
-                              <div className="space-y-2">
-                                <Label className="text-xs font-bold text-slate-500 uppercase ml-1">{t('카드 번호')}</Label>
-                                <input
-                                  placeholder="0000 0000 0000 0000"
-                                  value={formData.cardNumber}
-                                  onChange={(e) => setFormData({ ...formData, cardNumber: e.target.value })}
-                                  className="h-14 rounded-xl bg-white border border-slate-200 font-bold text-lg px-6 w-full outline-none focus:ring-2 focus:ring-primary/20"
-                                />
-                              </div>
-                              <div className="grid grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                  <Label className="text-xs font-bold text-slate-500 uppercase ml-1">{t('유효 기간 (MM/YY)')}</Label>
-                                  <input
-                                    placeholder={t("MM/YY")}
-                                    value={formData.expiryDate}
-                                    onChange={(e) => setFormData({ ...formData, expiryDate: e.target.value })}
-                                    className="h-14 rounded-xl bg-white border border-slate-200 font-bold text-lg px-6 w-full outline-none focus:ring-2 focus:ring-primary/20"
-                                  />
-                                </div>
-                                <div className="space-y-2">
-                                  <Label className="text-xs font-bold text-slate-500 uppercase ml-1">{t('CVC 번호')}</Label>
-                                  <input
-                                    placeholder={t("3자리 숫자")}
-                                    maxLength={3}
-                                    value={formData.cvc}
-                                    onChange={(e) => setFormData({ ...formData, cvc: e.target.value })}
-                                    className="h-14 rounded-xl bg-white border border-slate-200 font-bold text-lg px-6 w-full outline-none focus:ring-2 focus:ring-primary/20"
-                                  />
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          <Button onClick={() => handlePayment('card')} className="w-full h-24 bg-primary text-3xl font-black rounded-[2rem] shadow-xl shadow-primary/20 transition-all hover:scale-[1.02]">
-                            {t('신용카드 결제하기')}
-                          </Button>
-                        </TabsContent>
-                        <TabsContent value="bank" className="pt-8 space-y-8">
-                          <div className="p-10 bg-white rounded-[2.5rem] border border-slate-100 shadow-xl space-y-8">
-                            <div className="grid gap-4">
-                              <div className="flex justify-between items-center p-6 bg-slate-50 rounded-2xl">
-                                <span className="font-bold text-slate-400">{t('은행명')}</span>
+                  <div className="space-y-8">
+                    <Label className="text-xl font-black text-slate-900">{t('계좌 정보 입력')}</Label>
+                    
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                      <div className="space-y-3">
+                        <Label className="text-xs font-black text-primary uppercase tracking-widest ml-1">{t('은행명')}</Label>
+                        <Select open={bankSelectOpen} onOpenChange={setBankSelectOpen} onValueChange={(v) => setFormData({ ...formData, bankName: v })} value={formData.bankName}>
+                          <SelectTrigger id="step8-bank-select" className="h-16 rounded-2xl font-bold bg-slate-50 border-none px-6 text-lg w-full outline-none focus:ring-2 focus:ring-primary/20">
+                            <SelectValue placeholder={t("은행 선택")} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {Object.keys(BANK_LOGOS).map((bank) => (
+                              <SelectItem key={bank} value={bank}>
                                 <div className="flex items-center gap-3">
-                                  {BANK_LOGOS["KB국민은행"]}
-                                  <span className="font-black text-slate-900 text-lg">{t('국민은행 (KB Bank)')}</span>
+                                  {BANK_LOGOS[bank]}
+                                  <span className="font-bold">{t(bank)}</span>
                                 </div>
-                              </div>
-                              <div
-                                onClick={() => copyToClipboard("283502-04-233375")}
-                                className="flex justify-between items-center p-6 bg-slate-50 rounded-2xl cursor-pointer group hover:bg-slate-100"
-                              >
-                                <span className="font-bold text-slate-400">{t('계좌번호')}</span>
-                                <div className="flex items-center gap-2">
-                                  <span className="font-black text-primary text-xl tracking-wider">283502-04-233375</span>
-                                  <Copy className="h-4 w-4 text-slate-300 group-hover:text-primary" />
-                                </div>
-                              </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-3">
+                        <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('계좌번호')}</Label>
+                        <input
+                          id="step8-account-input"
+                          placeholder={t('계좌번호를 입력하세요')}
+                          value={formData.accountNumber}
+                          onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
+                          disabled={is1WonSent}
+                          className="h-16 rounded-2xl font-bold bg-slate-50 border-none px-6 text-lg w-full outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-3">
+                      <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('예금주명')}</Label>
+                      <input
+                        id="step8-holder-input"
+                        placeholder={t('계좌의 예금주 성함을 입력하세요')}
+                        value={formData.accountHolder}
+                        onChange={(e) => setFormData({ ...formData, accountHolder: e.target.value })}
+                        disabled={is1WonSent}
+                        className="h-16 rounded-2xl font-bold bg-slate-50 border-none px-6 text-lg w-full outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                      />
+                    </div>
+
+                    {/* 1원 송금 및 인증 인터페이스 */}
+                    <div className="pt-4">
+                      {!is1WonSent ? (
+                        <Button
+                          id="step8-send-1won-btn"
+                          onClick={handleSend1Won}
+                          disabled={is1WonLoading || !formData.bankName || !formData.accountNumber.trim() || !formData.accountHolder.trim()}
+                          className="w-full h-20 bg-slate-900 hover:bg-slate-800 text-white text-xl font-black rounded-2xl shadow-lg flex items-center justify-center gap-2 transition-all"
+                        >
+                          {is1WonLoading ? <Loader2 className="animate-spin h-6 w-6" /> : t('환급계좌 유효성 검증 (1원 송금받기)')}
+                        </Button>
+                      ) : (
+                        <div className="space-y-6 p-8 bg-slate-50 rounded-3xl border border-slate-100 shadow-inner">
+                          {!is1WonVerified ? (
+                            <>
                               <div className="space-y-3">
-                                <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('입금자명')}</Label>
-                                <div className="relative">
-                                  <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300" />
+                                <Label className="text-sm font-black text-slate-700">{t('입금자명 앞 4자리 입력')}</Label>
+                                <div className="flex gap-4">
                                   <input
-                                    id="step8-depositor-input"
-                                    placeholder={t('입금하실 분 성함을 입력하세요')}
-                                    value={formData.depositorName}
-                                    onChange={(e) => setFormData({ ...formData, depositorName: e.target.value })}
-                                    className="h-16 rounded-2xl font-bold bg-slate-50 border-none pl-12 pr-6 text-lg w-full outline-none focus:ring-2 focus:ring-primary/20"
+                                    id="step8-1won-code-input"
+                                    placeholder={t('예: 이지12')}
+                                    maxLength={4}
+                                    value={verificationCode}
+                                    onChange={(e) => setVerificationCode(e.target.value)}
+                                    className="h-16 flex-1 rounded-2xl font-black bg-white border border-slate-200 px-6 text-lg tracking-wider text-center outline-none focus:ring-2 focus:ring-primary/20"
                                   />
+                                  <Button
+                                    id="step8-verify-btn"
+                                    onClick={handleVerify1Won}
+                                    disabled={is1WonLoading || verificationCode.trim().length !== 4}
+                                    className="h-16 px-8 bg-primary text-white font-black rounded-2xl shadow-md"
+                                  >
+                                    {is1WonLoading ? <Loader2 className="animate-spin h-5 w-5" /> : t('인증 완료')}
+                                  </Button>
                                 </div>
+                              </div>
+                              <p className="text-xs font-bold text-slate-500 leading-relaxed">
+                                {t('입력하신 계좌로 1원이 송금되었습니다. 은행 어플리케이션 또는 인터넷 뱅킹에서 입금 거래내역의 입금자명 앞 4자리(예: 이지12)를 확인하여 3분 이내에 입력해 주세요.')}
+                              </p>
+                              <div className="text-right">
+                                <button
+                                  type="button"
+                                  onClick={() => { setIs1WonSent(false); setVerificationCode(""); }}
+                                  className="text-xs font-bold text-primary hover:underline"
+                                >
+                                  {t('계좌 정보 수정 / 다시 신청')}
+                                </button>
+                              </div>
+                            </>
+                          ) : (
+                            <div className="flex items-center gap-4 p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-800">
+                              <BadgeCheck className="h-8 w-8 text-emerald-600 shrink-0" />
+                              <div>
+                                <h4 className="font-black text-lg">{t('계좌 인증 및 CMS 동의 완료')}</h4>
+                                <p className="text-sm font-bold opacity-90">{t('환급계좌 유효성 검증 및 후불제 정산 수단 등록이 완료되었습니다. 다음 단계로 넘어가 서명을 완료하세요.')}</p>
                               </div>
                             </div>
-                          </div>
-                          <Button id="step8-submit-btn" onClick={() => handlePayment('bank')} className="w-full h-24 bg-slate-900 text-3xl font-black rounded-[2rem] shadow-xl transition-all hover:scale-[1.02]">
-                            {t('입금 완료 후 최종 신청하기')}
-                          </Button>
-                        </TabsContent>
-                      </Tabs>
+                          )}
+                        </div>
+                      )}
                     </div>
                   </div>
+
+                  <Button
+                    id="step8-next-btn"
+                    onClick={handleGoToStep9}
+                    disabled={!is1WonVerified}
+                    className="w-full h-24 bg-primary text-3xl font-black rounded-[2rem] shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:pointer-events-none"
+                  >
+                    {t('확인 완료 및 다음 단계')}
+                  </Button>
                 </CardContent>
               </Card>
             )}
@@ -3819,7 +3989,7 @@ export default function EstimatePage() {
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     {t('이전')}
                   </Button>
-                  <CardTitle className="text-2xl sm:text-3xl font-black font-headline">{t('Step 9: 최종 신청')}</CardTitle>
+                  <CardTitle className="text-2xl sm:text-3xl font-black font-headline">{t('Step 9: 최종 수임 동의')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6 sm:space-y-10 p-4 sm:p-10">
                   <Alert className="bg-primary/5 border-primary/20 rounded-[2rem] p-8 shadow-sm">
@@ -3828,7 +3998,7 @@ export default function EstimatePage() {
                         <BadgeCheck className="h-6 w-6 text-primary" />
                       </div>
                       <div className="space-y-3">
-                        <AlertTitle className="text-xl font-black text-slate-900">{t('세금 환급 받으실 계좌를 입력해주세요.')}</AlertTitle>
+                        <AlertTitle className="text-xl font-black text-slate-900">{t('환급 신청 완료 안내')}</AlertTitle>
                         <AlertDescription className="text-slate-600 font-bold text-base leading-relaxed">
                           {t('환급 신청 후 대한민국 국세청에 환급되기 까지는 45일에서 60일 정도 소요 될 수 있습니다.')} <span className="text-primary font-black">{t('환급 과정은 나의 환급 진행사항에서 실시간으로 확인하실 수 있으며, 필요에 따라 추가 증빙 서류가 필요할 수 있습니다.')}</span>
                         </AlertDescription>
@@ -3836,99 +4006,35 @@ export default function EstimatePage() {
                     </div>
                   </Alert>
 
+                  <div className="p-8 bg-slate-50 rounded-3xl border border-slate-100 space-y-4 shadow-inner">
+                    <h3 className="font-black text-slate-800 text-lg">{t('등록된 환급 및 정산 계좌')}</h3>
+                    <div className="flex items-center gap-3 bg-white p-6 rounded-2xl border border-slate-100 shadow-sm">
+                      {BANK_LOGOS[formData.bankName] || <CreditCard className="h-8 w-8 text-slate-400" />}
+                      <div>
+                        <p className="font-black text-slate-900 text-lg">{t(formData.bankName || '등록된 은행 없음')}</p>
+                        <p className="text-base font-bold text-slate-500">{formData.accountNumber} (예금주: {formData.accountHolder})</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 공식 수임 동의서 및 PDF 다운로드 */}
+                  <div className="flex flex-col sm:flex-row justify-between items-center bg-blue-50/50 border border-blue-100 p-6 rounded-3xl gap-4">
+                    <div>
+                      <h4 className="font-black text-slate-800 text-base">{t('공식 세무대리 수임 동의서 및 위임장')}</h4>
+                      <p className="text-xs text-slate-500 font-bold mt-1">{t('국세청 제출용 공식 양식으로, 기재된 정보와 서명이 자동으로 기입됩니다.')}</p>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleOpenDocument}
+                      className="w-full sm:w-auto border-primary text-primary hover:bg-primary/5 font-black rounded-2xl h-14 px-6 flex items-center justify-center gap-2 whitespace-nowrap"
+                    >
+                      <FileText className="h-5 w-5" />
+                      {t('계약서 확인 및 PDF 다운로드')}
+                    </Button>
+                  </div>
+
                   <form onSubmit={handleFinalSubmit} className="space-y-10">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="space-y-3">
-                        <Label className="text-xs font-black text-primary uppercase tracking-widest ml-1">{t('은행명(대한민국 에서 만든 계좌의 은행명을 꼭 입력해주세요)')}</Label>
-                        <Select open={bankSelectOpen} onOpenChange={setBankSelectOpen} onValueChange={(v) => setFormData({ ...formData, bankName: v })} value={formData.bankName}>
-                          <SelectTrigger id="step9-bank-select" className="h-16 rounded-2xl font-bold bg-slate-50 border-none px-6 text-lg w-full outline-none focus:ring-2 focus:ring-primary/20">
-                            <SelectValue placeholder={t("은행 선택")} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            <SelectItem value="하나은행">
-                              <div className="flex items-center gap-3">
-                                {BANK_LOGOS["하나은행"]}
-                                <span className="font-bold">{t('하나은행 (Hana Bank)')}</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="KB국민은행">
-                              <div className="flex items-center gap-3">
-                                {BANK_LOGOS["KB국민은행"]}
-                                <span className="font-bold">{t('국민은행 (KB Bank)')}</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="신한은행">
-                              <div className="flex items-center gap-3">
-                                {BANK_LOGOS["신한은행"]}
-                                <span className="font-bold">{t('신한은행 (Shinhan Bank)')}</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="우리은행">
-                              <div className="flex items-center gap-3">
-                                {BANK_LOGOS["우리은행"]}
-                                <span className="font-bold">{t('우리은행 (Woori Bank)')}</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="NH농협은행">
-                              <div className="flex items-center gap-3">
-                                {BANK_LOGOS["NH농협은행"]}
-                                <span className="font-bold">{t('농협은행 (NH Bank)')}</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="카카오뱅크">
-                              <div className="flex items-center gap-3">
-                                {BANK_LOGOS["카카오뱅크"]}
-                                <span className="font-bold">{t('카카오뱅크 (KakaoBank)')}</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="토스뱅크">
-                              <div className="flex items-center gap-3">
-                                {BANK_LOGOS["토스뱅크"]}
-                                <span className="font-bold">{t('토스뱅크 (Toss Bank)')}</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="IBK기업은행">
-                              <div className="flex items-center gap-3">
-                                {BANK_LOGOS["IBK기업은행"]}
-                                <span className="font-bold">{t('IBK기업은행 (IBK Bank)')}</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="케이뱅크">
-                              <div className="flex items-center gap-3">
-                                {BANK_LOGOS["케이뱅크"]}
-                                <span className="font-bold">{t('케이뱅크 (K-Bank)')}</span>
-                              </div>
-                            </SelectItem>
-                            <SelectItem value="우체국">
-                              <div className="flex items-center gap-3">
-                                {BANK_LOGOS["우체국"]}
-                                <span className="font-bold">{t('우체국 (Post Office)')}</span>
-                              </div>
-                            </SelectItem>
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      <div className="space-y-3">
-                        <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('계좌번호')}</Label>
-                        <input
-                          id="step9-account-input" placeholder={t('계좌번호를 입력하세요')}
-                          value={formData.accountNumber}
-                          onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
-                          className="h-16 rounded-2xl font-bold bg-slate-50 border-none px-6 text-lg w-full outline-none focus:ring-2 focus:ring-primary/20"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('예금주명')}</Label>
-                      <input
-                        id="step9-holder-input" placeholder={t('계좌의 예금주 성함을 입력하세요')}
-                        value={formData.accountHolder}
-                        onChange={(e) => setFormData({ ...formData, accountHolder: e.target.value })}
-                        className="h-16 rounded-2xl font-bold bg-slate-50 border-none px-6 text-lg w-full outline-none focus:ring-2 focus:ring-primary/20"
-                      />
-                    </div>
-
                     <div className="space-y-4">
                       <Label className="text-xl font-black text-slate-900">{t('전자서명 (세무 대리 수임 동의)')}</Label>
                       <div className="border-2 border-dashed border-slate-200 rounded-[2.5rem] p-6 bg-white shadow-inner">
@@ -3947,6 +4053,11 @@ export default function EstimatePage() {
                         />
                       </div>
                       {!isSigned && <p className="text-xs font-bold text-red-500 animate-pulse">{t('위 상자에 서명을 완료해야 신청이 가능합니다.')}</p>}
+                    </div>
+
+                    <div className="p-6 bg-slate-50 border border-slate-200 rounded-2xl text-xs font-bold text-slate-500 leading-relaxed space-y-2">
+                      <p>{t('본 서비스는 세무 분석 솔루션 프로그램을 제공하는 플랫폼으로, 실제 세무 신고 및 대행 업무는 제휴된 대한민국 국가공인 전문 세무법인/세무사를 통해 적법하게 처리됩니다.')}</p>
+                      <p>{t('이지택스환급(Easy Tax Refund)은 세무대리 신고를 직접 수행하지 않으며, 본 플랫폼에서 작성된 신청 서류는 제휴 세무사를 통해 최종 검토 및 제출됩니다.')}</p>
                     </div>
 
                     <Button id="step9-submit-btn" type="submit" className="w-full h-24 bg-slate-900 text-2xl lg:text-3xl font-black rounded-[2rem] shadow-2xl transition-all hover:scale-[1.02]" disabled={loading}>
@@ -4176,6 +4287,191 @@ export default function EstimatePage() {
               </Button>
             </form>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* 수임 동의서 공식 문서 뷰어 */}
+      <Dialog open={isDocumentOpen} onOpenChange={setIsDocumentOpen}>
+        <DialogContent className="max-w-4xl p-0 overflow-hidden border-none rounded-[2.5rem] shadow-2xl bg-white z-[150]">
+          <div className="bg-slate-900 p-8 text-white flex justify-between items-center shrink-0 print-hidden">
+            <div>
+              <DialogTitle className="text-2xl font-black text-white">{t('소득세 환급 자동 분석 솔루션 이용 및 후불 정산 계약서')}</DialogTitle>
+              <DialogDescription className="text-slate-400 font-medium">{t('플랫폼 서비스 이용 및 CMS 자동이체 출금 동의를 규정하는 법적 계약서입니다.')}</DialogDescription>
+            </div>
+            <div className="flex gap-4">
+              <Button onClick={handlePrint} className="bg-primary hover:bg-primary/90 text-white rounded-xl h-12 px-6 font-bold shadow-lg shadow-primary/20 transition-transform active:scale-95">
+                <Printer className="mr-2 h-5 w-5" /> {t('PDF로 저장 / 인쇄')}
+              </Button>
+            </div>
+          </div>
+
+          <div className="bg-white p-12 lg:p-20 overflow-y-auto max-h-[70vh] font-serif text-slate-900">
+            {/* 공식 문서 레이아웃 */}
+            <div ref={printRef} className="space-y-12 border-2 border-slate-100 p-10 lg:p-16 rounded-xl relative">
+              <div className="absolute top-10 right-10 opacity-10">
+                <Stamp className="h-32 w-32 text-slate-900" />
+              </div>
+
+              <div className="text-center space-y-4">
+                <h1 className="text-4xl font-black underline underline-offset-8 text-slate-900">{t('소득세 환급 자동 분석 솔루션 이용 및 후불 정산 계약서')}</h1>
+                <p className="text-sm text-slate-500 font-bold">{t('(중소기업 취업자 소득세 감면 및 경정청구 지원 서비스)')}</p>
+              </div>
+
+              <div className="space-y-8 pt-8 text-lg leading-relaxed text-justify text-slate-855">
+                
+                {/* 제1조 */}
+                <div className="space-y-2">
+                  <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제1조 (목적)')}</h3>
+                  <p>
+                    {t("본 계약은 위임인(이하 '이용자')이 더윤컴퍼니(이하 '회사')가 제공하는 '이지택스환급(Easy Tax Refund)' 세무 분석 솔루션 프로그램을 이용하고, 이에 따른 플랫폼 이용료(수수료)를 환급 성공 후 후불 정산 및 CMS 자동이체 방식으로 지불하기 위한 조항 및 출금 동의 사항을 규정함을 목적으로 합니다.")}
+                  </p>
+                </div>
+
+                {/* 제2조 */}
+                <div className="space-y-4 pt-4">
+                  <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제2조 (계약 당사자 정보)')}</h3>
+                  
+                  <div className="space-y-2">
+                    <h4 className="font-bold text-slate-900">{t('1. 이용자 (고객) 정보')}</h4>
+                    <div className="grid grid-cols-2 gap-y-2 pl-4 text-base">
+                      <div className="flex border-b border-slate-100 py-1">
+                        <span className="w-40 font-black text-slate-500">{t('성 명')}</span>
+                        <span className="font-bold text-slate-900">{formData.officialName || t("정보 없음")}</span>
+                      </div>
+                      <div className="flex border-b border-slate-100 py-1">
+                        <span className="w-40 font-black text-slate-500">{t('외국인등록번호')}</span>
+                        <span className="font-bold text-slate-900">{formData.registrationNumber || t("정보 확인 중")}</span>
+                      </div>
+                      <div className="flex border-b border-slate-100 py-1">
+                        <span className="w-40 font-black text-slate-500">{t('연락처')}</span>
+                        <span className="font-bold text-slate-900">{formData.phone || t("정보 없음")}</span>
+                      </div>
+                      <div className="flex border-b border-slate-100 py-1">
+                        <span className="w-40 font-black text-slate-500">{t('환급 및 정산 계좌')}</span>
+                        <span className="font-bold text-slate-900">
+                          {formData.bankName ? `${t(formData.bankName)} / ${formData.accountNumber || ''}` : t("미지정")}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-2 pt-2">
+                    <h4 className="font-bold text-slate-900">{t('2. 서비스 제공자 (회사) 정보')}</h4>
+                    <div className="grid grid-cols-2 gap-y-2 pl-4 text-base">
+                      <div className="flex border-b border-slate-100 py-1">
+                        <span className="w-40 font-black text-slate-500">{t('상 호')}</span>
+                        <span className="font-bold text-slate-900">{t('더윤컴퍼니')}</span>
+                      </div>
+                      <div className="flex border-b border-slate-100 py-1">
+                        <span className="w-40 font-black text-slate-500">{t('대표자')}</span>
+                        <span className="font-bold text-slate-900">{t('김홍일')}</span>
+                      </div>
+                      <div className="flex border-b border-slate-100 py-1 col-span-2">
+                        <span className="w-40 font-black text-slate-500">{t('사업자등록번호')}</span>
+                        <span className="font-bold text-slate-900">105-12-78126 {t('(통신판매업 신고번호: 제 2023-진접오남-0680호)')}</span>
+                      </div>
+                      <div className="flex border-b border-slate-100 py-1 col-span-2">
+                        <span className="w-40 font-black text-slate-500">{t('소재지')}</span>
+                        <span className="font-bold text-slate-900">{t('경기도 남양주시 부평로 48번길 140, 107-1102')}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 제3조 */}
+                <div className="space-y-2 pt-4">
+                  <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제3조 (플랫폼 서비스 이용료 및 후불 정산 조건)')}</h3>
+                  <div className="space-y-2 pl-4 text-base text-slate-800">
+                    <p>
+                      <strong>{t('서비스 이용료')}:</strong> {t('이용자는 본 솔루션을 통해 국세청으로부터 최종 지급받는 환급 금액의 25% (부가세 포함)를 플랫폼 서비스 이용료로 회사에 지급합니다.')}
+                    </p>
+                    <p className="font-bold text-slate-900 mt-2">{t('후불 정산 방식:')}</p>
+                    <ul className="list-disc pl-5 space-y-1 text-slate-700">
+                      <li>{t('서비스 신청 및 분석 시점의 이용자 결제 금액은 0원(초기 비용 없음)입니다.')}</li>
+                      <li>{t('이용료는 국세청이 이용자의 지정 계좌로 환급금을 입금 완료한 것이 확인된 이후에만 이용자가 등록한 본 계좌에서 출금(정산)됩니다.')}</li>
+                      <li>{t('국세청 심사 결과 환급액이 발생하지 않거나 거절되는 경우, 이용자가 지불해야 할 금액은 0원이며 어떠한 수수료도 청구되지 않습니다.')}</li>
+                    </ul>
+                  </div>
+                </div>
+
+                {/* 제4조 */}
+                <div className="space-y-2 pt-4">
+                  <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제4조 (CMS 자동이체 출금 동의)')}</h3>
+                  <p>
+                    {t('이용자는 국세청 환급금 입금 확인 후, 회사가 제휴 CMS 대행기관(효성CMS 등) 및 금융결제원을 통해 등록된 본인 계좌에서 제3조에 따른 이용료(환급액의 25%)를 자동으로 인출(출금)하는 것에 동의합니다.')}
+                  </p>
+                  <div className="space-y-2 pt-2">
+                    <h4 className="font-bold text-slate-900">{t('출금 동의 내역:')}</h4>
+                    <div className="grid grid-cols-2 gap-y-2 pl-4 text-base">
+                      <div className="flex border-b border-slate-100 py-1">
+                        <span className="w-40 font-black text-slate-500">{t('이용기관명')}</span>
+                        <span className="font-bold text-slate-900">{t('더윤컴퍼니')}</span>
+                      </div>
+                      <div className="flex border-b border-slate-100 py-1">
+                        <span className="w-40 font-black text-slate-500">{t('출금 대상 계좌')}</span>
+                        <span className="font-bold text-slate-900">
+                          {formData.bankName ? `${t(formData.bankName)} / ${formData.accountNumber || ''}` : t("미지정")}
+                        </span>
+                      </div>
+                      <div className="flex border-b border-slate-100 py-1">
+                        <span className="w-40 font-black text-slate-500">{t('예금주 성명')}</span>
+                        <span className="font-bold text-slate-900">{formData.officialName || t("정보 없음")}</span>
+                      </div>
+                      <div className="flex border-b border-slate-100 py-1">
+                        <span className="w-40 font-black text-slate-500">{t('출금 신청 금액')}</span>
+                        <span className="font-bold text-slate-900">{t('국세청 실지급 환급액의 25% 상당액')}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 제5조 */}
+                <div className="space-y-2 pt-4">
+                  <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제5조 (개인정보 수집 및 제3자 제공 동의)')}</h3>
+                  <p>
+                    {t('회사는 CMS 자동이체 등록 및 출금 실행을 목적으로 금융결제원 및 제휴 CMS 기관(효성CMS 등)에 이용자의 개인정보(성명, 생년월일/외국인등록번호, 은행명, 계좌번호, 연락처)를 제공할 수 있으며, 이용자는 이에 동의합니다.')}
+                  </p>
+                  <p className="text-base text-slate-600">
+                    {t('수집된 정보는 서비스 목적 달성 및 관련 법령(전자금융거래법 등)에 따른 의무 보관 기간(5년) 동안 안전하게 보관됩니다.')}
+                  </p>
+                </div>
+
+                {/* 제6조 */}
+                <div className="space-y-2 pt-4">
+                  <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제6조 (플랫폼의 역할 및 법적 책임 고지)')}</h3>
+                  <p>
+                    {t('더윤컴퍼니는 세무 분석 솔루션 프로그램을 제공하는 플랫폼 제공업자(통신판매업)로서, 이용자의 실제 세무 신고 대리 업무는 제휴된 대한민국 국가공인 전문 세무법인 및 세무사와의 협력을 통해 적법하게 대행 처리됩니다.')}
+                  </p>
+                </div>
+
+                {/* 날짜 및 서명 */}
+                <div className="pt-20 text-center space-y-10">
+                  <p className="text-2xl font-bold text-slate-900">{formatDocumentDate(new Date().toISOString())}</p>
+
+                  <div className="flex flex-col items-center gap-4">
+                    <p className="text-xl font-bold text-slate-900">{t('이용자 (서명)')} : {formData.officialName || t("정보 없음")}</p>
+                    {signatureDataUrl ? (
+                      <div className="border border-slate-200 rounded-xl p-4 bg-white shadow-inner inline-block">
+                        <img src={signatureDataUrl} alt="User Signature" className="h-24 object-contain" />
+                      </div>
+                    ) : (
+                      <div className="h-24 w-60 border-2 border-dashed border-slate-200 rounded-xl flex items-center justify-center text-slate-300 font-bold italic">
+                        {t('서명 데이터 없음')}
+                      </div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="pt-20 text-center">
+                  <h2 className="text-3xl font-black tracking-widest text-slate-900">{t('더윤컴퍼니 귀하')}</h2>
+                </div>
+
+              </div>
+            </div>
+          </div>
+          <div className="p-8 border-t border-slate-100 flex justify-end print-hidden">
+            <Button variant="outline" className="rounded-xl h-12 px-8 font-black text-slate-900 border-slate-200" onClick={() => setIsDocumentOpen(false)}>{t('닫기')}</Button>
+          </div>
         </DialogContent>
       </Dialog>
       <PassGuideModal

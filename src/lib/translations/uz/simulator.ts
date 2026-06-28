@@ -14,6 +14,4 @@ export const simulator = {
   "step_7": "Xizmat haqi (25%) bank o'tkazmasi",
   "step_8": "Hisob raqami va elektron imzo",
   "step_9": "Yakuniy ariza topshirish",
-  "waiting_banner_title": "💡 Tanlov kutilmoqda (Simulyatsiya to'xtatildi)",
-  "waiting_banner_desc": "Iltimos, telefondagi [ikki variantdan] birini tanlang! Simulyatsiya avtomatik ravishda davom etadi.",
 };

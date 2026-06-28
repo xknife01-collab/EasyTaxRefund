@@ -25,5 +25,5 @@ export const ur = {
   ...security,
 
   // Special case
-  "{year}년 {month}월 {day}일": "{day} {month} {year}"
+  "{year}년 {month}월 {day}일": "{day} {month} {year}",
 };

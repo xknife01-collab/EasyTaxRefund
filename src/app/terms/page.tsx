@@ -43,29 +43,30 @@ export default function TermsPage() {
 
               <section className="space-y-4">
                 <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
-                  <CreditCard className="h-5 w-5 text-primary" /> {t('제 2 조 (서비스 수수료 및 선임)')}
+                  <CreditCard className="h-5 w-5 text-primary" /> {t('제 2 조 (서비스 수수료 및 후불 정산)')}
                 </h3>
                 <div className="bg-primary/5 p-8 rounded-[2rem] border border-primary/10 space-y-4">
                   <Badge className="bg-primary text-white font-black">{t('중요 정책')}</Badge>
                   <p className="font-bold text-slate-900">
-                    {t('본 서비스는 조세특례제한법에 따른 세금 환급 대행을 위해 전문 세무사를 선임하는 방식으로 운영됩니다.')}
+                    {t('본 서비스는 환급 성공 시에만 수수료를 지급하는 성공 조건부 후불제(CMS 자동이체) 방식으로 운영됩니다.')}
                   </p>
                   <ul className="list-disc pl-6 space-y-2 font-bold text-sm text-slate-700">
-                    <li>{t('수수료는 예상 환급액의 25%를 원칙으로 합니다.')}</li>
-                    <li>{t('대한민국 국세청(NTS)의 직접 입금 원칙에 따라, 수수료는 신청 시점에 선결제(선임료) 방식으로 지급되어야 합니다.')}</li>
-                    <li>{t('사용자는 전자서명을 통해 세무 대리 수임에 명시적으로 동의합니다.')}</li>
+                    <li>{t('수수료는 국세청으로부터 최종 지급받는 환급 금액의 25% (부가세 포함)를 원칙으로 합니다.')}</li>
+                    <li>{t('서비스 신청 및 분석 시점의 이용자 결제 금액은 0원(초기 비용 없음)입니다.')}</li>
+                    <li>{t('수수료는 국세청이 사용자의 지정 계좌로 환급금을 입금 완료한 것이 확인된 이후에만, 사용자가 등록하고 출금 동의한 계좌에서 CMS 자동이체 방식으로 인출됩니다.')}</li>
+                    <li>{t('사용자는 전자서명을 통해 솔루션 이용 계약 및 CMS 자동이체 출금 동의서에 명시적으로 동의합니다.')}</li>
                   </ul>
                 </div>
               </section>
-
+ 
               <section className="space-y-4">
                 <h3 className="text-xl font-black text-slate-900 flex items-center gap-2">
-                  <RotateCcw className="h-5 w-5 text-primary" /> {t('제 3 조 (환불 보장 정책)')}
+                  <RotateCcw className="h-5 w-5 text-primary" /> {t('제 3 조 (미환급 시 청구 금액 0원 보장)')}
                 </h3>
                 <div className="bg-slate-900 text-white p-8 rounded-[2rem] space-y-4">
-                  <h4 className="text-lg font-black text-primary">{t('100% 안심 환불 약속')}</h4>
+                  <h4 className="text-lg font-black text-primary">{t('100% 안심 성공보수 약속')}</h4>
                   <p className="font-medium text-slate-300">
-                    {t('회사는 전문적인 검토를 통해 최선의 환급 서비스를 제공합니다. 만약 국세청의 최종 결정 결과 환급이 불가능하거나 환급액이 발생하지 않는 것으로 확정될 경우, 사용자가 지불한 선임료(수수료) 25%는 전액 즉시 환불됩니다.')}
+                    {t('회사는 전문적인 분석을 통해 최선의 환급 서비스를 제공합니다. 만약 국세청 심사 결과 환급액이 발생하지 않거나 기각(거절)되는 경우, 사용자가 지불해야 할 수수료는 0원이며 어떠한 요금도 청구되지 않습니다. 사용자의 리스크는 0%입니다.')}
                   </p>
                 </div>
               </section>

@@ -14,6 +14,4 @@ export const simulator = {
   "step_7": "Fee (25%) Bank Payout",
   "step_8": "Account Info & E-Signature",
   "step_9": "Final Application Submission",
-  "waiting_banner_title": "💡 Direct Selection Pending (Simulation Paused)",
-  "waiting_banner_desc": "Please click one of the [two options] on the phone screen below! The simulation will resume based on your choice.",
 };

@@ -32,5 +32,5 @@ export const km = {
   "welcome_desc": "ដើម្បីទទួលបានការគាំទ្រផ្នែកពន្ធដារប្រកបដោយវិជ្ជាជីវៈជាភាសាកំណើតរបស់អ្នក។",
 
   // Custom Date
-  "{year}년 {month}월 {day}일": "ថ្ងៃទី {day} ខែ {month} ឆ្នាំ {year}"
+  "{year}년 {month}월 {day}일": "ថ្ងៃទី {day} ខែ {month} ឆ្នាំ {year}",
 };

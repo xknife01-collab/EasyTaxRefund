@@ -14,6 +14,4 @@ export const simulator = {
   "step_7": "Pembayaran Layanan (25%) Transfer Bank",
   "step_8": "Informasi Rekening & Tanda Tangan Elektronik",
   "step_9": "Pengiriman Aplikasi Akhir",
-  "waiting_banner_title": "💡 Menunggu Pilihan Langsung (Simulasi Dijeda)",
-  "waiting_banner_desc": "Silakan klik salah satu dari [dua opsi] di layar ponsel! Simulasi akan dilanjutkan secara otomatis.",
 };

@@ -30,7 +30,8 @@ import {
   Database,
   Shield,
   X,
-  Minimize2
+  Minimize2,
+  Banknote
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -138,7 +139,7 @@ export default function HomePage() {
       category: t('4. 본인 인증 및 오류 (Authentication)'),
       items: [
         { q: t('이름이 외국인 등록증(ARC)이랑 통신사에 등록된 게 다른데 어떡하죠?'), a: t("외국인들이 가장 많이 겪는 문제입니다. 저희 앱의 'AI 이름 최적화' 기능을 사용하면, 다양한 이름 조합을 자동으로 테스트하여 인증에 성공할 수 있도록 도와드립니다.") },
-        { q: t('한국 핸드폰 번호가 없으면 신청이 불가능한가요?'), a: t('국세청 데이터 조회를 위해 본인 명의의 휴대폰 인증이나 금융인증서가 반드시 필요합니다. 본인 명의가 아닌 경우 상담원을 통해 별도의 방법을 안내받으실 수 있습니다.') },
+        { q: t('한국 핸드폰 번호가 없으면 신청이 불가능한가요?'), a: t("앱을 통한 자동 조회를 위해서는 본인 명의의 휴대폰 인증이 필수입니다. 만약 본인 명의의 휴대폰이 없으시다면, 가까운 주민센터(동사무소)나 세무서에 방문하여 발급받으신 '원천징수영수증' 사진을 촬영하여 실시간 상담원 채팅으로 보내주세요. 전문 세무사가 안전하게 개별 환급 신청을 도와드립니다.") },
       ]
     },
     {
@@ -250,6 +251,18 @@ export default function HomePage() {
                 <span className="text-primary">{t('월급에서 차감한 세금 90%')}</span>{t('를 환급을 받을 수 있습니다.')}<br />
                 <span className="text-primary">{t('평균 환급액 300만원이상!')}</span>
               </h1>
+
+              {/* 후불제 핵심 안내 뱃지 */}
+              <div className="flex flex-wrap gap-4 justify-center items-center max-w-4xl mx-auto pt-6 animate-fade-in-up delay-150">
+                <div className="flex items-center gap-3 bg-emerald-50 text-emerald-700 px-6 py-4 rounded-[1.5rem] border border-emerald-100/60 font-black text-lg sm:text-xl shadow-sm">
+                  <CheckCircle2 className="h-6 w-6 text-emerald-600 animate-pulse" />
+                  <span>{t('선결제 0원 / 환급 성공 시에만 수수료 발생')}</span>
+                </div>
+                <div className="flex items-center gap-3 bg-indigo-50 text-indigo-700 px-6 py-4 rounded-[1.5rem] border border-indigo-100/60 font-black text-lg sm:text-xl shadow-sm">
+                  <ShieldCheck className="h-6 w-6 text-indigo-600" />
+                  <span>{t('성과 기반 후불 정산 (No Win, No Fee)')}</span>
+                </div>
+              </div>
               
               <div className="max-w-5xl mx-auto space-y-8 text-xl lg:text-2xl text-slate-500 font-medium leading-relaxed animate-fade-in-up delay-200">
                 <p>{t(`대한민국 중소기업에서 근무하는 외국인 전문 인력 중 90% 이상이 자신의 당연한 권리를 놓치고 있다는 사실을 알고 계십니까? 청년 외국인 근로자(35번째 생일이 지나기 전에 한국에서 일을 시작했다면 OK!)는 소득세의 90%를 감면받을 수 있습니다.`)}</p>
@@ -304,12 +317,67 @@ export default function HomePage() {
               </div>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 animate-fade-in-up delay-300">
-                <Button size="lg" asChild className="w-full sm:w-auto text-lg sm:text-2xl px-6 sm:px-12 py-6 sm:py-10 h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/20 rounded-2xl sm:rounded-[2rem] transition-all hover:scale-105 active:scale-95 group whitespace-normal break-words">
-                  <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 sm:gap-4 text-center leading-tight py-2 w-full">
-                    <span className="flex-1 min-w-[150px]">{t('1분안에 전문세무사 환급신청하기')}</span> <ArrowRight className="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:translate-x-1 shrink-0" />
+                <Button size="lg" asChild className="w-full sm:w-auto text-lg sm:text-2xl px-6 sm:px-12 py-6 sm:py-10 h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/20 rounded-2xl sm:rounded-[2rem] transition-all hover:scale-105 active:scale-95 group whitespace-normal break-words text-white">
+                  <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 sm:gap-4 text-center leading-tight py-2 w-full text-white">
+                    <span className="flex-1 min-w-[150px] font-black text-white">
+                      <span className="text-orange-500 font-black">{t('선결제 0원 / 환급금 수령 후 수수료 지불')}</span> {t('환급 신청하기')}
+                    </span> <ArrowRight className="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:translate-x-1 shrink-0 text-white" />
                   </Link>
                 </Button>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* 안심 보장 비주얼 카드 섹션 */}
+        <section className="py-16 bg-slate-50/50 relative overflow-hidden">
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-r from-primary/5 to-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
+          <div className="container mx-auto px-4 max-w-7xl relative z-10">
+            <div className="grid md:grid-cols-3 gap-8">
+              {/* 카드 1 */}
+              <Card className="premium-card rounded-[2.5rem] border border-slate-200/50 p-8 space-y-6 bg-gradient-to-br from-slate-100/95 via-slate-50/40 to-slate-200/40 shadow-[0_12px_24px_-10px_rgba(0,0,0,0.03)] hover:-translate-y-1 hover:border-slate-300/80 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.08)] transition-all duration-300 cursor-pointer group">
+                <div className="flex items-center gap-4">
+                  <div className="h-14 w-14 bg-amber-50/60 rounded-2xl flex items-center justify-center shrink-0">
+                    <Coins className="h-7 w-7 text-amber-500 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 animate-float" />
+                  </div>
+                  <h3 className="text-2xl font-black text-primary">
+                    {t('초기 비용 0원, 완전 무료 시작')}
+                  </h3>
+                </div>
+                <p className="text-slate-500 font-bold leading-relaxed text-base">
+                  {t('서비스 신청 시 필요한 비용은 전혀 없습니다. 예상 환급액 조회부터 전문 세무사의 전담 검토 단계까지, 신청 시점에 고객님이 내야 할 돈은 단 1원도 없습니다.')}
+                </p>
+              </Card>
+              
+              {/* 카드 2 */}
+              <Card className="premium-card rounded-[2.5rem] border border-slate-200/50 p-8 space-y-6 bg-gradient-to-br from-slate-100/95 via-slate-50/40 to-slate-200/40 shadow-[0_12px_24px_-10px_rgba(0,0,0,0.03)] hover:-translate-y-1 hover:border-slate-300/80 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.08)] transition-all duration-300 cursor-pointer group">
+                <div className="flex items-center gap-4">
+                  <div className="h-14 w-14 bg-emerald-50/60 rounded-2xl flex items-center justify-center shrink-0">
+                    <ShieldCheck className="h-7 w-7 text-emerald-500 transition-all duration-500 group-hover:scale-110 group-hover:rotate-[-6deg] animate-pulse" />
+                  </div>
+                  <h3 className="text-2xl font-black text-primary">
+                    {t('환급 거절/실패 시 수수료 0원')}
+                  </h3>
+                </div>
+                <p className="text-slate-500 font-bold leading-relaxed text-base">
+                  {t('세무서 심사 결과 환급액이 나오지 않으면 서비스 수수료도 청구되지 않습니다. 고객님은 비용 손실이나 리스크가 0%이므로 안심하고 권리를 찾으세요.')}
+                </p>
+              </Card>
+
+              {/* 카드 3 */}
+              <Card className="premium-card rounded-[2.5rem] border border-slate-200/50 p-8 space-y-6 bg-gradient-to-br from-slate-100/95 via-slate-50/40 to-slate-200/40 shadow-[0_12px_24px_-10px_rgba(0,0,0,0.03)] hover:-translate-y-1 hover:border-slate-300/80 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.08)] transition-all duration-300 cursor-pointer group">
+                <div className="flex items-center gap-4">
+                  <div className="h-14 w-14 bg-indigo-50/60 rounded-2xl flex items-center justify-center shrink-0">
+                    <Banknote className="h-7 w-7 text-indigo-500 transition-all duration-500 group-hover:scale-115 group-hover:translate-y-[-2px] group-hover:translate-x-[2px] animate-float" />
+                  </div>
+                  <h3 className="text-2xl font-black text-primary">
+                    {t('환급금 통장 입금 확인 후 정산')}
+                  </h3>
+                </div>
+                <p className="text-slate-500 font-bold leading-relaxed text-base">
+                  {t('국세청에서 고객님 명의의 은행 계좌로 환급금을 직접 입금해 드린 것이 확인된 후에만 수수료(성과 보수) 정산 절차가 시작됩니다.')}
+                </p>
+              </Card>
             </div>
           </div>
         </section>
@@ -389,15 +457,15 @@ export default function HomePage() {
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
                   <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 text-center space-y-2">
                     <div className="text-slate-400 font-bold text-xs uppercase tracking-widest">{t('매년 최대 환급액')}</div>
-                    <div className="text-2xl font-black text-slate-900">{t('200만 원')}</div>
+                    <div className="text-2xl font-black text-primary">{t('200만 원')}</div>
                   </div>
                   <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 text-center space-y-2">
-                    <div className="text-slate-400 font-bold text-xs uppercase tracking-widest">{t('지원 기간')}</div>
-                    <div className="text-2xl font-black text-slate-900">{t('최대 5년')}</div>
+                    <div className="text-slate-400 font-bold text-xs uppercase tracking-widest">{t('최대 환급액')}</div>
+                    <div className="text-2xl font-black text-primary">{t('1,000만 원')}</div>
                   </div>
                   <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 text-center space-y-2">
                     <div className="text-slate-400 font-bold text-xs uppercase tracking-widest">{t('과거 내역 소급')}</div>
-                    <div className="text-2xl font-black text-slate-900">{t('과거 5년치')}</div>
+                    <div className="text-2xl font-black text-primary">{t('과거 5년치')}</div>
                   </div>
                 </div>
               </div>
@@ -459,12 +527,12 @@ export default function HomePage() {
         <section className="py-32 bg-white relative">
           <div className="container mx-auto px-6 max-w-5xl text-center space-y-12">
             <h2 className="text-4xl lg:text-7xl font-black font-headline text-slate-900 text-gradient break-keep">
-              {t('단 30초의 확인으로')}<br />{t('지난 5년의 권리를 찾으세요.')}
+              {t('단 30초의 확인으로, 선결제 없이')}<br />{t('지난 5년의 권리를 찾으세요.')}
             </h2>
             <div className="flex flex-col items-center gap-8 pt-8">
               <Button size="lg" asChild className="w-full sm:w-auto text-xl sm:text-3xl px-8 sm:px-12 py-8 sm:py-12 h-auto bg-primary hover:bg-primary/90 shadow-[0_32px_64px_-12px_rgba(99,102,241,0.4)] rounded-2xl sm:rounded-[2.5rem] transition-all hover:scale-105 active:scale-95 whitespace-normal break-words">
                 <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-4 text-center leading-tight py-4 w-full">
-                  <span className="flex-1 min-w-[200px]">{t('내 환급액 확인후 환급 신청하기')}</span> <ArrowRight className="h-6 w-6 sm:h-8 sm:w-8 shrink-0" />
+                  <span className="flex-1 min-w-[200px]">{t('선결제 0원 / 환급금 수령 후 수수료 지불 환급 신청하기')}</span> <ArrowRight className="h-6 w-6 sm:h-8 sm:w-8 shrink-0" />
                 </Link>
               </Button>
               <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-3xl bg-white border border-slate-100 shadow-sm">
@@ -472,7 +540,7 @@ export default function HomePage() {
                 <div className="hidden sm:block h-4 w-px bg-slate-200" />
                 <div className="flex items-center gap-2 text-slate-900 font-black"><RotateCcw className="h-6 w-6 text-primary" />{t('리스크 제로')}</div>
               </div>
-              <p className="text-slate-400 font-bold max-lg">{t('우리는 단순히 계산기만 돌리는 앱이 아닙니다. 전문적인 서비스, 리스크는 제로. 환급 거절 시 선임료를 100% 환불해 드립니다.')}</p>
+              <p className="text-slate-400 font-bold max-lg">{t('우리는 단순히 계산기만 돌리는 앱이 아닙니다. 전문적인 서비스, 리스크는 제로. 환급 성공 시에만 수수료가 청구되며 실패 시 수수료는 0원입니다.')}</p>
             </div>
           </div>
         </section>
@@ -602,7 +670,7 @@ export default function HomePage() {
                     },
                     { 
                       name: "Chen", country: "중국", flag: "🇨🇳", amount: "2,250,000", image: "/reviews/chen.png",
-                      text: "솔직히 처음엔 사기인 줄 알고 의심했어요. 하지만 국세청 공식 데이터를 안전하게 가져온다는 설명을 보고 용기를 냈죠. PASS 앱 인증이 조금 복잡했지만 그림 가이드 덕분에 성공했고, 정확히 8주 뒤에 225만원이 통장으로 들어왔습니다. 정말 믿을 수 있는 서비스예요." 
+                      text: "솔직히 처음엔 사기인 줄 알고 의심했어요. 하지만 국세청 공식 데이터를 안전하게 가져온다는 설명을 보고 용기를 냈죠. SMS 인증이 조금 복잡했지만 그림 가이드 덕분에 성공했고, 정확히 8주 뒤에 225만원이 통장으로 들어왔습니다. 정말 믿을 수 있는 서비스예요." 
                     },
                     { 
                       name: "Hassan", country: "우즈베키스탄", flag: "🇺🇿", amount: "1,850,000", image: "/reviews/hassan.png",
@@ -630,7 +698,7 @@ export default function HomePage() {
                     },
                     { 
                       name: "Vlad", country: "Russia", flag: "🇷🇺", amount: "1,680,000", image: "/reviews/vlad.png",
-                      text: "보안이 제일 중요했는데 이 앱은 보안 보증서까지 있어서 안심하고 사용했습니다. 카카오톡 인증 방법이 상세해서 외국인인 저도 5분 만에 끝냈어요. 168만원 환급금 받고 고향 부모님께 선물 보냈습니다. 정말 감사합니다!" 
+                      text: "보안이 제일 중요했는데 이 앱은 보안 보증서까지 있어서 안심하고 사용했습니다. SMS 인증 방법이 상세해서 외국인인 저도 5분 만에 끝냈어요. 168만원 환급금 받고 고향 부모님께 선물 보냈습니다. 정말 감사합니다!" 
                     },
                     { 
                       name: "Kyaw", country: "미얀마", flag: "🇲🇲", amount: "1,150,000", image: "/reviews/kyaw.png",
@@ -822,9 +890,11 @@ export default function HomePage() {
 
       {/* Mobile Sticky CTA */}
       <div className="lg:hidden fixed bottom-6 left-6 right-6 z-50 animate-fade-in-up delay-300">
-        <Button size="lg" asChild className="w-full text-lg min-h-[4rem] h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/40 rounded-2xl font-black py-4 px-6 whitespace-normal break-words">
-          <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 text-center leading-tight w-full">
-            <span className="flex-1 min-w-[150px]">{t('1분안에 전문세무사 환급신청하기')}</span> <ArrowRight className="h-5 w-5 shrink-0" />
+        <Button size="lg" asChild className="w-full text-lg min-h-[4rem] h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/40 rounded-2xl font-black py-4 px-6 whitespace-normal break-words text-white">
+          <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 text-center leading-tight w-full text-white">
+            <span className="flex-1 min-w-[150px] font-black text-white">
+              <span className="text-orange-500 font-black">{t('선결제 0원 / 환급금 수령 후 수수료 지불')}</span> {t('환급 신청하기')}
+            </span> <ArrowRight className="h-5 w-5 shrink-0 text-white" />
           </Link>
         </Button>
       </div>

@@ -14,6 +14,4 @@ export const simulator = {
   "step_7": "Nộp phí dịch vụ (25%)",
   "step_8": "Nhập tài khoản & Chữ ký điện tử",
   "step_9": "Hoàn tất đăng ký cuối cùng",
-  "waiting_banner_title": "💡 Đang chờ chọn trực tiếp (Tạm dừng mô phỏng)",
-  "waiting_banner_desc": "Vui lòng click chọn 1 trong [2 lựa chọn] trên màn hình điện thoại! Trình mô phỏng sẽ tự động tiếp tục theo từng kịch bản tương ứng.",
 };

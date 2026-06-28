@@ -1462,16 +1462,16 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                 {/* E-Signature / Contract Agreement Section */}
                 <div className="space-y-4 pt-4 border-t border-slate-100">
                   <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
-                    <PenTool className="h-4 w-4 text-indigo-600" /> 모바일 서명 위임 계약서
+                    <PenTool className="h-4 w-4 text-indigo-600" /> 모바일 서명 솔루션 이용 및 후불 정산 계약서
                   </h3>
                   <div className="bg-slate-50 p-6 rounded-3xl border border-slate-200 space-y-6 text-xs text-slate-700 leading-relaxed font-sans">
                     <div className="text-center border-b border-slate-200 pb-4">
-                      <h4 className="text-base font-black text-slate-900">세무대리 수임 동의서 / 위임계약서</h4>
-                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Consent for Tax Representation</p>
+                      <h4 className="text-base font-black text-slate-900">소득세 환급 자동 분석 솔루션 이용 및 후불 정산 계약서</h4>
+                      <p className="text-[9px] text-slate-400 font-bold uppercase tracking-wider mt-0.5">Platform Service & CMS Deferred Settlement Agreement</p>
                     </div>
-
+ 
                     <div className="space-y-2">
-                      <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">1. 위임인 (신청인) 및 계약 정보</p>
+                      <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">1. 이용자 (고객) 및 계약 정보</p>
                       <div className="grid grid-cols-2 gap-2 text-slate-600">
                         <div>• 성명: <span className="font-bold text-slate-900">{selectedApp.fullName || "미입력"}</span></div>
                         <div>• 휴대폰: <span className="font-bold text-slate-900">{selectedApp.phoneNo || selectedApp.phone || "미입력"}</span></div>
@@ -1479,33 +1479,34 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                         <div>• 신청 날짜: <span className="font-bold text-slate-900">{selectedApp.createdAt?.toDate ? selectedApp.createdAt.toDate().toLocaleDateString('ko-KR') : "N/A"}</span></div>
                         <div>• 예상 환급액: <span className="font-bold text-slate-900">₩ {(selectedApp.estimatedRefundAmount ?? 0).toLocaleString()}</span></div>
                         <div>• 수수료 금액 (25%): <span className="font-black text-amber-600">₩ {Math.round((selectedApp.estimatedRefundAmount ?? 0) * 0.25).toLocaleString()}</span></div>
+                        <div className="col-span-2">• 환급 및 정산 계좌: <span className="font-bold text-slate-900">{selectedApp.bankName ? `${selectedApp.bankName} / ${selectedApp.bankAccount || selectedApp.accountNumber || ''}` : "미지정"}</span></div>
                         <div className="col-span-2">• 서명 상태: <span className={cn("font-bold", selectedApp.signatureDataUri ? "text-green-600" : "text-amber-600")}>{selectedApp.signatureDataUri ? "서명 완료" : "미서명"}</span></div>
                       </div>
                     </div>
-
+ 
                     <div className="space-y-2">
-                      <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">2. 수임인 (세무대리인) 정보</p>
+                      <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">2. 서비스 제공자 (회사) 정보</p>
                       <div className="grid grid-cols-2 gap-2 text-slate-600">
-                        <div>• 상호: (주)이지택스 세무회계</div>
-                        <div>• 대표 세무사: 김홍일</div>
-                        <div>• 등록번호: 283-50-22337</div>
-                        <div>• 소재지: 서울특별시 강남구 테헤란로 123</div>
+                        <div>• 상호: 더윤컴퍼니</div>
+                        <div>• 대표자: 김홍일</div>
+                        <div>• 사업자번호: 105-12-78126</div>
+                        <div>• 소재지: 경기도 남양주시 부평로 48번길 140, 107-1102</div>
                       </div>
                     </div>
-
+ 
                     <div className="space-y-2">
-                      <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">3. 위임 내용</p>
+                      <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">3. 주요 정산 및 법적 조항 요약</p>
                       <p className="text-slate-500 text-[10px] leading-relaxed text-justify">
-                        본인(위임인)은 대한민국 「조세특례제한법」 제30조에 따른 '중소기업 취업자에 대한 소득세 감면' 적용 및 이에 따른 과거 납부 세액의 환급(경정청구) 절차를 진행함에 있어, 상기 수임인을 법정 대리인으로 선임합니다. 이에 따라 국세청(Hometax) 데이터 조회, 서류 작성 및 제출, 환급금 수령 계좌 등록 등 일체의 권한을 위임합니다.
+                        본 계약은 이용자가 더윤컴퍼니의 이지택스 솔루션을 이용하여 환급을 신청하고, 실제 환급이 완료된 후 실지급액의 25%(성공보수)를 후불로 CMS(대행기관: 효성CMS 등) 자동이체 인출하는 계약입니다. 본 플랫폼은 솔루션 프로그램 제공업자(통신판매업)로서 실제 대리 신고 업무는 대한민국 국가공인 제휴 세무사/세무법인이 대행함을 상호 인지합니다.
                       </p>
                     </div>
-
+ 
                     <div className="pt-4 border-t border-slate-200 flex flex-col items-center gap-3">
                       <p className="font-bold text-slate-400 text-[9px]">
-                        위임 날짜: {selectedApp.createdAt?.toDate ? selectedApp.createdAt.toDate().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : "N/A"}
+                        계약 날짜: {selectedApp.createdAt?.toDate ? selectedApp.createdAt.toDate().toLocaleDateString('ko-KR', { year: 'numeric', month: 'long', day: 'numeric' }) : "N/A"}
                       </p>
                       <div className="flex items-center gap-3 bg-white p-4 rounded-2xl border border-slate-200 shadow-sm w-full justify-center">
-                        <span className="font-bold text-slate-500">위임인 (인/서명) :</span>
+                        <span className="font-bold text-slate-500">이용자 (인/서명) :</span>
                         {selectedApp.signatureDataUri ? (
                           <img src={selectedApp.signatureDataUri} alt="User Signature" className="h-12 max-w-[150px] object-contain bg-white" />
                         ) : (

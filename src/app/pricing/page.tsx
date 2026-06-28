@@ -15,7 +15,9 @@ import {
   RotateCcw, 
   ArrowRight,
   Gem,
-  AlertCircle
+  AlertCircle,
+  Coins,
+  Sparkles
 } from "lucide-react";
 import Link from "next/link";
 import { useTranslation } from "@/components/LanguageContext";
@@ -27,104 +29,137 @@ export default function PricingPage() {
     <div className="min-h-screen flex flex-col font-body bg-slate-50/50">
       <Navbar />
       <main className="flex-1 container mx-auto px-4 py-20 lg:py-32">
-        <div className="max-w-4xl mx-auto space-y-16">
-          <div className="text-center space-y-6">
-            <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-bold uppercase tracking-widest">{t('가격 정책')}</Badge>
-            <h1 className="text-4xl lg:text-6xl font-black font-headline text-slate-900 tracking-tighter">
-              {t('[가격 정책]')}<br />
-              <span className="text-primary">{t('투명하고 안전한 25% 선임 제도')}</span>
-            </h1>
-            <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto">
-              {t('우리는 단순히 계산기만 돌리는 앱이 아닙니다. 당신의 사건을 맡아 해결하는 법적 대리인입니다.')}
-            </p>
+        <div className="max-w-5xl mx-auto space-y-16">
+          <div className="bg-slate-900 text-white rounded-[3rem] p-10 lg:p-16 text-center space-y-6 shadow-2xl relative overflow-hidden">
+            <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none">
+              <Gem className="h-48 w-48 text-white" />
+            </div>
+            <div className="relative z-10 space-y-6">
+              <Badge className="bg-primary/20 text-primary border-none font-black px-4 py-1.5 text-sm uppercase tracking-widest">{t('가격 정책')}</Badge>
+              <h1 className="text-4xl lg:text-6xl font-black font-headline tracking-tighter leading-tight text-white">
+                {t('선결제 0원, 오직 환급 성공 시에만')}<br />
+                <span className="text-primary">{t('후불제 자동 정산')}</span>
+              </h1>
+              <p className="text-xl text-slate-300 font-medium max-w-3xl mx-auto leading-relaxed">
+                {t('대한민국 국가공인 전문 세무법인 제휴 및 정밀 분석 솔루션으로 안전하고 확실하게 지난 세금을 돌려받으세요.')}
+              </p>
+            </div>
           </div>
 
-          <div className="grid gap-8">
-            {/* 1. 요율제 섹션 */}
-            <Card className="premium-card rounded-[3rem] border-none overflow-hidden shadow-2xl">
-              <CardHeader className="bg-slate-900 text-white p-10 lg:p-16">
-                <div className="flex items-center gap-4 mb-6">
-                  <div className="h-12 w-12 bg-primary rounded-2xl flex items-center justify-center">
-                    <Gem className="h-6 w-6 text-white" />
-                  </div>
-                  <CardTitle className="text-2xl lg:text-3xl font-black">{t('1. 신뢰를 바탕으로 한 단일 요율제')}</CardTitle>
+          {/* 3 Core Benefit Cards */}
+          <div className="grid md:grid-cols-3 gap-8">
+            <Card className="premium-card rounded-[2.5rem] p-8 bg-white border border-slate-100 shadow-xl flex flex-col justify-between hover:shadow-2xl transition-all">
+              <div className="space-y-6">
+                <div className="h-14 w-14 bg-primary/10 text-primary rounded-2xl flex items-center justify-center">
+                  <Sparkles className="h-7 w-7" />
                 </div>
-                <div className="space-y-6">
-                  <p className="text-xl lg:text-2xl font-medium text-slate-300 leading-relaxed">
-                    {t('저희 서비스는 복잡한 가입비나 숨겨진 비용 없이, 환급액의 25%를 정찰제로 운영합니다.')}
-                  </p>
-                  <p className="text-slate-400 font-medium border-l-4 border-primary pl-6">
-                    {t('이 수수료는 당신의 소중한 세금을 되찾아오기 위한 전문 세무사의 전담 마크와 AI 시스템 이용료가 포함된 금액입니다.')}
-                  </p>
+                <div className="space-y-2">
+                  <span className="text-primary font-black text-sm uppercase tracking-widest">{t('진행 리스크 0%')}</span>
+                  <h3 className="text-2xl font-black text-slate-900 leading-snug">{t('초기 비용 0원, 완전 무료 시작')}</h3>
                 </div>
-              </CardHeader>
+                <p className="text-slate-500 font-medium leading-relaxed text-base">
+                  {t('서비스 신청 시 필요한 비용은 전혀 없습니다. 예상 환급액 조회부터 전문 세무사의 전담 검토 단계까지, 신청 시점에 고객님이 내야 할 돈은 단 1원도 없습니다.')}
+                </p>
+              </div>
             </Card>
 
-            {/* 2. 선임료 필요성 섹션 */}
-            <div className="grid md:grid-cols-2 gap-8">
-              <Card className="premium-card rounded-[3rem] p-10 lg:p-12 space-y-8 bg-white border border-slate-100 shadow-xl">
-                <div className="space-y-4">
-                  <div className="h-14 w-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
-                    <Scale className="h-7 w-7" />
-                  </div>
-                  <h3 className="text-2xl font-black text-slate-900">{t('2. 왜 25% 선결제(선임)가 필요한가요?')}</h3>
-                  <p className="text-slate-500 font-medium">{t('외국인 세금 환급은 한국인보다 과정이 훨씬 까다롭습니다.')}</p>
+            <Card className="premium-card rounded-[2.5rem] p-8 bg-white border border-slate-100 shadow-xl flex flex-col justify-between hover:shadow-2xl transition-all">
+              <div className="space-y-6">
+                <div className="h-14 w-14 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center">
+                  <RotateCcw className="h-7 w-7" />
                 </div>
-                <div className="space-y-6">
-                  <div className="flex gap-4">
-                    <CheckCircle2 className="h-6 w-6 text-primary shrink-0 mt-1" />
-                    <div>
-                      <h4 className="font-black text-slate-900 text-lg">{t('개별 맞춤형 서류 검토')}</h4>
-                      <p className="text-slate-500 font-medium text-sm">{t('AI가 찾은 데이터를 바탕으로 전문 세무사가 당신의 비자와 재직 상태를 1:1로 정밀 검토합니다.')}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-4">
-                    <UserCheck className="h-6 w-6 text-primary shrink-0 mt-1" />
-                    <div>
-                      <h4 className="font-black text-slate-900 text-lg">{t('전담 대리인 지정')}</h4>
-                      <p className="text-slate-500 font-medium text-sm">{t('선임료 결제와 동시에 당신만을 위한 법적 세무 대리인이 지정되어 세무서와의 모든 소통을 책임집니다.')}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-4">
-                    <ShieldCheck className="h-6 w-6 text-primary shrink-0 mt-1" />
-                    <div>
-                      <h4 className="font-black text-slate-900 text-lg">{t('책임 있는 서비스')}</h4>
-                      <p className="text-slate-500 font-medium text-sm">{t("선임료는 저희가 끝까지 환급을 완료하겠다는 '약속의 증표'입니다.")}</p>
-                    </div>
-                  </div>
+                <div className="space-y-2">
+                  <span className="text-red-500 font-black text-sm uppercase tracking-widest">{t('성공 보수 100%')}</span>
+                  <h3 className="text-2xl font-black text-slate-900 leading-snug">{t('환급 거절/실패 시 수수료 0원')}</h3>
                 </div>
-              </Card>
+                <p className="text-slate-500 font-medium leading-relaxed text-base">
+                  {t('세무서 심사 결과 환급액이 나오지 않으면 서비스 수수료도 청구되지 않습니다. 고객님은 비용 손실이나 리스크가 0%이므로 안심하고 권리를 찾으세요.')}
+                </p>
+              </div>
+            </Card>
 
-              {/* 3. 환불 보장 섹션 */}
-              <Card className="premium-card rounded-[3rem] p-10 lg:p-12 bg-white border border-slate-200 space-y-10 relative overflow-hidden shadow-2xl">
-                <div className="absolute top-0 right-0 p-12 opacity-[0.03]">
-                  <RotateCcw className="h-48 w-48 text-slate-900" />
+            <Card className="premium-card rounded-[2.5rem] p-8 bg-white border border-slate-100 shadow-xl flex flex-col justify-between hover:shadow-2xl transition-all">
+              <div className="space-y-6">
+                <div className="h-14 w-14 bg-green-50 text-green-500 rounded-2xl flex items-center justify-center">
+                  <Coins className="h-7 w-7" />
                 </div>
-                <div className="space-y-4 relative z-10">
-                  <div className="flex items-center gap-2 mb-2">
-                    <AlertCircle className="h-5 w-5 text-primary" />
-                    <Badge className="bg-primary/10 text-primary border-none font-black px-4 py-1">{t('핵심 정책 (CORE POLICY)')}</Badge>
-                  </div>
-                  <h3 className="text-3xl font-black font-headline text-slate-900 leading-tight">{t('3. [핵심] 100% 안심 환불 보장 정책')}</h3>
-                  <p className="text-slate-600 font-medium text-lg">{t('가장 우려하시는 부분에 대해 명확한 약속을 드립니다.')}</p>
+                <div className="space-y-2">
+                  <span className="text-green-500 font-black text-sm uppercase tracking-widest">{t('후불 자동 정산')}</span>
+                  <h3 className="text-2xl font-black text-slate-900 leading-snug">{t('환급금 통장 입금 확인 후 정산')}</h3>
                 </div>
-                
-                <div className="p-8 bg-slate-50 rounded-[2rem] border border-slate-200 space-y-6 relative z-10">
-                  <p className="text-2xl lg:text-3xl font-black leading-tight text-slate-900">
-                    {t('환급이 거절되면, 선임료 25% 전액을 즉시 돌려드립니다.')}
-                  </p>
-                  <p className="text-slate-700 font-bold text-base leading-relaxed">
-                    {t('만약 세무서의 최종 검토 결과 환급이 불가능한 것으로 판명될 경우, 결제하신 선임료는 단 1원도 빠짐없이 100% 환불해 드립니다. 당신의 리스크는 0%입니다.')}
-                  </p>
-                </div>
+                <p className="text-slate-500 font-medium leading-relaxed text-base">
+                  {t('국세청에서 고객님 명의의 은행 계좌로 환급금을 직접 입금해 드린 것이 확인된 후에만 수수료(성과 보수) 정산 절차가 시작됩니다.')}
+                </p>
+              </div>
+            </Card>
+          </div>
 
-                <Button className="w-full h-16 rounded-2xl bg-slate-900 text-white hover:bg-slate-800 border-none font-black text-lg transition-all hover:scale-[1.02] relative z-10" asChild>
+          {/* 4. Why 25% Fee? & Compliance Disclaimer Section */}
+          <div className="grid md:grid-cols-5 gap-8">
+            <Card className="premium-card rounded-[3rem] p-10 lg:p-12 bg-white border border-slate-100 shadow-xl md:col-span-3 space-y-8">
+              <div className="space-y-3">
+                <div className="h-14 w-14 bg-blue-50 text-blue-600 rounded-2xl flex items-center justify-center">
+                  <Scale className="h-7 w-7" />
+                </div>
+                <h3 className="text-2xl lg:text-3xl font-black text-slate-900">{t('왜 25%의 플랫폼 이용료(수수료)가 발생하나요?')}</h3>
+                <p className="text-slate-500 font-medium">{t('외국인 세금 환급은 한국인보다 과정이 훨씬 까다롭습니다.')}</p>
+              </div>
+              
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <CheckCircle2 className="h-6 w-6 text-primary shrink-0 mt-1" />
+                  <div>
+                    <h4 className="font-black text-slate-900 text-lg">{t('국가공인 제휴 세무사의 전 과정 책임 대행')}</h4>
+                    <p className="text-slate-500 font-medium text-sm leading-relaxed">{t('환급 신청서 작성부터 환급금이 고객님의 통장에 안전하게 입금되는 마지막 순간까지, 제휴된 대한민국 국가공인 전문 세무사가 모든 심사와 행정 과정을 전담하여 책임 처리합니다.')}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <CheckCircle2 className="h-6 w-6 text-primary shrink-0 mt-1" />
+                  <div>
+                    <h4 className="font-black text-slate-900 text-lg">{t('제휴 세무사의 1:1 맞춤 정밀 검토')}</h4>
+                    <p className="text-slate-500 font-medium text-sm leading-relaxed">{t('단순 계산 오류나 비자 타입(E-9, E-7 등) 누락을 최소화하여 환급 성공률을 극대화합니다.')}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <UserCheck className="h-6 w-6 text-primary shrink-0 mt-1" />
+                  <div>
+                    <h4 className="font-black text-slate-900 text-lg">{t('비대면 자동화 세무 서류 생성 솔루션')}</h4>
+                    <p className="text-slate-500 font-medium text-sm leading-relaxed">{t('지난 5년 치의 소득세 납부 데이터를 안전하게 암호화하여 처리하는 독자적인 기술 솔루션을 제공합니다.')}</p>
+                  </div>
+                </div>
+                <div className="flex gap-4">
+                  <ShieldCheck className="h-6 w-6 text-primary shrink-0 mt-1" />
+                  <div>
+                    <h4 className="font-black text-slate-900 text-lg">{t('국세청 공식 절차(경정청구) 전담 마크')}</h4>
+                    <p className="text-slate-500 font-medium text-sm leading-relaxed">{t('접수부터 국세청 심사관 대응까지 환급금이 통장에 최종 입금되는 순간까지 모든 프로세스를 밀착 케어합니다.')}</p>
+                  </div>
+                </div>
+              </div>
+            </Card>
+
+            <Card className="premium-card rounded-[3rem] p-10 lg:p-12 bg-slate-900 text-white md:col-span-2 flex flex-col justify-between shadow-2xl relative overflow-hidden">
+              <div className="absolute top-0 right-0 p-12 opacity-[0.03] pointer-events-none">
+                <Gem className="h-48 w-48 text-white" />
+              </div>
+              <div className="space-y-6 relative z-10">
+                <div className="flex items-center gap-2 mb-2">
+                  <AlertCircle className="h-5 w-5 text-primary" />
+                  <Badge className="bg-primary/20 text-primary border-none font-black px-4 py-1">{t('준수 사항 (COMPLIANCE)')}</Badge>
+                </div>
+                <h3 className="text-2xl font-black font-headline text-white leading-tight">{t('합법적인 세무 프로세스')}</h3>
+                <p className="text-slate-400 font-medium text-sm leading-relaxed">
+                  {t('* 본 서비스는 대한민국 국가공인 전문 세무법인과의 공식 기술 제휴를 통해 운영되며, 세무 분석 및 신청 지원 솔루션을 제공합니다. 고객님의 실제 세무 신고 및 환급 대행 업무는 제휴 세무법인의 책임 하에 안전하고 적법하게 처리되므로 안심하셔도 됩니다.')}
+                </p>
+              </div>
+
+              <div className="space-y-4 pt-8 relative z-10">
+                <Button className="w-full h-16 rounded-2xl bg-primary text-white hover:bg-primary/90 border-none font-black text-lg transition-all hover:scale-[1.02] shadow-xl shadow-primary/20" asChild>
                   <Link href="/estimate" className="flex items-center justify-center">
                     {t('지금 무료로 조회하기')} <ArrowRight className="ml-2 h-5 w-5" />
                   </Link>
                 </Button>
-              </Card>
-            </div>
+              </div>
+            </Card>
           </div>
 
           <div className="text-center pt-10">
@@ -134,7 +169,7 @@ export default function PricingPage() {
                 <p className="text-xl font-black italic">{t('\"전문적인 서비스, 리스크 제로.\"')}</p>
               </div>
               <div className="h-10 w-px bg-white/10 hidden sm:block" />
-              <p className="text-sm font-medium text-slate-300 hidden sm:block max-w-[200px]">{t('전문적인 서비스,')}<br />{t('리스크는 제로.')}</p>
+              <p className="text-sm font-medium text-slate-300 hidden sm:block max-w-[200px] leading-relaxed">{t('전문적인 서비스,')}<br />{t('리스크는 제로.')}</p>
             </div>
           </div>
         </div>

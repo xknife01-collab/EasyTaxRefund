@@ -24,5 +24,5 @@ export const uz = {
   ...security,
 
   // Custom Date
-  "{year}년 {month}월 {day}일": "{day}-{month}, {year}-yil"
+  "{year}년 {month}월 {day}일": "{day}-{month}, {year}-yil",
 };

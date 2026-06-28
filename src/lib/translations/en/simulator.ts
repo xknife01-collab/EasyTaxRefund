@@ -5,7 +5,6 @@ export const simulator = {
   "play_btn": "Auto Play",
   "restart_btn": "Restart",
   "step_0": "Eligibility Check (Months/Salary)",
-  "step_1: Guideline & Requirements Check": "Guideline & Requirements Check",
   "step_1": "Guideline & Requirements Check",
   "step_2": "ARC Information Input",
   "step_3": "Mobile Identity Input",
@@ -15,6 +14,4 @@ export const simulator = {
   "step_7": "Fee (25%) Bank Payout",
   "step_8": "Account Info & E-Signature",
   "step_9": "Final Application Submission",
-  "waiting_banner_title": "💡 Direct Selection Pending (Simulation Paused)",
-  "waiting_banner_desc": "Please click one of the [two options] on the phone screen below! The simulation will resume based on your choice.",
 };

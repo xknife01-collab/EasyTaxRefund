@@ -14,6 +14,4 @@ export const simulator = {
   "step_7": "支付税务服务费 (25%)",
   "step_8": "账户输入及电子签名",
   "step_9": "最终申请提交成功",
-  "waiting_banner_title": "💡 等待手动选择 (模拟已暂停)",
-  "waiting_banner_desc": "请点击虚拟手机屏幕中的 [两个选项] 之一！模拟将根据选择的场景自动继续播放。",
 };
