@@ -40,6 +40,7 @@ import {
   ArrowRight,
   Database,
   Trophy,
+  Sliders,
   Smartphone,
   RefreshCw,
   UserCheck,
@@ -113,6 +114,45 @@ import {
 } from "firebase/firestore";
 import { getStoredTrackingData, getEffectiveSource } from "@/lib/tracking";
 import Image from "next/image";
+
+function RefundCounter({ value }: { value: number }) {
+  const [displayValue, setDisplayValue] = useState(0);
+  
+  useEffect(() => {
+    let start = 0;
+    const end = value;
+    if (end === 0) {
+      setDisplayValue(0);
+      return;
+    }
+    const duration = 1500; // 1.5s
+    const startTime = performance.now();
+    
+    let animationFrameId: number;
+    
+    const updateCount = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      // easeOutQuart
+      const easeProgress = 1 - Math.pow(1 - progress, 4);
+      
+      const current = Math.floor(easeProgress * end);
+      setDisplayValue(current);
+      
+      if (progress < 1) {
+        animationFrameId = requestAnimationFrame(updateCount);
+      } else {
+        setDisplayValue(end);
+      }
+    };
+    
+    animationFrameId = requestAnimationFrame(updateCount);
+    return () => cancelAnimationFrame(animationFrameId);
+  }, [value]);
+  
+  return <>{displayValue.toLocaleString()}</>;
+}
 
 export default function EstimatePage() {
   const { t, language } = useTranslation();
@@ -337,6 +377,21 @@ export default function EstimatePage() {
   });
   const [draftAppId, setDraftAppId] = useState<string | null>(null);
 
+  // Personal Info Consent states for Step 2
+  const [piConsent, setPiConsent] = useState(true);
+  const [piConsentOpen, setPiConsentOpen] = useState(false);
+
+  // Step 9 CMS Consent states
+  const [cmsConsent1, setCmsConsent1] = useState(true);
+  const [cmsConsent2, setCmsConsent2] = useState(true);
+  const [cmsConsent3, setCmsConsent3] = useState(true);
+  const [cmsConsentAll, setCmsConsentAll] = useState(true);
+  const [cmsModalOpen1, setCmsModalOpen1] = useState(false);
+  const [cmsModalOpen2, setCmsModalOpen2] = useState(false);
+  const [cmsModalOpen3, setCmsModalOpen3] = useState(false);
+  const [devPanelOpen, setDevPanelOpen] = useState(false);
+  const refundFee = result?.refundEstimate ? Math.floor(result.refundEstimate * 0.25) : 0;
+
   // --- New Hometax states ---
   const [authTab, setAuthTab] = useState<'signup' | 'login'>('signup');
   const [paymentTab, setPaymentTab] = useState<'card' | 'bank'>('card');
@@ -491,9 +546,7 @@ export default function EstimatePage() {
       if (step === 0) {
         // Step 0: months selection & salary input simulation
         // Ensure we start scrolled to the absolute top of the iframe window
-        if (typeof window !== 'undefined') {
-          window.scrollTo({ top: 0, behavior: 'auto' });
-        }
+        scrollToTop()
         // The user wants Step 0 to start at the top of the viewport with a grand animation:
         // virtual cursor moves to Sparkles icon/Title first, clicks it, then smooth-scrolls to the slider/salary input.
         subTimers.push(setTimeout(() => {
@@ -543,9 +596,7 @@ export default function EstimatePage() {
 
       } else if (step === 0.5) {
         // Step 0.5: Process Flow Guide
-        if (typeof window !== 'undefined') {
-          window.scrollTo({ top: 0, behavior: 'auto' });
-        }
+        scrollToTop()
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step05-submit-btn");
         }, 1500));
@@ -560,9 +611,7 @@ export default function EstimatePage() {
 
       } else if (step === 1) {
         // Step 1: Pre-requisites Checklist
-        if (typeof window !== 'undefined') {
-          window.scrollTo({ top: 0, behavior: 'auto' });
-        }
+        scrollToTop()
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step1-submit-btn");
         }, 1500));
@@ -578,9 +627,7 @@ export default function EstimatePage() {
       } else if (step === 2) {
         // Step 2: Alien Registration Card Scan / manual input fallback
         const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
-        if (typeof window !== 'undefined') {
-          window.scrollTo({ top: 0, behavior: 'auto' });
-        }
+        scrollToTop()
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step2-name-input");
         }, 1500));
@@ -616,9 +663,7 @@ export default function EstimatePage() {
       } else if (step === 3) {
         // Step 3: Identity & Telecom input
         const persona = PERSONAS[selectedPersona] || PERSONAS['ko'];
-        if (typeof window !== 'undefined') {
-          window.scrollTo({ top: 0, behavior: 'auto' });
-        }
+        scrollToTop()
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step3-phone-input");
         }, 1500));
@@ -681,9 +726,7 @@ export default function EstimatePage() {
 
       } else if (step === 4) {
         // Step 4: Hometax 1-minute Signup & Query simulation
-        if (typeof window !== 'undefined') {
-          window.scrollTo({ top: 0, behavior: 'auto' });
-        }
+        scrollToTop()
         
         // Ensure we are on the 'signup' tab
         setAuthTab('signup');
@@ -807,9 +850,7 @@ export default function EstimatePage() {
         sendPointerUpdate("50%", "50%", false, 0);
         
         // Scroll to top first
-        if (typeof window !== 'undefined') {
-          window.scrollTo({ top: 0, behavior: 'auto' });
-        }
+        scrollToTop()
         
         // Wait 1.5 seconds to show NTS Database animation at the top, then scroll down to checklist
         subTimers.push(setTimeout(() => {
@@ -818,20 +859,36 @@ export default function EstimatePage() {
 
       } else if (step === 7) {
         // Step 7: Expected Refund Report
-        // Scroll to top of report first to show results
+        // 1. Scroll to top of report first to show results
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step7-top-anchor");
         }, 200));
         
-        // Wait 6.5 seconds to let the user read the top report, then scroll down to the bottom
+        // 2. Scroll down to the refund amount counting up section
         subTimers.push(setTimeout(() => {
-        }, 8300));
+          scrollToSelector("#step7-refund-counter");
+        }, 1500));
         
+        // 3. Scroll down to the submit button at the bottom
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step7-submit-btn");
+        }, 3200));
+        
+        // 4. Move virtual cursor to the button
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step7-submit-btn");
+        }, 4400));
+
+        // 5. Click the button with fallback to direct setStep
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step7-submit-btn", true);
           const btn = document.querySelector("#step7-submit-btn") as HTMLButtonElement;
-          if (btn) btn.click();
-        }, 9500));
+          if (btn) {
+            btn.click();
+          } else {
+            setStep(8);
+          }
+        }, 5200));
 
       } else if (step === 8) {
         // Step 8: Bank account entry & 1-won verification
@@ -938,13 +995,28 @@ export default function EstimatePage() {
         
       } else if (step === 9) {
         // Step 9: Final consent - mobile signature
-        // 1. Scroll to signature canvas
+        // 1. Scroll to CMS Consent All checkbox
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#cms-consent-all");
+        }, 200));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#cms-consent-all");
+        }, 1200));
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#cms-consent-all", true);
+          setCmsConsentAll(true);
+          setCmsConsent1(true);
+          setCmsConsent2(true);
+          setCmsConsent3(true);
+        }, 2000));
+
+        // 2. Scroll to signature canvas
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step9-signature-canvas");
-        }, 1000));
+        }, 3200));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step9-signature-canvas");
-        }, 2600));
+        }, 4400));
         subTimers.push(setTimeout(() => {
           // Programmatically draw signature
           const canvas = document.querySelector("#step9-signature-canvas") as HTMLCanvasElement;
@@ -961,20 +1033,20 @@ export default function EstimatePage() {
             }
           }
           setIsSigned(true);
-        }, 3600));
+        }, 5400));
         
-        // 2. Scroll to complete button and click
+        // 3. Scroll to complete button and click
         subTimers.push(setTimeout(() => {
           scrollToSelector("#step9-submit-btn");
-        }, 5000));
+        }, 6800));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step9-submit-btn");
-        }, 6600));
+        }, 8000));
         subTimers.push(setTimeout(() => {
           sendPointerToElement("#step9-submit-btn", true);
           const btn = document.querySelector("#step9-submit-btn") as HTMLButtonElement;
           if (btn) btn.click();
-        }, 7600));
+        }, 9000));
       }
     };
 
@@ -1049,25 +1121,50 @@ export default function EstimatePage() {
     sendPointerUpdate(left, top, click, opacity);
   };
 
+  const scrollToTop = () => {
+    if (typeof window === 'undefined') return;
+    const container = document.getElementById("estimate-scroll-container");
+    if (isSimulation && container) {
+      container.scrollTo({ top: 0, behavior: 'auto' });
+    } else {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+    }
+  };
+
   const scrollToSelector = (selector: string, block: ScrollIntoViewOptions['block'] = 'center') => {
     if (typeof window === 'undefined') return;
+    if (isSimulation) {
+      sendPointerUpdate("50%", "50%", false, 0);
+    }
     const el = document.querySelector(selector);
     if (!el) return;
     
-    const rect = el.getBoundingClientRect();
-    const elementTop = rect.top + window.scrollY;
+    const container = document.getElementById("estimate-scroll-container");
+    const isSimScroll = isSimulation && container;
     
-    let targetY = elementTop;
-    if (block === 'center') {
-      targetY = elementTop - window.innerHeight / 2 + rect.height / 2;
-    } else if (block === 'end') {
-      targetY = elementTop - window.innerHeight + rect.height;
+    const rect = el.getBoundingClientRect();
+    const startY = isSimScroll ? container.scrollTop : window.scrollY;
+    
+    // Calculate top relative to the scroll container
+    let elementTop = rect.top + startY;
+    if (isSimScroll) {
+      const containerRect = container.getBoundingClientRect();
+      elementTop = rect.top - containerRect.top + startY;
     }
     
-    const maxScroll = document.documentElement.scrollHeight - window.innerHeight;
+    let targetY = elementTop;
+    const viewportHeight = isSimScroll ? container.clientHeight : window.innerHeight;
+    
+    if (block === 'center') {
+      targetY = elementTop - viewportHeight / 2 + rect.height / 2;
+    } else if (block === 'end') {
+      targetY = elementTop - viewportHeight + rect.height;
+    }
+    
+    const scrollHeight = isSimScroll ? container.scrollHeight : document.documentElement.scrollHeight;
+    const maxScroll = scrollHeight - viewportHeight;
     targetY = Math.max(0, Math.min(targetY, maxScroll));
     
-    const startY = window.scrollY;
     const distance = targetY - startY;
     const duration = 1200; // 1.2 seconds for a premium, slower slide down
     let startTime: number | null = null;
@@ -1082,7 +1179,12 @@ export default function EstimatePage() {
       const progress = Math.min(timeElapsed / duration, 1);
       const easedProgress = easeInOutCubic(progress);
       
-      window.scrollTo(0, startY + distance * easedProgress);
+      const nextY = startY + distance * easedProgress;
+      if (isSimScroll) {
+        container.scrollTo(0, nextY);
+      } else {
+        window.scrollTo(0, nextY);
+      }
       
       if (timeElapsed < duration) {
         requestAnimationFrame(animation);
@@ -1101,6 +1203,16 @@ export default function EstimatePage() {
       setPaymentTab('card');
     }
   }, [step, isSimulation]);
+
+  // Auto-prefill account holder name with verified identity name for step 8
+  useEffect(() => {
+    if (step === 8) {
+      const verifiedName = formData.authName || formData.officialName;
+      if (verifiedName) {
+        setFormData(prev => ({ ...prev, accountHolder: verifiedName }));
+      }
+    }
+  }, [step, formData.authName, formData.officialName]);
 
   // Listen to parent commands
   useEffect(() => {
@@ -1239,6 +1351,16 @@ export default function EstimatePage() {
       chatScrollRef.current.scrollIntoView({ behavior: 'smooth' });
     }
   }, [isVipChatOpen, draftAppId, unreadCount]);
+
+  // Auto-prefill account holder name with verified identity name for step 8
+  useEffect(() => {
+    if (step === 8) {
+      const verifiedName = formData.authName || formData.officialName || "";
+      if (verifiedName && formData.accountHolder !== verifiedName) {
+        setFormData(prev => ({ ...prev, accountHolder: verifiedName }));
+      }
+    }
+  }, [step, formData.authName, formData.officialName]);
 
   const handleSendVipMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -2228,6 +2350,20 @@ export default function EstimatePage() {
       toast({ variant: "destructive", title: t("정보 입력 필요"), description: t("은행명, 계좌번호, 예금주명을 모두 입력해 주세요.") });
       return;
     }
+    // Validate name matching
+    const verifiedName = formData.authName || formData.officialName;
+    if (verifiedName) {
+      const normalizedHolder = formData.accountHolder.replace(/\s+/g, '').toUpperCase();
+      const normalizedVerified = verifiedName.replace(/\s+/g, '').toUpperCase();
+      if (normalizedHolder !== normalizedVerified) {
+        toast({
+          variant: "destructive",
+          title: t("예금주 명의 불일치"),
+          description: t("본인인증을 완료한 이름({name})과 계좌의 예금주명이 일치하지 않습니다. 본인 명의의 계좌만 등록이 가능합니다.", { name: verifiedName }),
+        });
+        return;
+      }
+    }
     setIs1WonLoading(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
     setIs1WonSent(true);
@@ -2361,6 +2497,10 @@ export default function EstimatePage() {
 
   const handleFinalSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!cmsConsent1 || !cmsConsent2 || !cmsConsent3) {
+      toast({ variant: "destructive", title: t("동의 필요"), description: t("모든 필수 약관에 동의해 주세요.") });
+      return;
+    }
     if (!isSigned) {
       toast({ variant: "destructive", title: t("서명 확인 필요"), description: t("전자서명 칸에 서명을 완료해 주세요.") });
       return;
@@ -2393,6 +2533,10 @@ export default function EstimatePage() {
         accountNumber: formData.accountNumber,
         accountHolder: formData.accountHolder,
         signatureDataUri: signatureDataUri || null,
+        cmsConsent1,
+        cmsConsent2,
+        cmsConsent3,
+        cmsConsentAt: serverTimestamp(),
         estimatedRefundAmount: result?.refundEstimate || 0,
         preFilterEstimate,
         resIncomeTax: result?.resIncomeTax || 0,
@@ -2996,7 +3140,30 @@ export default function EstimatePage() {
                         <input id="step2-reg-input" value={formData.registrationNumber} maxLength={13} onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })} className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg w-full outline-none focus:ring-2 focus:ring-primary/20" />
                       </div>
                     </div>
-                    <Button id="step2-submit-btn" type="submit" className="w-full h-16 sm:h-20 bg-slate-900 text-lg sm:text-xl font-black rounded-2xl sm:rounded-3xl shadow-2xl" disabled={loading}>{t('다음 단계로 이동')}</Button>
+                    {/* 개인정보 수집 및 이용 동의 (Step 2 필수 동의) */}
+                    <div className="flex items-center justify-between p-3 bg-slate-50/50 rounded-2xl border border-slate-100/50 mt-1">
+                      <div className="flex items-center gap-3">
+                        <Checkbox
+                          id="pi-consent-checkbox"
+                          checked={piConsent}
+                          onCheckedChange={(val) => setPiConsent(!!val)}
+                          className="h-4 w-4 rounded border-slate-200 text-slate-500 focus:ring-slate-200 data-[state=checked]:bg-slate-400 data-[state=checked]:border-slate-400"
+                        />
+                        <label htmlFor="pi-consent-checkbox" className="text-xs font-bold text-slate-400 cursor-pointer">
+                          <span className="text-slate-400 font-bold mr-1">[필수]</span>
+                          {t('개인정보 수집 및 이용 동의')}
+                        </label>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setPiConsentOpen(true)}
+                        className="text-xs text-slate-400 hover:text-slate-500 underline font-medium"
+                      >
+                        {t('보기')}
+                      </button>
+                    </div>
+
+                    <Button id="step2-submit-btn" type="submit" className="w-full h-16 sm:h-20 bg-slate-900 text-lg sm:text-xl font-black rounded-2xl sm:rounded-3xl shadow-2xl" disabled={loading || !piConsent}>{t('다음 단계로 이동')}</Button>
                   </form>
                 </CardContent>
               </Card>
@@ -3785,7 +3952,7 @@ export default function EstimatePage() {
                     <div className="text-center space-y-10">
                       <div className="space-y-4">
                         <p className="text-slate-400 font-black uppercase tracking-widest text-sm">{t('최종 예상 환급액')}</p>
-                        <h2 className="text-7xl font-black text-[#fbbf24] font-headline">₩ {result.refundEstimate?.toLocaleString()}</h2>
+                        <h2 id="step7-refund-counter" className="text-7xl font-black text-[#fbbf24] font-headline">₩ <RefundCounter value={result.refundEstimate || 0} /></h2>
                       </div>
                       <div className="max-w-md mx-auto space-y-4 text-left p-8 bg-slate-50 rounded-3xl border border-slate-100 shadow-inner">
                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">{t('연도별 상세 내역 (적격 여부 검증 완료)')}</p>
@@ -3891,15 +4058,29 @@ export default function EstimatePage() {
                     </div>
 
                     <div className="space-y-3">
-                      <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('예금주명')}</Label>
+                      <div className="flex justify-between items-center">
+                        <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('예금주명')}</Label>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setStep(4);
+                          }}
+                          className="text-xs font-bold text-primary hover:underline"
+                        >
+                          {t('본인인증 다시 하기')} &rarr;
+                        </button>
+                      </div>
                       <input
                         id="step8-holder-input"
                         placeholder={t('계좌의 예금주 성함을 입력하세요')}
                         value={formData.accountHolder}
-                        onChange={(e) => setFormData({ ...formData, accountHolder: e.target.value })}
+                        readOnly
                         disabled={is1WonSent}
-                        className="h-16 rounded-2xl font-bold bg-slate-50 border-none px-6 text-lg w-full outline-none focus:ring-2 focus:ring-primary/20 disabled:opacity-50"
+                        className="h-16 rounded-2xl font-bold bg-slate-100 border-none px-6 text-lg w-full outline-none cursor-not-allowed opacity-80"
                       />
+                      <p className="text-xs font-bold text-slate-400 ml-1">
+                        {t('* 타인 계좌 무단 도용 방지를 위해 본인인증 성명({name})과 동일한 예금주의 계좌만 등록 가능합니다.', { name: formData.authName || formData.officialName || '' })}
+                      </p>
                     </div>
 
                     {/* 1원 송금 및 인증 인터페이스 */}
@@ -3914,25 +4095,25 @@ export default function EstimatePage() {
                           {is1WonLoading ? <Loader2 className="animate-spin h-6 w-6" /> : t('환급계좌 유효성 검증 (1원 송금받기)')}
                         </Button>
                       ) : (
-                        <div className="space-y-6 p-8 bg-slate-50 rounded-3xl border border-slate-100 shadow-inner">
+                        <div className="space-y-6 p-5 sm:p-8 bg-slate-50 rounded-3xl border border-slate-100 shadow-inner">
                           {!is1WonVerified ? (
                             <>
                               <div className="space-y-3">
                                 <Label className="text-sm font-black text-slate-700">{t('입금자명 앞 4자리 입력')}</Label>
-                                <div className="flex gap-4">
+                                <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                                   <input
                                     id="step8-1won-code-input"
                                     placeholder={t('예: 이지12')}
                                     maxLength={4}
                                     value={verificationCode}
                                     onChange={(e) => setVerificationCode(e.target.value)}
-                                    className="h-16 flex-1 rounded-2xl font-black bg-white border border-slate-200 px-6 text-lg tracking-wider text-center outline-none focus:ring-2 focus:ring-primary/20"
+                                    className="h-16 w-full sm:flex-1 rounded-2xl font-black bg-white border border-slate-200 px-6 text-lg tracking-wider text-center outline-none focus:ring-2 focus:ring-primary/20"
                                   />
                                   <Button
                                     id="step8-verify-btn"
                                     onClick={handleVerify1Won}
                                     disabled={is1WonLoading || verificationCode.trim().length !== 4}
-                                    className="h-16 px-8 bg-primary text-white font-black rounded-2xl shadow-md"
+                                    className="h-16 w-full sm:w-auto px-8 bg-primary text-white font-black rounded-2xl shadow-md"
                                   >
                                     {is1WonLoading ? <Loader2 className="animate-spin h-5 w-5" /> : t('인증 완료')}
                                   </Button>
@@ -4035,9 +4216,113 @@ export default function EstimatePage() {
                   </div>
 
                   <form onSubmit={handleFinalSubmit} className="space-y-10">
+                    {/* CMS 동의 체크박스 영역 */}
+                    <div className="p-6 bg-slate-50 rounded-3xl border border-slate-200 space-y-4">
+                      <div className="flex items-center gap-3 pb-3 border-b border-slate-200">
+                        <Checkbox
+                          id="cms-consent-all"
+                          checked={cmsConsentAll}
+                          onCheckedChange={(val) => {
+                            const isChecked = !!val;
+                            setCmsConsentAll(isChecked);
+                            setCmsConsent1(isChecked);
+                            setCmsConsent2(isChecked);
+                            setCmsConsent3(isChecked);
+                          }}
+                          className="h-5 w-5 rounded border-slate-300 text-slate-900 focus:ring-slate-300 data-[state=checked]:bg-slate-800 data-[state=checked]:border-slate-800"
+                        />
+                        <label htmlFor="cms-consent-all" className="text-sm font-black text-slate-700 cursor-pointer">
+                          {t('약관 전체 동의')}
+                        </label>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Checkbox
+                              id="cms-consent-1"
+                              checked={cmsConsent1}
+                              onCheckedChange={(val) => {
+                                const isChecked = !!val;
+                                setCmsConsent1(isChecked);
+                                if (!isChecked) setCmsConsentAll(false);
+                                else if (cmsConsent2 && cmsConsent3) setCmsConsentAll(true);
+                              }}
+                              className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-300 data-[state=checked]:bg-slate-800 data-[state=checked]:border-slate-800"
+                            />
+                            <label htmlFor="cms-consent-1" className="text-xs font-bold text-slate-500 cursor-pointer">
+                              <span className="text-slate-400 font-bold mr-1">[필수]</span>
+                              {t('개인정보 수집 및 이용 동의')}
+                            </label>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setCmsModalOpen1(true)}
+                            className="text-xs text-slate-400 hover:text-slate-500 underline font-medium"
+                          >
+                            {t('보기')}
+                          </button>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Checkbox
+                              id="cms-consent-2"
+                              checked={cmsConsent2}
+                              onCheckedChange={(val) => {
+                                const isChecked = !!val;
+                                setCmsConsent2(isChecked);
+                                if (!isChecked) setCmsConsentAll(false);
+                                else if (cmsConsent1 && cmsConsent3) setCmsConsentAll(true);
+                              }}
+                              className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-300 data-[state=checked]:bg-slate-800 data-[state=checked]:border-slate-800"
+                            />
+                            <label htmlFor="cms-consent-2" className="text-xs font-bold text-slate-500 cursor-pointer">
+                              <span className="text-slate-400 font-bold mr-1">[필수]</span>
+                              {t('개인정보 제3자 제공 동의')}
+                            </label>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setCmsModalOpen2(true)}
+                            className="text-xs text-slate-400 hover:text-slate-500 underline font-medium"
+                          >
+                            {t('보기')}
+
+                          </button>
+                        </div>
+
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Checkbox
+                              id="cms-consent-3"
+                              checked={cmsConsent3}
+                              onCheckedChange={(val) => {
+                                const isChecked = !!val;
+                                setCmsConsent3(isChecked);
+                                if (!isChecked) setCmsConsentAll(false);
+                                else if (cmsConsent1 && cmsConsent2) setCmsConsentAll(true);
+                              }}
+                              className="h-4 w-4 rounded border-slate-300 text-slate-900 focus:ring-slate-300 data-[state=checked]:bg-slate-800 data-[state=checked]:border-slate-800"
+                            />
+                            <label htmlFor="cms-consent-3" className="text-xs font-bold text-slate-500 cursor-pointer">
+                              <span className="text-slate-400 font-bold mr-1">[필수]</span>
+                              {t('금융거래정보 제공 및 CMS 자동이체 출금 동의')}
+                            </label>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={() => setCmsModalOpen3(true)}
+                            className="text-xs text-slate-400 hover:text-slate-500 underline font-medium"
+                          >
+                            {t('보기')}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                     <div className="space-y-4">
                       <Label className="text-xl font-black text-slate-900">{t('전자서명 (세무 대리 수임 동의)')}</Label>
-                      <div className="border-2 border-dashed border-slate-200 rounded-[2.5rem] p-6 bg-white shadow-inner">
+                      <div className={cn("border-2 border-dashed border-slate-200 rounded-[2.5rem] p-6 bg-white shadow-inner transition-all duration-300", (!cmsConsent1 || !cmsConsent2 || !cmsConsent3) ? "opacity-40 pointer-events-none" : "opacity-100")}>
                         <canvas
                           id="step9-signature-canvas"
                           ref={signatureCanvasRef}
@@ -4493,6 +4778,328 @@ export default function EstimatePage() {
       <KakaoGuideModal isOpen={isKakaoGuideOpen} onClose={() => setIsKakaoGuideOpen(false)} mode="registration" />
       <KakaoGuideModal isOpen={isKakaoAuthGuideOpen} onClose={() => setIsKakaoAuthGuideOpen(false)} mode="full" />
       <HanaGuideModal isOpen={isHanaGuideOpen} onClose={() => setIsHanaGuideOpen(false)} mode={hanaGuideMode} />
+
+      {/* 개인정보 수집 및 이용 동의 모달 */}
+      <Dialog open={piConsentOpen} onOpenChange={setPiConsentOpen}>
+        <DialogContent className="max-w-[480px] rounded-[2.5rem] p-6 sm:p-8 border-none shadow-2xl bg-white overflow-hidden text-slate-900 z-[160]">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-primary" />
+          <DialogHeader className="space-y-3 pt-2">
+            <DialogTitle className="text-xl font-black text-slate-900">
+              {t("개인정보 수집 및 이용 동의")}
+            </DialogTitle>
+            <DialogDescription className="text-slate-400 font-bold text-xs">
+              {t("환급 대상 여부 조회를 위해 아래와 같이 개인정보를 수집 및 이용합니다.")}
+            </DialogDescription>
+          </DialogHeader>
+
+          <ScrollArea className="max-h-[300px] my-6 pr-4 text-xs text-slate-600 font-medium leading-relaxed space-y-4">
+            <div className="space-y-4">
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">1. {t("수집 및 이용 목적")}</p>
+                <p>{t("소득세 경정청구 및 중소기업 취업자 감면 대상 여부 분석, 국세청 홈택스 자료 조회 연동")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">2. {t("수집하는 개인정보 항목")}</p>
+                <p>{t("성명, 외국인등록번호, 휴대전화번호, 통신사 정보")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">3. {t("보유 및 이용 기간")}</p>
+                <p className="font-bold text-red-500">{t("세무 분석 완료 후 즉시 파기 (단, 법령에 따른 보존 의무 발생 시 예외)")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">4. {t("동의 거부 권리 고지")}</p>
+                <p>{t("이용자는 본 개인정보 수집 및 이용 동의를 거부할 권리가 있으며, 동의 거부 시 서비스 이용이 제한될 수 있습니다.")}</p>
+              </div>
+            </div>
+          </ScrollArea>
+
+          <DialogFooter>
+            <Button
+              onClick={() => setPiConsentOpen(false)}
+              className="w-full h-14 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800"
+            >
+              {t("확인")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* CMS 개인정보 수집 및 이용 동의 모달 */}
+      <Dialog open={cmsModalOpen1} onOpenChange={setCmsModalOpen1}>
+        <DialogContent className="max-w-[480px] rounded-[2.5rem] p-6 sm:p-8 border-none shadow-2xl bg-white overflow-hidden text-slate-900 z-[160]">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-primary" />
+          <DialogHeader className="space-y-3 pt-2">
+            <DialogTitle className="text-xl font-black text-slate-900">
+              {t("개인정보 수집 및 이용 동의")}
+            </DialogTitle>
+            <DialogDescription className="text-slate-400 font-bold text-xs">
+              {t("환급 대상 여부 조회를 위해 아래와 같이 개인정보를 수집 및 이용합니다.")}
+            </DialogDescription>
+          </DialogHeader>
+
+          <ScrollArea className="max-h-[300px] my-6 pr-4 text-xs text-slate-600 font-medium leading-relaxed space-y-4">
+            <div className="space-y-4">
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">1. {t("수집 및 이용 목적")}</p>
+                <p>{t("소득세 경정청구 및 중소기업 취업자 감면 대상 여부 분석, 국세청 홈택스 자료 조회 연동")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">2. {t("수집하는 개인정보 항목")}</p>
+                <p>{t("성명, 외국인등록번호, 휴대전화번호, 통신사 정보")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">3. {t("보유 및 이용 기간")}</p>
+                <p className="font-bold text-red-500">{t("세무 분석 완료 후 즉시 파기 (단, 법령에 따른 보존 의무 발생 시 예외)")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">4. {t("동의 거부 권리 고지")}</p>
+                <p>{t("이용자는 본 개인정보 수집 및 이용 동의를 거부할 권리가 있으며, 동의 거부 시 서비스 이용이 제한될 수 있습니다.")}</p>
+              </div>
+            </div>
+          </ScrollArea>
+
+          <DialogFooter>
+            <Button
+              onClick={() => setCmsModalOpen1(false)}
+              className="w-full h-14 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800"
+            >
+              {t("확인")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* CMS 개인정보 제3자 제공 동의 모달 */}
+      <Dialog open={cmsModalOpen2} onOpenChange={setCmsModalOpen2}>
+        <DialogContent className="max-w-[480px] rounded-[2.5rem] p-6 sm:p-8 border-none shadow-2xl bg-white overflow-hidden text-slate-900 z-[160]">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-primary" />
+          <DialogHeader className="space-y-3 pt-2">
+            <DialogTitle className="text-xl font-black text-slate-900">
+              {t("개인정보 제3자 제공 동의")}
+            </DialogTitle>
+          </DialogHeader>
+
+          <ScrollArea className="max-h-[300px] my-6 pr-4 text-xs text-slate-600 font-medium leading-relaxed space-y-4">
+            <div className="space-y-4">
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="text-slate-500 mb-2">{t("오직 CMS 자동이체 등록 및 출금 실행 목적을 위해 아래와 같이 개인정보를 제3자에게 제공합니다.")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">1. {t("제공받는 자")}</p>
+                <p>{t("금융결제원, 효성CMS, 계좌 개설 금융기관(은행 및 카드사)")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">2. {t("제공받는 자의 이용 목적")}</p>
+                <p>{t("CMS 자동이체 등록, 유효성 검증 및 플랫폼 서비스 이용료(수수료) 자동 출금 실행")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">3. {t("제공하는 개인정보 항목")}</p>
+                <p>{t("성명, 생년월일/외국인등록번호, 은행명, 계좌번호, 휴대전화번호")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">4. {t("제공받는 자의 보유 및 이용 기간")}</p>
+                <p className="font-bold text-red-500">{t("CMS 자동이체 등록 동의 해지 시까지 (단, 관계법령에 따른 보존 의무 발생 시 예외)")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">5. {t("동의 거부 권리 고지")}</p>
+                <p>{t("이용자는 본 개인정보 제3자 제공 동의를 거부할 권리가 있으며, 동의 거부 시 자동이체 등록 및 서비스 최종 신청이 불가능합니다.")}</p>
+              </div>
+            </div>
+          </ScrollArea>
+
+          <DialogFooter>
+            <Button
+              onClick={() => setCmsModalOpen2(false)}
+              className="w-full h-14 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800"
+            >
+              {t("확인")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* CMS 금융거래정보 제공 동의 모달 */}
+      <Dialog open={cmsModalOpen3} onOpenChange={setCmsModalOpen3}>
+        <DialogContent className="max-w-[480px] rounded-[2.5rem] p-6 sm:p-8 border-none shadow-2xl bg-white overflow-hidden text-slate-900 z-[160]">
+          <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-500 to-primary" />
+          <DialogHeader className="space-y-3 pt-2">
+            <DialogTitle className="text-xl font-black text-slate-900">
+              {t("금융거래정보 제공 및 CMS 자동이체 출금 동의")}
+            </DialogTitle>
+          </DialogHeader>
+
+          <ScrollArea className="max-h-[300px] my-6 pr-4 text-xs text-slate-600 font-medium leading-relaxed space-y-4">
+            <div className="space-y-4">
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="text-slate-500 mb-2">{t("CMS 자동이체를 통한 플랫폼 서비스 이용료(수수료) 출금 신규 신청 및 해지를 위해 아래와 같이 출금에 동의합니다.")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100 text-slate-600">
+                <p className="font-black text-slate-800 mb-2">1. {t("출금 신청 정보")}</p>
+                <div className="pl-4 space-y-1">
+                  <p>• {t("이용기관")}: {t("더운컴퍼니")}</p>
+                  <p>• {t("출금 신청 금액")}: {t("국세청 실지급 환급액의 25% 상당액 (미환급 시 0원)")} {refundFee > 0 && `(₩${refundFee.toLocaleString()})`}</p>
+                  <p>• {t("1회 최대 출금 한도")}: {refundFee > 0 ? `₩${refundFee.toLocaleString()}` : t("국세청 실지급 환급액의 25% 상당액")} {t("한도 (실제 청구서 기준)")}</p>
+                  <p>• {t("출금 계좌")}: {t("등록된 본인 지정 계좌")}</p>
+                </div>
+                <p className="mt-2 text-[11px] text-slate-400">
+                  {t("* 본 출금 한도는 법적 등록을 위한 최대 상한선일 뿐이며, 환급이 성공하기 전까지는 0원도 출금되지 않으며 오직 확정된 서비스 이용료(25%)만 단 1회 출금됩니다.")}
+                </p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">2. {t("금융거래정보 제공 동의")}</p>
+                <p>{t("본인 계좌로부터 자동이체 출금을 이행하기 위해, 예금주 성명, 생년월일/외국인등록번호, 금융기관명, 계좌번호 등의 정보가 금융결제원, 효성CMS, 은행/카드사에 제공되는 것에 동의합니다.")}</p>
+              </div>
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                <p className="font-black text-slate-800 mb-2">3. {t("출금 동의 사항")}</p>
+                <p>{t("본 동의는 이용자가 직접 서명한 내용에 기반하며, 추후 국세청 환급금 입금이 확인되는 시점에 별도의 추가 통지 없이 등록된 계좌에서 인출(출금)하는 것에 명시적으로 동의합니다.")}</p>
+              </div>
+            </div>
+          </ScrollArea>
+
+          <DialogFooter>
+            <Button
+              onClick={() => setCmsModalOpen3(false)}
+              className="w-full h-14 bg-slate-900 text-white font-black rounded-2xl hover:bg-slate-800"
+            >
+              {t("확인")}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Floating Developer Control Panel */}
+      <div className="fixed bottom-6 right-6 z-[9999] font-sans">
+        {!devPanelOpen ? (
+          <button
+            onClick={() => setDevPanelOpen(true)}
+            className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs sm:text-sm px-4 py-3 rounded-full shadow-2xl border border-slate-700/50 hover:scale-105 active:scale-95 transition-all duration-200"
+          >
+            <Sliders className="h-4 w-4 text-emerald-400 animate-pulse" />
+            <span>🛠️ 시뮬레이션 제어판</span>
+          </button>
+        ) : (
+          <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/50 w-[360px] sm:w-[380px] rounded-3xl p-6 shadow-2xl text-slate-100 flex flex-col gap-4 animate-in slide-in-from-bottom-5 duration-300">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+              <div className="flex items-center gap-2">
+                <Sliders className="h-5 w-5 text-emerald-400" />
+                <span className="font-black text-sm tracking-wide text-slate-200">DEV SIMULATOR PANEL</span>
+              </div>
+              <button
+                onClick={() => setDevPanelOpen(false)}
+                className="text-slate-400 hover:text-white transition-colors"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Force Jump to Step 9 */}
+              <div>
+                <Button
+                  onClick={() => {
+                    setFormData({
+                      officialName: "홍길동 (GILDONG HONG)",
+                      authName: "홍길동",
+                      registrationNumber: "900101-5123456",
+                      issueDate: "2020-01-01",
+                      phone: "010-1234-5678",
+                      carrier: "SKT",
+                      otpCode: "123456",
+                      bankName: "KB국민은행",
+                      accountNumber: "123-456789-01-012",
+                      cardNumber: "1234-5678-1234-5678",
+                      expiryDate: "12/28",
+                      cvc: "123",
+                      depositorName: "홍길동",
+                      accountHolder: "홍길동"
+                    });
+                    setResult({
+                      refundEstimate: 2350000,
+                      resIncomeTax: 2136363,
+                      resCompanyIdentityNo1: "123-45-67890",
+                      resAttrYear: "2024",
+                      resIncomeSpecList: "[]",
+                      caseType: "D",
+                      details: [
+                        { year: "2024", companyName: "(주)가상상사", incomeAmount: 30000000, taxAmount: 1500000, deductedAmount: 1500000, isEligible: true }
+                      ]
+                    });
+                    setIs1WonVerified(true);
+                    setIsSimulation(true);
+                    setCmsConsent1(true);
+                    setCmsConsent2(true);
+                    setCmsConsent3(true);
+                    setCmsConsentAll(true);
+                    setStep(9);
+                    saveProgress(9);
+                    toast({
+                      title: "9단계 강제 이동 완료",
+                      description: "0.1초 만에 모크 데이터 주입 및 CMS 동의 테스트 화면으로 이동했습니다."
+                    });
+                  }}
+                  className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
+                >
+                  <Sparkles className="h-4 w-4" />
+                  <span>환급 9단계 즉시 이동 (CMS 테스트)</span>
+                </Button>
+              </div>
+
+              {/* Step pills */}
+              <div className="space-y-2">
+                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">단계별 빠른 이동</label>
+                <div className="grid grid-cols-6 gap-1.5 text-center">
+                  {[0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((s) => (
+                    <button
+                      key={s}
+                      onClick={() => {
+                        setIsSimulation(true);
+                        setStep(s);
+                        saveProgress(s);
+                        toast({
+                          title: `Step ${s} 이동`,
+                          description: `수동으로 ${s}단계 화면으로 변경되었습니다.`
+                        });
+                      }}
+                      className={cn(
+                        "h-8 text-xs font-black rounded-lg transition-colors",
+                        step === s
+                          ? "bg-primary text-white"
+                          : "bg-slate-800 hover:bg-slate-700 text-slate-300"
+                      )}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* isSimulation Toggle */}
+              <div className="flex items-center justify-between bg-slate-800/50 p-3 rounded-2xl border border-slate-800">
+                <div className="flex flex-col">
+                  <span className="text-xs font-black text-slate-200">시뮬레이션 모드 (isSimulation)</span>
+                  <span className="text-[10px] text-slate-400">활성화 시 실명/본인인증을 모킹합니다.</span>
+                </div>
+                <Checkbox
+                  id="dev-sim-toggle"
+                  checked={isSimulation}
+                  onCheckedChange={(val) => {
+                    setIsSimulation(!!val);
+                    toast({
+                      title: `시뮬레이션 모드 ${!!val ? "활성화" : "비활성화"}`,
+                      description: `인증 및 API 호출이 ${!!val ? "가상 시뮬레이션" : "실제 API"}으로 동작합니다.`
+                    });
+                  }}
+                  className="h-5 w-5 border-slate-600 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
+                />
+              </div>
+
+              <div className="text-[10px] text-slate-500 leading-normal text-center pt-2 border-t border-slate-800">
+                인증 프로세스 우회 및 최종 9단계 CMS 서명 동의서 규제 준수(보기 팝업, 서명 가두기 및 전송 기능) 테스트용 도구입니다.
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
 
       {/* Hometax Find ID Modal */}
       <Dialog open={findIdOpen} onOpenChange={setFindIdOpen}>

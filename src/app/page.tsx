@@ -333,6 +333,18 @@ export default function HomePage() {
         <section className="py-16 bg-slate-50/50 relative overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-r from-primary/5 to-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
           <div className="container mx-auto px-4 max-w-7xl relative z-10">
+            
+            {/* 안심 보장 타이틀 & 부타이틀 */}
+            <div className="text-center space-y-4 mb-16 max-w-4xl mx-auto">
+              <h2 
+                className="text-3xl md:text-5xl font-black text-slate-900 leading-tight tracking-tight break-keep"
+                dangerouslySetInnerHTML={{ __html: t('수수료 선결제 0원, 오직 환급 성공 시에만 정산받는 3대 안심 보장제도') }}
+              />
+              <p className="text-lg md:text-xl text-slate-500 font-bold leading-relaxed break-keep">
+                {t('0.1초 만에 조회하고, 환급금이 통장에 안전하게 입금된 것을 직접 확인한 후에 정산하세요.')}
+              </p>
+            </div>
+
             <div className="grid md:grid-cols-3 gap-8">
               {/* 카드 1 */}
               <Card className="premium-card rounded-[2.5rem] border border-slate-200/50 p-8 space-y-6 bg-gradient-to-br from-slate-100/95 via-slate-50/40 to-slate-200/40 shadow-[0_12px_24px_-10px_rgba(0,0,0,0.03)] hover:-translate-y-1 hover:border-slate-300/80 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.08)] transition-all duration-300 cursor-pointer group">
