@@ -2846,10 +2846,10 @@ export default function EstimatePage() {
                       </div>
                       <div className="space-y-1">
                         <h4 className="text-sm sm:text-[15px] font-black text-slate-900 text-left">
-                          {t('2️⃣ [가장 중요] 홈택스 1분 가입 또는 로그인')} <span className="text-[10px] sm:text-xs text-emerald-600 font-black ml-1">{t('(Step 4~5)')}</span>
+                          {t('2️⃣ [가장 중요] 본인 인증서 설치 및 인증')} <span className="text-[10px] sm:text-xs text-emerald-600 font-black ml-1">{t('(Step 4~5)')}</span>
                         </h4>
                         <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
-                          {t('한국 국세청(NTS) 전산망과 안전하게 연결하기 위해 홈택스 아이디/비밀번호로 로그인을 완료합니다. (아이디가 없으시면 1분 만에 바로 가입하실 수 있습니다.)')}
+                          {t('한국 국세청(NTS) 전산망과 안전하게 연결하기 위해 카카오톡, PASS, 하나은행 등의 인증서로 본인 인증을 완료합니다. (인증서가 없으시면 1분 만에 발급받는 법을 친절히 안내해 드립니다.)')}
                         </p>
                       </div>
                     </div>
@@ -2861,10 +2861,10 @@ export default function EstimatePage() {
                       </div>
                       <div className="space-y-1">
                         <h4 className="text-sm sm:text-[15px] font-black text-slate-900 text-left">
-                          {t('3️⃣ 정확한 환급금 확인 및 후불 정산 등록')} <span className="text-[10px] sm:text-xs text-blue-600 font-black ml-1">{t('(Step 6~8)')}</span>
+                          {t('3️⃣ 정확한 환급금 확인 및 결제')} <span className="text-[10px] sm:text-xs text-blue-600 font-black ml-1">{t('(Step 6~8)')}</span>
                         </h4>
                         <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
-                          {t('최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 즉시 확인합니다. 환급금이 확인되면, 국세청에서 고객님 통장으로 환급금이 입금된 후에만 출금되는 후불제 정산(플랫폼 이용료 25%) 등록을 진행합니다. 환급 거절/실패 시 청구되는 금액은 0원입니다.')}
+                          {t('최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 즉시 확인합니다. 환급금이 있다면, 세무사 수임료(25%) 결제를 진행합니다. (환급액이 없으면 결제하신 수수료는 100% 즉시 환불됩니다.)')}
                         </p>
                       </div>
                     </div>
@@ -2879,7 +2879,7 @@ export default function EstimatePage() {
                           {t('4️⃣ 계약서 서명 및 입금 신청')} <span className="text-[10px] sm:text-xs text-amber-600 font-black ml-1">{t('(Step 9)')}</span>
                         </h4>
                         <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
-                          {t('후불 정산 등록 완료 후, 모바일 서명을 통해 정식 세무대리 수임계약서가 투명하고 안전하게 작성되며 환급금을 입금받으실 본인 통장 계좌번호를 입력합니다. 이후 약 1~2개월 뒤 한국 국세청에서 고객님의 통장으로 환급금을 직접 송금해 드립니다.')}
+                          {t('결제 완료 후, 모바일 서명을 통해 정식 세무대리 수임계약서가 투명하고 안전하게 작성되며 환급금을 입금받으실 본인 통장 계좌번호를 입력합니다. 이후 약 1~2개월 뒤 한국 국세청에서 고객님의 통장으로 환급금을 직접 송금해 드립니다.')}
                         </p>
                       </div>
                     </div>
@@ -3150,30 +3150,7 @@ export default function EstimatePage() {
                         <input id="step2-reg-input" value={formData.registrationNumber} maxLength={13} onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })} className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg w-full outline-none focus:ring-2 focus:ring-primary/20" />
                       </div>
                     </div>
-                    {/* 개인정보 수집 및 이용 동의 (Step 2 필수 동의) */}
-                    <div className="flex items-center justify-between p-3 bg-slate-50/50 rounded-2xl border border-slate-100/50 mt-1">
-                      <div className="flex items-center gap-3">
-                        <Checkbox
-                          id="pi-consent-checkbox"
-                          checked={piConsent}
-                          onCheckedChange={(val) => setPiConsent(!!val)}
-                          className="h-4 w-4 rounded border-slate-200 text-slate-500 focus:ring-slate-200 data-[state=checked]:bg-slate-400 data-[state=checked]:border-slate-400"
-                        />
-                        <label htmlFor="pi-consent-checkbox" className="text-xs font-bold text-slate-400 cursor-pointer">
-                          <span className="text-slate-400 font-bold mr-1">[필수]</span>
-                          {t('개인정보 수집 및 이용 동의')}
-                        </label>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setPiConsentOpen(true)}
-                        className="text-xs text-slate-400 hover:text-slate-500 underline font-medium"
-                      >
-                        {t('보기')}
-                      </button>
-                    </div>
-
-                    <Button id="step2-submit-btn" type="submit" className="w-full h-16 sm:h-20 bg-slate-900 text-lg sm:text-xl font-black rounded-2xl sm:rounded-3xl shadow-2xl" disabled={loading || !piConsent}>{t('다음 단계로 이동')}</Button>
+                    <Button id="step2-submit-btn" type="submit" className="w-full h-16 sm:h-20 bg-slate-900 text-lg sm:text-xl font-black rounded-2xl sm:rounded-3xl shadow-2xl" disabled={loading}>{t('다음 단계로 이동')}</Button>
                   </form>
                 </CardContent>
               </Card>
@@ -3407,208 +3384,432 @@ export default function EstimatePage() {
             )}
 
             {step === 4 && (
-              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-white text-slate-900">
-                <CardHeader id="step4-top-anchor" className="text-center py-6 sm:py-10 bg-slate-50/50 relative border-b border-slate-100">
+              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
+                {hasCertificate === null ? (
+                  <>
+                    <CardHeader className="text-center py-4 sm:py-12 bg-slate-50/50 relative">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => { setStep(3); saveProgress(3); }}
+                        className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        {t('이전')}
+                      </Button>
+                      <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-primary rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg">
+                        <UserCheck className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+                      </div>
+                      <CardTitle className="text-2xl sm:text-3xl font-black text-slate-900 break-keep">
+                        {t('인증서가 스마트폰에 설치되어 있나요?')}
+                      </CardTitle>
+                      <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm mt-4">
+                        <div>
+                          {t('국세청 조회를 위해서는 본인 명의의 인증서가 반드시 필요합니다. 현재 아래 인증서 중 가입된 인증서가 있으신가요?')}
+                        </div>
+                        <div className="mt-4 p-4 bg-white/80 backdrop-blur rounded-2xl border border-slate-100 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 shadow-sm">
+                          <span className="text-[11px] sm:text-xs font-black text-slate-400 uppercase tracking-wider shrink-0">{t('💡 지원하는 인증서 종류')}</span>
+                          <div className="flex gap-2.5 flex-wrap justify-center">
+                            <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 text-[11px] sm:text-xs font-bold text-slate-700">
+                              <Image src="/images/logo/hana_1q.png" alt="Hana" width={14} height={14} className="object-contain" />
+                              {t('하나은행')}
+                            </div>
+                            <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 text-[11px] sm:text-xs font-bold text-slate-700">
+                              <Image src="/images/logo/pass.png" alt="PASS" width={14} height={14} className="object-contain" />
+                              {t('PASS')}
+                            </div>
+                            <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 text-[11px] sm:text-xs font-bold text-slate-700">
+                              <Image src="/images/logo/kakao.png" alt="Kakao" width={14} height={14} className="object-contain" />
+                              {t('카카오톡')}
+                            </div>
+                          </div>
+                        </div>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-6">
+                      <div className="grid grid-cols-1 gap-4">
+                        <div
+                          id="step4-cert-yes" onClick={() => setHasCertificate(true)}
+                          className="p-6 rounded-[2rem] border-2 border-slate-100 hover:border-primary/50 cursor-pointer transition-all flex items-center gap-5 bg-white hover:bg-slate-50/50 shadow-sm hover:shadow"
+                        >
+                          <div className="h-14 w-14 bg-emerald-50 rounded-2xl flex items-center justify-center shrink-0">
+                            <CheckCircle2 className="h-8 w-8 text-emerald-500" />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <h4 className="font-black text-lg text-slate-950">
+                              {t('네, 이미 가입된 인증서가 있습니다.')}
+                            </h4>
+                            <p className="text-sm text-slate-500 font-medium mt-1">
+                              {t('하나은행, PASS, 카카오톡 인증서 중 하나가 이미 휴대폰에 설치되어 있습니다.')}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div
+                          id="step4-cert-no" onClick={() => setHasCertificate(false)}
+                          className="p-6 rounded-[2rem] border-2 border-slate-100 hover:border-amber-500/50 cursor-pointer transition-all flex items-center gap-5 bg-white hover:bg-slate-50/50 shadow-sm hover:shadow"
+                        >
+                          <div className="h-14 w-14 bg-amber-50 rounded-2xl flex items-center justify-center shrink-0">
+                            <AlertCircle className="h-8 w-8 text-amber-500 animate-pulse" />
+                          </div>
+                          <div className="flex-1 text-left">
+                            <h4 className="font-black text-lg text-slate-950">
+                              {t('아니오, 인증서가 없습니다 (설치/발급 필요)')}
+                            </h4>
+                            <p className="text-sm text-slate-500 font-medium mt-1">
+                              {t('인증서가 없으시다면, 먼저 설치 및 발급을 진행하셔야 환급 조회가 가능합니다.')}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </>
+                ) : hasCertificate === false ? (
+                  <>
+                    <CardHeader className="text-center py-4 sm:py-12 bg-slate-50/50 relative">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setHasCertificate(null)}
+                        className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        {t('이전')}
+                      </Button>
+                      <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-amber-500 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg">
+                        <Download className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
+                      </div>
+                      <CardTitle className="text-2xl sm:text-3xl font-black text-slate-900 break-keep">
+                        {t('인증서가 없으신가요? (추천)')}
+                      </CardTitle>
+                      <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm">
+                        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-left">
+                          <p className="text-[12px] sm:text-[13px] font-black text-amber-900 leading-relaxed flex items-start gap-2">
+                            <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
+                            {t('국세청 조회를 하려면 아래 인증서 중 하나가 반드시 설치되어 있어야 합니다. 안내에 따라 설치 및 발급을 완료해 주세요.')}
+                          </p>
+                        </div>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8">
+                      {/* Selection Tabs in Guide Mode */}
+                      <div className="grid grid-cols-3 gap-2">
+                        {/* Hana */}
+                        <div
+                          onClick={() => setAuthMethod('hana')}
+                          className={cn(
+                            "p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2",
+                            authMethod === 'hana' ? "bg-emerald-50 border-[#008485]" : "bg-white border-slate-100 hover:border-slate-200"
+                          )}
+                        >
+                          <Image src="/images/logo/hana_1q.png" alt="Hana" width={32} height={32} className="object-contain" />
+                          <span className={cn("text-xs font-black", authMethod === 'hana' ? "text-[#008485]" : "text-slate-600")}>{t('하나은행')}</span>
+                        </div>
+                        {/* PASS */}
+                        <div
+                          onClick={() => setAuthMethod('app')}
+                          className={cn(
+                            "p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2",
+                            authMethod === 'app' ? "bg-red-50 border-red-500" : "bg-white border-slate-100 hover:border-slate-200"
+                          )}
+                        >
+                          <Image src="/images/logo/pass.png" alt="PASS" width={32} height={32} className="object-contain" />
+                          <span className={cn("text-xs font-black", authMethod === 'app' ? "text-red-700" : "text-slate-600")}>{t('PASS')}</span>
+                        </div>
+                        {/* Kakao */}
+                        <div
+                          onClick={() => setAuthMethod('kakao')}
+                          className={cn(
+                            "p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2",
+                            authMethod === 'kakao' ? "bg-yellow-50/50 border-[#FEE500]" : "bg-white border-slate-100 hover:border-slate-200"
+                          )}
+                        >
+                          <Image src="/images/logo/kakao.png" alt="Kakao" width={32} height={32} className="object-contain" />
+                          <span className={cn("text-xs font-black", authMethod === 'kakao' ? "text-[#191919]" : "text-slate-600")}>{t('카카오톡')}</span>
+                        </div>
+                      </div>
+
+                      {/* Guide Component */}
+                      {authMethod && (
+                        <div className="mt-2 animate-in fade-in slide-in-from-top-4 duration-500">
+                          <EmbeddedAuthGuide
+                            authMethod={authMethod}
+                            mode="registration"
+                            onClick={() => {
+                              if (authMethod === 'hana') {
+                                setHanaGuideMode('full');
+                                setIsHanaGuideOpen(true);
+                              } else if (authMethod === 'kakao') {
+                                setIsKakaoGuideOpen(true);
+                              } else {
+                                setIsGuideOpen(true);
+                              }
+                            }}
+                          />
+                        </div>
+                      )}
+
+                      <Button
+                        onClick={() => setHasCertificate(true)}
+                        className="w-full h-20 bg-primary text-xl sm:text-2xl font-black rounded-3xl shadow-xl shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all"
+                      >
+                        {t('인증서 설치 및 가입을 완료했습니다')}
+                      </Button>
+
+                      <div className="text-center">
+                        <button
+                          onClick={() => setHasCertificate(true)}
+                          className="text-sm font-bold text-slate-400 hover:text-slate-600 underline transition-colors"
+                        >
+                          {t('인증서가 있습니다. 바로 시작하기')}
+                        </button>
+                      </div>
+                    </CardContent>
+                  </>
+                ) : (
+                  <>
+                    <CardHeader className="text-center py-4 sm:py-12 bg-slate-50/50 relative">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => setHasCertificate(null)}
+                        className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
+                      >
+                        <ChevronLeft className="h-4 w-4 mr-1" />
+                        {t('이전')}
+                      </Button>
+                      <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-primary rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg"><UserCheck className="h-8 w-8 sm:h-10 sm:w-10 text-white" /></div>
+                      <CardTitle className="text-2xl sm:text-3xl font-black text-slate-900 break-keep">{t('Step 4: 인증 방식 선택')}</CardTitle>
+                      <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm">
+                        {t('가장 편리한 방법으로 본인을 인증해 주세요.')}
+                        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
+                          <p className="text-[12px] sm:text-[13px] font-black text-amber-900 leading-relaxed text-left flex items-start gap-2">
+                            <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
+                            {t('한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.')}
+                          </p>
+                        </div>
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8">
+                      {/* Selection Cards (Middle of CardContent) */}
+                      <div className="grid grid-cols-1 gap-4">
+                        {/* Hana Bank Card */}
+                        <div
+                          id="step4-method-hana" onClick={() => setAuthMethod('hana')}
+                          className={cn(
+                            "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
+                            authMethod === 'hana' ? "bg-emerald-50 border-[#008485] shadow-lg shadow-emerald-500/10" : "bg-white border-slate-100 hover:border-slate-200"
+                          )}
+                        >
+                          {authMethod === 'hana' && (
+                            <div className="absolute top-0 right-0 p-1 px-3 bg-[#008485] text-white text-[10px] font-black rounded-bl-xl uppercase">
+                              {t('외국인 추천')}
+                            </div>
+                          )}
+                          <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0", authMethod === 'hana' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
+                            <Image src="/images/logo/hana_1q.png" alt="Hana" width={40} height={40} className="w-full h-full object-contain" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between items-center mb-1">
+                              <h4 className={cn("font-black text-lg", authMethod === 'hana' ? "text-[#008485]" : "text-slate-900")}>{t('하나은행 인증서')}</h4>
+                              {authMethod === 'hana' && <CheckCircle2 className="h-5 w-5 text-[#008485]" />}
+                            </div>
+                            <p className="text-sm text-slate-500 font-medium">{t("하나은행 앱이 있다면 가장 간편해요")}</p>
+                          </div>
+                        </div>
+
+                        {/* PASS Card */}
+                        <div
+                          id="step4-method-pass" onClick={() => setAuthMethod('app')}
+                          className={cn(
+                            "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
+                            authMethod === 'app' ? "bg-red-50 border-red-500 shadow-lg shadow-red-500/10" : "bg-white border-slate-100 hover:border-slate-200"
+                          )}
+                        >
+                          <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0", authMethod === 'app' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
+                            <Image src="/images/logo/pass.png" alt="PASS" width={40} height={40} className="w-full h-full object-contain" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between items-center mb-1">
+                              <h4 className={cn("font-black text-lg", authMethod === 'app' ? "text-red-700" : "text-slate-900")}>{t('PASS 앱 설치 유저')}</h4>
+                              {authMethod === 'app' && <CheckCircle2 className="h-5 w-5 text-red-600" />}
+                            </div>
+                            <p className="text-sm text-slate-500 font-medium">{t("SKT, KT, LG 유저 휴대폰인증")}</p>
+                          </div>
+                        </div>
+
+                        {/* Kakao Card */}
+                        <div
+                          id="step4-method-kakao" onClick={() => setAuthMethod('kakao')}
+                          className={cn(
+                            "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
+                            authMethod === 'kakao' ? "bg-yellow-50/50 border-[#FEE500] shadow-lg shadow-yellow-500/10" : "bg-white border-slate-100 hover:border-slate-200"
+                          )}
+                        >
+                          <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0", authMethod === 'kakao' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
+                            <Image src="/images/logo/kakao.png" alt="Kakao" width={40} height={40} className="w-full h-full object-contain" />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex justify-between items-center mb-1">
+                              <h4 className={cn("font-black text-lg", authMethod === 'kakao' ? "text-[#191919]" : "text-slate-900")}>{t('카카오톡 인증')}</h4>
+                              {authMethod === 'kakao' && <CheckCircle2 className="h-5 w-5 text-[#191919]" />}
+                            </div>
+                            <p className={cn("text-sm font-medium", authMethod === 'kakao' ? "text-slate-700" : "text-slate-500")}>{t("카카오페이 지갑 이용자 추천")}</p>
+                          </div>
+                        </div>
+                      </div>
+
+                      <Button id="step4-submit-btn" onClick={handleInitiateAuth} className="w-full h-20 bg-primary text-2xl font-black rounded-3xl shadow-xl shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all" disabled={loading}>
+                        {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 요청하기')}
+                      </Button>
+
+                      <div className="text-center">
+                        <button
+                          onClick={() => setHasCertificate(false)}
+                          className="text-sm font-bold text-slate-400 hover:text-slate-600 underline transition-colors"
+                        >
+                          {t('인증서가 없으신가요? (추천)')}
+                        </button>
+                      </div>
+                    </CardContent>
+                  </>
+                )}
+              </Card>
+            )}
+
+            {step === 5 && (
+              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
+                <CardHeader className="text-center py-12 bg-slate-50/50 relative">
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={() => { setStep(3); saveProgress(3); }}
+                    onClick={() => { setStep(4); saveProgress(4); }}
                     className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
                   >
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     {t('이전')}
                   </Button>
-                  <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-white border border-slate-100 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-4 shadow-lg overflow-hidden p-1">
-                    <Image src="/nts-logo.jpg" alt="NTS Logo" width={80} height={80} className="w-full h-full object-contain" />
+                  <div className={cn("mx-auto h-20 w-20 rounded-3xl flex items-center justify-center mb-6 shadow-lg overflow-hidden p-3", authMethod === 'app' ? "bg-white border-2 border-red-500" : authMethod === 'hana' ? "bg-white border-2 border-[#008485]" : "bg-white border-2 border-[#FEE500]")}>
+                    <Image
+                      src={authMethod === 'app' ? "/images/logo/pass.png" : authMethod === 'hana' ? "/images/logo/hana_1q.png" : "/images/logo/kakao.png"}
+                      alt="Auth Method"
+                      width={64}
+                      height={64}
+                      className="w-full h-full object-contain"
+                    />
                   </div>
-                  <CardTitle className="text-2xl sm:text-3xl font-black text-slate-900 break-keep">
-                    {t('한국 국세청 홈택스 본인인증')}
-                  </CardTitle>
-                  <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm mt-2 max-w-md mx-auto break-keep">
-                    {t('세무 환급액 조회를 위해 한국 국세청 간편인증이 필요합니다. 0.1초 만에 조회가 완료됩니다.')}
-                  </CardDescription>
-
-                  {/* Prefix info summary */}
-                  <div className="max-w-md mx-auto mt-6 grid grid-cols-3 gap-2 bg-white/80 backdrop-blur p-4 rounded-2xl border border-slate-200/60 text-left shadow-sm">
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-400 block">{t("이름")}</span>
-                      <span className="text-xs sm:text-sm font-black text-slate-800 truncate block mt-0.5">{formData.authName || formData.officialName}</span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-400 block">{t("외국인번호")}</span>
-                      <span className="text-xs sm:text-sm font-black text-slate-800 truncate block mt-0.5">
-                        {formData.registrationNumber ? formData.registrationNumber.substring(0, 7) + "*******" : ""}
-                      </span>
-                    </div>
-                    <div>
-                      <span className="text-[10px] font-bold text-slate-400 block">{t("연락처")}</span>
-                      <span className="text-xs sm:text-sm font-black text-slate-800 truncate block mt-0.5">{formData.phone}</span>
-                    </div>
-                  </div>
+                  <CardTitle className="text-3xl font-black text-slate-900">{t('Step 5: 인증 확인')}</CardTitle>
                 </CardHeader>
+                <CardContent className="p-4 sm:p-10 space-y-6 sm:space-y-10">
+                  <div className="text-center space-y-8 py-4">
+                    {!authSession ? (
+                      <div className="space-y-6">
+                        <div className="flex flex-col items-center justify-center py-12 gap-6 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
+                          <Loader2 className="h-16 w-16 animate-spin text-primary" />
+                          <div className="space-y-2">
+                            <h2 className="text-2xl font-black text-slate-900">{authMethod === 'app' ? t("PASS 앱 인증 요청 중...") : authMethod === 'hana' ? t("하나은행 인증 요청 중...") : t("카카오톡 인증 요청 중...")}</h2>
+                            <p className="text-slate-500 font-bold">{t("잠시만 기다려 주세요.")}</p>
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <h2 className="text-2xl font-black text-slate-900">{t("휴대폰에서 '확인'을 눌러주세요")}</h2>
+                        <p className="text-lg font-bold text-slate-500 whitespace-pre-line">{authMethod === 'app' ? t("PASS 앱 알림 또는 문자를 확인한 뒤\n아래 버튼을 눌러주세요.") : authMethod === 'hana' ? t("하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.") : t("카카오 지갑 알림을 확인한 뒤\n아래 버튼을 눌러주세요.")}</p>
+                      </div>
+                    )}
+                  </div>
 
-                <CardContent className="p-4 sm:p-10 space-y-6">
-                  {analysisError && (
-                    <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-xs font-bold text-red-600 leading-relaxed break-keep max-w-md mx-auto">
-                      <p className="font-black text-sm mb-1">{analysisError.title}</p>
-                      <p>{analysisError.reason}</p>
-                      <p className="mt-2 text-slate-500 font-bold">{analysisError.solution}</p>
+                  {authSession && (
+                    <div className="space-y-6">
+                      <div className="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-6">
+                        <div className="flex items-center gap-3">
+                          <AlertTriangle className="h-6 w-6 text-amber-500" />
+                          <h4 className="text-lg font-black text-slate-900">{t('인증 알림이 오지 않나요?')}</h4>
+                        </div>
+                        <p className="text-sm font-bold text-slate-500 leading-relaxed">
+                          {t('외국 국적자는 통신사에 등록된 이름이 신분증과 다른 경우가 많습니다. 알림이 오지 않는다면 AI가 제안해 준 추천 성명을 하나씩 시도해 보세요.')}
+                        </p>
+
+                        <div className="pt-2 space-y-4">
+                          {true ? (
+                            <div className="space-y-4">
+                              <EmbeddedAuthGuide authMethod={authMethod} />
+                              {language !== 'ko' && preFilterEstimate >= 400000 && (
+                                <div className="p-4 bg-amber-400/10 rounded-2xl border border-amber-400/20">
+                                  <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">{t('VIP 전용 라이브 헬프')}</p>
+                                  <p className="text-sm font-bold text-slate-600">
+                                    {t('예상 환급액이 {amount}원이나 됩니다! 인증이 막히셨다면 전문 상담원이 즉시 도와드려요.', { amount: preFilterEstimate.toLocaleString() })}
+                                  </p>
+                                </div>
+                              )}
+                              {preFilterEstimate >= 400000 && (
+                                <Button
+                                  onClick={() => setIsVipChatOpen(true)}
+                                  className="w-full h-16 bg-slate-900 text-white hover:bg-slate-800 text-lg font-black rounded-2xl shadow-xl flex items-center justify-center gap-2 group transition-all hover:scale-[1.02]"
+                                >
+                                  <MessageSquare className="h-6 w-6 text-amber-400 animate-bounce" /> {t('실시간 전문 상담원 채팅 시작')}
+                                </Button>
+                              )}
+                            </div>
+                          ) : null}
+
+                          {/* AI OCR 이름 추출 섹션 */}
+                          <div className="p-6 bg-blue-50/50 rounded-3xl border border-blue-100 mt-4 space-y-4">
+                            <div className="flex items-center gap-2">
+                              <Sparkles className="h-5 w-5 text-blue-500" />
+                              <h4 className="font-black text-blue-900">{t('ai_name_check_title')}</h4>
+                            </div>
+                            <p className="text-xs font-bold text-blue-700/70 leading-relaxed">
+                              {t('ai_name_check_desc')}
+                            </p>
+
+                            {!ocrResult ? (
+                              <div className="relative">
+                                <input
+                                  type="file"
+                                  accept="image/*"
+                                  onChange={handleCarrierOcrUpload}
+                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                  disabled={isOcrLoading}
+                                />
+                                <Button
+                                  variant="outline"
+                                  className="w-full h-14 border-blue-200 text-blue-600 hover:bg-blue-100/50 rounded-2xl flex items-center justify-center gap-2"
+                                  disabled={isOcrLoading}
+                                >
+                                  {isOcrLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
+                                  {isOcrLoading ? t('analyzing_screenshot') : t('upload_screenshot')}
+                                </Button>
+                              </div>
+                            ) : (
+                              <div className="p-4 bg-white rounded-2xl border border-blue-200 space-y-4 animate-in zoom-in-95 duration-300">
+                                <div className="text-center space-y-1">
+                                  <p className="text-xs font-black text-blue-400 uppercase tracking-widest">{t('ocr_result_title')}</p>
+                                  <p className="text-xl font-black text-slate-900">"{ocrResult.extractedName}"</p>
+                                </div>
+                                <p className="text-xs font-bold text-slate-500 text-center">
+                                  {ocrResult.recommendation}
+                                </p>
+                                <div className="grid grid-cols-2 gap-2">
+                                  <Button variant="ghost" onClick={() => setOcrResult(null)} className="rounded-xl h-12 font-bold text-slate-400">
+                                    {t('다시 인증')}
+                                  </Button>
+                                  <Button onClick={applyOcrName} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-12 font-black shadow-lg shadow-blue-200">
+                                    {t('use_this_name')}
+                                  </Button>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
 
-                  {/* Easy Auth Method Selector */}
-                  <div className="max-w-md mx-auto space-y-6">
-                    <Label className="text-sm font-black text-slate-500 block mb-2">{t("간편인증 수단 선택")}</Label>
-                    <div className="grid grid-cols-3 gap-3">
-                      {/* PASS App */}
-                      <button
-                        type="button"
-                        onClick={() => setAuthMethod('app')}
-                        className={cn(
-                          "flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all",
-                          authMethod === 'app' ? "border-[#E1000E] bg-red-50/30" : "border-slate-100 hover:border-slate-200 bg-slate-50"
-                        )}
-                      >
-                        <div className="h-10 w-10 bg-white rounded-xl p-1.5 flex items-center justify-center shadow-sm mb-2">
-                          <Image src="/images/logo/pass.png" alt="PASS" width={28} height={28} className="object-contain" />
-                        </div>
-                        <span className="text-xs font-black text-slate-800">PASS</span>
-                      </button>
-
-                      {/* KakaoTalk */}
-                      <button
-                        type="button"
-                        onClick={() => setAuthMethod('kakao')}
-                        className={cn(
-                          "flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all",
-                          authMethod === 'kakao' ? "border-[#FEE500] bg-yellow-50/30" : "border-slate-100 hover:border-slate-200 bg-slate-50"
-                        )}
-                      >
-                        <div className="h-10 w-10 bg-white rounded-xl p-1.5 flex items-center justify-center shadow-sm mb-2">
-                          <Image src="/images/logo/kakao.png" alt="Kakao" width={28} height={28} className="object-contain" />
-                        </div>
-                        <span className="text-xs font-black text-slate-800">{t("카카오톡")}</span>
-                      </button>
-
-                      {/* Hana Bank */}
-                      <button
-                        type="button"
-                        onClick={() => setAuthMethod('hana')}
-                        className={cn(
-                          "flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all",
-                          authMethod === 'hana' ? "border-[#008485] bg-teal-50/30" : "border-slate-100 hover:border-slate-200 bg-slate-50"
-                        )}
-                      >
-                        <div className="h-10 w-10 bg-white rounded-xl p-1.5 flex items-center justify-center shadow-sm mb-2">
-                          <Image src="/images/logo/hana_1q.png" alt="Hana" width={28} height={28} className="object-contain" />
-                        </div>
-                        <span className="text-xs font-black text-slate-800">{t("하나은행")}</span>
-                      </button>
-                    </div>
-
-                    {/* Guide buttons */}
-                    <div className="flex justify-center gap-4 text-xs font-bold text-slate-400">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (authMethod === 'app') setIsGuideOpen(true);
-                          else if (authMethod === 'kakao') setIsKakaoGuideOpen(true);
-                          else if (authMethod === 'hana') { setHanaGuideMode('registration'); setIsHanaGuideOpen(true); }
-                        }}
-                        className="hover:text-slate-600 underline flex items-center gap-1"
-                      >
-                        <HelpCircle className="h-3.5 w-3.5" />
-                        {authMethod === 'app' ? t('PASS 등록 가이드') : authMethod === 'kakao' ? t('카카오톡 인증서 가이드') : t('하나인증서 가이드')}
-                      </button>
-                    </div>
-
-                    {/* Main CTA */}
-                    <Button
-                      id="step4-submit-btn"
-                      onClick={handleInitiateAuth}
-                      disabled={loading}
-                      className="w-full h-18 sm:h-20 bg-primary text-white hover:bg-primary/95 text-lg sm:text-xl font-black rounded-2xl shadow-xl shadow-primary/10 flex items-center justify-center gap-2 mt-6 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                    >
-                      {loading ? <Loader2 className="animate-spin h-6 w-6" /> : <Send className="h-6 w-6" />}
-                      {t("인증 요청 발송 (0.1초 만에)")}
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
-
-            {step === 5 && (
-              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-slate-900 text-white text-center py-12 sm:py-20 relative">
-                <div className="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-primary to-indigo-500" />
-                <CardHeader className="space-y-4">
-                  <div className="mx-auto h-20 w-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-2 animate-pulse">
-                    <ShieldCheck className="h-10 w-10 text-primary" />
-                  </div>
-                  <CardTitle className="text-3xl font-black">{t('본인인증 대기 중')}</CardTitle>
-                  <CardDescription className="text-slate-400 font-bold text-sm">
-                    {authMethod === 'hana'
-                      ? t('하나 1Q페이 앱에서 인증 요청을 승인해 주세요.')
-                      : authMethod === 'app'
-                      ? t('PASS 앱에서 인증 요청을 승인해 주세요.')
-                      : t('카카오톡으로 전송된 인증 요청을 승인해 주세요.')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-8 p-4 sm:p-10">
-                  <div className="flex flex-col items-center justify-center gap-6">
-                    {/* Spinning loader */}
-                    <div className="relative h-16 w-16">
-                      <Loader2 className="h-16 w-16 animate-spin text-primary" />
-                      <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
-                    </div>
-
-                    {/* Instruction notice */}
-                    <div className="p-6 bg-white/5 rounded-2xl border border-white/10 max-w-sm w-full text-sm font-bold text-slate-300 text-left space-y-4">
-                      <p className="leading-relaxed break-keep">
-                        {t('1. 선택하신 본인인증 앱(PASS, 카카오톡, 하나은행)으로 인증 요청이 전송되었습니다.')}
-                      </p>
-                      <p className="leading-relaxed break-keep">
-                        {t('2. 휴대폰에서 앱을 실행하거나 푸시 알림을 눌러 인증(비밀번호/생체)을 완료해 주세요.')}
-                      </p>
-                      <p className="leading-relaxed break-keep">
-                        {t('3. 휴대폰에서 인증 완료 후, 아래의 [인증 완료] 버튼을 눌러주세요.')}
-                      </p>
-                    </div>
-
-                    {/* Guide trigger */}
-                    <button
-                      type="button"
-                      onClick={() => {
-                        if (authMethod === 'app') setIsAuthGuideOpen(true);
-                        else if (authMethod === 'kakao') setIsKakaoAuthGuideOpen(true);
-                        else if (authMethod === 'hana') { setHanaGuideMode('auth'); setIsHanaGuideOpen(true); }
-                      }}
-                      className="text-xs font-bold text-slate-400 hover:text-white underline flex items-center gap-1 mt-2"
-                    >
-                      <HelpCircle className="h-4 w-4" />
-                      {t('인증이 진행되지 않나요? 도움말 보기')}
-                    </button>
-
-                    {/* Complete Button */}
-                    <Button
-                      id="step5-complete-btn"
-                      onClick={handleFinalVerifyAndAnalyze}
-                      disabled={loading}
-                      className="w-full h-18 bg-primary text-white hover:bg-primary/95 text-xl font-black rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                    >
-                      {loading ? <Loader2 className="animate-spin h-6 w-6" /> : <CheckCircle2 className="h-6 w-6" />}
-                      {t('인증 완료 (0.1초 만에)')}
-                    </Button>
-                    
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setStep(4);
-                      }}
-                      className="text-xs font-bold text-slate-500 hover:text-slate-400 mt-2"
-                    >
-                      &larr; {t('인증 수단 다시 선택하기')}
-                    </button>
-                  </div>
+                  <Button id="step5-submit-btn" onClick={handleFinalVerifyAndAnalyze} className="w-full h-20 bg-primary text-2xl font-black rounded-3xl shadow-xl shadow-primary/20" disabled={loading}>
+                    {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 완료 및 데이터 분석')}
+                  </Button>
                 </CardContent>
               </Card>
             )}
@@ -3629,7 +3830,7 @@ export default function EstimatePage() {
                       <p className="text-slate-400 font-bold">{t('잠시만 기다려 주세요.')}</p>
                     </div>
 
-                    <div id="step6-loading-checklist" className="max-w-[360px] mx-auto space-y-6 text-left border-l-2 border-primary/20 pl-8 py-2">
+                    <div className="max-w-[360px] mx-auto space-y-6 text-left border-l-2 border-primary/20 pl-8 py-2">
                       {/* Step 1: 국세청 홈택스 보안 터널 연결 */}
                       <div className={cn(
                         "flex items-center gap-4 font-bold transition-all duration-300",
@@ -3823,7 +4024,7 @@ export default function EstimatePage() {
 
             {step === 7 && result && (
               <Card className="premium-card rounded-[3rem] border-none shadow-2xl overflow-hidden bg-white">
-                <CardHeader id="step7-top-anchor" className="text-center py-8 sm:py-16 bg-slate-50/50 relative">
+                <CardHeader className="text-center py-8 sm:py-16 bg-slate-50/50 relative">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -3845,7 +4046,7 @@ export default function EstimatePage() {
                     <div className="text-center space-y-10">
                       <div className="space-y-4">
                         <p className="text-slate-400 font-black uppercase tracking-widest text-sm">{t('최종 예상 환급액')}</p>
-                        <h2 id="step7-refund-counter" className="text-7xl font-black text-[#fbbf24] font-headline">₩ <RefundCounter value={result.refundEstimate || 0} /></h2>
+                        <h2 className="text-7xl font-black text-[#fbbf24] font-headline">₩ {result.refundEstimate?.toLocaleString()}</h2>
                       </div>
                       <div className="max-w-md mx-auto space-y-4 text-left p-8 bg-slate-50 rounded-3xl border border-slate-100 shadow-inner">
                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">{t('연도별 상세 내역 (적격 여부 검증 완료)')}</p>
