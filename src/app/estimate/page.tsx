@@ -3425,7 +3425,7 @@ export default function EstimatePage() {
                     {t('한국 국세청 홈택스 본인인증')}
                   </CardTitle>
                   <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm mt-2 max-w-md mx-auto break-keep">
-                    {t('세무 환급액 조회를 위해 한국 국세청 정보 확인이 필요합니다. 한국 홈택스 계정이 없으시다면 1분 만에 가입하여 바로 조회할 수 있습니다.')}
+                    {t('세무 환급액 조회를 위해 한국 국세청 간편인증이 필요합니다. 0.1초 만에 조회가 완료됩니다.')}
                   </CardDescription>
 
                   {/* Prefix info summary */}
@@ -3448,250 +3448,91 @@ export default function EstimatePage() {
                 </CardHeader>
 
                 <CardContent className="p-4 sm:p-10 space-y-6">
-                  {/* Tab Selector */}
-                  <div className="flex bg-slate-100 p-1.5 rounded-2xl max-w-md mx-auto shadow-inner">
-                    <button
-                      id="step4-tab-signup"
-                      onClick={() => setAuthTab('signup')}
-                      className={cn(
-                        "flex-1 py-3 text-sm font-black rounded-xl transition-all flex items-center justify-center gap-2",
-                        authTab === 'signup' ? "bg-white text-primary shadow-md" : "text-slate-500 hover:text-slate-700"
-                      )}
-                    >
-                      <UserPlus className="h-4 w-4" />
-                      {t("1분 가입 후 조회")}
-                    </button>
-                    <button
-                      id="step4-tab-login"
-                      onClick={() => setAuthTab('login')}
-                      className={cn(
-                        "flex-1 py-3 text-sm font-black rounded-xl transition-all flex items-center justify-center gap-2",
-                        authTab === 'login' ? "bg-white text-primary shadow-md" : "text-slate-500 hover:text-slate-700"
-                      )}
-                    >
-                      <Lock className="h-4 w-4" />
-                      {t("아이디 로그인")}
-                    </button>
-                  </div>
-
-                  {authTab === 'signup' ? (
-                    /* SIGN UP FORM */
-                    <div className="max-w-md mx-auto space-y-4">
-                      {analysisError && (
-                        <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-xs font-bold text-red-600 leading-relaxed break-keep">
-                          <p className="font-black text-sm mb-1">{analysisError.title}</p>
-                          <p>{analysisError.reason}</p>
-                          <p className="mt-2 text-slate-500 font-bold">{analysisError.solution}</p>
-                        </div>
-                      )}
-
-                      <div className="space-y-4">
-                        {/* ID Field with Duplicate Check */}
-                        <div className="space-y-2">
-                          <Label className="text-xs font-bold text-slate-500">{t("희망 홈택스 아이디")}</Label>
-                          <div className="flex gap-2">
-                            <div className="relative flex-1">
-                              <Input
-                                id="step4-signup-id"
-                                value={hometaxId}
-                                onChange={(e) => {
-                                  setHometaxId(e.target.value.replace(/[^A-Za-z0-9]/g, ''));
-                                  setIsIdDuplicateChecked(false);
-                                }}
-                                placeholder={t("영문/숫자 조합 8~20자")}
-                                className="h-12 pl-10 rounded-xl bg-slate-50 border-none font-bold text-slate-900 outline-none w-full"
-                              />
-                              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                            </div>
-                            <Button
-                              id="step4-signup-id-check"
-                              onClick={handleCheckIdDuplicate}
-                              disabled={isIdChecking || !hometaxId}
-                              className={cn(
-                                "shrink-0 h-12 rounded-xl px-4 font-black transition-all",
-                                isIdDuplicateChecked
-                                  ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                                  : "bg-slate-950 hover:bg-slate-800 text-white"
-                              )}
-                            >
-                              {isIdChecking ? (
-                                <Loader2 className="animate-spin h-4 w-4" />
-                              ) : isIdDuplicateChecked ? (
-                                t("확인 완료")
-                              ) : (
-                                t("중복 확인")
-                              )}
-                            </Button>
-                          </div>
-                        </div>
-
-                        {/* Password Fields */}
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                          <div className="space-y-2">
-                            <Label className="text-xs font-bold text-slate-500">{t("비밀번호")}</Label>
-                            <Input
-                              id="step4-signup-pw"
-                              type="password"
-                              value={hometaxPw}
-                              onChange={(e) => setHometaxPw(e.target.value)}
-                              placeholder={t("비밀번호 입력")}
-                              className="h-12 rounded-xl bg-slate-50 border-none font-bold text-slate-900 w-full"
-                            />
-                          </div>
-                          <div className="space-y-2">
-                            <Label className="text-xs font-bold text-slate-500">{t("비밀번호 확인")}</Label>
-                            <Input
-                              id="step4-signup-pw-confirm"
-                              type="password"
-                              value={hometaxPwConfirm}
-                              onChange={(e) => setHometaxPwConfirm(e.target.value)}
-                              placeholder={t("한번 더 입력")}
-                              className="h-12 rounded-xl bg-slate-50 border-none font-bold text-slate-900 w-full"
-                            />
-                          </div>
-                        </div>
-                        <p className="text-[10px] text-slate-400 font-bold leading-relaxed ml-1">
-                          {t("💡 영문(A-Z, a-z), 숫자(0-9), 특수문자(!@#$%^&*)를 필수 포함하여 9~15자로 작성하세요.")}
-                        </p>
-
-                        {/* Email Field */}
-                        <div className="space-y-2">
-                          <Label className="text-xs font-bold text-slate-500">{t("이메일 주소")}</Label>
-                          <div className="relative">
-                            <Input
-                              id="step4-signup-email"
-                              type="email"
-                              value={hometaxEmail}
-                              onChange={(e) => setHometaxEmail(e.target.value)}
-                              placeholder="example@email.com"
-                              className="h-12 pl-10 rounded-xl bg-slate-50 border-none font-bold text-slate-900 w-full"
-                            />
-                            <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                          </div>
-                        </div>
-
-                        {/* SMS Verification code display if requested */}
-                        {isSmsRequested && (
-                          <div className="p-5 bg-slate-50 border border-slate-100 rounded-2xl space-y-3 mt-4 animate-in fade-in duration-300">
-                            <div className="flex justify-between items-center">
-                              <Label className="text-xs font-black text-slate-600">{t("인증번호 입력")}</Label>
-                              <span className="text-xs font-black text-red-500">{formatTimer(smsTimer)}</span>
-                            </div>
-                            <div className="flex gap-2">
-                              <Input
-                                id="step4-signup-sms-code"
-                                value={smsCode}
-                                onChange={(e) => setSmsCode(e.target.value.replace(/[^0-9]/g, ''))}
-                                placeholder="000000"
-                                maxLength={6}
-                                className="h-12 rounded-xl bg-white border-slate-200 text-center text-lg font-black tracking-widest text-slate-900 flex-1 w-full"
-                              />
-                              <Button
-                                onClick={handleRequestSignupSms}
-                                variant="outline"
-                                className="h-12 rounded-xl font-bold border-slate-200 text-slate-500 shrink-0"
-                              >
-                                {t("재전송")}
-                              </Button>
-                            </div>
-                            <Button
-                              id="step4-signup-complete-btn"
-                              onClick={handleCompleteSignup}
-                              disabled={isVerifyingSms || smsCode.length !== 6}
-                              className="w-full h-14 bg-emerald-500 hover:bg-emerald-600 text-white font-black text-lg rounded-xl shadow-lg shadow-emerald-500/10 flex items-center justify-center gap-2 mt-2"
-                            >
-                              {isVerifyingSms ? <Loader2 className="animate-spin h-5 w-5" /> : <ShieldCheck className="h-5 w-5" />}
-                              {t("가입 승인 및 환급금 조회")}
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-
-                      {/* Request SMS Button if not requested */}
-                      {!isSmsRequested && (
-                        <Button
-                          id="step4-signup-request-sms-btn"
-                          onClick={handleRequestSignupSms}
-                          disabled={loading}
-                          className="w-full h-16 bg-primary text-white hover:bg-primary/95 text-lg font-black rounded-2xl shadow-xl shadow-primary/10 flex items-center justify-center gap-2 mt-4"
-                        >
-                          {loading ? <Loader2 className="animate-spin h-6 w-6" /> : <UserPlus className="h-6 w-6" />}
-                          {t("회원가입 인증문자 발송")}
-                        </Button>
-                      )}
+                  {analysisError && (
+                    <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-xs font-bold text-red-600 leading-relaxed break-keep max-w-md mx-auto">
+                      <p className="font-black text-sm mb-1">{analysisError.title}</p>
+                      <p>{analysisError.reason}</p>
+                      <p className="mt-2 text-slate-500 font-bold">{analysisError.solution}</p>
                     </div>
-                  ) : (
-                    /* DIRECT LOGIN FORM */
-                    <form onSubmit={handleDirectLogin} className="max-w-md mx-auto space-y-4">
-                      {analysisError && (
-                        <div className="p-4 bg-red-50 border border-red-100 rounded-2xl text-xs font-bold text-red-600 leading-relaxed break-keep">
-                          <p className="font-black text-sm mb-1">{analysisError.title}</p>
-                          <p>{analysisError.reason}</p>
-                          <p className="mt-2 text-slate-500 font-bold">{analysisError.solution}</p>
-                        </div>
-                      )}
-
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <Label className="text-xs font-bold text-slate-500">{t("홈택스 아이디")}</Label>
-                          <div className="relative">
-                            <Input
-                              id="step4-login-id"
-                              value={hometaxId}
-                              onChange={(e) => setHometaxId(e.target.value)}
-                              placeholder={t("아이디 입력")}
-                              className="h-12 pl-10 rounded-xl bg-slate-50 border-none font-bold text-slate-900 w-full"
-                            />
-                            <User className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                          </div>
-                        </div>
-
-                        <div className="space-y-2">
-                          <Label className="text-xs font-bold text-slate-500">{t("홈택스 비밀번호")}</Label>
-                          <div className="relative">
-                            <Input
-                              id="step4-login-pw"
-                              type="password"
-                              value={hometaxPw}
-                              onChange={(e) => setHometaxPw(e.target.value)}
-                              placeholder={t("비밀번호 입력")}
-                              className="h-12 pl-10 rounded-xl bg-slate-50 border-none font-bold text-slate-900 w-full"
-                            />
-                            <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-400" />
-                          </div>
-                        </div>
-                      </div>
-
-                      <Button
-                        id="step4-login-submit-btn"
-                        type="submit"
-                        disabled={loading}
-                        className="w-full h-16 bg-slate-900 text-white hover:bg-slate-800 text-lg font-black rounded-2xl shadow-xl flex items-center justify-center gap-2 mt-4"
-                      >
-                        {loading ? <Loader2 className="animate-spin h-6 w-6" /> : <Unlock className="h-6 w-6 text-amber-400" />}
-                        {t("로그인 및 환급액 조회")}
-                      </Button>
-
-                      {/* Help Recovery Links */}
-                      <div className="flex justify-center gap-6 pt-4 text-xs font-bold text-slate-400">
-                        <button
-                          type="button"
-                          onClick={openFindIdModal}
-                          className="hover:text-slate-600 underline transition-colors"
-                        >
-                          {t("아이디 찾기")}
-                        </button>
-                        <span className="text-slate-200">|</span>
-                        <button
-                          type="button"
-                          onClick={openResetPwModal}
-                          className="hover:text-slate-600 underline transition-colors"
-                        >
-                          {t("비밀번호 재설정")}
-                        </button>
-                      </div>
-                    </form>
                   )}
+
+                  {/* Easy Auth Method Selector */}
+                  <div className="max-w-md mx-auto space-y-6">
+                    <Label className="text-sm font-black text-slate-500 block mb-2">{t("간편인증 수단 선택")}</Label>
+                    <div className="grid grid-cols-3 gap-3">
+                      {/* PASS App */}
+                      <button
+                        type="button"
+                        onClick={() => setAuthMethod('app')}
+                        className={cn(
+                          "flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all",
+                          authMethod === 'app' ? "border-[#E1000E] bg-red-50/30" : "border-slate-100 hover:border-slate-200 bg-slate-50"
+                        )}
+                      >
+                        <div className="h-10 w-10 bg-white rounded-xl p-1.5 flex items-center justify-center shadow-sm mb-2">
+                          <Image src="/images/logo/pass.png" alt="PASS" width={28} height={28} className="object-contain" />
+                        </div>
+                        <span className="text-xs font-black text-slate-800">PASS</span>
+                      </button>
+
+                      {/* KakaoTalk */}
+                      <button
+                        type="button"
+                        onClick={() => setAuthMethod('kakao')}
+                        className={cn(
+                          "flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all",
+                          authMethod === 'kakao' ? "border-[#FEE500] bg-yellow-50/30" : "border-slate-100 hover:border-slate-200 bg-slate-50"
+                        )}
+                      >
+                        <div className="h-10 w-10 bg-white rounded-xl p-1.5 flex items-center justify-center shadow-sm mb-2">
+                          <Image src="/images/logo/kakao.png" alt="Kakao" width={28} height={28} className="object-contain" />
+                        </div>
+                        <span className="text-xs font-black text-slate-800">{t("카카오톡")}</span>
+                      </button>
+
+                      {/* Hana Bank */}
+                      <button
+                        type="button"
+                        onClick={() => setAuthMethod('hana')}
+                        className={cn(
+                          "flex flex-col items-center justify-center p-4 rounded-2xl border-2 transition-all",
+                          authMethod === 'hana' ? "border-[#008485] bg-teal-50/30" : "border-slate-100 hover:border-slate-200 bg-slate-50"
+                        )}
+                      >
+                        <div className="h-10 w-10 bg-white rounded-xl p-1.5 flex items-center justify-center shadow-sm mb-2">
+                          <Image src="/images/logo/hana_1q.png" alt="Hana" width={28} height={28} className="object-contain" />
+                        </div>
+                        <span className="text-xs font-black text-slate-800">{t("하나은행")}</span>
+                      </button>
+                    </div>
+
+                    {/* Guide buttons */}
+                    <div className="flex justify-center gap-4 text-xs font-bold text-slate-400">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (authMethod === 'app') setIsGuideOpen(true);
+                          else if (authMethod === 'kakao') setIsKakaoGuideOpen(true);
+                          else if (authMethod === 'hana') { setHanaGuideMode('registration'); setIsHanaGuideOpen(true); }
+                        }}
+                        className="hover:text-slate-600 underline flex items-center gap-1"
+                      >
+                        <HelpCircle className="h-3.5 w-3.5" />
+                        {authMethod === 'app' ? t('PASS 등록 가이드') : authMethod === 'kakao' ? t('카카오톡 인증서 가이드') : t('하나인증서 가이드')}
+                      </button>
+                    </div>
+
+                    {/* Main CTA */}
+                    <Button
+                      id="step4-submit-btn"
+                      onClick={handleInitiateAuth}
+                      disabled={loading}
+                      className="w-full h-18 sm:h-20 bg-primary text-white hover:bg-primary/95 text-lg sm:text-xl font-black rounded-2xl shadow-xl shadow-primary/10 flex items-center justify-center gap-2 mt-6 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      {loading ? <Loader2 className="animate-spin h-6 w-6" /> : <Send className="h-6 w-6" />}
+                      {t("인증 요청 발송 (0.1초 만에)")}
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -3703,28 +3544,70 @@ export default function EstimatePage() {
                   <div className="mx-auto h-20 w-20 bg-primary/10 rounded-3xl flex items-center justify-center mb-2 animate-pulse">
                     <ShieldCheck className="h-10 w-10 text-primary" />
                   </div>
-                  <CardTitle className="text-3xl font-black">{t('국세청 정보 매칭 및 로그인')}</CardTitle>
+                  <CardTitle className="text-3xl font-black">{t('본인인증 대기 중')}</CardTitle>
                   <CardDescription className="text-slate-400 font-bold text-sm">
-                    {t('입력하신 정보로 국세청 회원정보를 매칭하고 보안 세션을 생성하고 있습니다.')}
+                    {authMethod === 'hana'
+                      ? t('하나 1Q페이 앱에서 인증 요청을 승인해 주세요.')
+                      : authMethod === 'app'
+                      ? t('PASS 앱에서 인증 요청을 승인해 주세요.')
+                      : t('카카오톡으로 전송된 인증 요청을 승인해 주세요.')}
                   </CardDescription>
                 </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="flex flex-col items-center justify-center gap-6 py-6">
-                    <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                    <div className="p-4 bg-white/5 rounded-2xl border border-white/10 max-w-sm w-full text-xs font-bold text-slate-400 text-left space-y-2">
-                      <div className="flex justify-between items-center text-slate-200">
-                        <span>{t("접속 경로")}</span>
-                        <span className="font-black text-primary">hometax.go.kr (NTS)</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span>{t("인증 방식")}</span>
-                        <span>{t("보안 웹 세션")}</span>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span>{t("보안 수준")}</span>
-                        <span className="text-emerald-400">AES-256 SSL</span>
-                      </div>
+                <CardContent className="space-y-8 p-4 sm:p-10">
+                  <div className="flex flex-col items-center justify-center gap-6">
+                    {/* Spinning loader */}
+                    <div className="relative h-16 w-16">
+                      <Loader2 className="h-16 w-16 animate-spin text-primary" />
+                      <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl" />
                     </div>
+
+                    {/* Instruction notice */}
+                    <div className="p-6 bg-white/5 rounded-2xl border border-white/10 max-w-sm w-full text-sm font-bold text-slate-300 text-left space-y-4">
+                      <p className="leading-relaxed break-keep">
+                        {t('1. 선택하신 본인인증 앱(PASS, 카카오톡, 하나은행)으로 인증 요청이 전송되었습니다.')}
+                      </p>
+                      <p className="leading-relaxed break-keep">
+                        {t('2. 휴대폰에서 앱을 실행하거나 푸시 알림을 눌러 인증(비밀번호/생체)을 완료해 주세요.')}
+                      </p>
+                      <p className="leading-relaxed break-keep">
+                        {t('3. 휴대폰에서 인증 완료 후, 아래의 [인증 완료] 버튼을 눌러주세요.')}
+                      </p>
+                    </div>
+
+                    {/* Guide trigger */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (authMethod === 'app') setIsAuthGuideOpen(true);
+                        else if (authMethod === 'kakao') setIsKakaoAuthGuideOpen(true);
+                        else if (authMethod === 'hana') { setHanaGuideMode('auth'); setIsHanaGuideOpen(true); }
+                      }}
+                      className="text-xs font-bold text-slate-400 hover:text-white underline flex items-center gap-1 mt-2"
+                    >
+                      <HelpCircle className="h-4 w-4" />
+                      {t('인증이 진행되지 않나요? 도움말 보기')}
+                    </button>
+
+                    {/* Complete Button */}
+                    <Button
+                      id="step5-complete-btn"
+                      onClick={handleFinalVerifyAndAnalyze}
+                      disabled={loading}
+                      className="w-full h-18 bg-primary text-white hover:bg-primary/95 text-xl font-black rounded-2xl shadow-xl shadow-primary/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98]"
+                    >
+                      {loading ? <Loader2 className="animate-spin h-6 w-6" /> : <CheckCircle2 className="h-6 w-6" />}
+                      {t('인증 완료 (0.1초 만에)')}
+                    </Button>
+                    
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setStep(4);
+                      }}
+                      className="text-xs font-bold text-slate-500 hover:text-slate-400 mt-2"
+                    >
+                      &larr; {t('인증 수단 다시 선택하기')}
+                    </button>
                   </div>
                 </CardContent>
               </Card>
