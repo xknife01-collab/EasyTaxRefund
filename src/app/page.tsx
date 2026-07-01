@@ -66,8 +66,16 @@ export default function HomePage() {
   // 방문 여부 확인 및 초기화
   useEffect(() => {
     try {
+      const params = new URLSearchParams(window.location.search);
+      const urlLang = params.get('lang');
       const welcomeSeen = localStorage.getItem("welcome_seen");
-      setHasSeenWelcome(!!welcomeSeen);
+      
+      if (urlLang) {
+        localStorage.setItem("welcome_seen", "true");
+        setHasSeenWelcome(true);
+      } else {
+        setHasSeenWelcome(!!welcomeSeen);
+      }
     } catch (e) {
       console.error('LocalStorage failed:', e);
       setHasSeenWelcome(false);
