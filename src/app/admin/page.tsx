@@ -39,7 +39,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { translateNotification } from "@/ai/flows/notification-translation-flow";
-import { MessageSquare, Send, Trash2, Copy, Key, PenTool } from "lucide-react";
+import { MessageSquare, Send, Trash2, Copy, Key, PenTool, EyeOff } from "lucide-react";
 import { translateChatMessage } from "@/ai/flows/chat-translation-flow";
 import { useTranslation } from "@/components/LanguageContext";
 import { cn } from "@/lib/utils";
@@ -49,7 +49,7 @@ import { getKstDateString } from "@/lib/tracking";
 import { useToast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
-import { collection, onSnapshot, query, orderBy, doc, updateDoc, addDoc, serverTimestamp, deleteDoc, increment } from "firebase/firestore";
+import { collection, onSnapshot, query, orderBy, doc, updateDoc, addDoc, serverTimestamp, deleteDoc, increment, writeBatch } from "firebase/firestore";
 import {
   Dialog,
   DialogContent,
@@ -101,6 +101,9 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const [appsLoading, setAppsLoading] = useState(true);
   const [todayVisits, setTodayVisits] = useState(0);
   const [todayInstalls, setTodayInstalls] = useState(0);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [isBulkConfirmOpen, setIsBulkConfirmOpen] = useState(false);
+  const [bulkActionType, setBulkActionType] = useState<'hide' | 'delete'>('hide');
 
   // Firestore 실시간 리스너
   useEffect(() => {
@@ -198,7 +201,12 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
 
   useEffect(() => {
     setCurrentPage(1);
+    setSelectedIds([]);
   }, [searchId, searchName, searchPhone]);
+
+  useEffect(() => {
+    setSelectedIds([]);
+  }, [activeView, currentPage]);
 
   const paginatedApps = useMemo(() => {
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -206,6 +214,10 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   }, [filteredApps, currentPage]);
 
   const totalPages = Math.ceil(filteredApps.length / itemsPerPage);
+
+  const vipApps = useMemo(() => {
+    return apps.filter(app => (app.preFilterEstimate || 0) >= 400000 && app.deletedFromDashboard !== true).slice(0, 50);
+  }, [apps]);
 
   // Global Unread & Push Notification Logic
   const prevUnreadRef = useRef<number>(-1);
@@ -540,6 +552,46 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     }
   };
 
+  const triggerBulkHide = () => {
+    if (selectedIds.length === 0) return;
+    setBulkActionType('hide');
+    setIsBulkConfirmOpen(true);
+  };
+
+  const triggerBulkDelete = () => {
+    if (selectedIds.length === 0) return;
+    setBulkActionType('delete');
+    setIsBulkConfirmOpen(true);
+  };
+
+  const executeBulkAction = async () => {
+    if (selectedIds.length === 0) return;
+    setIsBulkConfirmOpen(false);
+
+    try {
+      const batch = writeBatch(db);
+      if (bulkActionType === 'hide') {
+        selectedIds.forEach((id) => {
+          const docRef = doc(db, 'applications', id);
+          batch.update(docRef, { deletedFromDashboard: true });
+        });
+        await batch.commit();
+        toast({ title: "일괄 숨김 처리 완료", description: `선택한 ${selectedIds.length}명의 신청자가 대시보드에서 숨겨졌습니다.` });
+      } else {
+        selectedIds.forEach((id) => {
+          const docRef = doc(db, 'applications', id);
+          batch.delete(docRef);
+        });
+        await batch.commit();
+        toast({ title: "영구 삭제 완료", description: `선택한 ${selectedIds.length}명의 데이터가 완전히 삭제되었습니다.` });
+      }
+      setSelectedIds([]);
+    } catch (error) {
+      console.error("일괄 처리 오류:", error);
+      toast({ variant: "destructive", title: "일괄 처리 실패", description: "권한이 없거나 서버 오류가 발생했습니다." });
+    }
+  };
+
   const handleSaveMemo = async () => {
     if (!selectedApp) return;
     setIsSavingMemo(true);
@@ -836,7 +888,23 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                   <Table>
                     <TableHeader className="bg-slate-50/50">
                       <TableRow>
-                        <TableHead className="font-bold pl-8 py-5">신청번호 / 고객</TableHead>
+                        <TableHead className="w-12 pl-8 py-5">
+                          <input 
+                            type="checkbox"
+                            className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                            checked={paginatedApps.length > 0 && paginatedApps.every(app => selectedIds.includes(app.id))}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                const currentIds = paginatedApps.map(a => a.id);
+                                setSelectedIds(prev => [...new Set([...prev, ...currentIds])]);
+                              } else {
+                                const currentIds = paginatedApps.map(a => a.id);
+                                setSelectedIds(prev => prev.filter(id => !currentIds.includes(id)));
+                              }
+                            }}
+                          />
+                        </TableHead>
+                        <TableHead className="font-bold pl-2 py-5">신청번호 / 고객</TableHead>
                         <TableHead className="font-bold">신청 일자</TableHead>
                         <TableHead className="font-bold">국적</TableHead>
                         <TableHead className="font-bold">예상 환급액</TableHead>
@@ -851,11 +919,26 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                     <TableBody>
                       {paginatedApps?.map((app) => {
                         const statusBadge = getStatusBadge(app.status);
+                        const isSelected = selectedIds.includes(app.id);
                         return (
-                          <TableRow key={app.id} className="hover:bg-slate-50 border-b border-slate-50 transition-colors">
+                          <TableRow key={app.id} className={cn("hover:bg-slate-50 border-b border-slate-50 transition-colors", isSelected && "bg-slate-50/80")}>
+                            <TableCell className="pl-8 py-5 w-12">
+                              <input 
+                                type="checkbox"
+                                className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                                checked={isSelected}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedIds(prev => [...prev, app.id]);
+                                  } else {
+                                    setSelectedIds(prev => prev.filter(id => id !== app.id));
+                                  }
+                                }}
+                              />
+                            </TableCell>
                             {/* 신청번호 / 고객 */}
                             <TableCell 
-                              className="pl-8 py-5 cursor-pointer hover:bg-slate-100/50 transition-all group"
+                              className="pl-2 py-5 cursor-pointer hover:bg-slate-100/50 transition-all group"
                               onClick={() => openAppDetail(app)}
                             >
                               <div className="font-black text-slate-900 group-hover:text-primary flex items-center gap-2 transition-colors">
@@ -1044,7 +1127,23 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                     <Table>
                       <TableHeader className="bg-amber-400/10">
                         <TableRow className="hover:bg-amber-400/5 transition-colors border-b border-amber-400/20">
-                          <TableHead className="font-black text-amber-950 pl-8 py-6">VIP 고객 정보</TableHead>
+                          <TableHead className="w-12 pl-8 py-6">
+                            <input 
+                              type="checkbox"
+                              className="w-4 h-4 rounded border-amber-500 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                              checked={vipApps.length > 0 && vipApps.every(app => selectedIds.includes(app.id))}
+                              onChange={(e) => {
+                                if (e.target.checked) {
+                                  const vipIds = vipApps.map(a => a.id);
+                                  setSelectedIds(prev => [...new Set([...prev, ...vipIds])]);
+                                } else {
+                                  const vipIds = vipApps.map(a => a.id);
+                                  setSelectedIds(prev => prev.filter(id => !vipIds.includes(id)));
+                                }
+                              }}
+                            />
+                          </TableHead>
+                          <TableHead className="font-black text-amber-950 pl-2 py-6">VIP 고객 정보</TableHead>
                           <TableHead className="font-black text-amber-950">잠재 환급액</TableHead>
                           <TableHead className="font-black text-amber-950">현재 단계</TableHead>
                           <TableHead className="font-black text-amber-950">연락처</TableHead>
@@ -1052,11 +1151,26 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                         </TableRow>
                       </TableHeader>
                       <TableBody>
-                         {apps.filter(app => (app.preFilterEstimate || 0) >= 400000).slice(0, 50).map((app) => {
+                         {vipApps.map((app) => {
                            const statusBadge = getStatusBadge(app.status);
+                           const isSelected = selectedIds.includes(app.id);
                            return (
-                             <TableRow key={app.id} className="hover:bg-amber-400/5 transition-colors border-b border-amber-400/10">
-                                <TableCell className="pl-8 py-6 cursor-pointer" onClick={() => openAppDetail(app)}>
+                             <TableRow key={app.id} className={cn("hover:bg-amber-400/5 transition-colors border-b border-amber-400/10", isSelected && "bg-amber-400/10")}>
+                               <TableCell className="pl-8 py-6 w-12">
+                                 <input 
+                                   type="checkbox"
+                                   className="w-4 h-4 rounded border-amber-500 text-amber-600 focus:ring-amber-500 cursor-pointer"
+                                   checked={isSelected}
+                                   onChange={(e) => {
+                                     if (e.target.checked) {
+                                       setSelectedIds(prev => [...prev, app.id]);
+                                     } else {
+                                       setSelectedIds(prev => prev.filter(id => id !== app.id));
+                                     }
+                                   }}
+                                 />
+                               </TableCell>
+                               <TableCell className="pl-2 py-6 cursor-pointer" onClick={() => openAppDetail(app)}>
                                   <div className="flex items-center gap-3">
                                     <div className="h-10 w-10 bg-amber-400 text-amber-950 rounded-xl flex items-center justify-center font-black shadow-sm shrink-0">VIP</div>
                                     <div>
@@ -1204,7 +1318,23 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                   <Table>
                     <TableHeader className="bg-slate-50/50">
                       <TableRow>
-                        <TableHead className="font-bold pl-8 py-5">고객명 / ID</TableHead>
+                        <TableHead className="w-12 pl-8 py-5">
+                          <input 
+                            type="checkbox"
+                            className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                            checked={paginatedApps.length > 0 && paginatedApps.every(app => selectedIds.includes(app.id))}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                const pageIds = paginatedApps.map(a => a.id);
+                                setSelectedIds(prev => [...new Set([...prev, ...pageIds])]);
+                              } else {
+                                const pageIds = paginatedApps.map(a => a.id);
+                                setSelectedIds(prev => prev.filter(id => !pageIds.includes(id)));
+                              }
+                            }}
+                          />
+                        </TableHead>
+                        <TableHead className="font-bold pl-2 py-5">고객명 / ID</TableHead>
                         <TableHead className="font-bold">신청 일자</TableHead>
                         <TableHead className="font-bold">국적</TableHead>
                         <TableHead className="font-bold">연락처</TableHead>
@@ -1218,119 +1348,136 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {paginatedApps?.map((app) => (
-                        <TableRow key={app.id} className="hover:bg-slate-50 border-b border-slate-50 transition-colors">
-                          <TableCell 
-                            className="pl-8 py-5 cursor-pointer hover:bg-slate-100/50 transition-all group font-black text-slate-900"
-                            onClick={() => openAppDetail(app)}
-                          >
-                            <div className="font-black text-slate-900 group-hover:text-primary flex items-center gap-2 transition-colors">
-                              {app.fullName || "이름 없음"}
-                              <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0" />
-                            </div>
-                            <div className="text-[10px] text-slate-400 font-bold uppercase">{app.id.substring(0, 8)}...</div>
-                          </TableCell>
-
-                          {/* 신청 일자 */}
-                          <TableCell className="font-bold text-slate-600 text-xs">
-                            {app.createdAt?.toDate ? app.createdAt.toDate().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : String(app.createdAt || "N/A")}
-                          </TableCell>
-
-                          {/* 국적 */}
-                          <TableCell>
-                            {app.userLanguage ? (
-                              <Badge variant="outline" className="text-[10px] px-2 h-5 border-slate-200 text-slate-600 font-black bg-slate-100 uppercase">
-                                {app.userLanguage === 'ko' ? '한국 (KO)' : 
-                                 app.userLanguage === 'en' ? '미국 (EN)' : 
-                                 app.userLanguage === 'vi' ? '베트남 (VI)' : 
-                                 app.userLanguage === 'uz' ? '우즈벡 (UZ)' : 
-                                 app.userLanguage === 'zh' ? '중국 (ZH)' : 
-                                 app.userLanguage.toUpperCase()}
-                              </Badge>
-                            ) : (
-                              <span className="text-xs font-bold text-slate-400">N/A</span>
-                            )}
-                          </TableCell>
-
-                          <TableCell className="font-bold text-slate-600">{app.phone || app.phoneNo || "N/A"}</TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-bold text-slate-800">{app.hometaxId || "N/A"}</span>
-                              {app.hometaxId && (
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="h-6 w-6 p-0 text-slate-400 hover:text-primary" 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    copyToClipboard(app.hometaxId, "홈택스 ID");
-                                  }}
-                                >
-                                  <Copy className="h-3 w-3" />
-                                </Button>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-mono font-bold text-slate-800">{app.hometaxPw || "N/A"}</span>
-                              {app.hometaxPw && (
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="h-6 w-6 p-0 text-slate-400 hover:text-primary" 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    copyToClipboard(app.hometaxPw, "홈택스 PW");
-                                  }}
-                                >
-                                  <Copy className="h-3 w-3" />
-                                </Button>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell>
-                            <div className="flex items-center gap-1.5">
-                              <span className="font-bold text-slate-800">{app.registrationNumber || "N/A"}</span>
-                              {app.registrationNumber && (
-                                <Button 
-                                  variant="ghost" 
-                                  size="sm" 
-                                  className="h-6 w-6 p-0 text-slate-400 hover:text-primary" 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    copyToClipboard(app.registrationNumber, "외국인 등록번호");
-                                  }}
-                                >
-                                  <Copy className="h-3 w-3" />
-                                </Button>
-                              )}
-                            </div>
-                          </TableCell>
-                          <TableCell className="font-bold text-slate-700">
-                            {app.bankName ? `${app.bankName} (${app.bankAccount || app.accountNumber || '계좌미지정'})` : "N/A"}
-                          </TableCell>
-                          <TableCell className="font-black text-slate-900">
-                            ₩ {(app.estimatedRefundAmount ?? 0).toLocaleString()}
-                          </TableCell>
-
-                          {/* 수수료 (25%) */}
-                          <TableCell className="font-black text-amber-600">
-                            ₩ {Math.round((app.estimatedRefundAmount ?? 0) * 0.25).toLocaleString()}
-                          </TableCell>
-
-                          <TableCell className="pr-8 text-right">
-                            <Button 
-                              variant="outline" 
-                              size="sm" 
-                              className="rounded-xl font-bold" 
+                      {paginatedApps?.map((app) => {
+                        const isSelected = selectedIds.includes(app.id);
+                        return (
+                          <TableRow key={app.id} className={cn("hover:bg-slate-50 border-b border-slate-50 transition-colors", isSelected && "bg-slate-50/80")}>
+                            <TableCell className="pl-8 py-5 w-12">
+                              <input 
+                                type="checkbox"
+                                className="w-4 h-4 rounded border-slate-300 text-primary focus:ring-primary cursor-pointer"
+                                checked={isSelected}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedIds(prev => [...prev, app.id]);
+                                  } else {
+                                    setSelectedIds(prev => prev.filter(id => id !== app.id));
+                                  }
+                                }}
+                              />
+                            </TableCell>
+                            <TableCell 
+                              className="pl-2 py-5 cursor-pointer hover:bg-slate-100/50 transition-all group font-black text-slate-900"
                               onClick={() => openAppDetail(app)}
                             >
-                              보기
-                            </Button>
-                          </TableCell>
-                        </TableRow>
-                      ))}
+                              <div className="font-black text-slate-900 group-hover:text-primary flex items-center gap-2 transition-colors">
+                                {app.fullName || "이름 없음"}
+                                <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0" />
+                              </div>
+                              <div className="text-[10px] text-slate-400 font-bold uppercase">{app.id.substring(0, 8)}...</div>
+                            </TableCell>
+
+                            {/* 신청 일자 */}
+                            <TableCell className="font-bold text-slate-600 text-xs">
+                              {app.createdAt?.toDate ? app.createdAt.toDate().toLocaleDateString('ko-KR', { month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit' }) : String(app.createdAt || "N/A")}
+                            </TableCell>
+
+                            {/* 국적 */}
+                            <TableCell>
+                              {app.userLanguage ? (
+                                <Badge variant="outline" className="text-[10px] px-2 h-5 border-slate-200 text-slate-600 font-black bg-slate-100 uppercase">
+                                  {app.userLanguage === 'ko' ? '한국 (KO)' : 
+                                   app.userLanguage === 'en' ? '미국 (EN)' : 
+                                   app.userLanguage === 'vi' ? '베트남 (VI)' : 
+                                   app.userLanguage === 'uz' ? '우즈벡 (UZ)' : 
+                                   app.userLanguage === 'zh' ? '중국 (ZH)' : 
+                                   app.userLanguage.toUpperCase()}
+                                </Badge>
+                              ) : (
+                                <span className="text-xs font-bold text-slate-400">N/A</span>
+                              )}
+                            </TableCell>
+
+                            <TableCell className="font-bold text-slate-600">{app.phone || app.phoneNo || "N/A"}</TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-bold text-slate-800">{app.hometaxId || "N/A"}</span>
+                                {app.hometaxId && (
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 w-6 p-0 text-slate-400 hover:text-primary" 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      copyToClipboard(app.hometaxId, "홈택스 ID");
+                                    }}
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-mono font-bold text-slate-800">{app.hometaxPw || "N/A"}</span>
+                                {app.hometaxPw && (
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 w-6 p-0 text-slate-400 hover:text-primary" 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      copyToClipboard(app.hometaxPw, "홈택스 PW");
+                                    }}
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell>
+                              <div className="flex items-center gap-1.5">
+                                <span className="font-bold text-slate-800">{app.registrationNumber || "N/A"}</span>
+                                {app.registrationNumber && (
+                                  <Button 
+                                    variant="ghost" 
+                                    size="sm" 
+                                    className="h-6 w-6 p-0 text-slate-400 hover:text-primary" 
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      copyToClipboard(app.registrationNumber, "외국인 등록번호");
+                                    }}
+                                  >
+                                    <Copy className="h-3 w-3" />
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                            <TableCell className="font-bold text-slate-700">
+                              {app.bankName ? `${app.bankName} (${app.bankAccount || app.accountNumber || '계좌미지정'})` : "N/A"}
+                            </TableCell>
+                            <TableCell className="font-black text-slate-900">
+                              ₩ {(app.estimatedRefundAmount ?? 0).toLocaleString()}
+                            </TableCell>
+
+                            {/* 수수료 (25%) */}
+                            <TableCell className="font-black text-amber-600">
+                              ₩ {Math.round((app.estimatedRefundAmount ?? 0) * 0.25).toLocaleString()}
+                            </TableCell>
+
+                            <TableCell className="pr-8 text-right">
+                              <Button 
+                                variant="outline" 
+                                size="sm" 
+                                className="rounded-xl font-bold" 
+                                onClick={() => openAppDetail(app)}
+                              >
+                                보기
+                              </Button>
+                            </TableCell>
+                          </TableRow>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                   
@@ -1675,6 +1822,48 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
         </DialogContent>
       </Dialog>
 
+      {/* Bulk Action Confirmation Dialog */}
+      <Dialog open={isBulkConfirmOpen} onOpenChange={setIsBulkConfirmOpen}>
+        <DialogContent className="max-w-md rounded-[2.5rem] p-8 border-none shadow-2xl">
+          <DialogHeader className="mb-6">
+            <div className="h-16 w-16 bg-rose-100 rounded-2xl flex items-center justify-center mb-4">
+              <AlertTriangle className="h-8 w-8 text-rose-600" />
+            </div>
+            <DialogTitle className="text-2xl font-black text-slate-900">
+              {bulkActionType === 'delete' ? "선택한 고객을 영구 삭제하시겠습니까?" : "선택한 고객을 숨기시겠습니까?"}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            <p className="text-slate-500 font-bold leading-relaxed">
+              {bulkActionType === 'delete' ? (
+                <>
+                  선택한 <span className="text-rose-600 font-black">{selectedIds.length}명</span>의 고객 정보를 시스템에서 영구적으로 삭제합니다.<br />
+                  이 작업은 즉시 실행되며 절대로 되돌릴 수 없습니다.
+                </>
+              ) : (
+                <>
+                  선택한 <span className="text-primary font-black">{selectedIds.length}명</span>의 신청자를 대시보드 목록에서 숨김 처리합니다.<br />
+                  데이터는 유실되지 않으며 '고객 홈택스 정보' 뷰에서 언제든지 다시 확인하실 수 있습니다.
+                </>
+              )}
+            </p>
+            <div className="flex gap-4">
+              <Button variant="ghost" className="flex-1 h-14 rounded-xl font-bold" onClick={() => setIsBulkConfirmOpen(false)}>취소</Button>
+              <Button 
+                variant="destructive" 
+                className={cn(
+                  "flex-[2] h-14 rounded-xl font-black text-white shadow-lg",
+                  bulkActionType === 'delete' ? "bg-rose-500 hover:bg-rose-600" : "bg-slate-900 hover:bg-slate-800"
+                )} 
+                onClick={executeBulkAction}
+              >
+                {bulkActionType === 'delete' ? "네, 영구 삭제합니다" : "네, 숨김 처리합니다"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog open={isTaxReportOpen} onOpenChange={setIsTaxReportOpen}>
         <DialogContent className="max-w-3xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl">
           {reportApp && (
@@ -1875,6 +2064,47 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Floating Bulk Action Bar */}
+      <div 
+        className={cn(
+          "fixed bottom-8 left-1/2 -translate-x-1/2 z-50 bg-slate-900/95 backdrop-blur-xl border border-slate-800/80 text-white rounded-3xl shadow-[0_20px_50px_rgba(0,0,0,0.4)] px-8 py-5 flex items-center justify-between gap-8 transition-all duration-300 transform w-[90%] max-w-2xl",
+          selectedIds.length > 0 ? "translate-y-0 opacity-100 scale-100" : "translate-y-12 opacity-0 scale-95 pointer-events-none"
+        )}
+      >
+        <div className="flex items-center gap-3">
+          <div className="h-3 w-3 rounded-full bg-primary animate-pulse" />
+          <span className="font-bold text-sm tracking-tight text-slate-200">
+            총 <span className="text-primary text-base font-black ml-1 mr-1">{selectedIds.length}</span>명의 고객 선택됨
+          </span>
+        </div>
+        <div className="flex items-center gap-3">
+          <Button 
+            variant="ghost" 
+            className="rounded-2xl text-slate-300 hover:text-white hover:bg-slate-800/80 gap-2 h-12 px-5 text-xs sm:text-sm font-bold transition-all border border-slate-800"
+            onClick={triggerBulkHide}
+          >
+            <EyeOff className="w-4 h-4 text-slate-400" />
+            목록에서 숨기기
+          </Button>
+          <Button 
+            variant="destructive" 
+            className="rounded-2xl bg-rose-600 hover:bg-rose-500 text-white gap-2 h-12 px-5 text-xs sm:text-sm font-black shadow-lg shadow-rose-900/30 transition-all"
+            onClick={triggerBulkDelete}
+          >
+            <Trash2 className="w-4 h-4" />
+            영구 삭제
+          </Button>
+          <div className="h-6 w-[1px] bg-slate-800 self-center hidden sm:block" />
+          <Button 
+            variant="ghost" 
+            className="rounded-2xl text-slate-400 hover:text-slate-200 hover:bg-slate-800/40 h-12 px-4 text-xs font-bold transition-all hidden sm:block"
+            onClick={() => setSelectedIds([])}
+          >
+            선택 해제
+          </Button>
+        </div>
+      </div>
     </div>
   );
 }
