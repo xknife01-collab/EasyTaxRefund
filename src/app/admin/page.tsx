@@ -128,7 +128,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     });
 
     console.log("Requesting Applications Snapshot...");
-    const q = query(collection(db, 'applications'), orderBy('updatedAt', 'desc'));
+    const q = query(collection(db, 'applications'), orderBy('createdAt', 'desc'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       console.log("Snapshot Received! Count:", snapshot.size);
       const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
