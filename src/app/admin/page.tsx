@@ -127,11 +127,15 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       }
     });
 
-    console.log("Requesting Applications Snapshot...");
-    const q = query(collection(db, 'applications'), orderBy('createdAt', 'desc'));
+    const q = query(collection(db, 'applications'));
     const unsubscribe = onSnapshot(q, (snapshot) => {
       console.log("Snapshot Received! Count:", snapshot.size);
-      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
+      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() as any }));
+      data.sort((a, b) => {
+        const timeA = a.createdAt?.seconds || a.updatedAt?.seconds || 0;
+        const timeB = b.createdAt?.seconds || b.updatedAt?.seconds || 0;
+        return timeB - timeA;
+      });
       setApps(data);
       setAppsLoading(false);
     }, (error) => {

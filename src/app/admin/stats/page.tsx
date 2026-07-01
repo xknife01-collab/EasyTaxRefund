@@ -148,9 +148,15 @@ export default function AdminStatsPage() {
   }, [isMounted, router]);
 
   useEffect(() => {
-    const qApps = query(collection(db, 'applications'), orderBy('createdAt', 'desc'));
+    const qApps = query(collection(db, 'applications'));
     const unsubApps = onSnapshot(qApps, (snapshot) => {
-      setApps(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
+      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() as any }));
+      data.sort((a, b) => {
+        const timeA = a.createdAt?.seconds || a.updatedAt?.seconds || 0;
+        const timeB = b.createdAt?.seconds || b.updatedAt?.seconds || 0;
+        return timeB - timeA;
+      });
+      setApps(data);
     }, (err) => console.error("Apps listener error:", err));
 
     const qStats = query(collection(db, 'daily_stats'));

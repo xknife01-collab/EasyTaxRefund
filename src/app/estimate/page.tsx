@@ -107,6 +107,7 @@ import {
   doc,
   updateDoc,
   setDoc,
+  getDoc,
   onSnapshot,
   query,
   orderBy,
@@ -376,6 +377,7 @@ export default function EstimatePage() {
     accountHolder: ""
   });
   const [draftAppId, setDraftAppId] = useState<string | null>(null);
+  const savingPromiseRef = useRef<Promise<string | void> | null>(null);
 
   // Personal Info Consent states for Step 2
   const [piConsent, setPiConsent] = useState(true);
@@ -1533,22 +1535,41 @@ export default function EstimatePage() {
 
   // 드래프트 재연결 (브라우저 종료 후 앱을 다시 켰을 때 메시지 내역 복구)
   useEffect(() => {
+    if (isSimulation) return;
+
+    const checkDraftAndSet = async (savedDraftId: string) => {
+      try {
+        const docRef = doc(db, 'applications', savedDraftId);
+        const docSnap = await getDoc(docRef);
+        if (docSnap.exists()) {
+          setDraftAppId(savedDraftId);
+        } else {
+          // Document was deleted from Firestore! Clear it from storage.
+          console.log("Draft application document not found in database. Cleaning up stale local IDs.");
+          localStorage.removeItem('currentDraftId');
+          localStorage.removeItem('easy_tax_refund_persistence');
+          sessionStorage.removeItem('currentDraftId');
+        }
+      } catch (err) {
+        console.error("Failed to check draft in Firestore:", err);
+      }
+    };
+
     const savedDraftId = localStorage.getItem('currentDraftId');
     if (savedDraftId) {
-      setDraftAppId(savedDraftId);
+      checkDraftAndSet(savedDraftId);
     } else {
       const savedPersistence = localStorage.getItem("easy_tax_refund_persistence");
       if (savedPersistence) {
         try {
           const parsed = JSON.parse(savedPersistence);
           if (parsed.draftAppId) {
-            setDraftAppId(parsed.draftAppId);
-            localStorage.setItem('currentDraftId', parsed.draftAppId);
+            checkDraftAndSet(parsed.draftAppId);
           }
         } catch (e) { }
       }
     }
-  }, []);
+  }, [isSimulation]);
 
   const startCamera = async () => {
     setIsCameraActive(true);
@@ -1630,6 +1651,16 @@ export default function EstimatePage() {
 
   const saveProgress = async (nextStep: number, isFinal: boolean = false) => {
     if (isSimulation) return; // Do not save progress in simulation mode
+    
+    // If there is an active document creation promise, wait for it first to avoid duplicate calls
+    if (savingPromiseRef.current) {
+      try {
+        await savingPromiseRef.current;
+      } catch (e) {
+        console.error("Previous save promise failed, continuing:", e);
+      }
+    }
+
     try {
       const trackingData = getStoredTrackingData();
       const appData = {
@@ -1646,19 +1677,35 @@ export default function EstimatePage() {
         isDraft: !isFinal
       };
 
-      if (draftAppId) {
-        await setDoc(doc(db, 'applications', draftAppId), appData, { merge: true });
+      // Check current draft ID from state or stored storages in case state hasn't updated yet
+      const currentDraftId = draftAppId || 
+        (typeof window !== 'undefined' ? sessionStorage.getItem('currentDraftId') || localStorage.getItem('currentDraftId') : null);
+
+      if (currentDraftId) {
+        await setDoc(doc(db, 'applications', currentDraftId), appData, { merge: true });
       } else {
-        const docRef = await addDoc(collection(db, 'applications'), {
-          ...appData,
-          createdAt: serverTimestamp(),
-          status: 'Draft'
-        });
-        setDraftAppId(docRef.id);
-        sessionStorage.setItem('currentDraftId', docRef.id);
+        // Create a new promise for creation to prevent concurrent addDoc calls
+        const createPromise = (async () => {
+          const docRef = await addDoc(collection(db, 'applications'), {
+            ...appData,
+            createdAt: serverTimestamp(),
+            status: 'Draft'
+          });
+          setDraftAppId(docRef.id);
+          if (typeof window !== 'undefined') {
+            sessionStorage.setItem('currentDraftId', docRef.id);
+            localStorage.setItem('currentDraftId', docRef.id);
+          }
+          return docRef.id;
+        })();
+
+        savingPromiseRef.current = createPromise;
+        await createPromise;
+        savingPromiseRef.current = null;
       }
     } catch (err) {
       console.error("Progress save error:", err);
+      savingPromiseRef.current = null;
     }
   };
 
