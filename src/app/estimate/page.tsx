@@ -940,58 +940,18 @@ export default function EstimatePage() {
         // Simulate typing account holder name
         simulateTyping('accountHolder', persona.name, 13400, 100);
         
-        // 5. Scroll to 1-won send button and click
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step8-send-1won-btn");
-        }, 15200));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-send-1won-btn");
-        }, 16800));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-send-1won-btn", true);
-          const btn = document.querySelector("#step8-send-1won-btn") as HTMLButtonElement;
-          if (btn) btn.click();
-        }, 17800));
-        
-        // 6. After 1-won is sent (mock latency 1.5s), scroll to code input and type "이지12"
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step8-1won-code-input");
-        }, 20000));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-1won-code-input");
-        }, 21600));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-1won-code-input", true);
-        }, 22400));
-        
-        // Simulate typing the code "이지12"
-        simulateTyping('verificationCode', '이지12', 22800, 100);
-        
-        // 7. Scroll to verify button and click
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step8-verify-btn");
-        }, 24200));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-verify-btn");
-        }, 25800));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-verify-btn", true);
-          const btn = document.querySelector("#step8-verify-btn") as HTMLButtonElement;
-          if (btn) btn.click();
-        }, 26800));
-        
-        // 8. Scroll to next button and click
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step8-next-btn");
-        }, 28500));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-next-btn");
-        }, 30100));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step8-next-btn", true);
-          const btn = document.querySelector("#step8-next-btn") as HTMLButtonElement;
-          if (btn) btn.click();
-        }, 31100));
+                // 5. Scroll to next button and click (1-won verification is temporarily bypassed)
+                subTimers.push(setTimeout(() => {
+                  scrollToSelector("#step8-next-btn");
+                }, 15200));
+                subTimers.push(setTimeout(() => {
+                  sendPointerToElement("#step8-next-btn");
+                }, 16800));
+                subTimers.push(setTimeout(() => {
+                  sendPointerToElement("#step8-next-btn", true);
+                  const btn = document.querySelector("#step8-next-btn") as HTMLButtonElement;
+                  if (btn) btn.click();
+                }, 17800));
         
       } else if (step === 9) {
         // Step 9: Final consent - mobile signature
@@ -2384,8 +2344,8 @@ export default function EstimatePage() {
   };
 
   const handleGoToStep9 = () => {
-    if (!is1WonVerified) {
-      toast({ variant: "destructive", title: t("인증 필요"), description: t("계좌 1원 인증을 완료해 주세요.") });
+    if (!formData.bankName || !formData.accountNumber.trim()) {
+      toast({ variant: "destructive", title: t("정보 입력 필요"), description: t("은행명과 계좌번호를 모두 입력해 주세요.") });
       return;
     }
     setStep(9);
@@ -4083,7 +4043,8 @@ export default function EstimatePage() {
                       </p>
                     </div>
 
-                    {/* 1원 송금 및 인증 인터페이스 */}
+                    {/* 1원 송금 및 인증 인터페이스 (광고 테스트를 위해 임시 숨김) */}
+                    {/*
                     <div className="pt-4">
                       {!is1WonSent ? (
                         <Button
@@ -4144,12 +4105,13 @@ export default function EstimatePage() {
                         </div>
                       )}
                     </div>
+                    */}
                   </div>
 
                   <Button
                     id="step8-next-btn"
                     onClick={handleGoToStep9}
-                    disabled={!is1WonVerified}
+                    disabled={!formData.bankName || !formData.accountNumber.trim()}
                     className="w-full h-24 bg-primary text-3xl font-black rounded-[2rem] shadow-xl shadow-primary/20 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:pointer-events-none"
                   >
                     {t('확인 완료 및 다음 단계')}

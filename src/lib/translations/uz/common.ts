@@ -84,7 +84,7 @@ export const common = {
   "신한은행": "Shinhan Bank",
   "언어 선택": "Tilni tanlash",
   "업로드 실패": "Yuklash amalga oshmadi",
-  "연락처: 010-4885-8575 | 이메일: zkfnth01@naver.com": "Aloqa: 010-4885-8575 | Email: zkfnth01@naver.com",
+  "연락처: 010-5864-8577 | 이메일: zkfnth01@naver.com": "Aloqa: 010-5864-8577 | Email: zkfnth01@naver.com",
   "연락처와 통신사 정보를 모두 입력해 주세요.": "Iltimos, barcha aloqa ma'lumotlarini kiriting.",
   "완료": "Yakunlandi",
   "우리은행": "Woori Bank",

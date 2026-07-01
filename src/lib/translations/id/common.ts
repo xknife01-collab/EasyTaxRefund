@@ -84,7 +84,7 @@ export const common = {
   "신한은행": "Bank Shinhan",
   "언어 선택": "Pilih Bahasa",
   "업로드 실패": "Unggah Gagal",
-  "연락처: 010-4885-8575 | 이메일: zkfnth01@naver.com": "Kontak: 010-4885-8575 | Email: zkfnth01@naver.com",
+  "연락처: 010-5864-8577 | 이메일: zkfnth01@naver.com": "Kontak: 010-5864-8577 | Email: zkfnth01@naver.com",
   "연락처와 통신사 정보를 모두 입력해 주세요.": "Silakan masukkan kontak dan informasi operator seluler.",
   "완료": "Selesai",
   "우리은행": "Bank Woori",

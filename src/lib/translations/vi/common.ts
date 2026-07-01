@@ -84,7 +84,7 @@ export const common = {
   "신한은행": "Ngân hàng Shinhan",
   "언어 선택": "Lựa chọn ngôn ngữ",
   "업로드 실패": "Tải lên thất bại",
-  "연락처: 010-4885-8575 | 이메일: zkfnth01@naver.com": "Liên hệ: 010-4885-8575 | Email: zkfnth01@naver.com",
+  "연락처: 010-5864-8577 | 이메일: zkfnth01@naver.com": "Liên hệ: 010-5864-8577 | Email: zkfnth01@naver.com",
   "연락처와 통신사 정보를 모두 입력해 주세요.": "Vui lòng nhập đầy đủ thông tin liên hệ và nhà mạng.",
   "완료": "Hoàn tất",
   "우리은행": "Ngân hàng Woori",
