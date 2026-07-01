@@ -237,7 +237,33 @@ export default function AdminStatsPage() {
     funnel[0] = totalVisits;
 
     countryFilteredApps.forEach(app => {
-      const max = app.lastStep || 0;
+      let max = app.lastStep;
+      if (max === undefined || max === null) {
+        const status = app.status;
+        if (status === 'RefundCompleted' || app.paymentStatus === 'paid') {
+          max = 9;
+        } else if (status === 'NTSReviewing' || status === 'NTSDocumentReceipt') {
+          max = 9;
+        } else if (status === 'TaxOfficeReviewing' || status === 'TaxAccountantReceiving') {
+          max = 8;
+        } else if (status === 'AdditionalDocsNeeded') {
+          max = 8;
+        } else if (status === 'Applying') {
+          max = 8;
+        } else if (status === 'InquiryCompleted') {
+          max = 7;
+        } else if (status === 'bank_verification') {
+          max = 8;
+        } else if (status === 'document_submitted') {
+          max = 6;
+        } else if (status === 'identity_verified') {
+          max = 3;
+        } else if (status === 'welcome') {
+          max = 1;
+        } else {
+          max = 1;
+        }
+      }
       for (let i = 1; i <= Math.min(max, 9); i++) {
         funnel[i] = (funnel[i] || 0) + 1;
       }

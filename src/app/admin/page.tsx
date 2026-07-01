@@ -389,8 +389,33 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
         byUtm[source].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.25);
       }
 
-      // 퍼널 추적
-      const maxStep = app.lastStep || 1;
+      let maxStep = app.lastStep;
+      if (maxStep === undefined || maxStep === null) {
+        const status = app.status;
+        if (status === 'RefundCompleted' || app.paymentStatus === 'paid') {
+          maxStep = 9;
+        } else if (status === 'NTSReviewing' || status === 'NTSDocumentReceipt') {
+          maxStep = 9;
+        } else if (status === 'TaxOfficeReviewing' || status === 'TaxAccountantReceiving') {
+          maxStep = 8;
+        } else if (status === 'AdditionalDocsNeeded') {
+          maxStep = 8;
+        } else if (status === 'Applying') {
+          maxStep = 8;
+        } else if (status === 'InquiryCompleted') {
+          maxStep = 7;
+        } else if (status === 'bank_verification') {
+          maxStep = 8;
+        } else if (status === 'document_submitted') {
+          maxStep = 6;
+        } else if (status === 'identity_verified') {
+          maxStep = 3;
+        } else if (status === 'welcome') {
+          maxStep = 1;
+        } else {
+          maxStep = 1;
+        }
+      }
       for (let i = 1; i <= Math.min(maxStep, 8); i++) {
         funnel[i] = (funnel[i] || 0) + 1;
       }
