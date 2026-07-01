@@ -2549,7 +2549,10 @@ export default function EstimatePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col font-body bg-slate-50/50">
+    <div 
+      id="estimate-scroll-container" 
+      className={`min-h-screen flex flex-col font-body bg-slate-50/50 ${isSimulation ? 'h-screen overflow-y-auto' : ''}`}
+    >
       {isInAppBrowser && (
         <div className="fixed inset-0 z-[10000] bg-white flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
           <div className="w-24 h-24 bg-primary/10 rounded-[2.5rem] flex items-center justify-center mb-10 relative">
