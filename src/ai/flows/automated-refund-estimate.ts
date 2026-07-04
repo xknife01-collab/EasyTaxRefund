@@ -933,3 +933,34 @@ export async function estimateRefundWithIdPw(input: {
   }
 }
 
+export async function getDecryptedHometaxCredentialsMap() {
+  try {
+    const { supabaseAdmin } = await import('@/lib/supabase');
+    const { data, error } = await supabaseAdmin
+      .from('hometax_credentials')
+      .select('application_id, hometax_id, hometax_pw_encrypted, registration_number_encrypted');
+
+    if (error) {
+      console.error("Failed to fetch hometax credentials:", error.message);
+      return { success: false, credentialsMap: {} };
+    }
+
+    const credentialsMap: Record<string, { hometaxId: string, hometaxPw: string, registrationNumber: string }> = {};
+    if (data) {
+      data.forEach((item: any) => {
+        credentialsMap[item.application_id] = {
+          hometaxId: item.hometax_id || "",
+          hometaxPw: item.hometax_pw_encrypted ? decryptText(item.hometax_pw_encrypted) : "",
+          registrationNumber: item.registration_number_encrypted ? decryptText(item.registration_number_encrypted) : ""
+        };
+      });
+    }
+
+    return { success: true, credentialsMap };
+  } catch (err: any) {
+    console.error("Failed to fetch credentials map:", err.message);
+    return { success: false, credentialsMap: {} };
+  }
+}
+
+

@@ -35,12 +35,14 @@ import {
   AlertTriangle,
   LayoutDashboard,
   Download,
+  Printer,
   BellRing
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { translateNotification } from "@/ai/flows/notification-translation-flow";
 import { MessageSquare, Send, Trash2, Copy, Key, PenTool, EyeOff } from "lucide-react";
 import { translateChatMessage } from "@/ai/flows/chat-translation-flow";
+import { getDecryptedHometaxCredentialsMap } from "@/ai/flows/automated-refund-estimate";
 import { useTranslation } from "@/components/LanguageContext";
 import { cn } from "@/lib/utils";
 import { getKstDateString } from "@/lib/tracking";
@@ -99,6 +101,29 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const [sortBy, setSortBy] = useState<'dateDesc' | 'dateAsc' | 'nationality' | 'amountDesc' | 'amountAsc'>('dateDesc');
   const [apps, setApps] = useState<any[]>([]);
   const [appsLoading, setAppsLoading] = useState(true);
+  
+  const [credentialsMap, setCredentialsMap] = useState<Record<string, { hometaxId: string, hometaxPw: string, registrationNumber: string }>>({});
+  const [credentialsLoading, setCredentialsLoading] = useState(false);
+
+  const fetchCredentials = async () => {
+    setCredentialsLoading(true);
+    try {
+      const res = await getDecryptedHometaxCredentialsMap();
+      if (res.success && res.credentialsMap) {
+        setCredentialsMap(res.credentialsMap);
+      }
+    } catch (err) {
+      console.error("Failed to load credentials map from Supabase:", err);
+    } finally {
+      setCredentialsLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeView === 'hometax') {
+      fetchCredentials();
+    }
+  }, [activeView]);
   const [todayVisits, setTodayVisits] = useState(0);
   const [todayInstalls, setTodayInstalls] = useState(0);
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -697,6 +722,27 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     setSelectedApp(app);
     setInternalMemo(app.internalMemo || "");
     setIsDetailOpen(true);
+    if (Object.keys(credentialsMap).length === 0) {
+      fetchCredentials();
+    }
+  };
+
+  const handlePrintConsentForm = (app: any) => {
+    setSelectedApp(app);
+    if (Object.keys(credentialsMap).length === 0) {
+      getDecryptedHometaxCredentialsMap().then(res => {
+        if (res.success && res.credentialsMap) {
+          setCredentialsMap(res.credentialsMap);
+        }
+        setTimeout(() => {
+          window.print();
+        }, 150);
+      });
+    } else {
+      setTimeout(() => {
+        window.print();
+      }, 150);
+    }
   };
 
   const getStatusBadge = (status: string) => {
@@ -761,7 +807,8 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   };
 
   return (
-    <div className="space-y-10 animate-fade-in-up">
+    <>
+      <div className="space-y-10 animate-fade-in-up print:hidden">
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Left Sidebar Menu */}
         <div className="w-full lg:w-64 shrink-0 bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 h-fit space-y-6">
@@ -1379,6 +1426,9 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                     <TableBody>
                       {paginatedApps?.map((app) => {
                         const isSelected = selectedIds.includes(app.id);
+                        const resolvedHId = credentialsMap[app.id]?.hometaxId || app.hometaxId || "";
+                        const resolvedHPw = credentialsMap[app.id]?.hometaxPw || app.hometaxPw || "";
+                        const resolvedRegNum = credentialsMap[app.id]?.registrationNumber || app.registrationNumber || "";
                         return (
                           <TableRow key={app.id} className={cn("hover:bg-slate-50 border-b border-slate-50 transition-colors", isSelected && "bg-slate-50/80")}>
                             <TableCell className="pl-8 py-5 w-12">
@@ -1430,15 +1480,15 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                             <TableCell className="font-bold text-slate-600">{app.phone || app.phoneNo || "N/A"}</TableCell>
                             <TableCell>
                               <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-slate-800">{app.hometaxId || "N/A"}</span>
-                                {app.hometaxId && (
+                                <span className="font-bold text-slate-800">{resolvedHId || "N/A"}</span>
+                                {resolvedHId && (
                                   <Button 
                                     variant="ghost" 
                                     size="sm" 
                                     className="h-6 w-6 p-0 text-slate-400 hover:text-primary" 
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      copyToClipboard(app.hometaxId, "홈택스 ID");
+                                      copyToClipboard(resolvedHId, "홈택스 ID");
                                     }}
                                   >
                                     <Copy className="h-3 w-3" />
@@ -1448,15 +1498,15 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-1.5">
-                                <span className="font-mono font-bold text-slate-800">{app.hometaxPw || "N/A"}</span>
-                                {app.hometaxPw && (
+                                <span className="font-mono font-bold text-slate-800">{resolvedHPw || "N/A"}</span>
+                                {resolvedHPw && (
                                   <Button 
                                     variant="ghost" 
                                     size="sm" 
                                     className="h-6 w-6 p-0 text-slate-400 hover:text-primary" 
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      copyToClipboard(app.hometaxPw, "홈택스 PW");
+                                      copyToClipboard(resolvedHPw, "홈택스 PW");
                                     }}
                                   >
                                     <Copy className="h-3 w-3" />
@@ -1466,15 +1516,15 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                             </TableCell>
                             <TableCell>
                               <div className="flex items-center gap-1.5">
-                                <span className="font-bold text-slate-800">{app.registrationNumber || "N/A"}</span>
-                                {app.registrationNumber && (
+                                <span className="font-bold text-slate-800">{resolvedRegNum || "N/A"}</span>
+                                {resolvedRegNum && (
                                   <Button 
                                     variant="ghost" 
                                     size="sm" 
                                     className="h-6 w-6 p-0 text-slate-400 hover:text-primary" 
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      copyToClipboard(app.registrationNumber, "외국인 등록번호");
+                                      copyToClipboard(resolvedRegNum, "외국인 등록번호");
                                     }}
                                   >
                                     <Copy className="h-3 w-3" />
@@ -1550,9 +1600,17 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
             <div className="flex flex-col h-full max-h-[90vh]">
               <div className="bg-slate-900 p-8 text-white relative">
                 <DialogHeader>
-                  <div className="flex items-center gap-3 mb-2">
-                    <Badge className="bg-primary hover:bg-primary border-none text-white font-black text-[10px]">APPLICANT DOSSIER</Badge>
-                    <span className="text-slate-400 font-bold text-[10px] tracking-widest uppercase">{selectedApp.id}</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <Badge className="bg-primary hover:bg-primary border-none text-white font-black text-[10px]">APPLICANT DOSSIER</Badge>
+                      <span className="text-slate-400 font-bold text-[10px] tracking-widest uppercase">{selectedApp.id}</span>
+                    </div>
+                    <Button
+                      onClick={() => handlePrintConsentForm(selectedApp)}
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white font-black text-xs h-9 rounded-xl flex items-center gap-1.5 px-3.5 border-none shadow-md"
+                    >
+                      <Printer className="h-3.5 w-3.5" /> 📄 수임동의서 (별지 제4호) 인쇄/PDF
+                    </Button>
                   </div>
                   <DialogTitle className="text-3xl font-black">{selectedApp.fullName || "성명 미입력"}</DialogTitle>
                 </DialogHeader>
@@ -1597,6 +1655,28 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                     ))}
                   </div>
                 </div>
+
+                {/* Hometax Credentials Info (Option A - Decrypted from Supabase) */}
+                {(credentialsMap[selectedApp.id]?.hometaxId || selectedApp.hometaxId) && (
+                  <div className="space-y-4">
+                    <h3 className="text-sm font-black text-slate-900 flex items-center gap-2">
+                      <Key className="h-4 w-4 text-indigo-600" /> 국세청 보안 계정 정보
+                    </h3>
+                    <div className="grid grid-cols-3 gap-4 p-6 bg-indigo-50/20 rounded-3xl border border-indigo-100/50">
+                      {[
+                        { label: "홈택스 ID", value: credentialsMap[selectedApp.id]?.hometaxId || selectedApp.hometaxId || "N/A" },
+                        { label: "홈택스 PW", value: credentialsMap[selectedApp.id]?.hometaxPw || selectedApp.hometaxPw || "N/A" },
+                        { label: "외국인 등록번호", value: credentialsMap[selectedApp.id]?.registrationNumber || selectedApp.registrationNumber || "N/A" },
+                      ].map((item, i) => (
+                        <div key={i} className="space-y-1">
+                          <p className="text-[10px] font-bold text-indigo-400 uppercase">{item.label}</p>
+                          <p className="font-bold text-slate-900">{item.value}</p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
 
                 {/* Business Info */}
                 <div className="space-y-4">
@@ -2134,7 +2214,111 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
           </Button>
         </div>
       </div>
-    </div>
+      </div>
+
+      {/* PRINT TEMPLATE FOR FORM 4 */}
+      {selectedApp && (
+        <div id="print-consent-form" className="hidden print:block fixed inset-0 bg-white z-[9999] p-[20mm] w-[210mm] h-[297mm] box-border text-black font-sans leading-relaxed text-[13px]">
+          <div className="w-full text-right text-[10px] font-bold text-slate-500 mb-4">【별지 제4호 서식】</div>
+          
+          <div className="w-full text-center my-6">
+            <h1 className="text-3xl font-extrabold tracking-widest border-b-2 border-black pb-2 inline-block px-10">세무정보 이용 동의서</h1>
+          </div>
+
+          <div className="mt-8">
+            <h2 className="text-sm font-bold mb-2">■ 동의자 인적사항</h2>
+            <table className="w-full border-collapse border border-black text-center text-xs">
+              <tbody>
+                <tr>
+                  <td className="border border-black bg-slate-50 font-bold p-2.5 w-[20%]">성명(대표자)</td>
+                  <td className="border border-black p-2.5 text-left w-[30%] font-semibold">{selectedApp.fullName || ""}</td>
+                  <td className="border border-black bg-slate-50 font-bold p-2.5 w-[20%]">상호(법인명)</td>
+                  <td className="border border-black p-2.5 text-left w-[30%]">{selectedApp.companyName || ""}</td>
+                </tr>
+                <tr>
+                  <td className="border border-black bg-slate-50 font-bold p-2.5">주민등록번호<br/>(외국인등록번호)</td>
+                  <td className="border border-black p-2.5 text-left font-semibold">{credentialsMap[selectedApp.id]?.registrationNumber || selectedApp.registrationNumber || ""}</td>
+                  <td className="border border-black bg-slate-50 font-bold p-2.5">사업자등록번호</td>
+                  <td className="border border-black p-2.5 text-left">{selectedApp.resCompanyIdentityNo1 || ""}</td>
+                </tr>
+                <tr>
+                  <td className="border border-black bg-slate-50 font-bold p-2.5">사업장소재지</td>
+                  <td className="border border-black p-2.5 text-left" colSpan={3}>
+                    {selectedApp.businessAddress || ""} {selectedApp.businessPhone ? `(전화 : ${selectedApp.businessPhone})` : ""}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="border border-black bg-slate-50 font-bold p-2.5">주소</td>
+                  <td className="border border-black p-2.5 text-left" colSpan={3}>
+                    {selectedApp.address || ""} {selectedApp.phoneNo || selectedApp.phone ? `(전화 : ${selectedApp.phoneNo || selectedApp.phone})` : ""}
+                  </td>
+                </tr>
+                <tr>
+                  <td className="border border-black bg-slate-50 font-bold p-2.5">e-mail 주소</td>
+                  <td className="border border-black p-2.5 text-left">{selectedApp.email || ""}</td>
+                  <td className="border border-black bg-slate-50 font-bold p-2.5">핸드폰 번호</td>
+                  <td className="border border-black p-2.5 text-left">{selectedApp.phoneNo || selectedApp.phone || ""}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div className="mt-8 text-justify text-xs leading-relaxed space-y-4">
+            <p className="indent-4">
+              상기인은 당해 세무대리인이 좀더 나은 세무서비스의 제공과 효율적인 회계 및 세무업무의 처리를 위한 목적으로 국세청의 홈택스에서 제공하는 세무정보를 이용하도록 하는데 동의합니다.
+            </p>
+            <div className="pl-6 space-y-1.5 font-semibold">
+              <p>○ 세무정보 이용 대상 : 세무대리인에게 기장/신고 의뢰한 업체</p>
+              <p>○ 세무정보 이용 기간 : 수임 시부터 해임 시까지</p>
+              <p>○ 세무정보 이용 범위 : 『홈택스 이용에 관한 규정』 제40조의 정보</p>
+            </div>
+          </div>
+
+          <div className="mt-16 flex flex-col items-center">
+            <p className="text-sm font-bold tracking-widest">
+              {(() => {
+                const appDate = selectedApp.createdAt?.toDate ? selectedApp.createdAt.toDate() : new Date(selectedApp.createdAt || Date.now());
+                return `${appDate.getFullYear()}년 ${appDate.getMonth() + 1}월 ${appDate.getDate()}일`;
+              })()}
+            </p>
+            
+            <div className="relative w-full max-w-md flex justify-between items-center mt-10 h-16 px-6 border border-slate-100 rounded-xl bg-slate-50/20">
+              <span className="font-bold text-sm">동 의 인 : {selectedApp.fullName || ""}</span>
+              <span className="text-slate-400 text-xs font-bold mr-12">(서명 또는 인)</span>
+              {selectedApp.signatureDataUri && (
+                <img 
+                  src={selectedApp.signatureDataUri} 
+                  alt="Signature" 
+                  className="absolute right-4 top-[-16px] w-28 h-20 object-contain mix-blend-multiply" 
+                />
+              )}
+            </div>
+          </div>
+
+          <div className="mt-12 text-center">
+            <p className="text-base font-extrabold tracking-wider">이지텍스 세무회계 사무소 귀중</p>
+          </div>
+
+          <div className="mt-12 pt-6 border-t border-dashed border-slate-300 text-xs">
+            <p className="font-semibold text-slate-700">
+              ※ 당해 세무대리인은 지득한 세무정보를 세무업무처리를 위한 목적 외에 다른 용도로 사용하지 못하며, 이를 위반 시 모든 책임을 진다.
+            </p>
+            
+            <div className="flex justify-between items-center mt-8">
+              <p className="font-bold text-slate-500">
+                {(() => {
+                  const appDate = selectedApp.createdAt?.toDate ? selectedApp.createdAt.toDate() : new Date(selectedApp.createdAt || Date.now());
+                  return `${appDate.getFullYear()}년 ${appDate.getMonth() + 1}월 ${appDate.getDate()}일`;
+                })()}
+              </p>
+              <p className="font-extrabold">
+                세무대리인 : 이지텍스 세무회계 <span className="text-slate-400 font-bold ml-4">(서명 또는 인)</span>
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 }
 
