@@ -25,7 +25,6 @@ export const ne = {
 
   // Custom Date
   "{year}년 {month}월 {day}일": "{year} वर्ष {month} महिना {day} गते",
-  "_version": "1.0.1-" + Date.now()
 };
 
 console.log('Nepali translations (ne_new_stable) loaded at:', new Date().toISOString());
