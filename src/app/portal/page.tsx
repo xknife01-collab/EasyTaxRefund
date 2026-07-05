@@ -63,6 +63,7 @@ export default function ClientPortal() {
   const [isDocumentOpen, setIsDocumentOpen] = useState(false);
   const [isUploadOpen, setIsUploadOpen] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [selectedRequestForUpload, setSelectedRequestForUpload] = useState<any>(null);
   
   // Chat States
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -205,7 +206,7 @@ export default function ClientPortal() {
   const profileLoading = false;
   const notifsLoading = false;
 
-  const uploadedDocs: any[] = [];
+  const uploadedDocs: any[] = currentApp?.uploadedDocs || [];
 
   const steps = [
     { label: t("조회 완료"), status: "InquiryCompleted", icon: <CheckCircle2 className="h-5 w-5" /> },
@@ -229,21 +230,107 @@ export default function ClientPortal() {
     });
   };
 
+  const compressImage = (base64Str: string, maxSide = 1024, quality = 0.7): Promise<string> => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = base64Str;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        let width = img.width;
+        let height = img.height;
+
+        if (width > height) {
+          if (width > maxSide) {
+            height = Math.round((height * maxSide) / width);
+            width = maxSide;
+          }
+        } else {
+          if (height > maxSide) {
+            width = Math.round((width * maxSide) / height);
+            height = maxSide;
+          }
+        }
+
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (ctx) {
+          ctx.drawImage(img, 0, 0, width, height);
+          resolve(canvas.toDataURL('image/jpeg', quality));
+        } else {
+          resolve(base64Str);
+        }
+      };
+      img.onerror = () => {
+        resolve(base64Str);
+      };
+    });
+  };
+
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file || !currentApp || !user) return;
+
+    const isImage = file.type.startsWith('image/');
+    if (!isImage && file.size > 600 * 1024) {
+      toast({
+        variant: "destructive",
+        title: t("파일 용량 초과"),
+        description: t("이미지가 아닌 파일은 600KB 이하만 업로드 가능합니다.")
+      });
+      return;
+    }
 
     setIsUploading(true);
     try {
       const reader = new FileReader();
       reader.onload = async (e) => {
-        const dataUri = e.target?.result as string;
-        await new Promise(r => setTimeout(r, 1000));
-        toast({ title: t("문서 업로드 성공"), description: t("{fileName}이(가) 안전하게 제출되었습니다.", { fileName: file.name }) });
+        let fileDataUri = e.target?.result as string;
+
+        if (isImage) {
+          try {
+            fileDataUri = await compressImage(fileDataUri);
+          } catch (compressErr) {
+            console.error("Compression error:", compressErr);
+          }
+        }
+
+        const appRef = doc(db, 'applications', currentApp.id);
+        const newDoc = {
+          id: Math.random().toString(36).substring(7),
+          name: selectedRequestForUpload ? selectedRequestForUpload.name : file.name,
+          fileName: file.name,
+          uploadedAt: new Date().toISOString(),
+          dataUri: fileDataUri,
+          type: file.type
+        };
+
+        const existingDocs = currentApp.uploadedDocs || [];
+        const updatedDocs = [...existingDocs, newDoc];
+
+        let updatedRequests = currentApp.pendingDocRequests || [];
+        if (selectedRequestForUpload) {
+          updatedRequests = updatedRequests.map((r: any) => 
+            r.id === selectedRequestForUpload.id ? { ...r, status: 'completed', completedAt: new Date().toISOString() } : r
+          );
+        }
+
+        await updateDoc(appRef, {
+          uploadedDocs: updatedDocs,
+          pendingDocRequests: updatedRequests
+        });
+
+        toast({ 
+          title: t("문서 업로드 성공"), 
+          description: t("{fileName}이(가) 안전하게 제출되었습니다.", { fileName: file.name }) 
+        });
+        
         setIsUploadOpen(false);
+        setSelectedRequestForUpload(null);
       };
       reader.readAsDataURL(file);
     } catch (error) {
+      console.error("Upload error:", error);
       toast({ variant: "destructive", title: t("업로드 실패"), description: t("다시 시도해 주세요.") });
     } finally {
       setIsUploading(false);
@@ -378,7 +465,10 @@ export default function ClientPortal() {
                         <span className="text-lg font-black text-slate-800">{req.translatedName || req.name}</span>
                       </div>
                       <Button 
-                        onClick={() => setIsUploadOpen(true)}
+                        onClick={() => {
+                          setSelectedRequestForUpload(req);
+                          setIsUploadOpen(true);
+                        }}
                         className="w-full sm:w-auto px-8 h-12 bg-amber-500 hover:bg-amber-600 text-white font-black rounded-xl shadow-lg shadow-amber-500/20"
                       >
                         {t('지금 업로드')}
@@ -511,7 +601,10 @@ export default function ClientPortal() {
                       variant="ghost"
                       size="sm"
                       className="rounded-xl text-primary font-black hover:bg-primary/10"
-                      onClick={() => setIsUploadOpen(true)}
+                      onClick={() => {
+                        setSelectedRequestForUpload(null);
+                        setIsUploadOpen(true);
+                      }}
                     >
                       <Plus className="h-4 w-4 mr-1" /> {t('추가 업로드')}
                     </Button>

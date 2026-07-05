@@ -728,125 +728,92 @@ export default function EstimatePage() {
         }, 14900));
 
       } else if (step === 4) {
-        // Step 4: Hometax 1-minute Signup & Query simulation
-        scrollToTop()
-        
-        // Ensure we are on the 'signup' tab
-        setAuthTab('signup');
+        // Step 4: Certificate flow guide & Hometax signup/query simulation
+        scrollToTop();
 
-        // 1. Scroll to top anchor of step 4
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step4-top-anchor");
-        }, 800));
+        if (hasCertificate === null) {
+          // 1. Scroll to No Certificate card
+          subTimers.push(setTimeout(() => {
+            scrollToSelector("#step4-cert-no");
+          }, 800));
+          subTimers.push(setTimeout(() => {
+            sendPointerToElement("#step4-cert-no");
+          }, 2000));
+          subTimers.push(setTimeout(() => {
+            sendPointerToElement("#step4-cert-no", true);
+            const noBtn = document.querySelector("#step4-cert-no") as HTMLElement;
+            if (noBtn) noBtn.click();
+          }, 2800));
 
-        // 2. Select ID field and type ID
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-id");
-        }, 2000)); // 1200ms delay after scroll start
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-id", true);
-        }, 2600));
-        
-        // Simulate typing ID: "taxpayer123" (11 chars)
-        simulateTyping('hometaxId' as any, 'taxpayer123', 2900, 100);
+        } else if (hasCertificate === false) {
+          // 2. We are in the guide view. Show tabs switching (Hana -> PASS -> Kakao)
+          // Hana is active by default. Let's switch to PASS after 2s.
+          subTimers.push(setTimeout(() => {
+            setAuthMethod('app'); // Switch to PASS
+          }, 2000));
+          // Switch to Kakao after 4s
+          subTimers.push(setTimeout(() => {
+            setAuthMethod('kakao'); // Switch to Kakao
+          }, 4000));
+          // Scroll down to the Done button
+          subTimers.push(setTimeout(() => {
+            scrollToSelector("#step4-cert-complete-btn");
+          }, 5500));
+          // Move pointer to the Done button
+          subTimers.push(setTimeout(() => {
+            sendPointerToElement("#step4-cert-complete-btn");
+          }, 6800));
+          // Click it to transition to hasCertificate = true
+          subTimers.push(setTimeout(() => {
+            sendPointerToElement("#step4-cert-complete-btn", true);
+            setHasCertificate(true);
+          }, 7600));
 
-        // 3. Click Duplicate Check Button
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-id-check");
-        }, 4400));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-id-check", true);
-          const checkBtn = document.querySelector("#step4-signup-id-check") as HTMLButtonElement;
-          if (checkBtn) checkBtn.click();
-        }, 5100));
-
-        // 4. Scroll to PW field, select it, and type PW
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step4-signup-pw");
-        }, 6100));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-pw");
-        }, 7300)); // 1200ms delay after scroll start
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-pw", true);
-        }, 8000));
-
-        // Simulate typing PW: "SecurePass12!" (13 chars)
-        simulateTyping('hometaxPw' as any, 'SecurePass12!', 8300, 100);
-
-        // 5. Scroll to PW Confirm field, select it, and type PW Confirm
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step4-signup-pw-confirm");
-        }, 10200));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-pw-confirm");
-        }, 11400)); // 1200ms delay after scroll start
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-pw-confirm", true);
-        }, 12100));
-
-        // Simulate typing PW Confirm: "SecurePass12!" (13 chars)
-        simulateTyping('hometaxPwConfirm' as any, 'SecurePass12!', 12400, 100);
-
-        // 6. Scroll to Email field, select it, and type Email
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step4-signup-email");
-        }, 14300));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-email");
-        }, 15500)); // 1200ms delay after scroll start
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-email", true);
-        }, 16200));
-
-        // Simulate typing Email: "user@example.com" (16 chars)
-        simulateTyping('hometaxEmail' as any, 'user@example.com', 16500, 100);
-
-        // 7. Scroll to Request SMS Button and click it
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step4-signup-request-sms-btn");
-        }, 19000));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-request-sms-btn");
-        }, 20200)); // 1200ms delay after scroll start
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-request-sms-btn", true);
-          const reqBtn = document.querySelector("#step4-signup-request-sms-btn") as HTMLButtonElement;
-          if (reqBtn) reqBtn.click();
-        }, 20900));
-
-        // 8. Scroll to SMS Verification code field, select it, and type SMS Code
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step4-signup-sms-code");
-        }, 21900));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-sms-code");
-        }, 23100)); // 1200ms delay after scroll start
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-sms-code", true);
-        }, 23800));
-
-        // Simulate typing SMS Code: "123456" (6 chars)
-        simulateTyping('smsCode' as any, '123456', 24100, 100);
-
-        // 9. Scroll to Complete Signup Button and click it
-        subTimers.push(setTimeout(() => {
-          scrollToSelector("#step4-signup-complete-btn");
-        }, 25300));
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-complete-btn");
-        }, 26500)); // 1200ms delay after scroll start
-        subTimers.push(setTimeout(() => {
-          sendPointerToElement("#step4-signup-complete-btn", true);
-          const doneBtn = document.querySelector("#step4-signup-complete-btn") as HTMLButtonElement;
-          if (doneBtn) doneBtn.click();
-        }, 27200));
+        } else if (hasCertificate === true) {
+          // 3. Scroll down to the submit button on the certification selection screen
+          subTimers.push(setTimeout(() => {
+            scrollToSelector("#step4-submit-btn");
+          }, 800));
+          // Move virtual pointer to the button
+          subTimers.push(setTimeout(() => {
+            sendPointerToElement("#step4-submit-btn");
+          }, 2000));
+          // Click the button
+          subTimers.push(setTimeout(() => {
+            sendPointerToElement("#step4-submit-btn", true);
+            const submitBtn = document.querySelector("#step4-submit-btn") as HTMLButtonElement;
+            if (submitBtn) submitBtn.click();
+          }, 2800));
+        }
 
       } else if (step === 5) {
-        // Step 5: Verification confirm wait state (legacy/unused, auto-proceeds to step 6)
+        // Step 5: Verification confirm wait state
+        // 1. Scroll to top of Step 5 first to show verification request status
         subTimers.push(setTimeout(() => {
-          setStep(6);
-        }, 100));
+          scrollToSelector("#step5-top-anchor");
+        }, 200));
+        
+        // 2. Scroll down to the guide section
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step5-auth-guide-container");
+        }, 1500));
+        
+        // 3. Scroll down to the submit button at the bottom
+        subTimers.push(setTimeout(() => {
+          scrollToSelector("#step5-submit-btn");
+        }, 3200));
+        
+        // 4. Move virtual cursor to the button
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step5-submit-btn");
+        }, 4400));
+
+        // 5. Click the button to trigger handleFinalVerifyAndAnalyze
+        subTimers.push(setTimeout(() => {
+          sendPointerToElement("#step5-submit-btn", true);
+          const btn = document.querySelector("#step5-submit-btn") as HTMLButtonElement;
+          if (btn) btn.click();
+        }, 5200));
 
       } else if (step === 6) {
         // Step 6: Processing / loading screen
@@ -3657,6 +3624,7 @@ export default function EstimatePage() {
                       )}
 
                       <Button
+                        id="step4-cert-complete-btn"
                         onClick={() => setHasCertificate(true)}
                         className="w-full h-20 bg-primary text-xl sm:text-2xl font-black rounded-3xl shadow-xl shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all"
                       >
@@ -3786,7 +3754,7 @@ export default function EstimatePage() {
 
             {step === 5 && (
               <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
-                <CardHeader className="text-center py-12 bg-slate-50/50 relative">
+                <CardHeader id="step5-top-anchor" className="text-center py-12 bg-slate-50/50 relative">
                   <Button
                     variant="ghost"
                     size="sm"
@@ -3838,7 +3806,7 @@ export default function EstimatePage() {
                           {t('외국 국적자는 통신사에 등록된 이름이 신분증과 다른 경우가 많습니다. 알림이 오지 않는다면 AI가 제안해 준 추천 성명을 하나씩 시도해 보세요.')}
                         </p>
 
-                        <div className="pt-2 space-y-4">
+                        <div id="step5-auth-guide-container" className="pt-2 space-y-4">
                           {true ? (
                             <div className="space-y-4">
                               <EmbeddedAuthGuide authMethod={authMethod} />

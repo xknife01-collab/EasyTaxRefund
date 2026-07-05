@@ -243,33 +243,31 @@ export default function AdminStatsPage() {
     funnel[0] = totalVisits;
 
     countryFilteredApps.forEach(app => {
-      let max = app.lastStep;
-      if (max === undefined || max === null) {
-        const status = app.status;
-        if (status === 'RefundCompleted' || app.paymentStatus === 'paid') {
-          max = 9;
-        } else if (status === 'NTSReviewing' || status === 'NTSDocumentReceipt') {
-          max = 9;
-        } else if (status === 'TaxOfficeReviewing' || status === 'TaxAccountantReceiving') {
-          max = 8;
-        } else if (status === 'AdditionalDocsNeeded') {
-          max = 8;
-        } else if (status === 'Applying') {
-          max = 8;
-        } else if (status === 'InquiryCompleted') {
-          max = 7;
-        } else if (status === 'bank_verification') {
-          max = 8;
-        } else if (status === 'document_submitted') {
-          max = 6;
-        } else if (status === 'identity_verified') {
-          max = 3;
-        } else if (status === 'welcome') {
-          max = 1;
-        } else {
-          max = 1;
-        }
+      let statusInferredStep = 1;
+      const status = app.status;
+      if (status === 'RefundCompleted' || app.paymentStatus === 'paid') {
+        statusInferredStep = 9;
+      } else if (status === 'NTSReviewing' || status === 'NTSDocumentReceipt') {
+        statusInferredStep = 9;
+      } else if (status === 'TaxOfficeReviewing' || status === 'TaxAccountantReceiving') {
+        statusInferredStep = 8;
+      } else if (status === 'AdditionalDocsNeeded') {
+        statusInferredStep = 8;
+      } else if (status === 'Applying') {
+        statusInferredStep = 8;
+      } else if (status === 'InquiryCompleted') {
+        statusInferredStep = 7;
+      } else if (status === 'bank_verification') {
+        statusInferredStep = 8;
+      } else if (status === 'document_submitted') {
+        statusInferredStep = 6;
+      } else if (status === 'identity_verified') {
+        statusInferredStep = 3;
+      } else if (status === 'welcome') {
+        statusInferredStep = 1;
       }
+
+      const max = Math.max(app.lastStep || 0, statusInferredStep);
       for (let i = 1; i <= Math.min(max, 9); i++) {
         funnel[i] = (funnel[i] || 0) + 1;
       }

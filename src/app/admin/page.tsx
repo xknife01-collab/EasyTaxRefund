@@ -40,7 +40,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { translateNotification } from "@/ai/flows/notification-translation-flow";
-import { MessageSquare, Send, Trash2, Copy, Key, PenTool, EyeOff } from "lucide-react";
+import { MessageSquare, Send, Trash2, Copy, Key, PenTool, EyeOff, ZoomIn, ZoomOut, Eye, FileImage } from "lucide-react";
 import { translateChatMessage } from "@/ai/flows/chat-translation-flow";
 import { getDecryptedHometaxCredentialsMap } from "@/ai/flows/automated-refund-estimate";
 import { useTranslation } from "@/components/LanguageContext";
@@ -71,6 +71,8 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const [reportApp, setReportApp] = useState<any>(null);
   const [isTaxReportOpen, setIsTaxReportOpen] = useState(false);
   const [isDocsViewerOpen, setIsDocsViewerOpen] = useState(false);
+  const [activeDocPreview, setActiveDocPreview] = useState<any>(null);
+  const [zoomLevel, setZoomLevel] = useState(1);
   const [isNoteDrawerOpen, setIsNoteDrawerOpen] = useState(false);
   const [noteAppId, setNoteAppId] = useState<string | null>(null);
   const [adminNote, setAdminNote] = useState("");
@@ -176,7 +178,12 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const filteredApps = useMemo(() => {
     let result = [...apps];
     if (activeView === 'dashboard') {
-      result = result.filter(app => app.deletedFromDashboard !== true);
+      result = result.filter(app => app.isDeleted !== true && app.deletedFromDashboard !== true);
+    } else if (activeView === 'hometax') {
+      result = result.filter(app => {
+        const hasHometax = !!(credentialsMap[app.id]?.hometaxId || app.hometaxId);
+        return hasHometax;
+      });
     }
     if (searchId.trim()) {
       const low = searchId.toLowerCase();
@@ -222,7 +229,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     });
 
     return result;
-  }, [apps, searchId, searchName, searchPhone, activeView, sortBy]);
+  }, [apps, searchId, searchName, searchPhone, activeView, sortBy, credentialsMap]);
 
   // Pagination Logic
   const [currentPage, setCurrentPage] = useState(1);
@@ -245,7 +252,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const totalPages = Math.ceil(filteredApps.length / itemsPerPage);
 
   const vipApps = useMemo(() => {
-    return apps.filter(app => (app.preFilterEstimate || 0) >= 400000 && app.deletedFromDashboard !== true).slice(0, 50);
+    return apps.filter(app => (app.preFilterEstimate || 0) >= 400000 && app.isDeleted !== true && app.deletedFromDashboard !== true).slice(0, 50);
   }, [apps]);
 
   // Global Unread & Push Notification Logic
@@ -418,33 +425,31 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
         byUtm[source].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.25);
       }
 
-      let maxStep = app.lastStep;
-      if (maxStep === undefined || maxStep === null) {
-        const status = app.status;
-        if (status === 'RefundCompleted' || app.paymentStatus === 'paid') {
-          maxStep = 9;
-        } else if (status === 'NTSReviewing' || status === 'NTSDocumentReceipt') {
-          maxStep = 9;
-        } else if (status === 'TaxOfficeReviewing' || status === 'TaxAccountantReceiving') {
-          maxStep = 8;
-        } else if (status === 'AdditionalDocsNeeded') {
-          maxStep = 8;
-        } else if (status === 'Applying') {
-          maxStep = 8;
-        } else if (status === 'InquiryCompleted') {
-          maxStep = 7;
-        } else if (status === 'bank_verification') {
-          maxStep = 8;
-        } else if (status === 'document_submitted') {
-          maxStep = 6;
-        } else if (status === 'identity_verified') {
-          maxStep = 3;
-        } else if (status === 'welcome') {
-          maxStep = 1;
-        } else {
-          maxStep = 1;
-        }
+      let statusInferredStep = 1;
+      const status = app.status;
+      if (status === 'RefundCompleted' || app.paymentStatus === 'paid') {
+        statusInferredStep = 9;
+      } else if (status === 'NTSReviewing' || status === 'NTSDocumentReceipt') {
+        statusInferredStep = 9;
+      } else if (status === 'TaxOfficeReviewing' || status === 'TaxAccountantReceiving') {
+        statusInferredStep = 8;
+      } else if (status === 'AdditionalDocsNeeded') {
+        statusInferredStep = 8;
+      } else if (status === 'Applying') {
+        statusInferredStep = 8;
+      } else if (status === 'InquiryCompleted') {
+        statusInferredStep = 7;
+      } else if (status === 'bank_verification') {
+        statusInferredStep = 8;
+      } else if (status === 'document_submitted') {
+        statusInferredStep = 6;
+      } else if (status === 'identity_verified') {
+        statusInferredStep = 3;
+      } else if (status === 'welcome') {
+        statusInferredStep = 1;
       }
+
+      const maxStep = Math.max(app.lastStep || 0, statusInferredStep);
       for (let i = 1; i <= Math.min(maxStep, 8); i++) {
         funnel[i] = (funnel[i] || 0) + 1;
       }
@@ -594,7 +599,10 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
         toast({ title: "영구 삭제 완료", description: "신청자 데이터가 시스템에서 완전히 삭제되었습니다." });
       } else {
         console.log("Soft deleting applicant from dashboard:", appId);
-        await updateDoc(doc(db, 'applications', appId), { deletedFromDashboard: true });
+        await updateDoc(doc(db, 'applications', appId), { 
+          isDeleted: true,
+          deletedFromDashboard: true 
+        });
         toast({ title: "숨김 처리 완료", description: "대시보드 목록에서 숨김 처리되었습니다. 고객 홈택스 정보 뷰에서 계속 확인 가능합니다." });
       }
       setIsDeleteDialogOpen(false);
@@ -627,7 +635,10 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       if (bulkActionType === 'hide') {
         selectedIds.forEach((id) => {
           const docRef = doc(db, 'applications', id);
-          batch.update(docRef, { deletedFromDashboard: true });
+          batch.update(docRef, { 
+            isDeleted: true,
+            deletedFromDashboard: true 
+          });
         });
         await batch.commit();
         toast({ title: "일괄 숨김 처리 완료", description: `선택한 ${selectedIds.length}명의 신청자가 대시보드에서 숨겨졌습니다.` });
@@ -751,6 +762,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       case 'NTSReviewing': return { label: '국세청 검토중', class: 'bg-indigo-100 text-indigo-700' };
       case 'NTSDocumentReceipt': return { label: '국세청 서류접수', class: 'bg-blue-100 text-blue-700' };
       case 'TaxOfficeReviewing': return { label: '세무서 검토 중', class: 'bg-amber-100 text-amber-700' };
+      case 'TaxAccountantReceiving': return { label: '세무사 자료 접수중', class: 'bg-teal-100 text-teal-700' };
       case 'Applying': return { label: '신청 중', class: 'bg-primary/10 text-primary' };
       case 'AdditionalDocsNeeded': return { label: '서류 보완 필요', class: 'bg-red-100 text-red-600 font-black' };
       default: return { label: '조회 완료', class: 'bg-slate-100 text-slate-500' };
@@ -1076,7 +1088,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                                 </div>
                                 <Button variant="outline" size="sm" className="h-7 w-fit rounded-lg font-black text-[10px] text-emerald-600 bg-emerald-50 border-emerald-100" onClick={async () => {
                                   setIsDocsLoading(true);
-                                  try { setIsDocsViewerOpen(true); } finally { setIsDocsLoading(false); }
+                                  setSelectedApp(app); try { setIsDocsViewerOpen(true); } finally { setIsDocsLoading(false); }
                                 }}>
                                   현장 서류
                                 </Button>
@@ -1114,9 +1126,25 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                                     </div>
                                   )}
                                 </div>
-                                <Button variant="outline" size="sm" className="rounded-xl font-black" onClick={() => handleStatusChange(app, 1)}>
-                                  단계 제어 <ChevronRight className="h-4 w-4 ml-1" />
-                                </Button>
+                                <select
+                                  className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 font-black text-xs text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm cursor-pointer hover:border-slate-300 transition-all h-9 shrink-0"
+                                  value={app.status}
+                                  onChange={async (e) => {
+                                    const newStatus = e.target.value;
+                                    try {
+                                      await updateDoc(doc(db, 'applications', app.id), { status: newStatus });
+                                      toast({ title: "상태 업데이트 완료", description: `→ ${getStatusBadge(newStatus).label}` });
+                                    } catch (err) {
+                                      toast({ variant: "destructive", title: "업데이트 실패" });
+                                    }
+                                  }}
+                                >
+                                  {statusFlow.map((status) => (
+                                    <option key={status} value={status}>
+                                      {getStatusBadge(status).label}
+                                    </option>
+                                  ))}
+                                </select>
                               </div>
                             </TableCell>
                           </TableRow>
@@ -2003,21 +2031,234 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={isDocsViewerOpen} onOpenChange={setIsDocsViewerOpen}>
-        <DialogContent className="max-w-xl rounded-[2.5rem] p-8 border-none shadow-2xl">
-          <DialogHeader className="mb-6">
-            <DialogTitle className="text-2xl font-black">증빙 서류 확인</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-6 text-center py-10">
-            <div className="h-20 w-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Files className="h-10 w-10 text-slate-400" />
+      <Dialog open={isDocsViewerOpen} onOpenChange={(open) => {
+        setIsDocsViewerOpen(open);
+        if (!open) {
+          setActiveDocPreview(null);
+          setZoomLevel(1);
+        }
+      }}>
+        <DialogContent className="max-w-5xl rounded-[2.5rem] p-0 overflow-hidden border-none shadow-2xl bg-white">
+          {selectedApp ? (
+            <div className="flex flex-col md:flex-row h-[75vh] min-h-[550px]">
+              {/* Left Column: Documents list & status */}
+              <div className="w-full md:w-80 border-r border-slate-100 flex flex-col bg-slate-50/50 p-6 overflow-y-auto shrink-0">
+                <div className="mb-6">
+                  <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">SUBMITTED BY</span>
+                  <h3 className="text-xl font-black text-slate-900 mt-1">{selectedApp.fullName || "이름 미입력"}</h3>
+                  <p className="text-xs text-slate-400 font-medium uppercase mt-0.5">ID: {selectedApp.id.substring(0, 8)}</p>
+                </div>
+
+                <div className="space-y-6 flex-1">
+                  <div>
+                    <h4 className="text-xs font-black text-slate-500 uppercase tracking-wider mb-3">문서/서류 목록</h4>
+                    <div className="space-y-2">
+                      {/* Virtual document: Signature */}
+                      {selectedApp.signatureDataUri && (
+                        <button
+                          onClick={() => {
+                            setActiveDocPreview({
+                              id: 'signature',
+                              name: '환급 신청서 서명본',
+                              dataUri: selectedApp.signatureDataUri,
+                              type: 'image/png',
+                              uploadedAt: selectedApp.applicationDate || selectedApp.createdAt
+                            });
+                            setZoomLevel(1);
+                          }}
+                          className={cn(
+                            "w-full p-4 rounded-2xl text-left border flex items-center gap-3 transition-all",
+                            activeDocPreview?.id === 'signature'
+                              ? "bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-900/10"
+                              : "bg-white border-slate-100 text-slate-700 hover:border-slate-300"
+                          )}
+                        >
+                          <PenTool className={cn("h-5 w-5 shrink-0", activeDocPreview?.id === 'signature' ? "text-primary" : "text-slate-400")} />
+                          <div className="truncate">
+                            <p className="text-sm font-black truncate">환급 신청서 서명본</p>
+                            <p className="text-[10px] opacity-60 font-bold">서명 수집 완료</p>
+                          </div>
+                        </button>
+                      )}
+
+                      {/* Actual Uploaded Documents */}
+                      {selectedApp.uploadedDocs && selectedApp.uploadedDocs.length > 0 ? (
+                        selectedApp.uploadedDocs.map((doc: any) => {
+                          const isImg = doc.type?.startsWith('image/') || doc.dataUri?.startsWith('data:image/');
+                          return (
+                            <button
+                              key={doc.id}
+                              onClick={() => {
+                                setActiveDocPreview(doc);
+                                setZoomLevel(1);
+                              }}
+                              className={cn(
+                                "w-full p-4 rounded-2xl text-left border flex items-center gap-3 transition-all",
+                                activeDocPreview?.id === doc.id
+                                  ? "bg-slate-900 border-slate-900 text-white shadow-lg shadow-slate-900/10"
+                                  : "bg-white border-slate-100 text-slate-700 hover:border-slate-300"
+                              )}
+                            >
+                              {isImg ? (
+                                <FileImage className={cn("h-5 w-5 shrink-0", activeDocPreview?.id === doc.id ? "text-primary" : "text-slate-400")} />
+                              ) : (
+                                <FileText className={cn("h-5 w-5 shrink-0", activeDocPreview?.id === doc.id ? "text-primary" : "text-slate-400")} />
+                              )}
+                              <div className="truncate">
+                                <p className="text-sm font-black truncate">{doc.name}</p>
+                                <p className="text-[10px] opacity-60 font-bold">
+                                  {doc.uploadedAt ? new Date(doc.uploadedAt).toLocaleDateString() : "업로드 완료"}
+                                </p>
+                              </div>
+                            </button>
+                          );
+                        })
+                      ) : (
+                        !selectedApp.signatureDataUri && (
+                          <div className="py-8 text-center bg-white rounded-2xl border border-dashed border-slate-100 text-slate-400 font-bold text-sm">
+                            제출된 서류가 없습니다.
+                          </div>
+                        )
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Pending Doc Requests section */}
+                  {selectedApp.pendingDocRequests && selectedApp.pendingDocRequests.length > 0 && (
+                    <div>
+                      <h4 className="text-xs font-black text-slate-500 uppercase tracking-wider mb-3">서류 요청 상태</h4>
+                      <div className="space-y-1.5">
+                        {selectedApp.pendingDocRequests.map((req: any) => (
+                          <div key={req.id} className="flex items-center justify-between p-3 bg-white rounded-xl border border-slate-100 text-xs">
+                            <span className="font-bold text-slate-700 truncate max-w-[150px]">{req.name}</span>
+                            <Badge className={cn("text-[9px] font-black border-none", req.status === 'completed' ? "bg-green-50 text-green-600" : "bg-amber-50 text-amber-600")}>
+                              {req.status === 'completed' ? "완료" : "대기"}
+                            </Badge>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="pt-6 border-t border-slate-100 mt-auto">
+                  <Button onClick={() => setIsDocsViewerOpen(false)} className="w-full rounded-2xl h-12 bg-slate-200 text-slate-700 hover:bg-slate-300 font-bold">닫기</Button>
+                </div>
+              </div>
+
+              {/* Right Column: Preview Pane */}
+              <div className="flex-1 flex flex-col bg-slate-900 text-white relative">
+                {activeDocPreview ? (
+                  <>
+                    {/* Toolbar */}
+                    <div className="h-16 border-b border-white/10 px-6 flex justify-between items-center shrink-0 bg-slate-950/80 backdrop-blur-md z-10">
+                      <div className="flex items-center gap-3">
+                        <span className="font-black text-sm text-white/90 truncate max-w-[250px]">{activeDocPreview.name}</span>
+                        <Badge className="bg-white/10 text-white text-[9px] border-none font-bold uppercase">{activeDocPreview.type?.split('/')[1] || 'DOC'}</Badge>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {/* Zoom controls (only for images) */}
+                        {(activeDocPreview.type?.startsWith('image/') || activeDocPreview.dataUri?.startsWith('data:image/')) && (
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setZoomLevel(prev => Math.max(0.5, prev - 0.25))}
+                              className="text-white/60 hover:text-white hover:bg-white/10 h-10 w-10 rounded-xl"
+                            >
+                              <ZoomOut className="h-5 w-5" />
+                            </Button>
+                            <span className="text-xs font-bold text-white/60 min-w-[40px] text-center">{Math.round(zoomLevel * 100)}%</span>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setZoomLevel(prev => Math.min(3, prev + 0.25))}
+                              className="text-white/60 hover:text-white hover:bg-white/10 h-10 w-10 rounded-xl"
+                            >
+                              <ZoomIn className="h-5 w-5" />
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              onClick={() => setZoomLevel(1)}
+                              className="text-white/60 hover:text-white hover:bg-white/10 h-10 w-10 rounded-xl"
+                            >
+                              <RotateCcw className="h-4 w-4" />
+                            </Button>
+                          </>
+                        )}
+                        <a
+                          href={activeDocPreview.dataUri}
+                          download={activeDocPreview.fileName || activeDocPreview.name}
+                          className="flex items-center justify-center bg-primary hover:bg-primary/95 text-white font-bold h-10 px-4 rounded-xl text-xs gap-1.5 transition-colors"
+                        >
+                          <Download className="h-4 w-4" /> 다운로드
+                        </a>
+                      </div>
+                    </div>
+
+                    {/* Image/PDF view */}
+                    <div className="flex-1 overflow-auto p-8 flex items-center justify-center bg-slate-950/40 relative">
+                      {activeDocPreview.type?.startsWith('image/') || activeDocPreview.dataUri?.startsWith('data:image/') ? (
+                        <div 
+                          style={{ transform: `scale(${zoomLevel})`, transformOrigin: 'center center' }} 
+                          className="transition-transform duration-200 ease-out max-w-full max-h-full"
+                        >
+                          <img
+                            src={activeDocPreview.dataUri}
+                            alt={activeDocPreview.name}
+                            className="max-h-[50vh] object-contain rounded-lg shadow-2xl border border-white/5"
+                          />
+                        </div>
+                      ) : activeDocPreview.type === 'application/pdf' ? (
+                        <object
+                          data={activeDocPreview.dataUri}
+                          type="application/pdf"
+                          className="w-full h-full rounded-lg shadow-2xl"
+                        >
+                          <div className="text-center p-8 bg-slate-800 rounded-xl max-w-md">
+                            <FileText className="h-16 w-16 mx-auto text-slate-500 mb-4" />
+                            <p className="font-bold text-white mb-4">PDF 미리보기를 로드할 수 없습니다.</p>
+                            <a
+                              href={activeDocPreview.dataUri}
+                              download={activeDocPreview.name}
+                              className="inline-flex items-center justify-center bg-white text-slate-900 font-black h-12 px-6 rounded-xl text-sm"
+                            >
+                              PDF 다운로드하여 보기
+                            </a>
+                          </div>
+                        </object>
+                      ) : (
+                        <div className="text-center p-8 bg-slate-800/50 border border-white/5 rounded-2xl max-w-sm">
+                          <FileText className="h-16 w-16 mx-auto text-slate-500 mb-4" />
+                          <p className="font-bold text-white mb-2">미리보기가 지원되지 않는 형식입니다.</p>
+                          <p className="text-xs text-slate-400 mb-6">아래 버튼을 눌러 파일을 다운로드하여 확인해 주세요.</p>
+                          <a
+                            href={activeDocPreview.dataUri}
+                            download={activeDocPreview.name}
+                            className="inline-flex items-center justify-center bg-primary hover:bg-primary/95 text-white font-black h-12 px-6 rounded-xl text-sm gap-2"
+                          >
+                            <Download className="h-4 w-4" /> 파일 다운로드
+                          </a>
+                        </div>
+                      )}
+                    </div>
+                  </>
+                ) : (
+                  <div className="flex-1 flex flex-col items-center justify-center p-10 text-center text-slate-500">
+                    <Eye className="h-12 w-12 text-slate-600 mb-4 opacity-50" />
+                    <p className="font-black text-lg text-slate-400">선택된 서류가 없습니다.</p>
+                    <p className="text-sm text-slate-500 mt-1">왼쪽 목록에서 확인하실 서류를 클릭해 주세요.</p>
+                  </div>
+                )}
+              </div>
             </div>
-            <p className="text-slate-500 font-bold">
-              현재 해당 기능(서류 이미지 뷰어)은 세무 보안 서버와 동기화 중입니다.<br />
-              급한 확인이 필요하실 경우 DB 관리자에게 문의하세요.
-            </p>
-            <Button onClick={() => setIsDocsViewerOpen(false)} className="rounded-xl px-10">닫기</Button>
-          </div>
+          ) : (
+            <div className="p-12 text-center text-slate-500">
+              <Loader2 className="animate-spin h-10 w-10 mx-auto mb-4" />
+              로딩 중...
+            </div>
+          )}
         </DialogContent>
       </Dialog>
 
