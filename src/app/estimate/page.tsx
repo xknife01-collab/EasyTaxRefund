@@ -347,6 +347,7 @@ export default function EstimatePage() {
   const [bankSelectOpen, setBankSelectOpen] = useState(false);
   const [isSimulation, setIsSimulation] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
+  const [isLocal, setIsLocal] = useState(false);
   const [selectedPersona, setSelectedPersona] = useState<Language>('ko');
   const [isPlaying, setIsPlaying] = useState(true);
 
@@ -459,6 +460,12 @@ export default function EstimatePage() {
       }
       const p = searchParams.get('persona') as Language;
       if (p) setSelectedPersona(p);
+
+      const isLocalHost = window.location.hostname === 'localhost' || 
+                          window.location.hostname === '127.0.0.1' || 
+                          window.location.hostname.includes('192.168.') ||
+                          window.location.hostname.includes('10.');
+      setIsLocal(isLocalHost || process.env.NODE_ENV === 'development');
     }
   }, []);
 
@@ -5142,138 +5149,140 @@ export default function EstimatePage() {
       </Dialog>
 
       {/* Floating Developer Control Panel */}
-      <div className="fixed bottom-6 right-6 z-[9999] font-sans">
-        {!devPanelOpen ? (
-          <button
-            onClick={() => setDevPanelOpen(true)}
-            className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs sm:text-sm px-4 py-3 rounded-full shadow-2xl border border-slate-700/50 hover:scale-105 active:scale-95 transition-all duration-200"
-          >
-            <Sliders className="h-4 w-4 text-emerald-400 animate-pulse" />
-            <span>🛠️ 시뮬레이션 제어판</span>
-          </button>
-        ) : (
-          <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/50 w-[360px] sm:w-[380px] rounded-3xl p-6 shadow-2xl text-slate-100 flex flex-col gap-4 animate-in slide-in-from-bottom-5 duration-300">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-              <div className="flex items-center gap-2">
-                <Sliders className="h-5 w-5 text-emerald-400" />
-                <span className="font-black text-sm tracking-wide text-slate-200">DEV SIMULATOR PANEL</span>
-              </div>
-              <button
-                onClick={() => setDevPanelOpen(false)}
-                className="text-slate-400 hover:text-white transition-colors"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            <div className="space-y-4">
-              {/* Force Jump to Step 9 */}
-              <div>
-                <Button
-                  onClick={() => {
-                    setFormData({
-                      officialName: "홍길동 (GILDONG HONG)",
-                      authName: "홍길동",
-                      registrationNumber: "900101-5123456",
-                      issueDate: "2020-01-01",
-                      phone: "010-1234-5678",
-                      carrier: "SKT",
-                      otpCode: "123456",
-                      bankName: "KB국민은행",
-                      accountNumber: "123-456789-01-012",
-                      cardNumber: "1234-5678-1234-5678",
-                      expiryDate: "12/28",
-                      cvc: "123",
-                      depositorName: "홍길동",
-                      accountHolder: "홍길동"
-                    });
-                    setResult({
-                      refundEstimate: 2350000,
-                      resIncomeTax: 2136363,
-                      resCompanyIdentityNo1: "123-45-67890",
-                      resAttrYear: "2024",
-                      resIncomeSpecList: "[]",
-                      caseType: "D",
-                      details: [
-                        { year: "2024", companyName: "(주)가상상사", incomeAmount: 30000000, taxAmount: 1500000, deductedAmount: 1500000, isEligible: true }
-                      ]
-                    });
-                    setIs1WonVerified(true);
-                    setIsSimulation(true);
-                    setCmsConsent1(true);
-                    setCmsConsent2(true);
-                    setCmsConsent3(true);
-                    setCmsConsentAll(true);
-                    setStep(9);
-                    saveProgress(9);
-                    toast({
-                      title: "9단계 강제 이동 완료",
-                      description: "0.1초 만에 모크 데이터 주입 및 CMS 동의 테스트 화면으로 이동했습니다."
-                    });
-                  }}
-                  className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
+      {isLocal && (
+        <div className="fixed bottom-6 right-6 z-[9999] font-sans">
+          {!devPanelOpen ? (
+            <button
+              onClick={() => setDevPanelOpen(true)}
+              className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs sm:text-sm px-4 py-3 rounded-full shadow-2xl border border-slate-700/50 hover:scale-105 active:scale-95 transition-all duration-200"
+            >
+              <Sliders className="h-4 w-4 text-emerald-400 animate-pulse" />
+              <span>🛠️ 시뮬레이션 제어판</span>
+            </button>
+          ) : (
+            <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/50 w-[360px] sm:w-[380px] rounded-3xl p-6 shadow-2xl text-slate-100 flex flex-col gap-4 animate-in slide-in-from-bottom-5 duration-300">
+              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
+                <div className="flex items-center gap-2">
+                  <Sliders className="h-5 w-5 text-emerald-400" />
+                  <span className="font-black text-sm tracking-wide text-slate-200">DEV SIMULATOR PANEL</span>
+                </div>
+                <button
+                  onClick={() => setDevPanelOpen(false)}
+                  className="text-slate-400 hover:text-white transition-colors"
                 >
-                  <Sparkles className="h-4 w-4" />
-                  <span>환급 9단계 즉시 이동 (CMS 테스트)</span>
-                </Button>
+                  <X className="h-5 w-5" />
+                </button>
               </div>
 
-              {/* Step pills */}
-              <div className="space-y-2">
-                <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">단계별 빠른 이동</label>
-                <div className="grid grid-cols-6 gap-1.5 text-center">
-                  {[0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => {
-                        setIsSimulation(true);
-                        setStep(s);
-                        saveProgress(s);
-                        toast({
-                          title: `Step ${s} 이동`,
-                          description: `수동으로 ${s}단계 화면으로 변경되었습니다.`
-                        });
-                      }}
-                      className={cn(
-                        "h-8 text-xs font-black rounded-lg transition-colors",
-                        step === s
-                          ? "bg-primary text-white"
-                          : "bg-slate-800 hover:bg-slate-700 text-slate-300"
-                      )}
-                    >
-                      {s}
-                    </button>
-                  ))}
+              <div className="space-y-4">
+                {/* Force Jump to Step 9 */}
+                <div>
+                  <Button
+                    onClick={() => {
+                      setFormData({
+                        officialName: "홍길동 (GILDONG HONG)",
+                        authName: "홍길동",
+                        registrationNumber: "900101-5123456",
+                        issueDate: "2020-01-01",
+                        phone: "010-1234-5678",
+                        carrier: "SKT",
+                        otpCode: "123456",
+                        bankName: "KB국민은행",
+                        accountNumber: "123-456789-01-012",
+                        cardNumber: "1234-5678-1234-5678",
+                        expiryDate: "12/28",
+                        cvc: "123",
+                        depositorName: "홍길동",
+                        accountHolder: "홍길동"
+                      });
+                      setResult({
+                        refundEstimate: 2350000,
+                        resIncomeTax: 2136363,
+                        resCompanyIdentityNo1: "123-45-67890",
+                        resAttrYear: "2024",
+                        resIncomeSpecList: "[]",
+                        caseType: "D",
+                        details: [
+                          { year: "2024", companyName: "(주)가상상사", incomeAmount: 30000000, taxAmount: 1500000, deductedAmount: 1500000, isEligible: true }
+                        ]
+                      });
+                      setIs1WonVerified(true);
+                      setIsSimulation(true);
+                      setCmsConsent1(true);
+                      setCmsConsent2(true);
+                      setCmsConsent3(true);
+                      setCmsConsentAll(true);
+                      setStep(9);
+                      saveProgress(9);
+                      toast({
+                        title: "9단계 강제 이동 완료",
+                        description: "0.1초 만에 모크 데이터 주입 및 CMS 동의 테스트 화면으로 이동했습니다."
+                      });
+                    }}
+                    className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
+                  >
+                    <Sparkles className="h-4 w-4" />
+                    <span>환급 9단계 즉시 이동 (CMS 테스트)</span>
+                  </Button>
                 </div>
-              </div>
 
-              {/* isSimulation Toggle */}
-              <div className="flex items-center justify-between bg-slate-800/50 p-3 rounded-2xl border border-slate-800">
-                <div className="flex flex-col">
-                  <span className="text-xs font-black text-slate-200">시뮬레이션 모드 (isSimulation)</span>
-                  <span className="text-[10px] text-slate-400">활성화 시 실명/본인인증을 모킹합니다.</span>
+                {/* Step pills */}
+                <div className="space-y-2">
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">단계별 빠른 이동</label>
+                  <div className="grid grid-cols-6 gap-1.5 text-center">
+                    {[0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((s) => (
+                      <button
+                        key={s}
+                        onClick={() => {
+                          setIsSimulation(true);
+                          setStep(s);
+                          saveProgress(s);
+                          toast({
+                            title: `Step ${s} 이동`,
+                            description: `수동으로 ${s}단계 화면으로 변경되었습니다.`
+                          });
+                        }}
+                        className={cn(
+                          "h-8 text-xs font-black rounded-lg transition-colors",
+                          step === s
+                            ? "bg-primary text-white"
+                            : "bg-slate-800 hover:bg-slate-700 text-slate-300"
+                        )}
+                      >
+                        {s}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-                <Checkbox
-                  id="dev-sim-toggle"
-                  checked={isSimulation}
-                  onCheckedChange={(val) => {
-                    setIsSimulation(!!val);
-                    toast({
-                      title: `시뮬레이션 모드 ${!!val ? "활성화" : "비활성화"}`,
-                      description: `인증 및 API 호출이 ${!!val ? "가상 시뮬레이션" : "실제 API"}으로 동작합니다.`
-                    });
-                  }}
-                  className="h-5 w-5 border-slate-600 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
-                />
-              </div>
 
-              <div className="text-[10px] text-slate-500 leading-normal text-center pt-2 border-t border-slate-800">
-                인증 프로세스 우회 및 최종 9단계 CMS 서명 동의서 규제 준수(보기 팝업, 서명 가두기 및 전송 기능) 테스트용 도구입니다.
+                {/* isSimulation Toggle */}
+                <div className="flex items-center justify-between bg-slate-800/50 p-3 rounded-2xl border border-slate-800">
+                  <div className="flex flex-col">
+                    <span className="text-xs font-black text-slate-200">시뮬레이션 모드 (isSimulation)</span>
+                    <span className="text-[10px] text-slate-400">활성화 시 실명/본인인증을 모킹합니다.</span>
+                  </div>
+                  <Checkbox
+                    id="dev-sim-toggle"
+                    checked={isSimulation}
+                    onCheckedChange={(val) => {
+                      setIsSimulation(!!val);
+                      toast({
+                        title: `시뮬레이션 모드 ${!!val ? "활성화" : "비활성화"}`,
+                        description: `인증 및 API 호출이 ${!!val ? "가상 시뮬레이션" : "실제 API"}으로 동작합니다.`
+                      });
+                    }}
+                    className="h-5 w-5 border-slate-600 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
+                  />
+                </div>
+
+                <div className="text-[10px] text-slate-500 leading-normal text-center pt-2 border-t border-slate-800">
+                  인증 프로세스 우회 및 최종 9단계 CMS 서명 동의서 규제 준수(보기 팝업, 서명 가두기 및 전송 기능) 테스트용 도구입니다.
+                </div>
               </div>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
 
       {/* Hometax Find ID Modal */}
       <Dialog open={findIdOpen} onOpenChange={setFindIdOpen}>
