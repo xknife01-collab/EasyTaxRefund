@@ -229,4 +229,6 @@ export const main = {
   "후불 자동 정산": "Deferred Automatic Settlement",
   "리스크는 제로.": "Risk is zero.",
   "환급금 통장 입금 확인 후 정산": "Settled Only After Deposit is Confirmed",
+  "그냥 지나치셔도 상관없습니다. 하지만 모든 한국 사람은 받고 있는 권리입니다.": "You can just pass by if you want. But this is a right that every Korean is already receiving.",
+  "한국인들과 100% 동일한 법적 기준이 적용됩니다.": "100% identical legal standards apply as for Korean citizens.",
 };

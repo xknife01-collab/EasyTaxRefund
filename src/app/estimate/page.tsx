@@ -503,9 +503,17 @@ export default function EstimatePage() {
 
       window.addEventListener("unhandledrejection", handleUnhandledRejection);
 
+      // Override HTMLElement.prototype.focus to prevent browser-native focus-scrolling of the host page
+      const originalFocus = HTMLElement.prototype.focus;
+      HTMLElement.prototype.focus = function(options) {
+        const newOptions = options ? { ...options, preventScroll: true } : { preventScroll: true };
+        originalFocus.call(this, newOptions);
+      };
+
       return () => {
         console.error = originalConsoleError;
         window.removeEventListener("unhandledrejection", handleUnhandledRejection);
+        HTMLElement.prototype.focus = originalFocus;
       };
     }
   }, [isSimulation]);

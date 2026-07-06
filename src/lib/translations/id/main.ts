@@ -229,4 +229,6 @@ export const main = {
   "후불 자동 정산": "Penyelesaian Otomatis Pascabayang",
   "리스크는 제로.": "Risiko nol.",
   "환급금 통장 입금 확인 후 정산": "Penyelesaian Hanya Setelah Setoran Dikonfirmasi",
+  "그냥 지나치셔도 상관없습니다. 하지만 모든 한국 사람은 받고 있는 권리입니다.": "Anda bisa melewatinya begitu saja jika Anda mau. Tapi ini adalah hak yang sudah diterima oleh setiap orang Korea.",
+  "한국인들과 100% 동일한 법적 기준이 적용됩니다.": "Standar hukum yang 100% sama berlaku seperti halnya bagi warga negara Korea.",
 };

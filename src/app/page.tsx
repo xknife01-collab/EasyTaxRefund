@@ -337,6 +337,28 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* 임팩트 신뢰 슬로건 배너 */}
+        <section className="relative py-12 md:py-16 overflow-hidden bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 border-y border-indigo-500/20 shadow-[inset_0_0_80px_rgba(99,102,241,0.07)]">
+          {/* 빛 효과 배경 장식 */}
+          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[300px] h-[150px] bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+          <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[300px] h-[150px] bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
+          
+          <div className="container mx-auto px-4 relative z-10">
+            <div className="max-w-4xl mx-auto flex flex-col items-center text-center space-y-6">
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.15)] animate-float">
+                <Sparkles className="h-6 w-6" />
+              </div>
+              <h3 className="text-2xl md:text-4xl lg:text-[2.50rem] font-black font-headline text-white tracking-tight leading-[1.3] break-keep">
+                {t('그냥 지나치셔도 상관없습니다. 하지만 모든 한국 사람은 받고 있는 권리입니다.')}
+              </h3>
+              <p className="text-indigo-200/80 font-bold text-base md:text-xl tracking-wide max-w-2xl break-keep">
+                {t('한국인들과 100% 동일한 법적 기준이 적용됩니다.')}
+              </p>
+              <div className="w-16 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent rounded-full opacity-60" />
+            </div>
+          </div>
+        </section>
+
         {/* 안심 보장 비주얼 카드 섹션 */}
         <section className="py-16 bg-slate-50/50 relative overflow-hidden">
           <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-r from-primary/5 to-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />

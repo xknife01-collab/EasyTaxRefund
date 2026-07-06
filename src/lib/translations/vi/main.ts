@@ -229,4 +229,6 @@ export const main = {
   "후불 자동 정산": "Tự động quyết toán trả sau",
   "리스크는 제로.": "Rủi ro bằng không.",
   "환급금 통장 입금 확인 후 정산": "Thanh toán sau khi xác nhận tiền hoàn vào tài khoản",
+  "그냥 지나치셔도 상관없습니다. 하지만 모든 한국 사람은 받고 있는 권리입니다.": "Bạn có thể bỏ qua nếu muốn. Nhưng đây là quyền lợi mà mọi người Hàn Quốc đều đang nhận được.",
+  "한국인들과 100% 동일한 법적 기준이 적용됩니다.": "Áp dụng tiêu chuẩn pháp lý giống 100% như người Hàn Quốc.",
 };

@@ -229,4 +229,6 @@ export const main = {
   "후불 자동 정산": "Keyin to'lanadigan avtomatik hisob-kitob",
   "리스크는 제로.": "Xavf nolga teng.",
   "환급금 통장 입금 확인 후 정산": "Qaytarilgan mablag' hisob raqamiga tushganidan keyin hisob-kitob",
+  "그냥 지나치셔도 상관없습니다. 하지만 모든 한국 사람은 받고 있는 권리입니다.": "Shunchaki e'tiborsiz qoldirsangiz ham mayli. Biroq bu har bir koreyalik olayotgan qonuniy huquqdir.",
+  "한국인들과 100% 동일한 법적 기준이 적용됩니다.": "Koreya fuqarolari bilan 100% bir xil qonuniy standartlar amal qiladi.",
 };
