@@ -218,7 +218,7 @@ export const main = {
   "전문적인 서비스,": "Layanan profesional,",
   "수집하는 개인정보 항목": "Item Informasi Pribadi yang Dikumpulkan",
   "환급계좌 유효성 검증 및 후불제 정산 수단 등록이 완료되었습니다. 다음 단계로 넘어가 서명을 완료하세요.": "Validasi rekening pengembalian dana dan pendaftaran metode pembayaran pascabayar selesai. Silakan lanjut ke langkah berikutnya untuk menyelesaikan tanda tangan.",
-  "선결제 0원 / 환급금 수령 후 수수료 지불 환급 신청하기": "0 Won Di Muka / Bayar Biaya Setelah Menerima Pengembalian - Ajukan Sekarang",
+  "한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기": "Koneksi Resmi dengan Layanan Pajak Nasional Korea (NTS) • Ajukan pengembalian dana setelah memeriksa jumlah pengembalian",
   "한국에서 일하는 외국인 청년이라면": "Jika Anda pekerja asing muda yang bekerja di Korea",
   "수개월 치의 월세 및 생활비": "Biaya sewa rumah dan biaya hidup selama beberapa bulan",
   "국가공인 제휴 세무사의 전 과정 책임 대행": "Full Process Representation by Partnered Certified Tax Accountants",

@@ -227,7 +227,7 @@ export const common = {
   "취소 실패": "Cancellation failed",
   "중복 확인 중...": "Checking for duplicates...",
   "외국 국적자는 통신사에 등록된 이름이 신분증과 다른 경우가 많습니다. 알림이 오지 않는다면 AI가 제안해 준 추천 성명을 하나씩 시도해 보세요.": "Foreign nationals often have names registered with telecom companies that differ from their ID cards. If you're not receiving notifications, try each suggested name proposed by the AI.",
-  "선결제 0원 / 환급금 수령 후 수수료 지불 환급 신청하기": "0 KRW upfront / Pay fee after receiving refund Apply for refund",
+  "한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기": "Official Korean National Tax Service (NTS) Link • Apply for refund after checking my refund amount",
   "저희 앱에 접속하여 사업자 번호만 입력하시면, 저희 AI 시스템이 해당 기업이 감면 대상인 '중소기업 기본법'상의 중소기업인지 즉시 판별해 드립니다.": "Simply access our app and enter the business registration number, and our AI system will instantly determine if the company qualifies as a small and medium-sized enterprise under the 'Framework Act on Small and Medium Enterprises' for tax reduction.",
   "인도네시아어": "Indonesian",
   "회원가입이 완료되었습니다!": "Membership registration is complete!",

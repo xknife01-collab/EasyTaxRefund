@@ -227,7 +227,7 @@ export const common = {
   "취소 실패": "Bekor qilish amalga oshmadi",
   "중복 확인 중...": "Dublikatni tekshirish jarayonida...",
   "외국 국적자는 통신사에 등록된 이름이 신분증과 다른 경우가 많습니다. 알림이 오지 않는다면 AI가 제안해 준 추천 성명을 하나씩 시도해 보세요.": "Xorijiy fuqarolarning telekommunikatsiya kompaniyasida ro'yxatdan o'tgan ismi ID kartasidagi ismdan farq qilishi tez-tez uchraydi. Agar bildirishnoma kelmasa, AI tomonidan taklif qilingan tavsiya etilgan ism-shariflarni birma-bir sinab ko'ring.",
-  "선결제 0원 / 환급금 수령 후 수수료 지불 환급 신청하기": "Oldindan to'lov 0 von / Qaytarilgan pulni olgandan so'ng komissiya to'lash qaytarish uchun ariza berish",
+  "한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기": "Koreya Milliy Soliq xizmati (NTS) rasmiy hamkorligi • Qaytariladigan summani tekshirgandan so'ng qaytarish uchun ariza berish",
   "저희 앱에 접속하여 사업자 번호만 입력하시면, 저희 AI 시스템이 해당 기업이 감면 대상인 '중소기업 기본법'상의 중소기업인지 즉시 판별해 드립니다.": "Agar siz bizning ilovamizga kirib, faqat biznes raqamini kiritsangiz, bizning AI tizimimiz kompaniya 'Kichik va O'rta Korxonalar Asosiy Qonuni'ga muvofiq soliq imtiyozlariga ega kichik va o'rta korxonami yoki yo'qmi ekanligini darhol aniqlaydi.",
   "인도네시아어": "Indoneziya tili",
   "회원가입이 완료되었습니다!": "A'zolik ro'yxatdan o'tish yakunlandi!",

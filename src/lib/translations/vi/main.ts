@@ -218,7 +218,7 @@ export const main = {
   "전문적인 서비스,": "Dịch vụ chuyên nghiệp,",
   "수집하는 개인정보 항목": "Các mục thông tin cá nhân được thu thập",
   "환급계좌 유효성 검증 및 후불제 정산 수단 등록이 완료되었습니다. 다음 단계로 넘어가 서명을 완료하세요.": "Đã hoàn tất xác thực tính hợp lệ của tài khoản hoàn thuế và đăng ký phương thức thanh toán trả sau. Vui lòng chuyển sang bước tiếp theo để hoàn thành chữ ký.",
-  "선결제 0원 / 환급금 수령 후 수수료 지불 환급 신청하기": "0 Won trả trước / Thanh toán phí sau khi nhận tiền hoàn thuế - Đăng ký ngay",
+  "한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기": "Liên kết chính thức với Cục Thuế Hàn Quốc (NTS) • Đăng ký hoàn thuế sau khi kiểm tra số tiền hoàn",
   "한국에서 일하는 외국인 청년이라면": "Nếu bạn là một lao động trẻ nước ngoài đang làm việc tại Hàn Quốc",
   "수개월 치의 월세 및 생활비": "Tiền nhà và sinh hoạt phí",
   "국가공인 제휴 세무사의 전 과정 책임 대행": "Đại diện toàn bộ quy trình bởi kế toán thuế đối tác được chứng nhận",

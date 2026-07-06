@@ -227,7 +227,7 @@ export const common = {
   "취소 실패": "Gagal Membatalkan",
   "중복 확인 중...": "Memeriksa duplikasi...",
   "외국 국적자는 통신사에 등록된 이름이 신분증과 다른 경우가 많습니다. 알림이 오지 않는다면 AI가 제안해 준 추천 성명을 하나씩 시도해 보세요.": "Warga negara asing seringkali memiliki nama yang terdaftar di perusahaan telekomunikasi berbeda dengan nama di kartu identitas mereka. Jika notifikasi tidak datang, coba satu per satu nama yang disarankan oleh AI.",
-  "선결제 0원 / 환급금 수령 후 수수료 지불 환급 신청하기": "Pembayaran di muka 0 won / Ajukan pengembalian dana dengan pembayaran biaya setelah menerima pengembalian dana",
+  "한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기": "Koneksi Resmi dengan Layanan Pajak Nasional Korea (NTS) • Ajukan pengembalian dana setelah memeriksa jumlah pengembalian",
   "저희 앱에 접속하여 사업자 번호만 입력하시면, 저희 AI 시스템이 해당 기업이 감면 대상인 '중소기업 기본법'상의 중소기업인지 즉시 판별해 드립니다.": "Cukup akses aplikasi kami dan masukkan nomor registrasi bisnis, sistem AI kami akan segera mengidentifikasi apakah perusahaan tersebut adalah usaha kecil dan menengah di bawah 'Undang-Undang Dasar Usaha Kecil dan Menengah' yang memenuhi syarat untuk pemotongan pajak.",
   "인도네시아어": "Bahasa Indonesia",
   "회원가입이 완료되었습니다!": "Pendaftaran anggota selesai!",

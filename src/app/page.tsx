@@ -328,7 +328,7 @@ export default function HomePage() {
                 <Button size="lg" asChild className="w-full sm:w-auto text-lg sm:text-2xl px-6 sm:px-12 py-6 sm:py-10 h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/20 rounded-2xl sm:rounded-[2rem] transition-all hover:scale-105 active:scale-95 group whitespace-normal break-words text-white">
                   <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 sm:gap-4 text-center leading-tight py-2 w-full text-white">
                     <span className="flex-1 min-w-[150px] font-black text-white">
-                      <span className="text-orange-500 font-black">{t('선결제 0원 / 환급금 수령 후 수수료 지불')}</span> {t('환급 신청하기')}
+                      {t('한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기')}
                     </span> <ArrowRight className="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:translate-x-1 shrink-0 text-white" />
                   </Link>
                 </Button>
@@ -402,13 +402,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 10단계 시뮬레이터 쇼케이스 */}
-        <section className="py-12 bg-slate-50/50">
-          <div className="container mx-auto px-4">
-            <TaxRefundSimulator />
-          </div>
-        </section>
-
         {/* 디자인 섹션 2: 신뢰 지표 */}
         <section className="py-12 bg-white border-b border-slate-50 overflow-hidden">
           <div className="container mx-auto px-4">
@@ -458,6 +451,13 @@ export default function HomePage() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* 10단계 시뮬레이터 쇼케이스 */}
+        <section className="py-12 bg-slate-50/50">
+          <div className="container mx-auto px-4">
+            <TaxRefundSimulator />
           </div>
         </section>
 
@@ -552,7 +552,7 @@ export default function HomePage() {
             <div className="flex flex-col items-center gap-8 pt-8">
               <Button size="lg" asChild className="w-full sm:w-auto text-xl sm:text-3xl px-8 sm:px-12 py-8 sm:py-12 h-auto bg-primary hover:bg-primary/90 shadow-[0_32px_64px_-12px_rgba(99,102,241,0.4)] rounded-2xl sm:rounded-[2.5rem] transition-all hover:scale-105 active:scale-95 whitespace-normal break-words">
                 <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-4 text-center leading-tight py-4 w-full">
-                  <span className="flex-1 min-w-[200px]">{t('선결제 0원 / 환급금 수령 후 수수료 지불 환급 신청하기')}</span> <ArrowRight className="h-6 w-6 sm:h-8 sm:w-8 shrink-0" />
+                  <span className="flex-1 min-w-[200px]">{t('한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기')}</span> <ArrowRight className="h-6 w-6 sm:h-8 sm:w-8 shrink-0" />
                 </Link>
               </Button>
               <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-3xl bg-white border border-slate-100 shadow-sm">
@@ -913,7 +913,7 @@ export default function HomePage() {
         <Button size="lg" asChild className="w-full text-lg min-h-[4rem] h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/40 rounded-2xl font-black py-4 px-6 whitespace-normal break-words text-white">
           <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 text-center leading-tight w-full text-white">
             <span className="flex-1 min-w-[150px] font-black text-white">
-              <span className="text-orange-500 font-black">{t('선결제 0원 / 환급금 수령 후 수수료 지불')}</span> {t('환급 신청하기')}
+              {t('한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기')}
             </span> <ArrowRight className="h-5 w-5 shrink-0 text-white" />
           </Link>
         </Button>

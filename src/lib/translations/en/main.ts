@@ -218,7 +218,7 @@ export const main = {
   "전문적인 서비스,": "Professional service,",
   "수집하는 개인정보 항목": "Items of Personal Information Collected",
   "환급계좌 유효성 검증 및 후불제 정산 수단 등록이 완료되었습니다. 다음 단계로 넘어가 서명을 완료하세요.": "Refund account validation and deferred settlement method registration are complete. Please proceed to the next step to complete the signature.",
-  "선결제 0원 / 환급금 수령 후 수수료 지불 환급 신청하기": "0 Won Upfront / Pay Fees After Receiving Refund - Apply Now",
+  "한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기": "Official Korean National Tax Service (NTS) Link • Apply for refund after checking my refund amount",
   "한국에서 일하는 외국인 청년이라면": "If you are a young foreign worker in Korea",
   "수개월 치의 월세 및 생활비": "Several months of rent and living expenses",
   "국가공인 제휴 세무사의 전 과정 책임 대행": "Full Process Representation by Partnered Certified Tax Accountants",
