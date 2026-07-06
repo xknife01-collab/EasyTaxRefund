@@ -95,7 +95,7 @@ export default function DaisoEventPopup() {
           </h3>
 
           <p className="text-slate-400 text-xs font-bold leading-relaxed mb-6 max-w-sm break-keep">
-            {t("환급 완료 후 인증샷만 올리면 다이소 10,000원 상품권을 전원에게 보내드립니다.")} <br />
+            {t("환급 완료 후 페이스북 그룹에 인증샷만 올리면 다이소 10,000원 상품권을 전원에게 보내드립니다.")} <br />
             <span className="text-red-400/90 mt-1 block">
               {t("지인에게 추천하고 함께 받으세요!")}
             </span>
