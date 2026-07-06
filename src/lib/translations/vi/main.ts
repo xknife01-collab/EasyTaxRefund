@@ -231,4 +231,11 @@ export const main = {
   "환급금 통장 입금 확인 후 정산": "Thanh toán sau khi xác nhận tiền hoàn vào tài khoản",
   "그냥 지나치셔도 상관없습니다. 하지만 모든 한국 사람은 받고 있는 권리입니다.": "Bạn có thể bỏ qua nếu muốn. Nhưng đây là quyền lợi mà mọi người Hàn Quốc đều đang nhận được.",
   "한국인들과 100% 동일한 법적 기준이 적용됩니다.": "Áp dụng tiêu chuẩn pháp lý giống 100% như người Hàn Quốc.",
+  "100% 증정 이벤트": "Sự kiện quà tặng 100%",
+  "100% 무료 다이소 상품권 증정 이벤트!": "Sự kiện tặng phiếu mua hàng Daiso miễn phí 100%!",
+  "환급 완료 후 인증샷만 올리면 다이소 5,000원 상품권을 전원에게 보내드립니다.": "Chỉ cần đăng ảnh xác nhận sau khi nhận hoàn tiền, tất cả mọi người sẽ được tặng phiếu mua hàng Daiso trị giá 5.000 KRW!",
+  "지인에게 추천하고 함께 받으세요!": "Hãy giới thiệu cho bạn bè và nhận quà cùng nhau!",
+  "환급받고 상품권 받기": "Nhận hoàn tiền & Nhận phiếu quà tặng",
+  "오늘 하루 그만 보기": "Không hiển thị lại trong ngày hôm nay",
+  "닫기": "Đóng",
 };

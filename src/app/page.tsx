@@ -46,6 +46,7 @@ import { logLanguageVisit } from "@/lib/tracking";
 import { useRouter } from "next/navigation";
 import { languages } from '@/lib/translations/config';
 import Image from 'next/image';
+import DaisoEventPopup from "@/components/DaisoEventPopup";
 
 const TaxRefundSimulator = dynamic(
   () => import("@/components/TaxRefundSimulator"),
@@ -929,6 +930,7 @@ export default function HomePage() {
         </section>
       </main>
       <Footer />
+      <DaisoEventPopup />
 
       {/* Mobile Sticky CTA */}
       <div className="lg:hidden fixed bottom-6 left-6 right-6 z-50 animate-fade-in-up delay-300">
