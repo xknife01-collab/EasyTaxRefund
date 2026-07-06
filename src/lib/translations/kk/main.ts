@@ -233,7 +233,7 @@ export const main = {
   "한국인들과 100% 동일한 법적 기준이 적용됩니다.": "Корея азаматтарымен 100% бірдей заңды стандарттар қолданылады.",
   "100% 증정 이벤트": "100% Gift Event",
   "100% 무료 다이소 상품권 증정 이벤트!": "100% Free Daiso Gift Card Event!",
-  "환급 완료 후 인증샷만 올리면 다이소 5,000원 상품권을 전원에게 보내드립니다.": "Just upload a verification shot after your refund is completed, and we will send a ₩5,000 Daiso Gift Card to everyone.",
+  "환급 완료 후 인증샷만 올리면 다이소 10,000원 상품권을 전원에게 보내드립니다.": "Just upload a verification shot after your refund is completed, and we will send a ₩10,000 Daiso Gift Card to everyone.",
   "지인에게 추천하고 함께 받으세요!": "Recommend to your friends and get it together!",
   "환급받고 상품권 받기": "Get Refund & Gift Card",
   "오늘 하루 그만 보기": "Don't show again today",

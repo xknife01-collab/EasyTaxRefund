@@ -74,25 +74,15 @@ export default function DaisoEventPopup() {
         </button>
 
         <div className="p-8 pt-10 text-center relative z-10 flex flex-col items-center">
-          {/* 다이소 기프트카드 목업 데코레이션 */}
-          <div className="relative w-[180px] h-[110px] bg-gradient-to-br from-red-500 to-red-700 rounded-2xl p-4 shadow-[0_15px_30px_rgba(229,26,36,0.3)] border border-red-400/30 flex flex-col justify-between overflow-hidden mb-6 group hover:scale-105 transition-transform duration-300">
-            {/* 카드 내부 물결 데코 */}
-            <div className="absolute -top-10 -right-10 w-24 h-24 bg-white/5 rounded-full blur-xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-red-400/10 rounded-full blur-xl pointer-events-none" />
-            
-            <div className="flex justify-between items-start">
-              <span className="text-[10px] font-black tracking-widest text-red-100 uppercase bg-black/10 px-2 py-0.5 rounded-full border border-white/5">DAISO EVENT</span>
-              <Gift className="w-5 h-5 text-red-100 animate-pulse" />
-            </div>
-            
-            <div className="text-left space-y-1">
-              <span className="text-[10px] font-bold text-red-200/80 tracking-tight block">GIFT CARD</span>
-              <span className="text-xl font-black text-white tracking-wide">₩5,000</span>
-            </div>
-            
-            <div className="absolute top-1/2 right-4 -translate-y-1/2 opacity-30">
-              <Sparkles className="w-12 h-12 text-white" />
-            </div>
+          {/* 다이소 기프트카드 이미지 */}
+          <div className="relative w-[220px] aspect-[1.6/1] rounded-2xl overflow-hidden shadow-[0_15px_30px_rgba(229,26,36,0.3)] border border-red-500/20 mb-6 group hover:scale-[1.03] transition-transform duration-300">
+            <img 
+              src="/daiso-coupon.jpg" 
+              alt="Daiso 10,000 KRW Gift Card" 
+              className="w-full h-full object-cover"
+            />
+            {/* Shine effect overlay */}
+            <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/10 to-white/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
           </div>
 
           {/* 팝업 텍스트 내용 */}
@@ -105,7 +95,7 @@ export default function DaisoEventPopup() {
           </h3>
 
           <p className="text-slate-400 text-xs font-bold leading-relaxed mb-6 max-w-sm break-keep">
-            {t("환급 완료 후 인증샷만 올리면 다이소 5,000원 상품권을 전원에게 보내드립니다.")} <br />
+            {t("환급 완료 후 인증샷만 올리면 다이소 10,000원 상품권을 전원에게 보내드립니다.")} <br />
             <span className="text-red-400/90 mt-1 block">
               {t("지인에게 추천하고 함께 받으세요!")}
             </span>
