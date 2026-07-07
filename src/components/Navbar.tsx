@@ -89,7 +89,11 @@ export function Navbar() {
             )
           )}
           <Button asChild className="hidden sm:inline-flex bg-primary hover:bg-primary/90 text-white font-black rounded-2xl px-8 h-auto min-h-[3rem] py-2 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 whitespace-normal break-words">
-            <Link href="/estimate" className="flex-1 min-w-[max-content]">{t('한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기')}</Link>
+            <Link href="/estimate" className="flex-1 min-w-[max-content] flex items-center justify-center gap-1">
+              <span className="text-orange-500 font-black">{t('대한민국 국세청 공식 연동')}</span>
+              <span className="text-white font-medium">•</span>
+              <span className="text-white font-black">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
+            </Link>
           </Button>
           
           {/* Mobile Menu */}
@@ -129,7 +133,10 @@ export function Navbar() {
                 <div className="h-px bg-slate-100 my-4" />
                 <Link href="/login" className="text-xl font-bold text-slate-900">{t('로그인 / 신청 현황')}</Link>
                 <Button asChild className="w-full bg-primary h-auto min-h-[4rem] rounded-2xl font-black text-xl mt-4 py-4 px-6 shadow-lg shadow-primary/20 whitespace-normal break-words">
-                  <Link href="/estimate" className="text-center leading-tight flex-1">{t('한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기')}</Link>
+                  <Link href="/estimate" className="text-center leading-tight flex-1 flex flex-col items-center justify-center gap-0.5">
+                    <span className="text-orange-500 font-black">{t('대한민국 국세청 공식 연동')}</span>
+                    <span className="text-white font-black text-sm">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
+                  </Link>
                 </Button>
               </div>
             </SheetContent>

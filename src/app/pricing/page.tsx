@@ -85,10 +85,10 @@ export default function PricingPage() {
                 </div>
                 <div className="space-y-2">
                   <span className="text-green-500 font-black text-sm uppercase tracking-widest">{t('후불 자동 정산')}</span>
-                  <h3 className="text-2xl font-black text-slate-900 leading-snug">{t('환급금 통장 입금 확인 후 정산')}</h3>
+                  <h3 className="text-2xl font-black text-slate-900 leading-snug">{t('환급금 입금된 후 후불 정산')}</h3>
                 </div>
                 <p className="text-slate-500 font-medium leading-relaxed text-base">
-                  {t('국세청에서 고객님 명의의 은행 계좌로 환급금을 직접 입금해 드린 것이 확인된 후에만 수수료(성과 보수) 정산 절차가 시작됩니다.')}
+                  {t('국세청에서 고객님 명의의 은행 계좌로 환급금을 직접 입금해 드리면, 나중에 후불 정산합니다.')}
                 </p>
               </div>
             </Card>

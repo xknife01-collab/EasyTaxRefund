@@ -328,8 +328,10 @@ export default function HomePage() {
               <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 animate-fade-in-up delay-300">
                 <Button size="lg" asChild className="w-full sm:w-auto text-lg sm:text-2xl px-6 sm:px-12 py-6 sm:py-10 h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/20 rounded-2xl sm:rounded-[2rem] transition-all hover:scale-105 active:scale-95 group whitespace-normal break-words text-white">
                   <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 sm:gap-4 text-center leading-tight py-2 w-full text-white">
-                    <span className="flex-1 min-w-[150px] font-black text-white">
-                      {t('한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기')}
+                    <span className="flex-1 min-w-[150px] font-black text-white flex flex-wrap items-center justify-center gap-1.5">
+                      <span className="text-orange-500 font-black">{t('대한민국 국세청 공식 연동')}</span>
+                      <span className="text-white font-medium">•</span>
+                      <span className="text-white font-black">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
                     </span> <ArrowRight className="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:translate-x-1 shrink-0 text-white" />
                   </Link>
                 </Button>
@@ -414,11 +416,11 @@ export default function HomePage() {
                     <Banknote className="h-7 w-7 text-indigo-500 transition-all duration-500 group-hover:scale-115 group-hover:translate-y-[-2px] group-hover:translate-x-[2px] animate-float" />
                   </div>
                   <h3 className="text-2xl font-black text-primary">
-                    {t('환급금 통장 입금 확인 후 정산')}
+                    {t('환급금 입금된 후 후불 정산')}
                   </h3>
                 </div>
                 <p className="text-slate-500 font-bold leading-relaxed text-base">
-                  {t('국세청에서 고객님 명의의 은행 계좌로 환급금을 직접 입금해 드린 것이 확인된 후에만 수수료(성과 보수) 정산 절차가 시작됩니다.')}
+                  {t('국세청에서 고객님 명의의 은행 계좌로 환급금을 직접 입금해 드리면, 나중에 후불 정산합니다.')}
                 </p>
               </Card>
             </div>
@@ -575,7 +577,11 @@ export default function HomePage() {
             <div className="flex flex-col items-center gap-8 pt-8">
               <Button size="lg" asChild className="w-full sm:w-auto text-xl sm:text-3xl px-8 sm:px-12 py-8 sm:py-12 h-auto bg-primary hover:bg-primary/90 shadow-[0_32px_64px_-12px_rgba(99,102,241,0.4)] rounded-2xl sm:rounded-[2.5rem] transition-all hover:scale-105 active:scale-95 whitespace-normal break-words">
                 <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-4 text-center leading-tight py-4 w-full">
-                  <span className="flex-1 min-w-[200px]">{t('한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기')}</span> <ArrowRight className="h-6 w-6 sm:h-8 sm:w-8 shrink-0" />
+                  <span className="flex-1 min-w-[200px] flex flex-wrap items-center justify-center gap-1.5 font-black text-white">
+                    <span className="text-orange-500 font-black">{t('대한민국 국세청 공식 연동')}</span>
+                    <span className="text-white font-medium">•</span>
+                    <span className="text-white font-black">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
+                  </span> <ArrowRight className="h-6 w-6 sm:h-8 sm:w-8 shrink-0" />
                 </Link>
               </Button>
               <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-3xl bg-white border border-slate-100 shadow-sm">
@@ -936,8 +942,10 @@ export default function HomePage() {
       <div className="lg:hidden fixed bottom-6 left-6 right-6 z-50 animate-fade-in-up delay-300">
         <Button size="lg" asChild className="w-full text-lg min-h-[4rem] h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/40 rounded-2xl font-black py-4 px-6 whitespace-normal break-words text-white">
           <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 text-center leading-tight w-full text-white">
-            <span className="flex-1 min-w-[150px] font-black text-white">
-              {t('한국 국세청 공식 연동 • 내 환급액 확인후 환급 신청하기')}
+            <span className="flex-1 min-w-[150px] font-black text-white flex flex-wrap items-center justify-center gap-1">
+              <span className="text-orange-500 font-black text-[15px] xs:text-base">{t('대한민국 국세청 공식 연동')}</span>
+              <span className="text-white font-medium text-sm">•</span>
+              <span className="text-white font-black text-sm xs:text-base">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
             </span> <ArrowRight className="h-5 w-5 shrink-0 text-white" />
           </Link>
         </Button>

@@ -1,0 +1,103 @@
+{
+  "missing_in_ko": [],
+  "details": {
+    "vi": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "zh": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "km": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "ne": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "uz": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "my": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "id": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "th": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "en": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "si": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "mn": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "bn": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "kk": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    },
+    "ur": {
+      "total": 1190,
+      "missing_count": 0,
+      "missing_keys": [],
+      "redundant_count": 0,
+      "redundant_keys": []
+    }
+  }
+}

@@ -206,9 +206,11 @@ export async function completeAuthAndEstimate(input: {id: string, twoWayInfo: an
 
     // 하이픈 데이터 파싱
     const rawList = res.data.data?.list || res.data.data?.resPayList || [];
+    console.log("[Hyphen Sign] rawList retrieved (length):", rawList.length, "contents:", JSON.stringify(rawList));
     
     const settlementPromises = rawList.map((item: any) => analyzeYearlyTax(item));
     const analyses = await Promise.all(settlementPromises);
+    console.log("[Hyphen Sign] analyses completed:", JSON.stringify(analyses));
     
     let totalRefundSum = 0;
     let totalDecidedTax = 0;
@@ -228,13 +230,17 @@ export async function completeAuthAndEstimate(input: {id: string, twoWayInfo: an
       }
     }
 
-    return {
+    const finalResult = {
+      success: true,
       ...formatResult(totalRefundSum, anyAlreadyReduced, details, totalDecidedTax, recordsFoundCount),
       resIncomeTax: latestFoundAnalysis?.decidedTax ?? 0,
       resCompanyIdentityNo1: latestFoundAnalysis?.businessNo ?? "N/A",
       resAttrYear: latestFoundAnalysis?.year || "N/A",
       resIncomeSpecList: latestFoundAnalysis?.incomeSpecsJSON || "조회된 내역이 없습니다."
     };
+    
+    console.log("[Hyphen Sign] Final parsed result returned to client:", JSON.stringify(finalResult));
+    return finalResult;
 
   } catch (error: any) {
     console.error("[Hyphen Sign Error]", error.message);
@@ -885,7 +891,7 @@ export async function estimateRefundWithIdPw(input: {
     console.log("[Hometax ID/PW Estimate] Step 2: Querying MyNTS statements using cookie...");
     const ntsRes = await axios.post(`${HYPHEN_CONFIG.baseUrl}/in0076000300`, {
       cookieData: cookieData,
-      loginMethod: "SMS", // Format value required by schema
+      loginMethod: "ID", // Format value required by schema
       detailYn: "Y"
     }, { headers, timeout: 90000 });
 
@@ -897,8 +903,11 @@ export async function estimateRefundWithIdPw(input: {
 
     // Run original tax analysis logic on the retrieved list
     const rawList = ntsRes.data.data?.list || ntsRes.data.data?.resPayList || [];
+    console.log("[Hometax ID/PW Estimate] rawList retrieved (length):", rawList.length, "contents:", JSON.stringify(rawList));
+    
     const settlementPromises = rawList.map((item: any) => analyzeYearlyTax(item));
     const analyses = await Promise.all(settlementPromises);
+    console.log("[Hometax ID/PW Estimate] analyses completed:", JSON.stringify(analyses));
     
     let totalRefundSum = 0;
     let totalDecidedTax = 0;
@@ -918,7 +927,7 @@ export async function estimateRefundWithIdPw(input: {
       }
     }
 
-    return {
+    const finalResult = {
       success: true,
       ...formatResult(totalRefundSum, anyAlreadyReduced, details, totalDecidedTax, recordsFoundCount),
       resIncomeTax: latestFoundAnalysis?.decidedTax ?? 0,
@@ -926,6 +935,9 @@ export async function estimateRefundWithIdPw(input: {
       resAttrYear: latestFoundAnalysis?.year || "N/A",
       resIncomeSpecList: latestFoundAnalysis?.incomeSpecsJSON || "조회된 내역이 없습니다."
     };
+    
+    console.log("[Hometax ID/PW Estimate] Final parsed result returned to client:", JSON.stringify(finalResult));
+    return finalResult;
 
   } catch (error: any) {
     console.error("[Hometax ID/PW Estimate Error]", error.message);

@@ -352,6 +352,32 @@ export default function EstimatePage() {
   const [isPlaying, setIsPlaying] = useState(true);
 
   const [authSession, setAuthSession] = useState<{ id: string, twoWayInfo: any } | null>(null);
+
+  // Enforce session cookie/state persistence for authSession
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (authSession) {
+        sessionStorage.setItem('authSession', JSON.stringify(authSession));
+      } else {
+        sessionStorage.removeItem('authSession');
+      }
+    }
+  }, [authSession]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const savedAuthSession = sessionStorage.getItem('authSession');
+      if (savedAuthSession) {
+        try {
+          const parsed = JSON.parse(savedAuthSession);
+          setAuthSession(parsed);
+          console.log("[Frontend] Restored authSession from sessionStorage:", parsed);
+        } catch (e) {
+          console.error("Failed to parse saved authSession:", e);
+        }
+      }
+    }
+  }, []);
   const [authMethod, setAuthMethod] = useState<'app' | 'kakao' | 'hana'>('hana');
   const [hasCertificate, setHasCertificate] = useState<boolean | null>(null);
   const [hadCertificateInitially, setHadCertificateInitially] = useState<boolean | null>(null);
@@ -1269,20 +1295,37 @@ export default function EstimatePage() {
     if (isSimulation) return; // Do not auto-save in simulation mode
     // Only save if we have at least started OCR or entered some info
     if (step > 0 || formData.officialName || formData.phone) {
+      // Self-Healing: Do not overwrite localStorage with a null result if a valid result exists locally
+      const savedPersistence = localStorage.getItem("easy_tax_refund_persistence");
+      let activeResult = result;
+      if (!activeResult && savedPersistence) {
+        try {
+          const parsed = JSON.parse(savedPersistence);
+          // If the cached step and draft match the current ones, and we have a valid result cached, restore it.
+          if (parsed.result && parsed.step === step && parsed.draftAppId === draftAppId) {
+            activeResult = parsed.result;
+            setResult(parsed.result);
+          }
+        } catch (e) {
+          console.error("Failed to parse saved persistence:", e);
+        }
+      }
+
       const dataToSave = {
         step,
         formData,
         draftAppId,
+        result: activeResult,
         lastSaved: Date.now()
       };
       localStorage.setItem("easy_tax_refund_persistence", JSON.stringify(dataToSave));
 
       // Also update remote DB for funnel tracking whenever step changes
       if (step > 0) {
-        saveProgress(step);
+        saveProgress(step, false, activeResult);
       }
     }
-  }, [step]); // Only trigger on step change for Firestore to avoid excessive writes
+  }, [step, result, draftAppId]); // Trigger on step, result, or draftAppId change to keep them in sync
 
   // Session Persistence: Load on mount
   useEffect(() => {
@@ -1311,6 +1354,9 @@ export default function EstimatePage() {
     if (resumeData) {
       setStep(resumeData.step);
       setFormData(resumeData.formData);
+      if (resumeData.result) {
+        setResult(resumeData.result);
+      }
       if (resumeData.draftAppId) {
         setDraftAppId(resumeData.draftAppId);
         localStorage.setItem('currentDraftId', resumeData.draftAppId);
@@ -1563,6 +1609,48 @@ export default function EstimatePage() {
         const docSnap = await getDoc(docRef);
         if (docSnap.exists()) {
           setDraftAppId(savedDraftId);
+          const data = docSnap.data();
+          if (data) {
+            // Restore formData
+            setFormData(prev => ({
+              ...prev,
+              officialName: data.fullName || prev.officialName,
+              authName: data.fullName || prev.authName,
+              registrationNumber: data.registrationNumber || prev.registrationNumber,
+              phone: data.phone || prev.phone,
+              bankName: data.bankName || prev.bankName,
+              accountNumber: data.accountNumber || prev.accountNumber,
+              accountHolder: data.accountHolder || prev.accountHolder,
+            }));
+            
+            // Restore step
+            if (data.lastStep !== undefined) {
+              setStep(data.lastStep);
+            }
+            
+            // Restore result
+            if (data.estimatedRefundAmount !== undefined) {
+              const caseType = data.caseType || 'D';
+              const message = caseType === 'A' ? "축하합니다! {amount}을 찾았습니다." :
+                              caseType === 'B' ? "이미 감면 혜택를 받고 계시네요!" :
+                              caseType === 'C' ? "납부하신 세금이 없어 환급액이 0원입니다." : "조회된 데이터가 없습니다.";
+              
+              const restoredResult = {
+                success: true,
+                refundEstimate: data.estimatedRefundAmount,
+                resIncomeTax: data.resIncomeTax || 0,
+                resCompanyIdentityNo1: data.resCompanyIdentityNo1 || 'N/A',
+                resAttrYear: data.resAttrYear || 'N/A',
+                resIncomeSpecList: data.resIncomeSpecList || '',
+                caseType: caseType,
+                message: message,
+                details: data.details || []
+              };
+
+              console.log("[Frontend] Restored result from Firestore draft:", JSON.stringify(restoredResult));
+              setResult(restoredResult);
+            }
+          }
         } else {
           // Document was deleted from Firestore! Clear it from storage.
           console.log("Draft application document not found in database. Cleaning up stale local IDs.");
@@ -1669,7 +1757,7 @@ export default function EstimatePage() {
     }
   };
 
-  const saveProgress = async (nextStep: number, isFinal: boolean = false) => {
+  const saveProgress = async (nextStep: number, isFinal: boolean = false, resultOverride: any = null) => {
     if (isSimulation) return; // Do not save progress in simulation mode
     
     // If there is an active document creation promise, wait for it first to avoid duplicate calls
@@ -1683,6 +1771,7 @@ export default function EstimatePage() {
 
     try {
       const trackingData = getStoredTrackingData();
+      const activeResult = resultOverride || result;
       const appData = {
         fullName: formData.officialName,
         registrationNumber: formData.registrationNumber,
@@ -1694,7 +1783,16 @@ export default function EstimatePage() {
         utmCampaign: trackingData?.utmCampaign || null,
         userLanguage: (typeof window !== 'undefined' ? localStorage.getItem('app_lang') || 'ko' : 'ko'),
         updatedAt: serverTimestamp(),
-        isDraft: !isFinal
+        isDraft: !isFinal,
+        ...(activeResult ? {
+          estimatedRefundAmount: activeResult.refundEstimate || 0,
+          resIncomeTax: activeResult.resIncomeTax || 0,
+          resCompanyIdentityNo1: activeResult.resCompanyIdentityNo1 || 'N/A',
+          resAttrYear: activeResult.resAttrYear || 'N/A',
+          resIncomeSpecList: activeResult.resIncomeSpecList || '',
+          caseType: activeResult.caseType || 'D',
+          details: activeResult.details || []
+        } : {})
       };
 
       // Check current draft ID from state or stored storages in case state hasn't updated yet
@@ -2051,7 +2149,7 @@ export default function EstimatePage() {
 
         setResult(analysisResult);
         setStep(7);
-        saveProgress(7);
+        saveProgress(7, false, analysisResult);
       } else {
         setAnalysisError({
           code: "HOMETAX_RETRIEVAL_FAILED",
@@ -2317,22 +2415,27 @@ export default function EstimatePage() {
       setLoading(true);
       await new Promise(resolve => setTimeout(resolve, 3500));
       const persona = PERSONAS[selectedPersona || 'ko'] || PERSONAS['ko'];
-      setResult({
+      
+      const simulatedResult = {
+        success: true,
         refundEstimate: persona.refund,
         resIncomeTax: persona.refund / 1.1,
         resCompanyIdentityNo1: "123-45-67890",
         resAttrYear: "2024",
         resIncomeSpecList: JSON.stringify(persona.breakdown),
-        caseType: "D",
+        caseType: persona.refund > 0 ? "A" : "D",
+        message: persona.refund > 0 ? "축하합니다! {amount}을 찾았습니다." : "조회된 데이터가 없습니다.",
         details: persona.breakdown.map(b => ({
           year: b.year,
-          companyName: "(주)가상상사",
-          incomeAmount: 30000000,
-          taxAmount: b.amount / 0.9,
-          deductedAmount: b.amount,
+          company: "(주)가상상사",
+          amount: b.amount,
           isEligible: true
-        }))
-      });
+        })),
+        serviceFee: Math.floor(persona.refund * 0.25)
+      };
+
+      console.log("[Frontend] Simulated identity verification analysis completed:", JSON.stringify(simulatedResult));
+      setResult(simulatedResult);
       setStep(7);
       saveProgress(7);
       setLoading(false);
@@ -2372,7 +2475,7 @@ export default function EstimatePage() {
       
       setResult(analysisResult);
       setStep(7);
-      saveProgress(7);
+      saveProgress(7, false, analysisResult);
       setLoading(false);
     } catch (error: any) {
       const isHighValue = preFilterEstimate >= 400000;
@@ -4109,6 +4212,14 @@ export default function EstimatePage() {
                     </Button>
                   </div>
                 </CardContent>
+              </Card>
+            )}
+
+            {step === 7 && !result && (
+              <Card className="premium-card rounded-[3rem] border-none shadow-2xl overflow-hidden bg-white p-8 sm:p-16 text-center flex flex-col items-center justify-center min-h-[300px]">
+                <Loader2 className="h-12 w-12 text-primary animate-spin mb-6" />
+                <h3 className="text-xl font-bold text-slate-800">{t('환급 결과를 복구하는 중입니다...')}</h3>
+                <p className="text-sm text-slate-400 mt-2">{t('잠시만 기다려 주세요.')}</p>
               </Card>
             )}
 

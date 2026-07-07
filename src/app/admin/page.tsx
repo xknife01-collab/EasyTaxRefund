@@ -1058,7 +1058,9 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                             </TableCell>
 
                             {/* 예상 환급액 */}
-                            <TableCell className="font-black">₩ {app.estimatedRefundAmount?.toLocaleString()}</TableCell>
+                            <TableCell className={cn("font-black", app.estimatedRefundAmount !== undefined ? "text-emerald-600 font-extrabold" : "text-slate-400 font-medium")}>
+                              {app.estimatedRefundAmount !== undefined ? `₩ ${app.estimatedRefundAmount.toLocaleString()}` : "미조회"}
+                            </TableCell>
 
                             {/* 수수료 (25%) */}
                             <TableCell className="font-black text-amber-600">
@@ -1284,7 +1286,17 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                                   </div>
                                 </TableCell>
                                 <TableCell>
-                                  <div className="text-2xl font-black text-amber-600 tracking-tighter">₩ {(app.preFilterEstimate || 0).toLocaleString()}</div>
+                                  {app.estimatedRefundAmount !== undefined ? (
+                                    <div className="text-2xl font-black text-emerald-600 tracking-tighter flex flex-col items-start leading-none gap-1">
+                                      <span>₩ {app.estimatedRefundAmount.toLocaleString()}</span>
+                                      <span className="text-[10px] text-emerald-500 font-extrabold bg-emerald-50 border border-emerald-100 rounded px-1.5 py-0.5">실제 환급액</span>
+                                    </div>
+                                  ) : (
+                                    <div className="text-2xl font-black text-amber-600 tracking-tighter flex flex-col items-start leading-none gap-1">
+                                      <span>₩ {(app.preFilterEstimate || 0).toLocaleString()}</span>
+                                      <span className="text-[10px] text-amber-500 font-extrabold bg-amber-50 border border-amber-100 rounded px-1.5 py-0.5">사전 진단액</span>
+                                    </div>
+                                  )}
                                 </TableCell>
                                 <TableCell>
                                    <Badge className={`rounded-xl px-3 font-black ${statusBadge.class} border-none shadow-sm`}>{statusBadge.label}</Badge>
@@ -1563,8 +1575,8 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                             <TableCell className="font-bold text-slate-700">
                               {app.bankName ? `${app.bankName} (${app.bankAccount || app.accountNumber || '계좌미지정'})` : "N/A"}
                             </TableCell>
-                            <TableCell className="font-black text-slate-900">
-                              ₩ {(app.estimatedRefundAmount ?? 0).toLocaleString()}
+                            <TableCell className={cn("font-black", app.estimatedRefundAmount !== undefined ? "text-emerald-600 font-extrabold" : "text-slate-400 font-medium")}>
+                              {app.estimatedRefundAmount !== undefined ? `₩ ${app.estimatedRefundAmount.toLocaleString()}` : "미조회"}
                             </TableCell>
 
                             {/* 수수료 (25%) */}
