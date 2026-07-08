@@ -358,7 +358,14 @@ function getCleanRegNo(regNo: string): string {
 }
 
 function getTelecomSignupCode(telecom: string): string {
-  const telMap: Record<string, string> = { "0": "SKT", "1": "KTF", "2": "LGT" };
+  const telMap: Record<string, string> = { 
+    "0": "SKT", 
+    "1": "KTF", 
+    "2": "LGT",
+    "3": "SKM",
+    "4": "KTM",
+    "5": "LGM"
+  };
   return telMap[telecom] || telecom;
 }
 

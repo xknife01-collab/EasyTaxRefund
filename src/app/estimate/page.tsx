@@ -1857,9 +1857,13 @@ export default function EstimatePage() {
   // --- Hometax Helper Functions and Event Handlers ---
   const getTelecomCode = (carrier: string) => {
     if (!carrier) return "0";
-    if (carrier.includes("SKT")) return "0";
-    if (carrier.includes("KT")) return "1";
-    return "2"; // LGT or others
+    if (carrier === "SKT") return "0";
+    if (carrier === "KT") return "1";
+    if (carrier === "LGU+") return "2";
+    if (carrier.includes("SKT 알뜰폰")) return "3";
+    if (carrier.includes("KT 알뜰폰")) return "4";
+    if (carrier.includes("LGU+ 알뜰폰")) return "5";
+    return "0"; // fallback
   };
 
   const openFindIdModal = () => {
@@ -5451,6 +5455,9 @@ export default function EstimatePage() {
                         <SelectItem value="0">SKT</SelectItem>
                         <SelectItem value="1">KT</SelectItem>
                         <SelectItem value="2">LGU+</SelectItem>
+                        <SelectItem value="3">{t("SKT 알뜰폰")}</SelectItem>
+                        <SelectItem value="4">{t("KT 알뜰폰")}</SelectItem>
+                        <SelectItem value="5">{t("LGU+ 알뜰폰")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -5591,6 +5598,9 @@ export default function EstimatePage() {
                         <SelectItem value="0">SKT</SelectItem>
                         <SelectItem value="1">KT</SelectItem>
                         <SelectItem value="2">LGU+</SelectItem>
+                        <SelectItem value="3">{t("SKT 알뜰폰")}</SelectItem>
+                        <SelectItem value="4">{t("KT 알뜰폰")}</SelectItem>
+                        <SelectItem value="5">{t("LGU+ 알뜰폰")}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
