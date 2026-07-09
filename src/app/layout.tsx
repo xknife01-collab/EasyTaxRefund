@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import { Toaster } from '@/components/ui/toaster';
 import { LanguageProvider } from '@/components/LanguageContext';
-import { SocialProof } from '@/components/SocialProof';
+// import { SocialProof } from '@/components/SocialProof';
 import { PWASetup } from '@/components/PWASetup';
 import { FloatingAiChat } from '@/components/FloatingAiChat';
 
@@ -51,7 +51,7 @@ export default function RootLayout({
         <LanguageProvider>
           {children}
           <Toaster />
-          <SocialProof />
+          {/* <SocialProof /> */}
           <PWASetup />
           <FloatingAiChat />
         </LanguageProvider>
