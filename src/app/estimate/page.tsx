@@ -289,10 +289,13 @@ export default function EstimatePage() {
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      const searchParams = new URLSearchParams(window.location.search);
+      const isSim = searchParams.get('simulation') === 'true';
+
       const ua = navigator.userAgent || navigator.vendor || (window as any).opera;
       const isInApp = /FBAN|FBAV|Instagram|KAKAOTALK|Line|Twitter/i.test(ua);
 
-      if (isInApp) {
+      if (isInApp && !isSim) {
         setIsInAppBrowser(true);
         // 자동 전환은 페이스북에 의해 차단되므로, 오버레이를 통해 사용자 클릭 유도
       }

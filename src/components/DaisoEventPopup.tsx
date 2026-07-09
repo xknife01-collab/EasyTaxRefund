@@ -68,7 +68,7 @@ export default function DaisoEventPopup() {
         {/* 닫기 버튼 */}
         <button 
           onClick={handleClose}
-          className="absolute top-5 right-5 z-10 p-2 bg-slate-950/40 hover:bg-slate-800 border border-white/10 rounded-full transition-colors cursor-pointer"
+          className="absolute top-5 right-5 z-50 p-2 bg-slate-950/40 hover:bg-slate-800 border border-white/10 rounded-full transition-colors cursor-pointer"
         >
           <X className="w-4 h-4 text-slate-400 hover:text-white" />
         </button>

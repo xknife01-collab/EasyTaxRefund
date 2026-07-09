@@ -22,7 +22,7 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const user = null; // Mocked
   const isUserLoading = false; // Mocked
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -91,7 +91,7 @@ export function Navbar() {
           <Button asChild className="hidden sm:inline-flex bg-primary hover:bg-primary/90 text-white font-black rounded-2xl px-8 h-auto min-h-[3rem] py-2 shadow-lg shadow-primary/20 transition-all hover:scale-105 active:scale-95 whitespace-normal break-words">
             <Link href="/estimate" className="flex-1 min-w-[max-content] flex items-center justify-center gap-1">
               <span className="text-orange-500 font-black">{t('대한민국 국세청 공식 연동')}</span>
-              <span className="text-white font-medium">•</span>
+              {language !== 'ko' && <span className="text-white font-medium">•</span>}
               <span className="text-white font-black">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
             </Link>
           </Button>
