@@ -160,8 +160,8 @@ export default function HomePage() {
     }
   ];
 
-  // 로딩 중이거나 방문 여부를 아직 확인하지 못한 경우
-  if (!isReady || hasSeenWelcome === null) {
+  // 로딩 중인 경우에만 렌더링
+  if (!isReady) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 relative overflow-hidden">
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
@@ -180,162 +180,158 @@ export default function HomePage() {
     );
   }
 
-  // 방문한 적이 없다면 국기 선택 화면(Welcome) 표시
-  if (!hasSeenWelcome) {
-    return (
-      <div className="min-h-screen flex flex-col font-body bg-slate-50 items-center justify-center p-6 py-20">
-        <div className="max-w-6xl w-full space-y-16 animate-fade-in-up">
-          <div className="text-center space-y-6">
-            <div className="mx-auto h-20 w-20 bg-primary rounded-[2rem] flex items-center justify-center shadow-2xl shadow-primary/20 mb-8 animate-float">
-              <Globe className="h-10 w-10 text-white" />
-            </div>
-            <h1 className="text-4xl lg:text-5xl font-black font-headline text-slate-900 tracking-tight">
-              {t('welcome_title')}
-            </h1>
-            <p className="text-xl text-slate-500 font-bold">
-              {t('welcome_desc')}
-            </p>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
-            {languages.filter(l => l.code !== 'ko').map((lang, index) => (
-              <Card 
-                key={lang.code}
-                onClick={() => handleLanguageSelect(lang.code)}
-                className="premium-card rounded-[2.5rem] border-none shadow-sm cursor-pointer overflow-hidden group transition-all hover:scale-105"
-              >
-                <CardContent className="p-8 flex flex-col items-center gap-6 text-center">
-                  <div className="relative w-24 h-16 shadow-lg rounded-xl overflow-hidden transform transition-transform group-hover:scale-110">
-                    <Image 
-                      src={`https://flagcdn.com/w320/${lang.countryCode}.png`}
-                      alt={lang.name}
-                      fill
-                      className="object-cover"
-                      unoptimized={true}
-                      priority={index < 5}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <p className="font-black text-slate-900 text-lg">{lang.name}</p>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center justify-center gap-1">
-                      Select <ArrowRight className="h-2 w-2" />
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // 방문한 적이 있다면 메인 서비스 화면(Home) 표시
-
   return (
     <div className="min-h-screen flex flex-col font-body">
       <Navbar />
       <main className="flex-1">
         
         {/* 디자인 섹션 1: 히어로 섹션 */}
-        <section className="relative pt-32 pb-24 lg:pt-52 lg:pb-40 overflow-hidden bg-slate-50/50">
-          <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-[1000px] h-[1000px] bg-primary/5 rounded-full blur-[140px] pointer-events-none" />
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-5xl mx-auto text-center space-y-10">
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-primary/10 shadow-[0_4px_20px_-4px_rgba(99,102,241,0.1)] animate-fade-in-up">
-                <BadgeCheck className="h-5 w-5 text-primary" />
-                <span className="text-sm font-bold text-slate-700 tracking-tight">{t('청년 외국인 세무 지원 • Certified System')}</span>
-              </div>
-              
-              <div className="bg-primary/5 border border-primary/10 rounded-3xl p-6 md:p-8 max-w-3xl mx-auto animate-fade-in-up">
-                <p 
-                  className="text-xl md:text-2xl font-black text-slate-800 break-keep leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: t('💡 대한민국 정부는 중소기업에서 일하는 청년을 위해, 막강한 세제 혜택을 지원합니다. 매달 월급에서 먼저 차감한 세금 중 소득세 부분을 환급해 주는 "중소기업 청년 소득세 감면"이라는 제도입니다.') }}
-                />
-              </div>
-
-              <h1 className="text-4xl md:text-6xl lg:text-[5.5rem] font-black font-headline text-slate-900 text-gradient animate-fade-in-up delay-100 leading-[1.1] break-keep">
-                {t('한국에서 일하는 외국인 청년이라면')}<br />
-                <span className="text-primary">{t('1년에 200만원 한도,')}</span> {t('5년동안,')} <span className="text-primary">{t('최대 1000만원까지,')}</span><br />
-                <span className="text-primary">{t('월급에서 차감한 세금 90%')}</span>{t('를 환급을 받을 수 있습니다.')}<br />
-                <span className="text-primary">{t('평균 환급액 300만원이상!')}</span>
-              </h1>
-
-              {/* 후불제 핵심 안내 뱃지 */}
-              <div className="flex flex-wrap gap-4 justify-center items-center max-w-4xl mx-auto pt-6 animate-fade-in-up delay-150">
-                <div className="flex items-center gap-3 bg-emerald-50 text-emerald-700 px-6 py-4 rounded-[1.5rem] border border-emerald-100/60 font-black text-lg sm:text-xl shadow-sm">
-                  <CheckCircle2 className="h-6 w-6 text-emerald-600 animate-pulse" />
-                  <span>{t('선결제 0원 / 환급 성공 시에만 수수료 발생')}</span>
-                </div>
-                <div className="flex items-center gap-3 bg-indigo-50 text-indigo-700 px-6 py-4 rounded-[1.5rem] border border-indigo-100/60 font-black text-lg sm:text-xl shadow-sm">
-                  <ShieldCheck className="h-6 w-6 text-indigo-600" />
-                  <span>{t('성과 기반 후불 정산 (No Win, No Fee)')}</span>
-                </div>
-              </div>
-              
-              <div className="max-w-5xl mx-auto space-y-8 text-xl lg:text-2xl text-slate-500 font-medium leading-relaxed animate-fade-in-up delay-200">
-                <p>{t(`대한민국 중소기업에서 근무하는 외국인 전문 인력 중 90% 이상이 자신의 당연한 권리를 놓치고 있다는 사실을 알고 계십니까? 청년 외국인 근로자(35번째 생일이 지나기 전에 한국에서 일을 시작했다면 OK!)는 소득세의 90%를 감면받을 수 있습니다.`)}</p>
+        <section className="relative pt-24 pb-20 lg:pt-36 lg:pb-32 overflow-hidden bg-white">
+          {/* Full-width background image */}
+          <div className="absolute inset-0 z-0 select-none">
+            <img
+              src="/MAIN.png?v=1"
+              alt="National Assembly Background"
+              className="absolute inset-0 w-full h-full object-cover object-right"
+            />
+          </div>
+          
+          <div className="container mx-auto px-6 max-w-7xl relative z-10">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+              <div className="lg:col-span-7 text-left space-y-6 md:space-y-8">
                 
-                {/* Tax Exemption Explanation Cards */}
-                <div className="grid md:grid-cols-3 gap-6 text-left pt-4 pb-4">
-                  {/* Card 1: Amber Accent */}
-                  <div className="bg-gradient-to-br from-white via-white to-amber-50/30 border border-amber-100/40 shadow-[0_10px_30px_-10px_rgba(245,158,11,0.05)] rounded-[2rem] p-6 lg:p-8 hover:shadow-[0_20px_40px_-15px_rgba(245,158,11,0.15)] hover:border-amber-200/60 transition-all hover:-translate-y-1 duration-300">
-                    <div className="flex items-center gap-3.5 mb-4">
-                      <div className="h-11 w-11 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-600 shrink-0">
-                        <Coins className="h-6 w-6" />
-                      </div>
-                      <h4 className="font-extrabold text-slate-800 text-xl">{t("어떤 세금을 돌려받나요?")}</h4>
-                    </div>
-                    <p className="text-slate-500 text-sm md:text-base font-normal leading-relaxed">
-                      {t("매월 월급을 받으실 때 급여명세서의 '소득세(Income Tax)' 항목으로 이미 자동 공제되어 납부된 아까운 내 세금을 다시 돌려받는 것입니다.")}
-                    </p>
-                  </div>
+                {/* Main Heading */}
+                <div className="space-y-3">
+                  <h2 className="text-[#0b192c] text-xl md:text-2xl lg:text-[2.2rem] font-black tracking-tight font-headline uppercase leading-none">
+                    FOREIGNER INCOME TAX REFUND
+                  </h2>
+                  <h3 className="text-[#b88c30] text-lg md:text-xl lg:text-2xl font-black font-headline uppercase leading-none">
+                    - GOVERNMENT SUPPORTED PROGRAM
+                  </h3>
+                  <h1 className="text-3xl md:text-5xl lg:text-[3.2rem] font-black text-slate-900 tracking-tight leading-[1.15] break-keep pt-2">
+                    외국인 중소기업 소득세 환급 - 정부 공식 제도 안내
+                  </h1>
+                </div>
 
-                  {/* Card 2: Indigo Accent */}
-                  <div className="bg-gradient-to-br from-white via-white to-indigo-50/30 border border-indigo-100/40 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.05)] rounded-[2rem] p-6 lg:p-8 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.15)] hover:border-indigo-200/60 transition-all hover:-translate-y-1 duration-300">
-                    <div className="flex items-center gap-3.5 mb-4">
-                      <div className="h-11 w-11 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600 shrink-0">
-                        <Sparkles className="h-6 w-6" />
-                      </div>
-                      <h4 className="font-extrabold text-slate-800 text-xl">{t("어떻게 돌려받나요?")}</h4>
-                    </div>
-                    <p 
-                      className="text-slate-500 text-sm md:text-base font-normal leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: t("대한민국 국세청 공식 제도인 '경정청구'를 통해 돌려받습니다. 국가 공인 세무사가 복잡한 서류 작성과 신청 과정을 모두 대행하여, 국세청으로부터 세금을 안전하고 확실하게 환급받아 드립니다.") }}
-                    />
+                {/* Subtitle / Bullet descriptions and Badges row */}
+                <div className="flex flex-col md:flex-row md:items-center gap-6 pt-2">
+                  <div className="space-y-2 text-left">
+                    <p className="text-base md:text-lg font-bold text-slate-700">{t('Verify your eligibility in 1 minute.')}</p>
+                    <p className="text-sm md:text-base font-semibold text-slate-500">{t('Our service is securely linked with the National Tax Service (Hometax).')}</p>
                   </div>
-
-                  {/* Card 3: Emerald Accent */}
-                  <div className="bg-gradient-to-br from-white via-white to-emerald-50/30 border border-emerald-100/40 shadow-[0_10px_30px_-10px_rgba(16,185,129,0.05)] rounded-[2rem] p-6 lg:p-8 hover:shadow-[0_20px_40px_-15px_rgba(16,185,129,0.15)] hover:border-emerald-200/60 transition-all hover:-translate-y-1 duration-300">
-                    <div className="flex items-center gap-3.5 mb-4">
-                      <div className="h-11 w-11 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-600 shrink-0">
-                        <ShieldCheck className="h-6 w-6" />
-                      </div>
-                      <h4 className="font-extrabold text-slate-800 text-xl">{t("비자에 불이익은 없나요?")}</h4>
+                  
+                  {/* Badges */}
+                  <div className="flex items-center gap-3 shrink-0">
+                    {/* Gold Shield SECURE Badge */}
+                    <div className="flex flex-col items-center justify-center p-2 bg-white border border-[#e2b659] rounded-xl shadow-sm h-16 w-16">
+                      <ShieldCheck className="h-6 w-6 text-[#b88c30]" />
+                      <span className="text-[9px] font-black text-slate-900 mt-1 uppercase">SECURE</span>
                     </div>
-                    <p className="text-slate-500 text-sm md:text-base font-normal leading-relaxed">
-                      {t("대한민국 세법(조세특례제한법 제30조)에 명시된 정당한 법적 혜택입니다. 세금 체납이 아닌 정상 환급이므로 비자 연장 시 전혀 문제되지 않습니다.")}
-                    </p>
+                    {/* NTS Compatible Badge */}
+                    <div className="flex flex-col items-center justify-center p-2 bg-white border border-slate-200 rounded-xl shadow-sm h-16 w-28">
+                      <div className="text-[7px] font-black text-slate-400 uppercase tracking-wider">{t('NTS 국세청')}</div>
+                      <div className="text-[10px] font-black text-[#0b192c] mt-0.5">{t('Compatible')}</div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-3 text-primary/80 font-bold bg-primary/5 py-4 px-8 rounded-3xl border border-primary/10 w-fit mx-auto">
-                  <CheckCircle2 className="h-6 w-6" />
-                  {t('언어의 장벽과 복잡한 절차 때문에 포기하지 마세요. 저희가 최적의 환급 경로를 찾아드립니다.')}
+                {/* CTA Button */}
+                <div className="pt-2">
+                  <Button size="lg" asChild className="w-full sm:w-auto text-base font-black px-10 py-5 h-auto bg-[#0b192c] hover:bg-[#152a45] text-white border border-[#e2b659]/30 rounded-xl shadow-md transition-all hover:scale-[1.02] active:scale-95">
+                    <Link href="/estimate" className="flex items-center justify-center gap-2 text-white">
+                      <span>{t('SECURE ELIGIBILITY CHECK')}</span>
+                      <ArrowRight className="h-5 w-5" />
+                    </Link>
+                  </Button>
                 </div>
+
               </div>
+              <div className="hidden lg:block lg:col-span-5 h-[400px]">
+                {/* Space reserved for image background display on large screens */}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Navy Trust Banner */}
+        <section className="bg-[#0b192c] text-white py-10 border-y-4 border-[#e2b659]">
+          <div className="container mx-auto px-6 max-w-7xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/50">
               
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 animate-fade-in-up delay-300">
-                <Button size="lg" asChild className="w-full sm:w-auto text-lg sm:text-2xl px-6 sm:px-12 py-6 sm:py-10 h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/20 rounded-2xl sm:rounded-[2rem] transition-all hover:scale-105 active:scale-95 group whitespace-normal break-words text-white">
-                  <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 sm:gap-4 text-center leading-tight py-2 w-full text-white">
-                    <span className="flex-1 min-w-[150px] font-black text-white flex flex-wrap items-center justify-center gap-1.5">
-                      <span className="text-orange-500 font-black">{t('대한민국 국세청 공식 연동')}</span>
-                      {language !== 'ko' && <span className="text-white font-medium">•</span>}
-                      <span className="text-white font-black">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
-                    </span> <ArrowRight className="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:translate-x-1 shrink-0 text-white" />
-                  </Link>
-                </Button>
+              {/* Col 1: Certified Partners */}
+              <div className="space-y-4 pb-6 lg:pb-0">
+                <div className="text-[#e2b659] text-xs font-black tracking-wider uppercase">{t('Certified Partners')}</div>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-all">
+                    <div className="h-10 w-10 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center shrink-0">
+                      <span className="text-xs font-black text-slate-800 tracking-tighter">세무사</span>
+                    </div>
+                    <div className="text-left">
+                      <div className="text-xs font-black text-slate-900">{t('Certified Public Tax')}</div>
+                      <div className="text-[10px] text-slate-500 font-bold">{t('Accountant (세무사)')}</div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-all">
+                    <div className="h-10 w-10 bg-indigo-50 border border-indigo-100 rounded-full flex items-center justify-center shrink-0">
+                      <span className="text-[9px] font-black text-indigo-700">ISO</span>
+                    </div>
+                    <div className="text-left">
+                      <div className="text-xs font-black text-slate-900">{t('ISO 27001 Security')}</div>
+                      <div className="text-[10px] text-slate-500 font-bold">{t('국제 정보보호 표준 인증')}</div>
+                    </div>
+                  </div>
+                </div>
               </div>
+
+              {/* Col 2: Visas Supported */}
+              <div className="space-y-4 pt-6 lg:pt-0 lg:pl-8 pb-6 lg:pb-0 text-left">
+                <div className="text-[#e2b659] text-xs font-black tracking-wider uppercase">{t('Real Visas Supported')}</div>
+                <div className="text-xl lg:text-2xl font-black text-white">{t('E-7, E-9, D-10, etc.')}</div>
+                <div className="flex flex-wrap gap-2.5 pt-2">
+                  {['🇰🇷', '🇻🇳', '🇵🇭', '🇰🇭', '🇲🇳', '🇳🇵', '🇺🇿', '🇹🇭'].map((flag, idx) => (
+                    <span key={idx} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/20 text-lg shadow-sm hover:bg-white/20 transition-all cursor-default">
+                      {flag}
+                    </span>
+                  ))}
+                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-dashed border-white/20 text-xs font-bold text-slate-400">
+                    •••
+                  </span>
+                </div>
+              </div>
+
+              {/* Col 3: Success Stories */}
+              <div className="space-y-4 pt-6 lg:pt-0 lg:pl-8 pb-6 lg:pb-0">
+                <div className="text-[#e2b659] text-xs font-black tracking-wider uppercase">{t('Success Stories')}</div>
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg">🇻🇳</span>
+                    <span className="text-xs font-black text-white">Nguyen (E-9): <span className="text-[#e2b659]">+3.1M KRW</span></span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg">🇺🇿</span>
+                    <span className="text-xs font-black text-white">Hassan (E-9): <span className="text-[#e2b659]">+1.8M KRW</span></span>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="text-lg">🇵🇭</span>
+                    <span className="text-xs font-black text-white">Maria (E-7): <span className="text-[#e2b659]">+2.7M KRW</span></span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Col 4: Map & Office Location */}
+              <div className="space-y-4 pt-6 lg:pt-0 lg:pl-8">
+                <div className="text-[#e2b659] text-xs font-black tracking-wider uppercase">{t('Physical Locations')}</div>
+                <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-3">
+                  <div className="h-10 w-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
+                    <Globe className="h-5 w-5 text-[#e2b659]" />
+                  </div>
+                  <div className="text-xs font-bold text-slate-300">
+                    <div>{t('Korea Location Coverage')}</div>
+                    <div className="text-[10px] text-slate-500 font-bold">{t('전국 세무관할 실시간 대응')}</div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
@@ -431,16 +427,16 @@ export default function HomePage() {
         <section className="py-12 bg-white border-b border-slate-50 overflow-hidden">
           <div className="container mx-auto px-4">
             <div className="flex flex-wrap justify-center gap-12 lg:gap-24 opacity-80 text-slate-400">
-              <div className="flex items-center gap-3 font-black text-2xl tracking-tighter">{t('청년 외국인 세무 지원')}</div>
-              <div className="flex items-center gap-3 font-black text-2xl tracking-tighter">{t('공인 세무 서비스')}</div>
-              <div className="flex items-center gap-3 font-black text-2xl tracking-tighter">{t('금융 보안 보장')}</div>
+              <div className="flex items-center gap-3 font-black text-2xl tracking-tighter text-slate-800">{t('청년 외국인 세무 지원')}</div>
+              <div className="flex items-center gap-3 font-black text-2xl tracking-tighter text-slate-800">{t('공인 세무 서비스')}</div>
+              <div className="flex items-center gap-3 font-black text-2xl tracking-tighter text-slate-800">{t('금융 보안 보장')}</div>
             </div>
           </div>
         </section>
 
         {/* 디자인 섹션 3: 정부 공인 상세 안내 */}
         <section className="py-20 bg-slate-50/50 relative overflow-hidden">
-          <div className="absolute inset-0 bg-primary/[0.02] pointer-events-none" />
+          <div className="absolute inset-0 bg-[#0b192c]/[0.02] pointer-events-none" />
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-10 md:gap-16 text-center md:text-left p-10 bg-white rounded-[3rem] shadow-xl border border-slate-100/50">
               <div className="shrink-0 relative group">
@@ -461,16 +457,16 @@ export default function HomePage() {
                 <h2 className="text-2xl md:text-4xl font-black text-slate-900 leading-tight">
                   {t('nts_trust_title')}
                 </h2>
-                <p className="text-lg md:text-xl text-slate-500 font-bold leading-relaxed max-w-2xl">
+                <p className="text-lg md:text-xl text-slate-600 font-bold leading-relaxed max-w-2xl">
                   {t('nts_trust_message')}
                 </p>
                 <div className="flex flex-wrap justify-center md:justify-start gap-8 pt-2">
                   <div className="flex items-center gap-2.5 text-sm font-black text-slate-400">
-                    <div className="w-2 h-2 rounded-full bg-primary" />
+                    <div className="w-2 h-2 rounded-full bg-[#e2b659]" />
                     {t('nts_hometax')}
                   </div>
                   <div className="flex items-center gap-2.5 text-sm font-black text-slate-400">
-                    <div className="w-2 h-2 rounded-full bg-primary" />
+                    <div className="w-2 h-2 rounded-full bg-[#e2b659]" />
                     {t('SKT / KT / LGU+')}
                   </div>
                 </div>
@@ -515,7 +511,7 @@ export default function HomePage() {
                 </div>
               </div>
               <div className="relative">
-                <div className="absolute inset-0 bg-primary/5 rounded-[4rem] -rotate-3" />
+                <div className="absolute inset-0 bg-[#0b192c]/5 rounded-[4rem] -rotate-3" />
                 <Card className="relative premium-card rounded-[3.5rem] border-none p-10 lg:p-16 space-y-12 shadow-2xl overflow-hidden">
                   <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-primary"><AlertCircle className="h-48 w-48" /></div>
                   <h3 className="text-2xl font-black text-slate-900 relative z-10">{t('왜 지금까지 못 받았을까요?')}</h3>
@@ -575,13 +571,13 @@ export default function HomePage() {
               {t('단 30초의 확인으로, 선결제 없이')}<br />{t('지난 5년의 권리를 찾으세요.')}
             </h2>
             <div className="flex flex-col items-center gap-8 pt-8">
-              <Button size="lg" asChild className="w-full sm:w-auto text-xl sm:text-3xl px-8 sm:px-12 py-8 sm:py-12 h-auto bg-primary hover:bg-primary/90 shadow-[0_32px_64px_-12px_rgba(99,102,241,0.4)] rounded-2xl sm:rounded-[2.5rem] transition-all hover:scale-105 active:scale-95 whitespace-normal break-words">
-                <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-4 text-center leading-tight py-4 w-full">
+              <Button size="lg" asChild className="w-full sm:w-auto text-xl sm:text-3xl px-8 sm:px-12 py-8 sm:py-12 h-auto bg-[#0b192c] hover:bg-[#152a45] text-white border-2 border-[#e2b659] shadow-xl rounded-2xl transition-all hover:scale-105 active:scale-95 whitespace-normal break-words">
+                <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-4 text-center leading-tight py-4 w-full text-white">
                   <span className="flex-1 min-w-[200px] flex flex-wrap items-center justify-center gap-1.5 font-black text-white">
-                    <span className="text-orange-500 font-black">{t('대한민국 국세청 공식 연동')}</span>
+                    <span className="text-[#e2b659] font-black">{t('대한민국 국세청 공식 연동')}</span>
                     {language !== 'ko' && <span className="text-white font-medium">•</span>}
                     <span className="text-white font-black">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
-                  </span> <ArrowRight className="h-6 w-6 sm:h-8 sm:w-8 shrink-0" />
+                  </span> <ArrowRight className="h-6 w-6 sm:h-8 sm:w-8 shrink-0 text-white" />
                 </Link>
               </Button>
               <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-3xl bg-white border border-slate-100 shadow-sm">
@@ -700,7 +696,7 @@ export default function HomePage() {
         {/* 사회적 증거(Social Proof) 리뷰 섹션 */}
         <section className="py-20 bg-slate-50/50 overflow-hidden border-t border-slate-100">
           <div className="container mx-auto px-4 mb-12 text-center">
-            <Badge variant="outline" className="mb-4 py-1 px-4 border-primary/20 text-primary bg-primary/5 rounded-full font-bold">
+            <Badge variant="outline" className="mb-4 py-1 px-4 border-[#e2b659] text-slate-800 bg-[#e2b659]/5 rounded-full font-bold">
               {t('함께하는 동료들의 리얼 후기')}
             </Badge>
             <h2 className="text-3xl lg:text-4xl font-black text-slate-900">
@@ -805,112 +801,198 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 디자인 섹션 7: FAQ/AI Assistant */}
-        <section className="py-40 bg-white">
-          <div className="container mx-auto px-4 max-w-4xl space-y-24">
-            <div className="text-center space-y-6">
-              <h2 className="text-4xl lg:text-6xl font-black font-headline text-slate-900">{t('궁금한 점이 있으신가요?')}</h2>
-              <p className="text-slate-500 text-xl font-medium">{t('Easy Tax Refund AI 비서와 상세 FAQ가 도와드립니다.')}</p>
-            </div>
-            {/* AI Assistant Card */}
-            {isAiVisible ? (
-              <Card className="border-none shadow-[0_40px_80px_-15px_rgba(163,139,255,0.15)] relative overflow-hidden bg-white rounded-[3rem] p-6 lg:p-12 animate-in fade-in zoom-in duration-500">
-                <div className="absolute top-0 right-0 p-12 opacity-[0.03] text-primary pointer-events-none">
-                  <MessageCircle className="h-64 w-64" />
+        {/* 디자인 섹션 7: FAQ/AI Assistant & Contact Us Grid */}
+        <section className="py-24 bg-white border-t border-slate-100">
+          <div className="container mx-auto px-6 max-w-7xl">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+              
+              {/* Left/Middle Column (Col-span 2): FAQ List & AI assistant */}
+              <div className="lg:col-span-2 space-y-12">
+                <div className="space-y-4">
+                  <h2 className="text-3xl md:text-5xl font-black text-slate-900 leading-tight tracking-tight break-keep">
+                    {t('궁금한 점이 있으신가요?')}
+                  </h2>
+                  <p className="text-slate-500 text-lg font-bold">{t('Easy Tax Refund AI 비서와 상세 FAQ가 도와드립니다.')}</p>
                 </div>
-                <button 
-                  onClick={() => setIsAiVisible(false)}
-                  className="absolute top-8 right-8 p-3 rounded-2xl hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-all z-20 group"
-                  title={t("AI 비서 숨기기")}
-                >
-                  <Minimize2 className="h-6 w-6 group-hover:scale-110 transition-transform" />
-                </button>
-                <CardHeader className="relative z-10 px-0 pt-0">
-                  <div className="flex items-center gap-4 mb-4">
-                    <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center">
-                      <Sparkles className="h-7 w-7 text-primary" />
+                
+                {/* AI Assistant Card */}
+                {isAiVisible ? (
+                  <Card className="border border-slate-200/60 shadow-lg relative overflow-hidden bg-white rounded-[2.5rem] p-6 lg:p-10 animate-in fade-in zoom-in duration-500">
+                    <div className="absolute top-0 right-0 p-12 opacity-[0.03] text-[#e2b659] pointer-events-none">
+                      <MessageCircle className="h-64 w-64" />
                     </div>
-                    <div>
-                      <CardTitle className="text-2xl font-bold">{t('Easy Tax Refund AI 비서')}</CardTitle>
-                      <CardDescription className="text-base font-medium">{t('어떤 질문이든 자유롭게 입력하세요. 365일 24시간 실시간 답변.')}</CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-8 relative z-10 px-0 pb-0">
-                  <form onSubmit={handleAsk} className="flex flex-col sm:flex-row gap-4">
-                    <input 
-                      placeholder={t(`궁금한 점을 자유롭게 입력하세요.`)} 
-                      className="h-22 text-lg rounded-[1.5rem] border-slate-200 focus:ring-primary shadow-inner bg-slate-50/50 w-full sm:flex-1 px-8 outline-none transition-all focus:bg-white" 
-                      value={question} 
-                      onChange={(e) => setQuestion(e.target.value)} 
-                    />
-                    <button type="submit" className="h-22 px-10 rounded-[1.5rem] bg-primary hover:bg-primary/90 text-white flex items-center justify-center shadow-xl shadow-primary/20 disabled:opacity-50 transition-all w-full sm:w-auto min-w-[140px]" disabled={loading}>
-                      {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <div className="flex items-center gap-2 font-black text-xl">{t('질문하기')} <Send className="h-6 w-6" /></div>}
+                    <button 
+                      onClick={() => setIsAiVisible(false)}
+                      className="absolute top-8 right-8 p-3 rounded-2xl hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-all z-20 group"
+                      title={t("AI 비서 숨기기")}
+                    >
+                      <Minimize2 className="h-6 w-6 group-hover:scale-110 transition-transform" />
                     </button>
-                  </form>
-                  {aiAnswer && (
-                    <div className="p-10 bg-slate-900 text-white rounded-[2.5rem] border-none animate-in fade-in slide-in-from-bottom-6 duration-700 shadow-2xl relative">
-                      <div className="absolute top-6 right-8 flex items-center gap-4">
-                        <Badge variant="outline" className="text-primary border-primary/30">AI Verified</Badge>
-                        <button 
-                          onClick={() => { setAiAnswer(null); setQuestion(""); }}
-                          className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-all"
-                        >
-                          <X className="h-5 w-5" />
-                        </button>
+                    <CardHeader className="relative z-10 px-0 pt-0">
+                      <div className="flex items-center gap-4 mb-4">
+                        <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center">
+                          <Sparkles className="h-7 w-7 text-primary" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-2xl font-bold">{t('Easy Tax Refund AI 비서')}</CardTitle>
+                          <CardDescription className="text-base font-medium">{t('어떤 질문이든 자유롭게 입력하세요. 365일 24시간 실시간 답변.')}</CardDescription>
+                        </div>
                       </div>
-                      <div className="flex gap-6">
-                        <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/40">
-                          <Sparkles className="h-6 w-6 text-white" />
+                    </CardHeader>
+                    <CardContent className="space-y-8 relative z-10 px-0 pb-0">
+                      <form onSubmit={handleAsk} className="flex flex-col sm:flex-row gap-4">
+                        <input 
+                          placeholder={t(`궁금한 점을 자유롭게 입력하세요.`)} 
+                          className="h-16 text-base rounded-[1.2rem] border-slate-200 focus:ring-primary shadow-inner bg-slate-50/50 w-full sm:flex-1 px-6 outline-none transition-all focus:bg-white" 
+                          value={question} 
+                          onChange={(e) => setQuestion(e.target.value)} 
+                        />
+                        <button type="submit" className="h-16 px-8 rounded-[1.2rem] bg-[#0b192c] hover:bg-[#152a45] text-white flex items-center justify-center shadow-lg disabled:opacity-50 transition-all w-full sm:w-auto min-w-[120px] font-black" disabled={loading}>
+                          {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <div className="flex items-center gap-2 text-base">{t('질문하기')} <Send className="h-5 w-5 text-[#e2b659]" /></div>}
+                        </button>
+                      </form>
+                      {aiAnswer && (
+                        <div className="p-8 bg-slate-900 text-white rounded-[2rem] border-none animate-in fade-in slide-in-from-bottom-6 duration-700 shadow-2xl relative">
+                          <div className="absolute top-6 right-8 flex items-center gap-4">
+                            <Badge variant="outline" className="text-primary border-primary/30">AI Verified</Badge>
+                            <button 
+                              onClick={() => { setAiAnswer(null); setQuestion(""); }}
+                              className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-all"
+                            >
+                              <X className="h-5 w-5" />
+                            </button>
+                          </div>
+                          <div className="flex gap-6">
+                            <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/40">
+                              <Sparkles className="h-6 w-6 text-white" />
+                            </div>
+                            <div className="space-y-4">
+                              <p className="font-bold text-primary tracking-widest uppercase text-xs">{t('AI Assistant Response')}</p>
+                              <p className="text-lg text-slate-200 leading-relaxed font-medium whitespace-pre-wrap">{aiAnswer}</p>
+                            </div>
+                          </div>
                         </div>
-                        <div className="space-y-4">
-                          <p className="font-bold text-primary tracking-widest uppercase text-xs">{t('AI Assistant Response')}</p>
-                          <p className="text-xl text-slate-200 leading-relaxed font-medium whitespace-pre-wrap">{aiAnswer}</p>
-                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <div className="flex justify-center animate-in fade-in slide-in-from-top-4 duration-500">
+                    <Button 
+                      onClick={() => setIsAiVisible(true)}
+                      variant="outline" 
+                      className="rounded-full px-8 py-4 border-primary/20 hover:bg-primary/5 text-primary font-bold gap-3 shadow-lg shadow-primary/5 group h-auto"
+                    >
+                      {t('Easy Tax Refund AI 비서 호출하기')}
+                    </Button>
+                  </div>
+                )}
+
+                {/* Accordion Questions */}
+                <div className="space-y-12">
+                  {faqData.map((section, sectionIdx) => (
+                    <div key={sectionIdx} className="space-y-6">
+                      <div className="flex items-center gap-4 px-2">
+                        <div className="h-8 w-1.5 bg-[#e2b659] rounded-full" />
+                        <h2 className="text-xl lg:text-2xl font-black font-headline text-slate-900">{section.category}</h2>
+                      </div>
+                      <Accordion type="single" collapsible className="w-full space-y-4">
+                        {section.items.map((item, itemIdx) => (
+                          <AccordionItem key={itemIdx} value={`section-${sectionIdx}-item-${itemIdx}`} className="border-none rounded-[1.8rem] bg-slate-50 shadow-sm hover:shadow-md transition-all px-6 py-1">
+                            <AccordionTrigger className="hover:no-underline font-bold text-base lg:text-lg py-5 text-left text-slate-800">
+                              <div className="flex items-center gap-3 pr-3">
+                                <HelpCircle className="h-5 w-5 text-slate-400 shrink-0" />
+                                {item.q}
+                              </div>
+                            </AccordionTrigger>
+                            <AccordionContent className="text-slate-600 text-sm pb-8 pl-8 leading-relaxed font-medium border-t border-slate-200/50 pt-6">
+                              {item.a}
+                            </AccordionContent>
+                          </AccordionItem>
+                        ))}
+                      </Accordion>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Right Column: Contact Us & Map Widget */}
+              <div className="space-y-8 lg:sticky lg:top-28 h-fit">
+                
+                {/* Contact Us Card */}
+                <div className="bg-[#0b192c] text-white rounded-[2.5rem] p-8 border-t-4 border-[#e2b659] shadow-xl space-y-6 relative overflow-hidden">
+                  <div className="absolute top-0 right-0 p-8 opacity-[0.02] text-[#e2b659] pointer-events-none">
+                    <MessageCircle className="h-40 w-40" />
+                  </div>
+                  
+                  <h3 className="text-2xl font-black text-[#e2b659] tracking-tight">{t('Contact Us')}</h3>
+                  <p className="text-slate-300 text-sm font-medium leading-relaxed">{t('궁금한 사항이 있으시면 공식 상담원 채널로 1:1 직접 대화해보세요.')}</p>
+                  
+                  <div className="space-y-4">
+                    <a 
+                      href="https://pf.kakao.com/_xxx" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-4 bg-[#fef01b] text-slate-900 rounded-2xl p-4 font-black transition-all hover:scale-[1.03] active:scale-95 shadow-lg"
+                    >
+                      <span className="text-2xl shrink-0">💬</span>
+                      <div className="text-left leading-tight">
+                        <div className="text-[10px] font-bold opacity-70">{t('KakaoTalk Channel')}</div>
+                        <div className="text-base font-black">{t('KakaoTalk')}</div>
+                      </div>
+                    </a>
+                    
+                    <a 
+                      href="https://wa.me/82103259953" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-4 bg-[#25d366] text-white rounded-2xl p-4 font-black transition-all hover:scale-[1.03] active:scale-95 shadow-lg"
+                    >
+                      <span className="text-2xl shrink-0">🟢</span>
+                      <div className="text-left leading-tight">
+                        <div className="text-[10px] font-bold opacity-80">{t('WhatsApp Channel')}</div>
+                        <div className="text-base font-black">{t('WhatsApp')}</div>
+                      </div>
+                    </a>
+
+                    <a 
+                      href="tel:0103259953" 
+                      className="flex items-center gap-4 bg-white/5 border border-white/10 text-white rounded-2xl p-4 font-black transition-all hover:scale-[1.03] active:scale-95 hover:bg-white/10"
+                    >
+                      <span className="text-2xl shrink-0">📞</span>
+                      <div className="text-left leading-tight">
+                        <div className="text-[10px] text-slate-400">{t('Official Customer Center')}</div>
+                        <div className="text-base font-black">Official (010) 325-9953</div>
+                      </div>
+                    </a>
+                  </div>
+                </div>
+
+                {/* Map/Coverage Box */}
+                <div className="bg-slate-50 border border-slate-200/60 rounded-[2.5rem] p-6 space-y-4">
+                  <div className="text-slate-800 text-sm font-black tracking-tight">{t('Physical Locations Coverage')}</div>
+                  <div className="relative h-48 w-full rounded-2xl overflow-hidden shadow-inner border border-slate-200">
+                    <Image 
+                      src="/og-image.png" 
+                      alt="Office Map Coverage"
+                      fill
+                      className="object-cover opacity-80"
+                      unoptimized={true}
+                    />
+                    <div className="absolute inset-0 bg-[#0b192c]/5 flex items-center justify-center">
+                      <div className="bg-[#0b192c] text-white text-[10px] font-black px-3 py-1.5 rounded-full border border-[#e2b659] shadow-md flex items-center gap-1.5 animate-bounce">
+                        <span>📍</span>
+                        <span>Seoul, Korea</span>
                       </div>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            ) : (
-              <div className="flex justify-center animate-in fade-in slide-in-from-top-4 duration-500">
-                <Button 
-                  onClick={() => setIsAiVisible(true)}
-                  variant="outline" 
-                  className="rounded-full px-8 py-6 border-primary/20 hover:bg-primary/5 text-primary font-bold gap-3 shadow-lg shadow-primary/5 group h-auto"
-                >
-                  {t('Easy Tax Refund AI 비서 호출하기')}
-                </Button>
-              </div>
-            )}
-
-            <div className="space-y-16">
-              {faqData.map((section, sectionIdx) => (
-                <div key={sectionIdx} className="space-y-8">
-                  <div className="flex items-center gap-4 px-4">
-                    <div className="h-10 w-1.5 bg-primary rounded-full" />
-                    <h2 className="text-2xl lg:text-3xl font-bold font-headline text-slate-900">{section.category}</h2>
                   </div>
-                  <Accordion type="single" collapsible className="w-full space-y-4">
-                    {section.items.map((item, itemIdx) => (
-                      <AccordionItem key={itemIdx} value={`section-${sectionIdx}-item-${itemIdx}`} className="border-none rounded-[2rem] bg-white shadow-sm hover:shadow-md transition-all px-8 py-2">
-                        <AccordionTrigger className="hover:no-underline font-bold text-lg lg:text-xl py-6 text-left text-slate-800">
-                          <div className="flex items-center gap-4 pr-4">
-                            <HelpCircle className="h-6 w-6 text-slate-300 shrink-0" />
-                            {item.q}
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="text-slate-500 text-lg pb-10 pl-10 leading-relaxed font-medium border-t border-slate-50 pt-8">
-                          {item.a}
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
+                  <p className="text-[11px] text-slate-400 font-bold leading-normal">{t('* 대한민국 전역(서울, 경기, 경남 등) 모든 관할 세무서와의 전산망 연계로 빠르고 정확한 처리가 실시간으로 보장됩니다.')}</p>
                 </div>
-              ))}
+
+              </div>
+
             </div>
 
-            <div className="text-center pt-20 pb-10 border-t border-slate-200">
+            <div className="text-center pt-20 pb-10 border-t border-slate-200/60 mt-20">
               <div className="inline-flex flex-wrap justify-center items-center gap-6 px-10 py-5 rounded-3xl bg-white shadow-sm border border-slate-100">
                 <div className="flex items-center gap-2">
                   <BadgeCheck className="h-6 w-6 text-primary" />
@@ -927,11 +1009,12 @@ export default function HomePage() {
             <div className="text-center space-y-10">
               <h3 className="text-2xl font-bold">{t('해결되지 않은 궁금증이 있나요?')}</h3>
               <AiChatDialog>
-                <button className="inline-flex items-center justify-center rounded-2xl h-18 px-16 border-2 border-primary text-primary hover:bg-primary/5 text-xl font-bold transition-all hover:scale-105">
+                <button className="inline-flex items-center justify-center rounded-2xl h-18 px-16 border-2 border-[#0b192c] text-[#0b192c] hover:bg-slate-50 text-xl font-black transition-all hover:scale-105 active:scale-95 shadow-sm">
                   {t('상담원과 실시간 채팅하기')}
                 </button>
               </AiChatDialog>
             </div>
+
           </div>
         </section>
       </main>
@@ -940,10 +1023,10 @@ export default function HomePage() {
 
       {/* Mobile Sticky CTA */}
       <div className="lg:hidden fixed bottom-6 left-6 right-6 z-50 animate-fade-in-up delay-300">
-        <Button size="lg" asChild className="w-full text-lg min-h-[4rem] h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/40 rounded-2xl font-black py-4 px-6 whitespace-normal break-words text-white">
+        <Button size="lg" asChild className="w-full text-lg min-h-[4rem] h-auto bg-[#0b192c] hover:bg-[#152a45] text-white border border-[#e2b659] shadow-2xl rounded-2xl font-black py-4 px-6 whitespace-normal break-words">
           <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 text-center leading-tight w-full text-white">
             <span className="flex-1 min-w-[150px] font-black text-white flex flex-wrap items-center justify-center gap-1">
-              <span className="text-orange-500 font-black text-[15px] xs:text-base">{t('대한민국 국세청 공식 연동')}</span>
+              <span className="text-[#e2b659] font-black text-[15px] xs:text-base">{t('대한민국 국세청 공식 연동')}</span>
               {language !== 'ko' && <span className="text-white font-medium text-sm">•</span>}
               <span className="text-white font-black text-sm xs:text-base">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
             </span> <ArrowRight className="h-5 w-5 shrink-0 text-white" />

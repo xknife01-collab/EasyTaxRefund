@@ -8,6 +8,8 @@ import { Globe, Calculator, HelpCircle, Menu, CreditCard, User, RotateCcw } from
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/components/LanguageContext";
+import { languages } from "@/lib/translations/config";
+
 
 import { 
   Sheet, 
@@ -22,7 +24,8 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const user = null; // Mocked
   const isUserLoading = false; // Mocked
-  const { t, language } = useTranslation();
+  const { t, language, setLanguage } = useTranslation();
+  const [isLangOpen, setIsLangOpen] = useState(false);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,6 +46,8 @@ export function Navbar() {
     { href: "/faq", label: t('자주 묻는 질문'), icon: <HelpCircle className="h-4 w-4" /> },
   ];
 
+  const TOP_LANGS = ['ko', 'en', 'vi', 'km', 'mn'];
+
   return (
     <nav className={cn(
       "fixed top-0 z-50 w-full transition-all duration-500 py-4 print:hidden",
@@ -50,17 +55,18 @@ export function Navbar() {
     )}>
       <div className="container mx-auto flex items-center justify-between px-6 lg:px-12">
         <Link href="/" className="flex items-center gap-3 sm:gap-4 group">
-          <div className="relative h-12 w-12 sm:h-14 sm:w-14 shrink-0 transition-transform duration-300 group-hover:scale-110 active:scale-95">
+          <div className="relative h-10 w-10 sm:h-12 sm:w-12 shrink-0 transition-transform duration-300 group-hover:scale-110 active:scale-95">
             <Image 
-              src="/sophisticated_gradient_globe_icon_1774153957587.png" 
-              alt="Easy Tax Refund Premium Logo" 
+              src="/1625.png" 
+              alt="KOREA Easy Tax Refund Logo" 
               fill
-              className="object-contain mix-blend-multiply"
+              className="object-contain"
             />
           </div>
-          <span className="text-xl sm:text-2xl lg:text-3xl font-black tracking-tighter text-slate-900 font-headline leading-[0.9] sm:leading-normal flex flex-col sm:flex-row sm:gap-2">
-            <span>Easy</span>
-            <span className="text-primary sm:text-slate-900">Tax Refund</span>
+          <span className="text-sm sm:text-base font-black tracking-tighter text-[#0b192c] font-headline uppercase flex items-center gap-1.5 whitespace-nowrap">
+            <span className="text-[#b88c30]">Korea</span>
+            <span>Easy Tax</span>
+            <span>Refund</span>
           </span>
         </Link>
 
@@ -73,12 +79,43 @@ export function Navbar() {
         </div>
 
         <div className="flex items-center gap-6">
-          <Button variant="ghost" asChild className="rounded-xl hover:bg-slate-100 flex items-center gap-1 sm:gap-2 px-2 sm:px-3">
-            <Link href="/welcome" title={t('언어 선택')}>
-              <Globe className="h-5 w-5 text-slate-400 shrink-0" />
-              <span className="text-[12px] sm:text-[14px] font-bold text-slate-600 truncate max-w-[70px] xs:max-w-none">{t('언어 선택')}</span>
-            </Link>
-          </Button>
+          {/* Desktop Language Switcher */}
+          <div className="hidden md:flex items-center relative">
+            <div className="relative">
+              <button
+                onClick={() => setIsLangOpen(!isLangOpen)}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-xl border border-slate-200/80 bg-white text-xs font-black text-slate-700 hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
+              >
+                <span>🌐</span>
+                <span>{languages.find(l => l.code === language)?.name || 'Language'}</span>
+                <span>▾</span>
+              </button>
+              {isLangOpen && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setIsLangOpen(false)} />
+                  <div className="absolute right-0 mt-2 w-48 bg-white border border-slate-200 rounded-2xl shadow-xl py-2 z-50 animate-fade-in max-h-64 overflow-y-auto">
+                    {languages.map((l) => (
+                      <button
+                        key={l.code}
+                        onClick={() => {
+                          setLanguage(l.code, false);
+                          setIsLangOpen(false);
+                        }}
+                        className={cn(
+                          "w-full flex items-center gap-3 px-4 py-2.5 text-left text-xs transition-colors hover:bg-slate-50",
+                          language === l.code ? "text-primary font-black bg-slate-50" : "text-slate-600 font-bold"
+                        )}
+                      >
+                        <span className="text-sm">{l.flag}</span>
+                        <span>{l.name}</span>
+                      </button>
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
           {!isUserLoading && (
             user ? (
               <Button variant="ghost" onClick={handleLogout} className="hidden md:inline-flex font-black text-slate-900 hover:bg-slate-100/50 rounded-2xl px-6">{t('로그아웃')}</Button>
@@ -103,8 +140,8 @@ export function Navbar() {
                 <Menu className="h-6 w-6" />
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" className="rounded-l-[2.5rem] p-10">
-              <SheetHeader className="text-left mb-10">
+            <SheetContent side="right" className="rounded-l-[2.5rem] p-10 overflow-y-auto">
+              <SheetHeader className="text-left mb-6">
                 <SheetTitle className="text-2xl font-black font-headline">Easy Tax Refund</SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-6">
@@ -112,7 +149,7 @@ export function Navbar() {
                   <Link 
                     key={link.href} 
                     href={link.href} 
-                    className="flex items-center gap-4 text-xl font-bold text-slate-600 hover:text-primary transition-colors"
+                    className="flex items-center gap-4 text-lg font-bold text-slate-600 hover:text-primary transition-colors"
                   >
                     <div className="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center">
                       {link.icon}
@@ -121,21 +158,41 @@ export function Navbar() {
                   </Link>
                 ))}
                  {user && (
-                    <Link href="/portal" className="flex items-center gap-4 text-xl font-bold text-slate-600 hover:text-primary transition-colors">
+                    <Link href="/portal" className="flex items-center gap-4 text-lg font-bold text-slate-600 hover:text-primary transition-colors">
                       <div className="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center"><User className="h-4 w-4" /></div>
                       {t('나의 환급 진행사항')}
                     </Link>
                  )}
-                 <Link href="/welcome" className="flex items-center gap-4 text-xl font-bold text-slate-600 hover:text-primary transition-colors">
-                   <div className="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center"><Globe className="h-5 w-5" /></div>
-                   {t('언어 선택')}
-                 </Link>
-                <div className="h-px bg-slate-100 my-4" />
-                <Link href="/login" className="text-xl font-bold text-slate-900">{t('로그인 / 신청 현황')}</Link>
-                <Button asChild className="w-full bg-primary h-auto min-h-[4rem] rounded-2xl font-black text-xl mt-4 py-4 px-6 shadow-lg shadow-primary/20 whitespace-normal break-words">
+                
+                {/* Mobile Language Grid */}
+                <div className="h-px bg-slate-100 my-2" />
+                <div className="flex flex-col gap-2">
+                  <span className="text-xs font-black text-slate-400 uppercase tracking-wider px-1">{t('언어 선택')}</span>
+                  <div className="grid grid-cols-3 gap-2">
+                    {languages.map((l) => (
+                      <button
+                        key={l.code}
+                        onClick={() => setLanguage(l.code, false)}
+                        className={cn(
+                          "flex items-center justify-center gap-1 p-2 rounded-xl border text-[11px] font-black transition-all active:scale-95",
+                          language === l.code
+                            ? "border-slate-900 bg-slate-900 text-white shadow-sm"
+                            : "border-slate-100 bg-slate-50 text-slate-600 hover:bg-slate-100"
+                        )}
+                      >
+                        <span>{l.flag}</span>
+                        <span>{l.code.toUpperCase()}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="h-px bg-slate-100 my-2" />
+                <Link href="/login" className="text-lg font-bold text-slate-900">{t('로그인 / 신청 현황')}</Link>
+                <Button asChild className="w-full bg-primary h-auto min-h-[4rem] rounded-2xl font-black text-lg mt-2 py-4 px-6 shadow-lg shadow-primary/20 whitespace-normal break-words">
                   <Link href="/estimate" className="text-center leading-tight flex-1 flex flex-col items-center justify-center gap-0.5">
                     <span className="text-orange-500 font-black">{t('대한민국 국세청 공식 연동')}</span>
-                    <span className="text-white font-black text-sm">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
+                    <span className="text-white font-black text-xs">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
                   </Link>
                 </Button>
               </div>

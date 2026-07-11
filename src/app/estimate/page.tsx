@@ -4703,6 +4703,23 @@ export default function EstimatePage() {
               </Card>
             )}
 
+            {/* 100% 안전 보장 안내 (Step >= 1) */}
+            {step >= 1 && (
+              <div className="bg-slate-50 border border-slate-200/60 rounded-[1.8rem] p-5 flex items-start gap-4 mt-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="h-10 w-10 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0 border border-emerald-100">
+                  <ShieldCheck className="h-6 w-6 text-emerald-600 animate-pulse" />
+                </div>
+                <div className="space-y-1.5 text-left leading-normal">
+                  <div className="text-sm font-black text-slate-800 flex items-center gap-1.5">
+                    <span>{t('🔒 100% 안전한 금융권 수준 개인정보 보안 보장')}</span>
+                  </div>
+                  <p className="text-[11px] text-slate-500 font-bold leading-normal">
+                    {t('이지택스환급은 정보보호 표준(ISO 27001)을 준수하며, 모든 데이터는 국세청 매칭 즉시 256-bit AES 암호화되어 전송됩니다. 입력하신 정보는 환급금 조회 목적 이외에 절대 사용되거나 서버에 저장되지 않습니다.')}
+                  </p>
+                </div>
+              </div>
+            )}
+
             {/* Global App Install / In-App Browser Escape Banner (Visible across all steps) */}
             <div className="flex flex-col gap-3 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl border border-blue-100 shadow-md w-full mx-auto relative overflow-hidden mt-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-500">
               <div className="absolute -top-4 -right-4 p-4 opacity-5"><Smartphone className="h-32 w-32" /></div>

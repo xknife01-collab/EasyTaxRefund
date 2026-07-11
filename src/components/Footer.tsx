@@ -19,13 +19,19 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-3 group">
               <div className="relative h-10 w-10 shrink-0 transition-transform duration-300 group-hover:scale-105">
                 <Image 
-                  src="/sophisticated_gradient_globe_icon_1774153957587.png" 
-                  alt="Easy Tax Refund Logo" 
+                  src="/1625.png" 
+                  alt="KOREA Easy Tax Refund Logo" 
                   fill
-                  className="object-contain mix-blend-multiply"
+                  className="object-contain"
                 />
               </div>
-              <span className="text-2xl font-black font-headline tracking-tighter text-slate-900">Easy Tax Refund</span>
+              <span className="text-xl font-black font-headline tracking-tighter text-[#0b192c] flex flex-col uppercase leading-[1.0]">
+                <span className="text-[#b88c30]">Korea</span>
+                <span className="flex gap-1.5">
+                  <span>Easy Tax</span>
+                  <span>Refund</span>
+                </span>
+              </span>
             </Link>
             <p className="text-slate-500 text-sm font-medium max-sm leading-relaxed">
               {t('대한민국에 있는 외국인들이 정당한 권리를 찾을 수 있도록 돕습니다. 외국인을 위한 쉽고 빠르며 안전한 세금 환급 서비스입니다.')}
@@ -73,19 +79,59 @@ export function Footer() {
           </div>
         </div>
         
-        <div className="mt-20 pt-10 border-t border-slate-50">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-end">
-            <div className="space-y-2 text-xs font-bold text-slate-400 leading-relaxed">
-              <p>{t('사업자명: 더윤컴퍼니 | 사업자 번호: 105-1278126')}</p>
-              <p>{t('통신판매업 번호: 제 2023-진접오남-0680호')}</p>
-              <p>{t('주소: 경기도 남양주시 부평로 48번길 140, 107-1102')}</p>
-              <p>{t('연락처: 010-5864-8577 | 이메일: zkfnth01@naver.com')}</p>
-              <p className="mt-4 text-[10px] text-slate-400/80 font-medium leading-relaxed max-w-2xl">
+        <div className="mt-16 pt-10 border-t border-slate-200">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+            <div className="lg:col-span-2 space-y-4 text-xs font-medium text-slate-400 leading-relaxed">
+              <div className="flex flex-wrap gap-x-4 gap-y-2 text-slate-500 font-bold">
+                <span>{t('사업자명: 더윤컴퍼니')}</span>
+                <span className="hidden sm:inline text-slate-300">|</span>
+                <span>{t('대표자: 윤희수')}</span>
+                <span className="hidden sm:inline text-slate-300">|</span>
+                <span>{t('사업자 등록번호: 105-1278126')}</span>
+                <span className="hidden sm:inline text-slate-300">|</span>
+                <span>{t('통신판매업 번호: 제 2023-진접오남-0680호')}</span>
+              </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-2 text-slate-500 font-bold">
+                <span>{t('주소: 경기도 남양주시 부평로 48번길 140, 107-1102')}</span>
+                <span className="hidden sm:inline text-slate-300">|</span>
+                <span>{t('연락처: 010-5864-8577')}</span>
+                <span className="hidden sm:inline text-slate-300">|</span>
+                <span>{t('이메일: zkfnth01@naver.com')}</span>
+              </div>
+              <p className="mt-4 text-[10px] text-slate-400/80 font-medium leading-relaxed max-w-3xl">
                 {t('이지택스환급(Easy Tax Refund)은 세무대리 신고를 직접 수행하지 않으며, 본 플랫폼에서 작성된 신청 서류는 제휴된 대한민국 국가공인 전문 세무법인 및 협력 세무사를 통해 최종 검토 및 제출됩니다.')}
               </p>
             </div>
-            <div className="text-center md:text-right">
-              <p className="text-xs font-bold text-slate-400">
+            
+            <div className="flex flex-col items-center lg:items-end justify-between h-full gap-4">
+              {/* Stamps Container */}
+              <div className="flex flex-wrap gap-4">
+                {/* Stamp 1 */}
+                <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-2.5 shadow-sm hover:border-[#e2b659] transition-all">
+                  <div className="h-10 w-10 rounded-full border-2 border-emerald-500 flex flex-col items-center justify-center text-[7px] font-black text-emerald-600 bg-emerald-50 shrink-0 leading-none">
+                    <span>SSL</span>
+                    <span>SECURE</span>
+                  </div>
+                  <div className="text-left leading-none">
+                    <div className="text-[9px] font-black text-slate-700">{t('개인정보 보호')}</div>
+                    <div className="text-[8px] font-medium text-slate-400 mt-1">256bit Encrypted</div>
+                  </div>
+                </div>
+
+                {/* Stamp 2 */}
+                <div className="flex items-center gap-2 bg-slate-50 border border-slate-200 rounded-xl p-2.5 shadow-sm hover:border-[#e2b659] transition-all">
+                  <div className="h-10 w-10 rounded-full border-2 border-[#e2b659] flex flex-col items-center justify-center text-[7px] font-black text-[#b88c30] bg-[#e2b659]/10 shrink-0 leading-none">
+                    <span>TAX</span>
+                    <span>PARTNER</span>
+                  </div>
+                  <div className="text-left leading-none">
+                    <div className="text-[9px] font-black text-slate-700">{t('공인 세무 협력')}</div>
+                    <div className="text-[8px] font-medium text-slate-400 mt-1">Certified Review</div>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-xs font-bold text-slate-400 text-center lg:text-right mt-2">
                 © 2026 Easy Tax Refund. THEYOON COMPANY. All rights reserved.
               </p>
             </div>
