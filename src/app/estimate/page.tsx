@@ -2855,21 +2855,23 @@ export default function EstimatePage() {
       {!isSimulation && <Navbar />}
       <main className={`flex-1 container mx-auto ${isSimulation ? 'px-2 py-2' : 'px-4 py-8 lg:py-24'}`}>
         <div className={`max-w-2xl mx-auto ${isSimulation ? 'space-y-3' : 'space-y-6 sm:space-y-8'}`}>
-          <div className="space-y-4">
-            <div className="flex justify-between items-end">
-              <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5">
-                {step === 0 
-                  ? t('나의 환급금 사전 진단') 
-                  : step === 0.5 
-                    ? t('세금 환급 절차 안내') 
-                    : t('Process {step} / {total}', { step, total: 10 })}
-              </Badge>
-              <span className="text-2xl font-black">
-                {step === 0 ? '0%' : step === 0.5 ? '5%' : `${Math.round(progressValue)}%`}
-              </span>
+          {step < 11 && (
+            <div className="space-y-4">
+              <div className="flex justify-between items-end">
+                <Badge variant="outline" className="text-primary border-primary/20 bg-primary/5">
+                  {step === 0 
+                    ? t('나의 환급금 사전 진단') 
+                    : step === 0.5 
+                      ? t('세금 환급 절차 안내') 
+                      : t('Process {step} / {total}', { step, total: 10 })}
+                </Badge>
+                <span className="text-2xl font-black">
+                  {step === 0 ? '0%' : step === 0.5 ? '5%' : `${Math.round(progressValue)}%`}
+                </span>
+              </div>
+              <Progress value={step === 0 ? 5 : step === 0.5 ? 8 : progressValue} className="h-3" />
             </div>
-            <Progress value={step === 0 ? 5 : step === 0.5 ? 8 : progressValue} className="h-3" />
-          </div>
+          )}
 
           <div className="relative">
             {step === 0 && (
@@ -4701,23 +4703,6 @@ export default function EstimatePage() {
                   </Button>
                 </CardContent>
               </Card>
-            )}
-
-            {/* 100% 안전 보장 안내 (Step >= 1) */}
-            {step >= 1 && (
-              <div className="bg-slate-50 border border-slate-200/60 rounded-[1.8rem] p-5 flex items-start gap-4 mt-6 animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <div className="h-10 w-10 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0 border border-emerald-100">
-                  <ShieldCheck className="h-6 w-6 text-emerald-600 animate-pulse" />
-                </div>
-                <div className="space-y-1.5 text-left leading-normal">
-                  <div className="text-sm font-black text-slate-800 flex items-center gap-1.5">
-                    <span>{t('🔒 100% 안전한 금융권 수준 개인정보 보안 보장')}</span>
-                  </div>
-                  <p className="text-[11px] text-slate-500 font-bold leading-normal">
-                    {t('이지택스환급은 정보보호 표준(ISO 27001)을 준수하며, 모든 데이터는 국세청 매칭 즉시 256-bit AES 암호화되어 전송됩니다. 입력하신 정보는 환급금 조회 목적 이외에 절대 사용되거나 서버에 저장되지 않습니다.')}
-                  </p>
-                </div>
-              </div>
             )}
 
             {/* Global App Install / In-App Browser Escape Banner (Visible across all steps) */}

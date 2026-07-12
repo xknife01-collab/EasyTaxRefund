@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Globe, Calculator, HelpCircle, Menu, CreditCard, User, RotateCcw } from "lucide-react";
+import { Globe, Calculator, HelpCircle, Menu, CreditCard, User, RotateCcw, Headphones, Percent } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/components/LanguageContext";
@@ -41,9 +41,11 @@ export function Navbar() {
   };
 
   const navLinks = [
-    { href: "/estimate", label: t('환급 신청'), icon: <Calculator className="h-4 w-4" /> },
-    { href: "/pricing", label: t('가격 정책'), icon: <CreditCard className="h-4 w-4" /> },
-    { href: "/faq", label: t('자주 묻는 질문'), icon: <HelpCircle className="h-4 w-4" /> },
+    { href: "/estimate", label: t('환급 신청'), icon: <Calculator className="h-4 w-4 text-[#b88c30]" /> },
+    { href: "/pricing", label: t('가격 정책'), icon: <CreditCard className="h-4 w-4 text-[#b88c30]" /> },
+    { href: "/faq", label: t('자주 묻는 질문'), icon: <HelpCircle className="h-4 w-4 text-[#b88c30]" /> },
+    { href: "/youth-tax", label: t('청년 소득세 90% 감면 제도안내'), icon: <Percent className="h-4 w-4 text-[#b88c30]" /> },
+    { href: "/support", label: t('고객센터'), icon: <Headphones className="h-4 w-4 text-[#b88c30]" /> },
   ];
 
   const TOP_LANGS = ['ko', 'en', 'vi', 'km', 'mn'];
@@ -55,18 +57,17 @@ export function Navbar() {
     )}>
       <div className="container mx-auto flex items-center justify-between px-6 lg:px-12">
         <Link href="/" className="flex items-center gap-3 sm:gap-4 group">
-          <div className="relative h-10 w-10 sm:h-12 sm:w-12 shrink-0 transition-transform duration-300 group-hover:scale-110 active:scale-95">
-            <Image 
-              src="/1625.png" 
-              alt="KOREA Easy Tax Refund Logo" 
-              fill
-              className="object-contain"
-            />
-          </div>
-          <span className="text-sm sm:text-base font-black tracking-tighter text-[#0b192c] font-headline uppercase flex items-center gap-1.5 whitespace-nowrap">
+          <img 
+            src="/1625.png" 
+            alt="KOREA Easy Tax Refund Logo" 
+            className="h-10 w-10 sm:h-12 sm:w-12 object-contain shrink-0 transition-transform duration-300 group-hover:scale-110 active:scale-95"
+          />
+          <span className="text-sm sm:text-base font-black tracking-tighter text-[#0b192c] font-headline uppercase flex flex-col leading-[1.0] whitespace-nowrap">
             <span className="text-[#b88c30]">Korea</span>
-            <span>Easy Tax</span>
-            <span>Refund</span>
+            <span className="flex gap-1">
+              <span>Easy Tax</span>
+              <span>Refund</span>
+            </span>
           </span>
         </Link>
 
@@ -206,7 +207,7 @@ export function Navbar() {
 
 function NavLink({ href, children, icon }: { href: string, children: React.ReactNode, icon: React.ReactNode }) {
   return (
-    <Link href={href} className="text-[15px] font-black text-slate-600 hover:text-slate-900 transition-all flex items-center gap-2 relative group">
+    <Link href={href} className="text-[15px] font-black text-slate-600 hover:text-slate-900 transition-all flex items-center gap-2 relative group whitespace-nowrap">
       {icon}
       {children}
       <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full" />
