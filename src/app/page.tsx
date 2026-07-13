@@ -336,109 +336,297 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* 디자인 섹션 1.5: 기존 중소기업 소득세 감면 안내 및 카드 섹션 */}
-        <section className="py-20 bg-slate-50/50">
-          <div className="container mx-auto px-4 max-w-7xl">
-            <div className="max-w-5xl mx-auto text-center space-y-10">
-              <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-primary/10 shadow-[0_4px_20px_-4px_rgba(99,102,241,0.1)] animate-fade-in-up">
-                <BadgeCheck className="h-5 w-5 text-primary" />
-                <span className="text-sm font-bold text-slate-700 tracking-tight">{t('청년 외국인 세무 지원 • Certified System')}</span>
-              </div>
-              
-              <div className="bg-primary/5 border border-primary/10 rounded-3xl p-6 md:p-8 max-w-3xl mx-auto animate-fade-in-up">
-                <p 
-                  className="text-xl md:text-2xl font-black text-slate-800 break-keep leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: t('💡 대한민국 정부는 중소기업에서 일하는 청년을 위해, 막강한 세제 혜택을 지원합니다. 매달 월급에서 먼저 차감한 세금 중 소득세 부분을 환급해 주는 "중소기업 청년 소득세 감면"이라는 제도입니다.') }}
-                />
-              </div>
+        {/* ===== 청년 외국인 세무 지원 섹션 — 에디토리얼 프리미엄 ===== */}
+        <section className="bg-white overflow-hidden">
+          <div className="h-1 w-full bg-gradient-to-r from-[#b88c30] via-[#e2b659] to-[#b88c30]" />
 
-              <h1 className="text-4xl md:text-6xl lg:text-[5.5rem] font-black font-headline text-slate-900 text-gradient animate-fade-in-up delay-100 leading-[1.1] break-keep">
-                {t('한국에서 일하는 외국인 청년이라면')}<br />
-                <span className="text-primary">{t('1년에 200만원 한도,')}</span> {t('5년동안,')} <span className="text-primary">{t('최대 1000만원까지,')}</span><br />
-                <span className="text-primary">{t('월급에서 차감한 세금 90%')}</span>{t('를 환급을 받을 수 있습니다.')}<br />
-                <span className="text-primary">{t('평균 환급액 300만원이상!')}</span>
-              </h1>
+          <div className="container mx-auto max-w-7xl px-6 py-16 lg:py-24">
+            {/* 상단: 2열 구조 (왼쪽: 사진, 오른쪽: 헤드라인/수치/타임라인) */}
+            <div className="grid grid-cols-1 lg:grid-cols-[480px_1fr] gap-12 lg:gap-16 items-start">
 
-              {/* 후불제 핵심 안내 뱃지 */}
-              <div className="flex flex-wrap gap-4 justify-center items-center max-w-4xl mx-auto pt-6 animate-fade-in-up delay-150">
-                <div className="flex items-center gap-3 bg-emerald-50 text-emerald-700 px-6 py-4 rounded-[1.5rem] border border-emerald-100/60 font-black text-lg sm:text-xl shadow-sm">
-                  <CheckCircle2 className="h-6 w-6 text-emerald-600 animate-pulse" />
-                  <span>{t('선결제 0원 / 환급 성공 시에만 수수료 발생')}</span>
-                </div>
-                <div className="flex items-center gap-3 bg-indigo-50 text-indigo-700 px-6 py-4 rounded-[1.5rem] border border-indigo-100/60 font-black text-lg sm:text-xl shadow-sm">
-                  <ShieldCheck className="h-6 w-6 text-indigo-600" />
-                  <span>{t('성과 기반 후불 정산 (No Win, No Fee)')}</span>
-                </div>
-              </div>
+              {/* ─── 왼쪽: 매니저 사진 ─── */}
+              <div className="relative w-full max-w-[480px] mx-auto lg:mx-0">
+                {/* 뒤 골드 장식 */}
+                <div className="absolute top-4 -left-3 w-full h-full rounded-3xl border-2 border-[#b88c30]/20 bg-[#f5f0e8]/50 -z-0" />
 
-              <div className="max-w-5xl mx-auto space-y-8 text-xl lg:text-2xl text-slate-500 font-medium leading-relaxed animate-fade-in-up delay-200">
-                <p>{t(`대한민국 중소기업에서 근무하는 외국인 전문 인력 중 90% 이상이 자신의 당연한 권리를 놓치고 있다는 사실을 알고 계십니까? 청년 외국인 근로자(35번째 생일이 지나기 전에 한국에서 일을 시작했다면 OK!)는 소득세의 90%를 감면받을 수 있습니다.`)}</p>
-                
-                {/* Tax Exemption Explanation Cards */}
-                <div className="grid md:grid-cols-3 gap-6 text-left pt-4 pb-4">
-                  {/* Card 1: Amber Accent */}
-                  <div className="bg-gradient-to-br from-white via-white to-amber-50/30 border border-amber-100/40 shadow-[0_10px_30px_-10px_rgba(245,158,11,0.05)] rounded-[2rem] p-6 lg:p-8 hover:shadow-[0_20px_40px_-15px_rgba(245,158,11,0.15)] hover:border-amber-200/60 transition-all hover:-translate-y-1 duration-300">
-                    <div className="flex items-center gap-3.5 mb-4">
-                      <div className="h-11 w-11 bg-amber-500/10 rounded-xl flex items-center justify-center text-amber-600 shrink-0">
-                        <Coins className="h-6 w-6" />
-                      </div>
-                      <h4 className="font-extrabold text-slate-800 text-xl">{t("어떤 세금을 돌려받나요?")}</h4>
-                    </div>
-                    <p className="text-slate-500 text-sm md:text-base font-normal leading-relaxed">
-                      {t("매월 월급을 받으실 때 급여명세서의 '소득세(Income Tax)' 항목으로 이미 자동 공제되어 납부된 아까운 내 세금을 다시 돌려받는 것입니다.")}
-                    </p>
+                <div className="relative z-10 w-full rounded-3xl overflow-hidden shadow-[0_32px_80px_rgba(15,30,54,0.18)]">
+                  <img
+                    src="/images/manager.png"
+                    alt="김준현 공식 매니저"
+                    className="w-full object-cover object-top"
+                    style={{ height: '520px' }}
+                  />
+                  {/* 하단 페이드 */}
+                  <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#0f1e36]/90 to-transparent" />
+                  {/* 상단 Official Manager 라인 */}
+                  <div className="absolute top-5 left-5 right-5 flex items-center gap-2">
+                    <div className="h-px flex-1 bg-[#b88c30]/40" />
+                    <span className="text-[#b88c30] text-[10px] font-black uppercase tracking-[0.3em]">Official Manager</span>
+                    <div className="h-px flex-1 bg-[#b88c30]/40" />
                   </div>
-
-                  {/* Card 2: Indigo Accent */}
-                  <div className="bg-gradient-to-br from-white via-white to-indigo-50/30 border border-indigo-100/40 shadow-[0_10px_30px_-10px_rgba(99,102,241,0.05)] rounded-[2rem] p-6 lg:p-8 hover:shadow-[0_20px_40px_-15px_rgba(99,102,241,0.15)] hover:border-indigo-200/60 transition-all hover:-translate-y-1 duration-300">
-                    <div className="flex items-center gap-3.5 mb-4">
-                      <div className="h-11 w-11 bg-indigo-500/10 rounded-xl flex items-center justify-center text-indigo-600 shrink-0">
-                        <Sparkles className="h-6 w-6" />
-                      </div>
-                      <h4 className="font-extrabold text-slate-800 text-xl">{t("어떻게 돌려받나요?")}</h4>
+                  {/* 하단 이름 */}
+                  <div className="absolute bottom-0 left-0 right-0 px-6 py-4 text-center">
+                    <div className="text-white font-black text-xl">김준현 공식 매니저</div>
+                    <div className="text-slate-300 font-bold text-xs mt-0.5">외국인 중소기업 청년 소득세 환급 전문</div>
+                    <div className="flex items-center justify-center gap-2 mt-2">
+                      <span className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-pulse" />
+                      <span className="text-emerald-400 text-xs font-black">지금 상담 가능 · 010-325-9953</span>
                     </div>
-                    <p 
-                      className="text-slate-500 text-sm md:text-base font-normal leading-relaxed"
-                      dangerouslySetInnerHTML={{ __html: t("대한민국 국세청 공식 제도인 '경정청구'를 통해 돌려받습니다. 국가 공인 세무사가 복잡한 서류 작성과 신청 과정을 모두 대행하여, 국세청으로부터 세금을 안전하고 확실하게 환급받아 드립니다.") }}
-                    />
-                  </div>
-
-                  {/* Card 3: Emerald Accent */}
-                  <div className="bg-gradient-to-br from-white via-white to-emerald-50/30 border border-emerald-100/40 shadow-[0_10px_30px_-10px_rgba(16,185,129,0.05)] rounded-[2rem] p-6 lg:p-8 hover:shadow-[0_20px_40px_-15px_rgba(16,185,129,0.15)] hover:border-emerald-200/60 transition-all hover:-translate-y-1 duration-300">
-                    <div className="flex items-center gap-3.5 mb-4">
-                      <div className="h-11 w-11 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-600 shrink-0">
-                        <ShieldCheck className="h-6 w-6" />
-                      </div>
-                      <h4 className="font-extrabold text-slate-800 text-xl">{t("비자에 불이익은 없나요?")}</h4>
-                    </div>
-                    <p className="text-slate-500 text-sm md:text-base font-normal leading-relaxed">
-                      {t("대한민국 세법(조세특례제한법 제30조)에 명시된 정당한 법적 혜택입니다. 세금 체납이 아닌 정상 환급이므로 비자 연장 시 전혀 문제되지 않습니다.")}
-                    </p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-center gap-3 text-primary/80 font-bold bg-primary/5 py-4 px-8 rounded-3xl border border-primary/10 w-fit mx-auto">
-                  <CheckCircle2 className="h-6 w-6" />
-                  {t('언어의 장벽과 복잡한 절차 때문에 포기하지 마세요. 저희가 최적의 환급 경로를 찾아드립니다.')}
+                {/* 90% 플로팅 배지 */}
+                <div className="absolute top-8 -right-4 z-20 bg-[#b88c30] rounded-2xl px-4 py-3 shadow-[0_8px_32px_rgba(184,140,48,0.40)] text-center">
+                  <div className="text-[#0f1e36] font-black text-3xl leading-none">90%</div>
+                  <div className="text-[#0f1e36]/70 font-black text-xs mt-0.5">소득세 감면</div>
                 </div>
               </div>
-              
-              <div className="flex flex-col sm:flex-row gap-4 justify-center pt-8 animate-fade-in-up delay-300">
-                <Button size="lg" asChild className="w-full sm:w-auto text-lg sm:text-2xl px-6 sm:px-12 py-6 sm:py-10 h-auto bg-slate-900 hover:bg-slate-800 shadow-2xl shadow-slate-900/20 rounded-2xl sm:rounded-[2rem] transition-all hover:scale-105 active:scale-95 group whitespace-normal break-words text-white">
-                  <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 sm:gap-4 text-center leading-tight py-2 w-full text-white">
-                    <span className="flex-1 min-w-[150px] font-black text-white flex flex-wrap items-center justify-center gap-1.5">
-                      <span className="text-[#e2b659] font-black">{t('대한민국 국세청 공식 연동')}</span>
-                      {language !== 'ko' && <span className="text-white font-medium">•</span>}
-                      <span className="text-white font-black">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
-                    </span> <ArrowRight className="h-6 w-6 sm:h-7 sm:w-7 transition-transform group-hover:translate-x-1 shrink-0 text-white" />
-                  </Link>
-                </Button>
+
+              {/* ─── 오른쪽: 헤드라인 + 수치 + 타임라인 ─── */}
+              <div className="flex flex-col gap-8 lg:pt-2">
+
+                {/* 아이브로우 */}
+                <div className="flex items-center gap-3">
+                  <div className="h-[3px] w-8 bg-[#b88c30]" />
+                  <span className="text-[#b88c30] text-xs font-black tracking-[0.35em] uppercase">조세특례제한법 제30조 · 정부 공식 제도</span>
+                </div>
+
+                {/* 헤드라인 */}
+                <div className="space-y-3 border-l-4 border-[#b88c30] pl-6">
+                  <h2 className="text-4xl sm:text-5xl font-black text-[#0f1e36] tracking-tight leading-[1.1] break-keep font-headline">
+                    월급에서 이미 낸 세금<br />
+                    <span className="text-[#b88c30]">90%</span>를 돌려받을 권리
+                  </h2>
+                  <p className="text-slate-500 font-bold text-base leading-relaxed break-keep">
+                    {t('대한민국 정부가 중소기업 청년 근로자에게 보장하는 법정 세제 혜택입니다. 외국인 근로자도 동일하게 적용됩니다.')}
+                  </p>
+                </div>
+
+                {/* 핵심 수치 3개 */}
+                <div className="grid grid-cols-3 gap-3">
+                   {[
+                     { value: '90%', label: '소득세 감면율', sub: '취업일부터 5년간', dark: true },
+                     { value: '200만원', label: '연간 최대 환급', sub: '과세연도 한도', dark: false },
+                     { value: '1,000만원', label: '5년 누적 총액', sub: '평균 실수령 300만+', dark: false },
+                   ].map((item) => (
+                     <div key={item.value} className={`rounded-xl p-5 text-center border ${item.dark ? 'bg-[#0f1e36] border-[#0f1e36]' : 'bg-[#f5f0e8] border-[#b88c30]/20'}`}>
+                       <div className={`font-black text-2xl sm:text-3xl leading-none ${item.dark ? 'text-[#b88c30]' : 'text-[#0f1e36]'}`}>{item.value}</div>
+                       <div className={`font-black text-xs mt-2 ${item.dark ? 'text-white' : 'text-[#0f1e36]'}`}>{item.label}</div>
+                       <div className={`font-bold text-xs mt-0.5 ${item.dark ? 'text-slate-400' : 'text-slate-500'}`}>{item.sub}</div>
+                     </div>
+                   ))}
+                 </div>
+
+                 {/* 5년 타임라인 */}
+                 <div className="bg-[#f5f0e8] rounded-xl p-6 space-y-4">
+                   <div className="flex items-center justify-between">
+                     <span className="text-[#0f1e36] font-black text-base">5년 환급 타임라인</span>
+                     <span className="text-[#b88c30] font-black text-sm">누적 최대 1,000만원</span>
+                   </div>
+                   <div className="flex gap-2">
+                     {['1년차', '2년차', '3년차', '4년차', '5년차'].map((yr, i) => (
+                       <div key={yr} className="flex-1 space-y-1.5">
+                         <div className="h-7 rounded bg-[#b88c30] transition-all hover:h-9" style={{ opacity: 0.35 + i * 0.13 }} />
+                         <div className="text-center text-[10px] text-slate-500 font-black">{yr}</div>
+                         <div className="text-center text-[10px] text-[#b88c30] font-black">+200만</div>
+                       </div>
+                     ))}
+                   </div>
+                 </div>
+
+                 {/* 법적 대행 안내 */}
+                 <div className="flex items-start gap-4 bg-[#f5f0e8] border border-[#b88c30]/20 rounded-xl px-5 py-4">
+                   <BadgeCheck className="h-6 w-6 text-[#b88c30] shrink-0 mt-0.5" />
+                   <div>
+                     <div className="text-[#0f1e36] font-black text-base">공인 세무사 직접 대행</div>
+                     <div className="text-slate-500 font-bold text-sm mt-0.5 break-keep">비자 불이익 없음 · 조세특례제한법 제30조 기반 정당한 법적 혜택</div>
+                   </div>
+                 </div>
               </div>
             </div>
-          </div>
+
+            {/* 웅장한 가로 구분선 */}
+            <div className="my-16 h-px w-full bg-gradient-to-r from-transparent via-[#b88c30]/30 to-transparent" />
+
+            {/* ─── 하단: 세금 감면 상세 정보 및 신청 자격 요약 (2열 프리미엄 레이아웃) ─── */}
+            <div className="max-w-5xl mx-auto space-y-12">
+                  
+                  {/* 섹션 소제목 */}
+                  <div className="space-y-4">
+                    <span className="text-xs font-black text-[#b88c30] uppercase tracking-widest">01 — Benefit Details</span>
+                    <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#0f1e36] leading-tight break-keep font-headline">
+                      파격적인 세금 감면 제도, 알고 계셨나요?
+                    </h2>
+                    <div className="h-1 w-12 bg-[#b88c30] rounded-full" />
+                  </div>
+
+                  {/* 2열 상세 구조 */}
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+                    
+                    {/* 1) 왼쪽: 친절한 제도 설명 및 환급 예시 */}
+                    <div className="space-y-8">
+                      {/* 핵심 설명 */}
+                      <p className="text-slate-600 text-base sm:text-lg font-bold leading-relaxed break-keep">
+                        대한민국 정부는 중소기업에 취업한 청년 근로자들에게 매우 큰 세금 감면 혜택을 제공하고 있으며, 이는 외국인 근로자(베트남 등 모든 국적)에게도 동일하게 적용되는 정당한 권리입니다.
+                      </p>
+
+                      {/* 어떤 세금을 돌려받는가 */}
+                      <div className="p-6 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-[#b88c30]" />
+                          <span className="text-sm font-black text-[#0f1e36] uppercase tracking-wider">어떤 세금을 돌려받나요?</span>
+                        </div>
+                        <p className="text-slate-600 text-sm font-bold leading-relaxed break-keep">
+                          매달 월급을 받을 때 회사가 급여에서 미리 떼어 가는 '근로소득세 (원천징수세)'가 그 대상입니다. 예를 들어 월급이 250만원이라면 회사가 매월 약 3~8만원의 소득세를 자동으로 공제한 후 지급합니다. 이 세금의 90%를 돌려받는 제도입니다.
+                        </p>
+                      </div>
+
+                      {/* 실제 환급 계산 예시 */}
+                      <div className="p-6 bg-[#0f1e36]/3 rounded-2xl border border-slate-200 space-y-4">
+                        <div className="flex items-center gap-2">
+                          <div className="h-2 w-2 rounded-full bg-[#b88c30]" />
+                          <span className="text-sm font-black text-[#0f1e36] uppercase tracking-wider">실제 환급 계산 예시</span>
+                        </div>
+                        <div className="space-y-3">
+                          <div className="flex justify-between items-center text-sm py-2 border-b border-slate-200">
+                            <span className="text-slate-500 font-bold">연간 소득세 100만원인 경우</span>
+                            <span className="font-black text-emerald-600">→ 90만원 환급</span>
+                          </div>
+                          <div className="flex justify-between items-center text-sm py-2 border-b border-slate-200">
+                            <span className="text-slate-500 font-bold">연간 소득세 200만원인 경우</span>
+                            <span className="font-black text-emerald-600">→ 180만원 환급</span>
+                          </div>
+                          <div className="flex justify-between items-center text-sm py-2">
+                            <span className="text-slate-500 font-bold">연간 소득세 300만원인 경우</span>
+                            <span className="font-black text-emerald-600">→ 200만원 환급 (한도 적용)</span>
+                          </div>
+                        </div>
+                        <p className="text-xs text-slate-400 font-bold">※ 연간 최대 감면 한도 200만원. 5년 적용 시 최대 1,000만원</p>
+                      </div>
+
+                      {/* 과거 환급 + 현실적 문제 */}
+                      <div className="space-y-4">
+                        <div className="flex gap-4 p-5 bg-emerald-50 rounded-2xl border border-emerald-100">
+                          <CheckCircle2 className="h-5 w-5 text-emerald-600 mt-0.5 shrink-0" />
+                          <div>
+                            <div className="text-sm font-black text-[#0f1e36] mb-1">과거 5년치 환급 가능 (경정청구)</div>
+                            <p className="text-slate-500 text-sm font-bold leading-relaxed break-keep">
+                              제도를 몰라서 신청하지 못했어도, '경정청구'를 통해 최대 5년치 이미 납부한 세금을 전액 일시에 돌려받을 수 있습니다. 퇴사 후에도 신청 가능합니다.
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex gap-4 p-5 bg-red-50 rounded-2xl border border-red-100">
+                          <AlertCircle className="h-5 w-5 text-red-500 mt-0.5 shrink-0" />
+                          <div>
+                            <div className="text-sm font-black text-[#0f1e36] mb-1">현실적인 문제</div>
+                            <p className="text-slate-500 text-sm font-bold leading-relaxed break-keep">
+                              대부분의 중소기업은 외국인 근로자를 위한 감면 신청서를 별도로 챙겨주지 않습니다. 회사가 처리해주지 않으면 근로자 본인이 놓치게 되며, 수년치 세금을 그냥 납부하는 경우가 대부분입니다.
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 2) 오른쪽: 다크 네이비 "신청 자격 요약" 카드 */}
+                    <div className="bg-[#0f1e36] rounded-3xl p-8 sm:p-10 space-y-6 text-white shadow-2xl shadow-slate-900/20 border border-[#b88c30]/20">
+                      <div className="flex items-center gap-3 pb-4 border-b border-slate-700">
+                        <div className="h-2 w-2 rounded-full bg-[#b88c30]" />
+                        <span className="text-[#b88c30] text-xs font-black uppercase tracking-widest">신청 자격 요약</span>
+                      </div>
+                      {[
+                        { label: "신청 대상", value: "만 15 ~ 34세 외국인" },
+                        { label: "근무지 요건", value: "중소기업 재직자" },
+                        { label: "거주 요건", value: "183일 이상 국내 거소" },
+                        { label: "감면율", value: "소득세 90%" },
+                        { label: "연간 한도", value: "200만원 / 년" },
+                        { label: "최대 한도", value: "누적 1,000만원" },
+                        { label: "적용 기간", value: "최대 5년" },
+                        { label: "과거 환급", value: "경정청구로 5년치 가능" },
+                      ].map((row, i) => (
+                        <div key={i} className="flex justify-between items-center py-2.5 border-b border-slate-800 last:border-0">
+                          <span className="text-slate-400 text-sm font-bold">{row.label}</span>
+                          <span className="text-white text-sm font-black">{row.value}</span>
+                        </div>
+                      ))}
+                      
+                      {/* 예상 환급액 무료 조회 메인 CTA 버튼 (금빛 그라데이션 + 쉬머 효과) */}
+                      <Button asChild className="w-full premium-btn-shimmer bg-gradient-to-r from-[#b88c30] via-[#e2b659] to-[#b88c30] hover:from-[#e2b659] hover:to-[#b88c30] text-[#0f1e36] font-black rounded-2xl py-6 text-base mt-4 shadow-xl shadow-[#b88c30]/20 transition-all duration-300 hover:scale-[1.02] active:scale-95 group cursor-pointer">
+                        <Link href="/estimate" className="flex items-center justify-center gap-2">
+                          <span>예상 환급액 무료 조회</span>
+                          <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1.5 shrink-0 text-[#0f1e36]" />
+                        </Link>
+                      </Button>
+                    </div>
+
+                  </div>
+
+                  {/* ─── 하단 추가: 자격 요건 + 후불제 (전체 너비 가로 배치) ─── */}
+                  <div className="bg-slate-50 rounded-3xl p-8 lg:p-12 border border-[#b88c30]/15 shadow-[0_16px_48px_rgba(15,30,54,0.06)]">
+                    
+                    {/* 타이틀 */}
+                    <div className="text-center mb-10">
+                      <div className="inline-block text-[#b88c30] text-xs font-black uppercase tracking-[0.2em] mb-2">ELIGIBILITY & PROCESS</div>
+                      <h3 className="text-[#0f1e36] text-2xl lg:text-3xl font-black tracking-tight">소득세 감면 신청 자격 요건</h3>
+                      <p className="text-slate-500 font-bold text-sm mt-1">아래 요건을 모두 충족하거나 해당하는 경우 지난 5년간의 세금을 소급 환급받으실 수 있습니다.</p>
+                    </div>
+
+                    {/* 자격 조건 그리드 (2열) */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      {[
+                        { icon: '🎂', title: '만 15~34세 취업 (군복무 최대 6년 차감 → 최대 만 40세)', sub: '취업 계약 체결일 기준 · 병적증명서 제출 시 연장 인정' },
+                        { icon: '🏢', title: '중소기업기본법상 중소기업 재직 (감면 대상 업종)', sub: '제조·IT·서비스업 등 · 수의업·부동산임대업·가상자산업 제외' },
+                        { icon: '🛂', title: '한국 세법상 거주자 — 183일 이상 국내 거소', sub: 'E-7, E-9, D-10, F-2 등 합법 취업 비자 소지자 동일 적용' },
+                        { icon: '📋', title: '과거 5년 이내 경정청구 소급 신청 가능', sub: '퇴직 후 · 출국 예정자도 지난 세금 환급 신청 가능' },
+                      ].map((item) => (
+                        <div key={item.title} className="flex items-start gap-4 bg-white border border-slate-100 rounded-2xl px-6 py-5 hover:border-[#b88c30]/40 transition-all shadow-sm group">
+                          <span className="text-2xl shrink-0 mt-0.5">{item.icon}</span>
+                          <div className="flex-1">
+                            <div className="text-[#0f1e36] font-black text-base leading-snug group-hover:text-[#b88c30] transition-colors">{item.title}</div>
+                            <div className="text-slate-400 font-bold text-xs mt-1 leading-normal break-keep">{item.sub}</div>
+                          </div>
+                          <CheckCircle2 className="h-5 w-5 text-[#b88c30] shrink-0 mt-0.5 opacity-60 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* 후불제 문구 */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 pt-8 border-t border-slate-200">
+                      <div className="flex items-center gap-4 bg-[#0f1e36] rounded-2xl px-6 py-5 shadow-sm">
+                        <CheckCircle2 className="h-6 w-6 text-[#b88c30] shrink-0" />
+                        <div>
+                          <div className="text-[#b88c30] font-black text-base">선결제 0원</div>
+                          <div className="text-slate-400 font-bold text-xs mt-1">환급 성공 시에만 수수료 발생 · 실패 시 전액 무료</div>
+                        </div>
+                      </div>
+                      <div className="flex items-center gap-4 bg-[#f5f0e8] border border-[#b88c30]/20 rounded-2xl px-6 py-5 shadow-sm">
+                        <ShieldCheck className="h-6 w-6 text-[#b88c30] shrink-0" />
+                        <div>
+                          <div className="text-[#0f1e36] font-black text-base">성과 기반 후불 정산 (No Win, No Fee)</div>
+                          <div className="text-slate-500 font-bold text-xs mt-1">착수금이나 선결제 없이 환급 후 정산합니다.</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* 제도안내 자세히 알아보기 CTA 버튼 */}
+                  <div className="flex justify-center pt-4">
+                    <Button size="lg" asChild className="premium-btn-shimmer w-full sm:w-auto text-lg font-black px-12 py-7 h-auto bg-gradient-to-r from-[#b88c30] via-[#e2b659] to-[#b88c30] hover:from-[#e2b659] hover:to-[#b88c30] text-[#0f1e36] rounded-2xl shadow-xl shadow-[#b88c30]/20 transition-all duration-300 hover:scale-[1.02] active:scale-95 group cursor-pointer">
+                      <Link href="/youth-tax" className="flex items-center justify-center gap-3">
+                        <span>청년 소득세 90% 감면 제도안내 자세히 알아보기</span>
+                        <ArrowRight className="h-6 w-6 transition-transform duration-300 group-hover:translate-x-1.5 shrink-0" />
+                      </Link>
+                    </Button>
+                  </div>
+
+                </div>
+
+              </div>
+
+          <div className="h-px w-full bg-gradient-to-r from-transparent via-[#b88c30]/40 to-transparent" />
         </section>
 
         {/* 임팩트 신뢰 슬로건 배너 */}
+
         <section className="relative py-12 md:py-16 overflow-hidden bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 border-y border-indigo-500/20 shadow-[inset_0_0_80px_rgba(99,102,241,0.07)]">
           {/* 빛 효과 배경 장식 */}
           <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[300px] h-[150px] bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
