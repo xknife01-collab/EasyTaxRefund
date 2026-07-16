@@ -688,63 +688,63 @@ export default function HomePage() {
 
 
         {/* 디자인 섹션 2: 신뢰 지표 */}
-        <section className="py-6 bg-slate-50/60 border-y border-slate-100/80 overflow-hidden">
+        <section className="py-8 bg-slate-50/60 border-y border-slate-100/80 overflow-hidden">
           <div className="container mx-auto px-4 max-w-6xl">
-            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4 md:gap-x-12">
+            <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 md:gap-x-16">
               
               {/* 공인 세무사 직접 대행 */}
-              <div className="flex items-center gap-2">
-                <CheckCircle2 className="h-5 w-5 text-[#b88c30] shrink-0" />
-                <span className="font-black text-sm md:text-base text-[#2b4c7e] tracking-tight whitespace-nowrap">
+              <div className="flex items-center gap-2.5">
+                <CheckCircle2 className="h-6 w-6 text-[#b88c30] shrink-0" />
+                <span className="font-black text-base md:text-lg text-[#2b4c7e] tracking-tight whitespace-nowrap">
                   {t('공인 세무사 직접 대행')}
                 </span>
               </div>
               
-              <div className="hidden md:block h-5 w-px bg-slate-200" />
+              <div className="hidden md:block h-8 w-px bg-slate-200" />
               
               {/* 국세청 로고 */}
-              <div className="flex items-center h-8">
+              <div className="flex items-center h-12 md:h-14">
                 <Image
                   src="/nts-logo.jpg"
                   alt="국세청"
-                  width={72}
-                  height={28}
-                  className="h-7 w-auto object-contain"
+                  width={110}
+                  height={44}
+                  className="h-10 md:h-12 w-auto object-contain"
                 />
               </div>
               
-              <div className="hidden md:block h-5 w-px bg-slate-200" />
+              <div className="hidden md:block h-8 w-px bg-slate-200" />
               
               {/* NTS Badge */}
-              <div className="flex items-center h-8">
+              <div className="flex items-center h-12 md:h-14">
                 <Image
                   src="/official_nts_carrier_badge_v2_1774141326494.png"
                   alt="NTS Badge"
-                  width={28}
-                  height={28}
-                  className="h-7 w-auto object-contain"
+                  width={48}
+                  height={48}
+                  className="h-10 md:h-12 w-auto object-contain"
                 />
               </div>
               
-              <div className="hidden md:block h-5 w-px bg-slate-200" />
+              <div className="hidden md:block h-8 w-px bg-slate-200" />
               
               {/* Security Seal */}
-              <div className="flex items-center h-8">
+              <div className="flex items-center h-12 md:h-14">
                 <Image
                   src="/certified_security_seal_premium_1774150786685.png"
                   alt="Security Seal"
-                  width={28}
-                  height={28}
-                  className="h-7 w-auto object-contain"
+                  width={48}
+                  height={48}
+                  className="h-10 md:h-12 w-auto object-contain"
                 />
               </div>
               
-              <div className="hidden md:block h-5 w-px bg-slate-200" />
+              <div className="hidden md:block h-8 w-px bg-slate-200" />
               
               {/* 개인정보 보호 인증 */}
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="h-5 w-5 text-emerald-600 shrink-0" />
-                <span className="font-black text-sm md:text-base text-[#2b4c7e] tracking-tight whitespace-nowrap">
+              <div className="flex items-center gap-2.5">
+                <ShieldCheck className="h-6 w-6 text-emerald-600 shrink-0" />
+                <span className="font-black text-base md:text-lg text-[#2b4c7e] tracking-tight whitespace-nowrap">
                   {t('개인정보 보호 인증')}
                 </span>
               </div>
