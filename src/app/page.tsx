@@ -754,42 +754,85 @@ export default function HomePage() {
         </section>
 
         {/* 디자인 섹션 3: 정부 공인 상세 안내 */}
-        <section className="py-20 bg-slate-50/50 relative overflow-hidden">
-          <div className="absolute inset-0 bg-[#0b192c]/[0.02] pointer-events-none" />
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto flex flex-col md:flex-row items-center gap-10 md:gap-16 text-center md:text-left p-10 bg-white rounded-[3rem] shadow-xl border border-slate-100/50">
-              <div className="shrink-0 relative group">
-                <div className="absolute -inset-4 bg-primary/10 rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                <Image 
-                  src="/official_nts_carrier_badge_v2_1774141326494.png"
-                  alt="Official NTS & Carrier Badge" 
-                  width={180}
-                  height={180}
-                  className="relative rounded-3xl shadow-xl border border-slate-50 transition-transform group-hover:scale-105"
-                />
-              </div>
-              <div className="space-y-5">
-                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600">
-                  <ShieldCheck className="h-5 w-5" />
-                  <span className="text-xs font-black uppercase tracking-widest leading-none">{t('safe_and_secure')}</span>
+        <section className="py-24 bg-[#faf6f0] relative overflow-hidden">
+          {/* Subtle elegant legal patterns */}
+          <div className="absolute inset-0 bg-[#0b192c]/[0.01] pointer-events-none" />
+          <div className="absolute top-1/2 left-0 -translate-y-1/2 w-[500px] h-[500px] bg-[#b88c30]/5 rounded-full blur-[120px] pointer-events-none" />
+          
+          <div className="container mx-auto px-6 relative z-10 max-w-5xl">
+            <div className="relative flex flex-col md:flex-row items-center gap-10 md:gap-16 p-10 md:p-14 bg-[#0f1e36] rounded-[2.5rem] shadow-[0_24px_60px_rgba(15,30,54,0.35)] border-2 border-[#b88c30]/35 overflow-hidden">
+              
+              {/* Decorative corner borders for classic official feel */}
+              <div className="absolute top-3 left-3 w-6 h-6 border-t-2 border-l-2 border-[#b88c30]/50 rounded-tl-xl" />
+              <div className="absolute top-3 right-3 w-6 h-6 border-t-2 border-r-2 border-[#b88c30]/50 rounded-tr-xl" />
+              <div className="absolute bottom-3 left-3 w-6 h-6 border-b-2 border-l-2 border-[#b88c30]/50 rounded-bl-xl" />
+              <div className="absolute bottom-3 right-3 w-6 h-6 border-b-2 border-r-2 border-[#b88c30]/50 rounded-br-xl" />
+              
+              {/* Left Column: Official Stamp Frame */}
+              <div className="shrink-0 relative group mx-auto md:mx-0">
+                {/* Elegant outer glow */}
+                <div className="absolute -inset-4 bg-[#b88c30]/15 rounded-[2.5rem] blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                
+                {/* Double-bordered luxury frame for the partner badge */}
+                <div className="relative p-2.5 rounded-[2rem] bg-[#0b192c] border border-[#b88c30]/35 shadow-[0_16px_36px_rgba(0,0,0,0.5)]">
+                  <div className="rounded-[1.5rem] overflow-hidden bg-white p-5 border border-[#b88c30]/20">
+                    <Image 
+                      src="/official_nts_carrier_badge_v2_1774141326494.png"
+                      alt="Official NTS & Carrier Badge" 
+                      width={160}
+                      height={160}
+                      className="object-contain transition-transform duration-500 group-hover:scale-105"
+                    />
+                  </div>
                 </div>
-                <h2 className="text-2xl md:text-4xl font-black text-slate-900 leading-tight">
-                  {t('nts_trust_title')}
-                </h2>
-                <p className="text-lg md:text-xl text-slate-600 font-bold leading-relaxed max-w-2xl">
+              </div>
+
+              {/* Right Column: Premium Text & Detailed Grid */}
+              <div className="flex-1 space-y-6 text-left">
+                {/* Eyebrow badge */}
+                <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-[#b88c30]/40 text-[#e2b659] bg-[#b88c30]/10">
+                  <ShieldCheck className="h-4 w-4 text-[#e2b659] animate-pulse" />
+                  <span className="text-xs font-black uppercase tracking-[0.2em] leading-none">{t('safe_and_secure')}</span>
+                </div>
+                
+                {/* Title */}
+                <div className="space-y-3">
+                  <h2 className="text-2xl md:text-4xl font-extrabold text-white leading-tight tracking-tight font-headline">
+                    {t('nts_trust_title')}
+                  </h2>
+                  {/* Decorative line under title */}
+                  <div className="h-0.5 w-16 bg-gradient-to-r from-[#b88c30] to-transparent" />
+                </div>
+                
+                {/* Message */}
+                <p className="text-slate-300 font-bold text-base md:text-lg leading-relaxed max-w-2xl">
                   {t('nts_trust_message')}
                 </p>
-                <div className="flex flex-wrap justify-center md:justify-start gap-8 pt-2">
-                  <div className="flex items-center gap-2.5 text-sm font-black text-slate-400">
-                    <div className="w-2 h-2 rounded-full bg-[#e2b659]" />
-                    {t('nts_hometax')}
+                
+                {/* Clean data blocks matching law firm style */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-6 border-t border-slate-700/60 w-full">
+                  <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-5 py-4 transition-all hover:bg-white/10 hover:border-[#b88c30]/30 group">
+                    <div className="h-10 w-10 bg-[#b88c30]/10 border border-[#b88c30]/35 rounded-xl flex items-center justify-center shrink-0">
+                      <CheckCircle2 className="h-5 w-5 text-[#e2b659]" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-[10px] text-slate-400 font-black uppercase tracking-wider">database portal</div>
+                      <div className="text-white text-sm font-black transition-colors group-hover:text-[#e2b659]">{t('nts_hometax')}</div>
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2.5 text-sm font-black text-slate-400">
-                    <div className="w-2 h-2 rounded-full bg-[#e2b659]" />
-                    {t('SKT / KT / LGU+')}
+                  
+                  <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl px-5 py-4 transition-all hover:bg-white/10 hover:border-[#b88c30]/30 group">
+                    <div className="h-10 w-10 bg-[#b88c30]/10 border border-[#b88c30]/35 rounded-xl flex items-center justify-center shrink-0">
+                      <UserCheck className="h-5 w-5 text-[#e2b659]" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-[10px] text-slate-400 font-black uppercase tracking-wider">carrier auth</div>
+                      <div className="text-white text-sm font-black transition-colors group-hover:text-[#e2b659]">{t('SKT / KT / LGU+')}</div>
+                    </div>
                   </div>
                 </div>
               </div>
+              
             </div>
           </div>
         </section>
