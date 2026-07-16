@@ -605,18 +605,17 @@ export default function HomePage() {
             <div className="flex items-center justify-center gap-3">
               <div className="h-px w-10 bg-[#b88c30]" />
               <span className="text-[#b88c30] text-xs font-black tracking-widest uppercase">
-                {t('조세특례제한법 제30조 기반 정당한 법적 혜택')}
+                {t('대한민국 국세청(NTS) 조세특례제한법 제30조 법적 근거')}
               </span>
               <div className="h-px w-10 bg-[#b88c30]" />
             </div>
             <h2 className="text-2xl sm:text-4xl font-black text-white leading-snug break-keep">
-              {t('그냥 지나치셔도 상관없습니다.')}
-              <br className="hidden sm:block" />
-              <span className="text-[#b88c30]">{t('하지만 모든 한국 사람은 받고 있는 권리입니다.')}</span>
+              {t('그냥 지나치기 쉬운 세금 감면 혜택,')}{' '}
+              <span className="text-[#b88c30]">{t('외국인 근로자도 동일하게 보장받는 법적 권리입니다.')}</span>
             </h2>
             <div className="h-px w-20 bg-[#b88c30] mx-auto" />
             <p className="text-slate-300 text-base sm:text-lg font-bold leading-relaxed max-w-4xl mx-auto break-keep">
-              {t('한국인들과 100% 동일한 법적 기준이 적용됩니다.')}
+              {t('본 제도는 대한민국 조세특례제한법에 근거한 공식 세제 지원책입니다. 대한민국 세법은 내·외국인 간 세무상 차별을 두지 않으므로, 납세 의무를 다한 외국인 근로자라면 누구나 안전하게 국세청을 통해 정당한 소득세 환급을 청구할 수 있습니다.')}
             </p>
           </div>
         </section>
