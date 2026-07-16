@@ -646,43 +646,40 @@ export default function HomePage() {
             <div className="grid md:grid-cols-3 gap-6">
 
               {/* 카드 01 */}
-              <div className="group relative bg-white border border-slate-200 rounded-2xl p-8 space-y-5 hover:border-[#b88c30]/40 hover:shadow-[0_8px_40px_rgba(184,140,48,0.10)] transition-all duration-300 overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#b88c30]/60 via-[#b88c30] to-[#b88c30]/60" />
-                <div className="h-11 w-11 bg-[#f5f0e8] rounded-xl flex items-center justify-center">
-                  <Coins className="h-5 w-5 text-[#b88c30]" />
+              <div className="group relative bg-white border-t-4 border-t-[#b88c30] border-x border-b border-slate-200/80 rounded-3xl p-8 space-y-5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div className="h-14 w-14 bg-[#0f1e36]/5 rounded-2xl flex items-center justify-center text-[#0f1e36]">
+                  <Coins className="h-7 w-7" />
                 </div>
-                <h3 className="text-[#0f1e36] font-black text-xl leading-snug break-keep">
+                <h3 className="text-xl font-black text-[#0f1e36] leading-snug break-keep">
                   {t('초기 비용 0원, 완전 무료 시작')}
                 </h3>
-                <p className="text-slate-500 font-bold text-sm leading-relaxed break-keep">
+                <p className="text-slate-500 text-sm sm:text-base font-bold leading-relaxed break-keep">
                   {t('서비스 신청 시 필요한 비용은 전혀 없습니다. 예상 환급액 조회부터 전문 세무사의 전담 검토 단계까지, 신청 시점에 고객님이 내야 할 돈은 단 1원도 없습니다.')}
                 </p>
               </div>
 
-              {/* 카드 02 — 가운데 다크 네이비 강조 */}
-              <div className="group relative bg-[#0f1e36] rounded-2xl p-8 space-y-5 hover:shadow-[0_8px_40px_rgba(15,30,54,0.20)] transition-all duration-300 overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#b88c30]/60 via-[#b88c30] to-[#b88c30]/60" />
-                <div className="h-11 w-11 bg-[#b88c30]/15 border border-[#b88c30]/30 rounded-xl flex items-center justify-center">
-                  <ShieldCheck className="h-5 w-5 text-[#b88c30]" />
+              {/* 카드 02 — 가운데 다크 네이비 대신 깔끔한 화이트 + 네이비 상단 포인트 */}
+              <div className="group relative bg-white border-t-4 border-t-[#0f1e36] border-x border-b border-slate-200/80 rounded-3xl p-8 space-y-5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div className="h-14 w-14 bg-[#0f1e36]/5 rounded-2xl flex items-center justify-center text-[#0f1e36]">
+                  <ShieldCheck className="h-7 w-7" />
                 </div>
-                <h3 className="text-white font-black text-xl leading-snug break-keep">
+                <h3 className="text-xl font-black text-[#0f1e36] leading-snug break-keep">
                   {t('환급 거절/실패 시 수수료 0원')}
                 </h3>
-                <p className="text-slate-400 font-bold text-sm leading-relaxed break-keep">
+                <p className="text-slate-500 text-sm sm:text-base font-bold leading-relaxed break-keep">
                   {t('세무서 심사 결과 환급액이 나오지 않으면 서비스 수수료도 청구되지 않습니다. 고객님은 비용 손실이나 리스크가 0%이므로 안심하고 권리를 찾으세요.')}
                 </p>
               </div>
 
               {/* 카드 03 */}
-              <div className="group relative bg-white border border-slate-200 rounded-2xl p-8 space-y-5 hover:border-[#b88c30]/40 hover:shadow-[0_8px_40px_rgba(184,140,48,0.10)] transition-all duration-300 overflow-hidden">
-                <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#b88c30]/60 via-[#b88c30] to-[#b88c30]/60" />
-                <div className="h-11 w-11 bg-[#f5f0e8] rounded-xl flex items-center justify-center">
-                  <Banknote className="h-5 w-5 text-[#b88c30]" />
+              <div className="group relative bg-white border-t-4 border-t-[#b88c30] border-x border-b border-slate-200/80 rounded-3xl p-8 space-y-5 hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+                <div className="h-14 w-14 bg-[#0f1e36]/5 rounded-2xl flex items-center justify-center text-[#0f1e36]">
+                  <Banknote className="h-7 w-7" />
                 </div>
-                <h3 className="text-[#0f1e36] font-black text-xl leading-snug break-keep">
+                <h3 className="text-xl font-black text-[#0f1e36] leading-snug break-keep">
                   {t('환급금 입금된 후 후불 정산')}
                 </h3>
-                <p className="text-slate-500 font-bold text-sm leading-relaxed break-keep">
+                <p className="text-slate-500 text-sm sm:text-base font-bold leading-relaxed break-keep">
                   {t('국세청에서 고객님 명의의 은행 계좌로 환급금을 직접 입금해 드리면, 나중에 후불 정산합니다.')}
                 </p>
               </div>
