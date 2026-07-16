@@ -607,8 +607,8 @@ export default function HomePage() {
 
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto flex flex-col items-center text-center space-y-6">
-              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.15)] animate-float">
-                <Sparkles className="h-6 w-6" />
+              <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-[#b88c30]/10 border border-[#b88c30]/35 text-[#b88c30] shadow-sm">
+                <BadgeCheck className="h-6 w-6" />
               </div>
               <h3 className="text-2xl md:text-4xl lg:text-[2.50rem] font-black font-headline text-white tracking-tight leading-[1.3] break-keep">
                 {t('그냥 지나치셔도 상관없습니다.')}{' '}
