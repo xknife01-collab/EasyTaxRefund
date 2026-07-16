@@ -623,70 +623,134 @@ export default function HomePage() {
         </section>
         <div className="h-[5px] w-full bg-gradient-to-r from-transparent via-[#b88c30] to-transparent" />
 
-        {/* 안심 보장 비주얼 카드 섹션 */}
-        <section className="py-16 bg-slate-50/50 relative overflow-hidden">
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[300px] bg-gradient-to-r from-primary/5 to-emerald-500/5 rounded-full blur-[100px] pointer-events-none" />
-          <div className="container mx-auto px-4 max-w-7xl relative z-10">
-            
-            {/* 안심 보장 타이틀 & 부타이틀 */}
-            <div className="text-center space-y-4 mb-16 max-w-4xl mx-auto">
-              <h2 
-                className="text-3xl md:text-5xl font-black text-slate-900 leading-tight tracking-tight break-keep"
+        {/* 안심 보장 비주얼 카드 섹션 — 관공서 프리미엄 리디자인 */}
+        <section className="relative py-20 md:py-28 bg-[#0f1e36] overflow-hidden">
+
+          {/* 배경 장식 */}
+          <div className="absolute inset-0 opacity-[0.025]"
+            style={{ backgroundImage: 'repeating-linear-gradient(90deg,#b88c30,#b88c30 1px,transparent 1px,transparent 80px),repeating-linear-gradient(0deg,#b88c30,#b88c30 1px,transparent 1px,transparent 80px)' }} />
+          <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#b88c30]/5 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-[#b88c30]/4 rounded-full blur-[100px] pointer-events-none" />
+
+          <div className="container mx-auto px-6 max-w-6xl relative z-10">
+
+            {/* 헤더 */}
+            <div className="mb-16 md:mb-20">
+              {/* 상단 법령 뱃지 */}
+              <div className="flex items-center gap-3 mb-6">
+                <div className="h-[2px] w-10 bg-[#b88c30]" />
+                <span className="text-[#b88c30] text-xs font-black uppercase tracking-[0.3em]">3-Tier Guarantee System · No Win, No Fee</span>
+              </div>
+
+              {/* 메인 타이틀 */}
+              <h2
+                className="text-3xl md:text-5xl font-black text-white leading-tight tracking-tight break-keep mb-5"
                 dangerouslySetInnerHTML={{ __html: t('수수료 선결제 0원, 오직 환급 성공 시에만 정산받는 3대 안심 보장제도') }}
               />
-              <p className="text-lg md:text-xl text-slate-500 font-bold leading-relaxed break-keep">
+
+              {/* 구분선 */}
+              <div className="flex items-center gap-4 mb-5">
+                <div className="h-px flex-1 bg-[#b88c30]/20" />
+              </div>
+
+              <p className="text-slate-400 font-bold text-base md:text-lg leading-relaxed break-keep max-w-2xl">
                 {t('0.1초 만에 조회하고, 환급금이 통장에 안전하게 입금된 것을 직접 확인한 후에 정산하세요.')}
               </p>
             </div>
 
-            <div className="grid md:grid-cols-3 gap-8">
-              {/* 카드 1 */}
-              <Card className="premium-card rounded-[2.5rem] border border-slate-200/50 p-8 space-y-6 bg-gradient-to-br from-slate-100/95 via-slate-50/40 to-slate-200/40 shadow-[0_12px_24px_-10px_rgba(0,0,0,0.03)] hover:-translate-y-1 hover:border-slate-300/80 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.08)] transition-all duration-300 cursor-pointer group">
-                <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 bg-amber-50/60 rounded-2xl flex items-center justify-center shrink-0">
-                    <Coins className="h-7 w-7 text-amber-500 transition-all duration-500 group-hover:scale-110 group-hover:rotate-12 animate-float" />
-                  </div>
-                  <h3 className="text-2xl font-black text-primary">
-                    {t('초기 비용 0원, 완전 무료 시작')}
-                  </h3>
-                </div>
-                <p className="text-slate-500 font-bold leading-relaxed text-base">
-                  {t('서비스 신청 시 필요한 비용은 전혀 없습니다. 예상 환급액 조회부터 전문 세무사의 전담 검토 단계까지, 신청 시점에 고객님이 내야 할 돈은 단 1원도 없습니다.')}
-                </p>
-              </Card>
-              
-              {/* 카드 2 */}
-              <Card className="premium-card rounded-[2.5rem] border border-slate-200/50 p-8 space-y-6 bg-gradient-to-br from-slate-100/95 via-slate-50/40 to-slate-200/40 shadow-[0_12px_24px_-10px_rgba(0,0,0,0.03)] hover:-translate-y-1 hover:border-slate-300/80 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.08)] transition-all duration-300 cursor-pointer group">
-                <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 bg-emerald-50/60 rounded-2xl flex items-center justify-center shrink-0">
-                    <ShieldCheck className="h-7 w-7 text-emerald-500 transition-all duration-500 group-hover:scale-110 group-hover:rotate-[-6deg] animate-pulse" />
-                  </div>
-                  <h3 className="text-2xl font-black text-primary">
-                    {t('환급 거절/실패 시 수수료 0원')}
-                  </h3>
-                </div>
-                <p className="text-slate-500 font-bold leading-relaxed text-base">
-                  {t('세무서 심사 결과 환급액이 나오지 않으면 서비스 수수료도 청구되지 않습니다. 고객님은 비용 손실이나 리스크가 0%이므로 안심하고 권리를 찾으세요.')}
-                </p>
-              </Card>
+            {/* 3개 보장 카드 */}
+            <div className="space-y-5">
 
-              {/* 카드 3 */}
-              <Card className="premium-card rounded-[2.5rem] border border-slate-200/50 p-8 space-y-6 bg-gradient-to-br from-slate-100/95 via-slate-50/40 to-slate-200/40 shadow-[0_12px_24px_-10px_rgba(0,0,0,0.03)] hover:-translate-y-1 hover:border-slate-300/80 hover:shadow-[0_20px_40px_-12px_rgba(0,0,0,0.08)] transition-all duration-300 cursor-pointer group">
-                <div className="flex items-center gap-4">
-                  <div className="h-14 w-14 bg-indigo-50/60 rounded-2xl flex items-center justify-center shrink-0">
-                    <Banknote className="h-7 w-7 text-indigo-500 transition-all duration-500 group-hover:scale-115 group-hover:translate-y-[-2px] group-hover:translate-x-[2px] animate-float" />
-                  </div>
-                  <h3 className="text-2xl font-black text-primary">
-                    {t('환급금 입금된 후 후불 정산')}
-                  </h3>
+              {/* 보장 01 */}
+              <div className="group flex items-stretch gap-0 bg-white/[0.03] border border-[#b88c30]/15 rounded-2xl overflow-hidden hover:bg-white/[0.06] hover:border-[#b88c30]/35 transition-all duration-300">
+                {/* 왼쪽 골드 넘버 컬럼 */}
+                <div className="w-20 md:w-28 shrink-0 bg-[#b88c30]/10 border-r border-[#b88c30]/20 flex flex-col items-center justify-center py-8 gap-2">
+                  <span className="text-[#b88c30]/50 text-[10px] font-black uppercase tracking-widest">No.</span>
+                  <span className="text-[#b88c30] text-4xl md:text-5xl font-black leading-none">01</span>
                 </div>
-                <p className="text-slate-500 font-bold leading-relaxed text-base">
-                  {t('국세청에서 고객님 명의의 은행 계좌로 환급금을 직접 입금해 드리면, 나중에 후불 정산합니다.')}
-                </p>
-              </Card>
+                {/* 본문 */}
+                <div className="flex-1 p-7 md:p-10 flex flex-col md:flex-row md:items-center gap-6">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-[#b88c30]/15 border border-[#b88c30]/30 flex items-center justify-center shrink-0">
+                        <Coins className="h-4 w-4 text-[#b88c30]" />
+                      </div>
+                      <h3 className="text-white font-black text-xl md:text-2xl">
+                        {t('초기 비용 0원, 완전 무료 시작')}
+                      </h3>
+                    </div>
+                    <p className="text-slate-400 font-bold text-sm md:text-base leading-relaxed break-keep pl-11">
+                      {t('서비스 신청 시 필요한 비용은 전혀 없습니다. 예상 환급액 조회부터 전문 세무사의 전담 검토 단계까지, 신청 시점에 고객님이 내야 할 돈은 단 1원도 없습니다.')}
+                    </p>
+                  </div>
+                  <div className="shrink-0 md:text-right">
+                    <div className="inline-flex items-center gap-2 border border-[#b88c30]/30 bg-[#b88c30]/5 text-[#b88c30] rounded-full px-4 py-2 text-xs font-black tracking-widest uppercase">
+                      선결제 0원
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 보장 02 */}
+              <div className="group flex items-stretch gap-0 bg-white/[0.03] border border-[#b88c30]/15 rounded-2xl overflow-hidden hover:bg-white/[0.06] hover:border-[#b88c30]/35 transition-all duration-300">
+                <div className="w-20 md:w-28 shrink-0 bg-[#b88c30]/10 border-r border-[#b88c30]/20 flex flex-col items-center justify-center py-8 gap-2">
+                  <span className="text-[#b88c30]/50 text-[10px] font-black uppercase tracking-widest">No.</span>
+                  <span className="text-[#b88c30] text-4xl md:text-5xl font-black leading-none">02</span>
+                </div>
+                <div className="flex-1 p-7 md:p-10 flex flex-col md:flex-row md:items-center gap-6">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-[#b88c30]/15 border border-[#b88c30]/30 flex items-center justify-center shrink-0">
+                        <ShieldCheck className="h-4 w-4 text-[#b88c30]" />
+                      </div>
+                      <h3 className="text-white font-black text-xl md:text-2xl">
+                        {t('환급 거절/실패 시 수수료 0원')}
+                      </h3>
+                    </div>
+                    <p className="text-slate-400 font-bold text-sm md:text-base leading-relaxed break-keep pl-11">
+                      {t('세무서 심사 결과 환급액이 나오지 않으면 서비스 수수료도 청구되지 않습니다. 고객님은 비용 손실이나 리스크가 0%이므로 안심하고 권리를 찾으세요.')}
+                    </p>
+                  </div>
+                  <div className="shrink-0 md:text-right">
+                    <div className="inline-flex items-center gap-2 border border-[#b88c30]/30 bg-[#b88c30]/5 text-[#b88c30] rounded-full px-4 py-2 text-xs font-black tracking-widest uppercase">
+                      리스크 0%
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* 보장 03 */}
+              <div className="group flex items-stretch gap-0 bg-white/[0.03] border border-[#b88c30]/15 rounded-2xl overflow-hidden hover:bg-white/[0.06] hover:border-[#b88c30]/35 transition-all duration-300">
+                <div className="w-20 md:w-28 shrink-0 bg-[#b88c30]/10 border-r border-[#b88c30]/20 flex flex-col items-center justify-center py-8 gap-2">
+                  <span className="text-[#b88c30]/50 text-[10px] font-black uppercase tracking-widest">No.</span>
+                  <span className="text-[#b88c30] text-4xl md:text-5xl font-black leading-none">03</span>
+                </div>
+                <div className="flex-1 p-7 md:p-10 flex flex-col md:flex-row md:items-center gap-6">
+                  <div className="flex-1 space-y-2">
+                    <div className="flex items-center gap-3">
+                      <div className="h-8 w-8 rounded-lg bg-[#b88c30]/15 border border-[#b88c30]/30 flex items-center justify-center shrink-0">
+                        <Banknote className="h-4 w-4 text-[#b88c30]" />
+                      </div>
+                      <h3 className="text-white font-black text-xl md:text-2xl">
+                        {t('환급금 입금된 후 후불 정산')}
+                      </h3>
+                    </div>
+                    <p className="text-slate-400 font-bold text-sm md:text-base leading-relaxed break-keep pl-11">
+                      {t('국세청에서 고객님 명의의 은행 계좌로 환급금을 직접 입금해 드리면, 나중에 후불 정산합니다.')}
+                    </p>
+                  </div>
+                  <div className="shrink-0 md:text-right">
+                    <div className="inline-flex items-center gap-2 border border-[#b88c30]/30 bg-[#b88c30]/5 text-[#b88c30] rounded-full px-4 py-2 text-xs font-black tracking-widest uppercase">
+                      후불 정산
+                    </div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
+
 
         {/* 디자인 섹션 2: 신뢰 지표 */}
         <section className="py-12 bg-white border-b border-slate-50 overflow-hidden">
