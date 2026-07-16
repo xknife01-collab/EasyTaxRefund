@@ -600,25 +600,24 @@ export default function HomePage() {
         </section>
         {/* 임팩트 신뢰 슬로건 배너 */}
         <div className="h-[5px] w-full bg-gradient-to-r from-transparent via-[#b88c30] to-transparent" />
-        <section className="relative py-12 md:py-16 overflow-hidden bg-gradient-to-r from-[#0b1220] via-[#0f1e36] to-[#0b1220]">
-          {/* 빛 효과 배경 장식 */}
-          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[300px] h-[150px] bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
-          <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[300px] h-[150px] bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
-
-          <div className="container mx-auto px-4 relative z-10">
-            <div className="max-w-4xl mx-auto flex flex-col items-center text-center space-y-6">
-              <span className="text-[#b88c30] text-sm md:text-base font-black tracking-widest">
-                {t('- 조세특례제한법 제30조 기반 정당한 법적 혜택 -')}
+        <section className="w-full bg-[#0f1e36] py-20 px-6">
+          <div className="max-w-5xl mx-auto text-center space-y-7">
+            <div className="flex items-center justify-center gap-3">
+              <div className="h-px w-10 bg-[#b88c30]" />
+              <span className="text-[#b88c30] text-xs font-black tracking-widest uppercase">
+                {t('조세특례제한법 제30조 기반 정당한 법적 혜택')}
               </span>
-              <h3 className="text-2xl md:text-4xl lg:text-[2.50rem] font-black font-headline text-white tracking-tight leading-[1.3] break-keep">
-                {t('그냥 지나치셔도 상관없습니다.')}{' '}
-                <span className="text-[#b88c30]">{t('하지만 모든 한국 사람은 받고 있는 권리입니다.')}</span>
-              </h3>
-              <p className="text-indigo-200/80 font-bold text-base md:text-xl tracking-wide max-w-2xl break-keep">
-                {t('한국인들과 100% 동일한 법적 기준이 적용됩니다.')}
-              </p>
-              <div className="w-16 h-1 bg-gradient-to-r from-transparent via-indigo-500 to-transparent rounded-full opacity-60" />
+              <div className="h-px w-10 bg-[#b88c30]" />
             </div>
+            <h2 className="text-2xl sm:text-4xl font-black text-white leading-snug break-keep">
+              {t('그냥 지나치셔도 상관없습니다.')}
+              <br className="hidden sm:block" />
+              <span className="text-[#b88c30]">{t('하지만 모든 한국 사람은 받고 있는 권리입니다.')}</span>
+            </h2>
+            <div className="h-px w-20 bg-[#b88c30] mx-auto" />
+            <p className="text-slate-300 text-base sm:text-lg font-bold leading-relaxed max-w-4xl mx-auto break-keep">
+              {t('한국인들과 100% 동일한 법적 기준이 적용됩니다.')}
+            </p>
           </div>
         </section>
         <div className="h-[5px] w-full bg-gradient-to-r from-transparent via-[#b88c30] to-transparent" />
