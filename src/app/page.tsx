@@ -186,7 +186,7 @@ export default function HomePage() {
       <main className="flex-1">
         
         {/* 디자인 섹션 1: 히어로 섹션 */}
-        <section className="relative pt-24 pb-20 lg:pt-36 lg:pb-32 overflow-hidden bg-white">
+        <section className="relative h-[750px] overflow-hidden bg-white flex items-center">
           {/* Full-width background image */}
           <div className="absolute inset-0 z-0 select-none">
             <img
@@ -211,42 +211,16 @@ export default function HomePage() {
                   <h1 className="text-3xl md:text-5xl lg:text-[3.2rem] font-black text-slate-900 tracking-tight leading-[1.15] break-keep pt-2">
                     외국인 중소기업 소득세 환급 - 정부 공식 제도 안내
                   </h1>
-                </div>
 
-                {/* Subtitle / Bullet descriptions and Badges row */}
-                <div className="flex flex-col md:flex-row md:items-center gap-6 pt-2">
-                  <div className="space-y-2 text-left">
-                    <p className="text-base md:text-lg font-bold text-slate-700">{t('Verify your eligibility in 1 minute.')}</p>
-                    <p className="text-sm md:text-base font-semibold text-slate-500">{t('Our service is securely linked with the National Tax Service (Hometax).')}</p>
+                  {/* Subtitle text only */}
+                  <div className="space-y-1 pt-2">
+                    <p className="text-base md:text-lg font-black text-slate-700">{t('Verify your eligibility in 1 minute.')}</p>
+                    <p className="text-sm md:text-base font-bold text-slate-500">{t('Our service is securely linked with the National Tax Service (Hometax).')}</p>
                   </div>
-                  
-                  {/* Badges */}
-                  <div className="flex items-center gap-3 shrink-0">
-                    {/* Gold Shield SECURE Badge */}
-                    <div className="flex flex-col items-center justify-center p-2 bg-white border border-[#e2b659] rounded-xl shadow-sm h-16 w-16">
-                      <ShieldCheck className="h-6 w-6 text-[#b88c30]" />
-                      <span className="text-[9px] font-black text-slate-900 mt-1 uppercase">SECURE</span>
-                    </div>
-                    {/* NTS Compatible Badge */}
-                    <div className="flex flex-col items-center justify-center p-2 bg-white border border-slate-200 rounded-xl shadow-sm h-16 w-28">
-                      <div className="text-[7px] font-black text-slate-400 uppercase tracking-wider">{t('NTS 국세청')}</div>
-                      <div className="text-[10px] font-black text-[#0b192c] mt-0.5">{t('Compatible')}</div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* CTA Button */}
-                <div className="pt-2">
-                  <Button size="lg" asChild className="w-full sm:w-auto text-base font-black px-10 py-5 h-auto bg-[#0b192c] hover:bg-[#152a45] text-white border border-[#e2b659]/30 rounded-xl shadow-md transition-all hover:scale-[1.02] active:scale-95">
-                    <Link href="/estimate" className="flex items-center justify-center gap-2 text-white">
-                      <span>{t('SECURE ELIGIBILITY CHECK')}</span>
-                      <ArrowRight className="h-5 w-5" />
-                    </Link>
-                  </Button>
                 </div>
 
               </div>
-              <div className="hidden lg:block lg:col-span-5 h-[400px]">
+              <div className="hidden lg:block lg:col-span-5">
                 {/* Space reserved for image background display on large screens */}
               </div>
             </div>
@@ -255,80 +229,47 @@ export default function HomePage() {
 
         {/* Navy Trust Banner */}
         <section className="bg-[#0b192c] text-white py-10 border-y-4 border-[#e2b659]">
-          <div className="container mx-auto px-6 max-w-7xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 divide-y lg:divide-y-0 lg:divide-x divide-slate-700/50">
+          <div className="container mx-auto px-6 max-w-5xl">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 divide-y md:divide-y-0 md:divide-x divide-slate-700/50">
               
               {/* Col 1: Certified Partners */}
-              <div className="space-y-4 pb-6 lg:pb-0">
+              <div className="space-y-4 pb-6 md:pb-0">
                 <div className="text-[#e2b659] text-xs font-black tracking-wider uppercase">{t('Certified Partners')}</div>
                 <div className="space-y-3">
                   <div className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-all">
-                    <div className="h-10 w-10 bg-slate-50 border border-slate-100 rounded-full flex items-center justify-center shrink-0">
-                      <span className="text-xs font-black text-slate-800 tracking-tighter">세무사</span>
+                    <div className="h-10 w-10 bg-white rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+                      <img src="/nts-logo.jpg" alt="국세청 로고" className="h-full w-full object-contain" />
                     </div>
                     <div className="text-left">
-                      <div className="text-xs font-black text-slate-900">{t('Certified Public Tax')}</div>
-                      <div className="text-[10px] text-slate-500 font-bold">{t('Accountant (세무사)')}</div>
+                      <div className="text-sm font-black text-slate-900">NTS Hometax Connected</div>
+                      <div className="text-xs text-slate-500 font-bold">국세청 홈택스 공식 실시간 연동</div>
                     </div>
                   </div>
                   <div className="flex items-center gap-3 bg-white border border-slate-200 rounded-xl p-3 shadow-sm hover:shadow-md transition-all">
-                    <div className="h-10 w-10 bg-indigo-50 border border-indigo-100 rounded-full flex items-center justify-center shrink-0">
-                      <span className="text-[9px] font-black text-indigo-700">ISO</span>
+                    <div className="h-10 w-10 bg-white rounded-lg flex items-center justify-center shrink-0 overflow-hidden">
+                      <img src="/certified_security_seal_premium_1774150786685.png" alt="보안 인증" className="h-full w-full object-contain" />
                     </div>
                     <div className="text-left">
-                      <div className="text-xs font-black text-slate-900">{t('ISO 27001 Security')}</div>
-                      <div className="text-[10px] text-slate-500 font-bold">{t('국제 정보보호 표준 인증')}</div>
+                      <div className="text-sm font-black text-slate-900">Certified Secure Platform</div>
+                      <div className="text-xs text-slate-500 font-bold">개인정보 보안 인증 플랫폼</div>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Col 2: Visas Supported */}
-              <div className="space-y-4 pt-6 lg:pt-0 lg:pl-8 pb-6 lg:pb-0 text-left">
+              <div className="space-y-4 pt-6 md:pt-0 md:pl-10 text-left">
                 <div className="text-[#e2b659] text-xs font-black tracking-wider uppercase">{t('Real Visas Supported')}</div>
                 <div className="text-xl lg:text-2xl font-black text-white">{t('E-7, E-9, D-10, etc.')}</div>
-                <div className="flex flex-wrap gap-2.5 pt-2">
-                  {['🇰🇷', '🇻🇳', '🇵🇭', '🇰🇭', '🇲🇳', '🇳🇵', '🇺🇿', '🇹🇭'].map((flag, idx) => (
-                    <span key={idx} className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/20 text-lg shadow-sm hover:bg-white/20 transition-all cursor-default">
-                      {flag}
-                    </span>
+                <div className="flex flex-wrap gap-2 pt-2">
+                  {languages.map((lang) => (
+                    <div key={lang.code} className="flex flex-col items-center gap-1 group cursor-default">
+                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/20 text-lg shadow-sm group-hover:bg-white/25 group-hover:scale-110 transition-all">
+                        {lang.flag}
+                      </span>
+                      <span className="text-[9px] font-bold text-slate-500 group-hover:text-slate-300 transition-colors leading-none">{lang.countryCode.toUpperCase()}</span>
+                    </div>
                   ))}
-                  <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/5 border border-dashed border-white/20 text-xs font-bold text-slate-400">
-                    •••
-                  </span>
-                </div>
-              </div>
-
-              {/* Col 3: Success Stories */}
-              <div className="space-y-4 pt-6 lg:pt-0 lg:pl-8 pb-6 lg:pb-0">
-                <div className="text-[#e2b659] text-xs font-black tracking-wider uppercase">{t('Success Stories')}</div>
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-3">
-                    <span className="text-lg">🇻🇳</span>
-                    <span className="text-xs font-black text-white">Nguyen (E-9): <span className="text-[#e2b659]">+3.1M KRW</span></span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-lg">🇺🇿</span>
-                    <span className="text-xs font-black text-white">Hassan (E-9): <span className="text-[#e2b659]">+1.8M KRW</span></span>
-                  </div>
-                  <div className="flex items-center gap-3">
-                    <span className="text-lg">🇵🇭</span>
-                    <span className="text-xs font-black text-white">Maria (E-7): <span className="text-[#e2b659]">+2.7M KRW</span></span>
-                  </div>
-                </div>
-              </div>
-
-              {/* Col 4: Map & Office Location */}
-              <div className="space-y-4 pt-6 lg:pt-0 lg:pl-8">
-                <div className="text-[#e2b659] text-xs font-black tracking-wider uppercase">{t('Physical Locations')}</div>
-                <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-2xl p-3">
-                  <div className="h-10 w-10 bg-white/10 rounded-xl flex items-center justify-center shrink-0">
-                    <Globe className="h-5 w-5 text-[#e2b659]" />
-                  </div>
-                  <div className="text-xs font-bold text-slate-300">
-                    <div>{t('Korea Location Coverage')}</div>
-                    <div className="text-[10px] text-slate-500 font-bold">{t('전국 세무관할 실시간 대응')}</div>
-                  </div>
                 </div>
               </div>
 
@@ -549,7 +490,6 @@ export default function HomePage() {
                         </div>
                       ))}
                       
-                      {/* 예상 환급액 무료 조회 메인 CTA 버튼 (금빛 그라데이션 + 쉬머 효과) */}
                       <Button asChild className="w-full premium-btn-shimmer bg-gradient-to-r from-[#b88c30] via-[#e2b659] to-[#b88c30] hover:from-[#e2b659] hover:to-[#b88c30] text-[#0f1e36] font-black rounded-2xl py-6 text-base mt-4 shadow-xl shadow-[#b88c30]/20 transition-all duration-300 hover:scale-[1.02] active:scale-95 group cursor-pointer">
                         <Link href="/estimate" className="flex items-center justify-center gap-2">
                           <span>예상 환급액 무료 조회</span>
@@ -560,17 +500,15 @@ export default function HomePage() {
 
                   </div>
 
-                  {/* ─── 하단 추가: 자격 요건 + 후불제 (전체 너비 가로 배치) ─── */}
+                  {/* ─── 하단 추가: 자격 요건 + 후불제 ─── */}
+
+                  {/* ↓↓↓ ORIGINAL VERSION (되돌리려면 이 주석 블록을 복원하세요) ↓↓↓
                   <div className="bg-slate-50 rounded-3xl p-8 lg:p-12 border border-[#b88c30]/15 shadow-[0_16px_48px_rgba(15,30,54,0.06)]">
-                    
-                    {/* 타이틀 */}
                     <div className="text-center mb-10">
                       <div className="inline-block text-[#b88c30] text-xs font-black uppercase tracking-[0.2em] mb-2">ELIGIBILITY & PROCESS</div>
                       <h3 className="text-[#0f1e36] text-2xl lg:text-3xl font-black tracking-tight">소득세 감면 신청 자격 요건</h3>
                       <p className="text-slate-500 font-bold text-sm mt-1">아래 요건을 모두 충족하거나 해당하는 경우 지난 5년간의 세금을 소급 환급받으실 수 있습니다.</p>
                     </div>
-
-                    {/* 자격 조건 그리드 (2열) */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {[
                         { icon: '🎂', title: '만 15~34세 취업 (군복무 최대 6년 차감 → 최대 만 40세)', sub: '취업 계약 체결일 기준 · 병적증명서 제출 시 연장 인정' },
@@ -588,8 +526,6 @@ export default function HomePage() {
                         </div>
                       ))}
                     </div>
-
-                    {/* 후불제 문구 */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-8 pt-8 border-t border-slate-200">
                       <div className="flex items-center gap-4 bg-[#0f1e36] rounded-2xl px-6 py-5 shadow-sm">
                         <CheckCircle2 className="h-6 w-6 text-[#b88c30] shrink-0" />
@@ -607,8 +543,46 @@ export default function HomePage() {
                       </div>
                     </div>
                   </div>
+                  ↑↑↑ ORIGINAL VERSION END ↑↑↑ */}
 
-                  {/* 제도안내 자세히 알아보기 CTA 버튼 */}
+                  {/* ── 정리된 새 버전 ── */}
+                  <div className="bg-slate-50 rounded-3xl p-8 lg:p-10 border border-[#b88c30]/15 shadow-[0_16px_48px_rgba(15,30,54,0.06)]">
+
+                    {/* 타이틀 */}
+                    <div className="flex items-center gap-3 mb-8">
+                      <div className="h-[3px] w-8 bg-[#b88c30]" />
+                      <div>
+                        <div className="text-[#b88c30] text-xs font-black uppercase tracking-[0.25em]">신청 자격 · 4가지 조건</div>
+                        <div className="text-slate-400 text-xs font-bold mt-0.5">4가지 중 하나라도 해당되면 환급 신청 가능합니다</div>
+                      </div>
+                    </div>
+
+                    {/* 자격 카드 - 핵심어 압축 */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      {[
+                        { icon: '🎂', title: '만 15~34세 외국인', sub: '군복무 시 최대 만 40세까지 · 비자 종류 무관' },
+                        { icon: '🏢', title: '중소기업 재직자', sub: '제조·IT·서비스업 등 감면 대상 업종 근무' },
+                        { icon: '🛂', title: '183일 이상 국내 거주', sub: 'E-7, E-9, D-10, F-2 등 합법 취업 비자 동일 적용' },
+                        { icon: '📋', title: '5년 이내 소급 환급 가능', sub: '퇴사 후 · 출국 예정자도 경정청구로 신청 가능' },
+                      ].map((item) => (
+                        <div key={item.title} className="flex items-center gap-4 bg-white border border-slate-100 rounded-2xl px-5 py-4 hover:border-[#b88c30]/40 transition-all shadow-sm group">
+                          <span className="text-xl shrink-0">{item.icon}</span>
+                          <div className="flex-1 min-w-0">
+                            <div className="text-[#0f1e36] font-black text-sm group-hover:text-[#b88c30] transition-colors">{item.title}</div>
+                            <div className="text-slate-400 font-bold text-xs mt-0.5 break-keep">{item.sub}</div>
+                          </div>
+                          <CheckCircle2 className="h-4 w-4 text-[#b88c30] shrink-0 opacity-50 group-hover:opacity-100 transition-opacity" />
+                        </div>
+                      ))}
+                    </div>
+
+                    {/* 후불제 카드는 하단 섹션에 중복 존재하므로 제거됨 */}
+
+                  </div>
+
+
+
+                  {/* 제도안내 자세히 알아보기 CTA */}
                   <div className="flex justify-center pt-4">
                     <Button size="lg" asChild className="premium-btn-shimmer w-full sm:w-auto text-lg font-black px-12 py-7 h-auto bg-gradient-to-r from-[#b88c30] via-[#e2b659] to-[#b88c30] hover:from-[#e2b659] hover:to-[#b88c30] text-[#0f1e36] rounded-2xl shadow-xl shadow-[#b88c30]/20 transition-all duration-300 hover:scale-[1.02] active:scale-95 group cursor-pointer">
                       <Link href="/youth-tax" className="flex items-center justify-center gap-3">
@@ -618,27 +592,27 @@ export default function HomePage() {
                     </Button>
                   </div>
 
-                </div>
+            </div>
 
-              </div>
+          </div>
 
           <div className="h-px w-full bg-gradient-to-r from-transparent via-[#b88c30]/40 to-transparent" />
         </section>
-
         {/* 임팩트 신뢰 슬로건 배너 */}
-
-        <section className="relative py-12 md:py-16 overflow-hidden bg-gradient-to-r from-slate-950 via-indigo-950 to-slate-950 border-y border-indigo-500/20 shadow-[inset_0_0_80px_rgba(99,102,241,0.07)]">
+        <div className="h-[5px] w-full bg-gradient-to-r from-transparent via-[#b88c30] to-transparent" />
+        <section className="relative py-12 md:py-16 overflow-hidden bg-gradient-to-r from-[#0b1220] via-[#0f1e36] to-[#0b1220]">
           {/* 빛 효과 배경 장식 */}
-          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[300px] h-[150px] bg-primary/10 rounded-full blur-[80px] pointer-events-none" />
+          <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[300px] h-[150px] bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
           <div className="absolute top-1/2 right-1/4 -translate-y-1/2 w-[300px] h-[150px] bg-indigo-500/10 rounded-full blur-[80px] pointer-events-none" />
-          
+
           <div className="container mx-auto px-4 relative z-10">
             <div className="max-w-4xl mx-auto flex flex-col items-center text-center space-y-6">
               <div className="inline-flex h-12 w-12 items-center justify-center rounded-2xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 shadow-[0_0_20px_rgba(99,102,241,0.15)] animate-float">
                 <Sparkles className="h-6 w-6" />
               </div>
               <h3 className="text-2xl md:text-4xl lg:text-[2.50rem] font-black font-headline text-white tracking-tight leading-[1.3] break-keep">
-                {t('그냥 지나치셔도 상관없습니다. 하지만 모든 한국 사람은 받고 있는 권리입니다.')}
+                {t('그냥 지나치셔도 상관없습니다.')}{' '}
+                <span className="text-[#b88c30]">{t('하지만 모든 한국 사람은 받고 있는 권리입니다.')}</span>
               </h3>
               <p className="text-indigo-200/80 font-bold text-base md:text-xl tracking-wide max-w-2xl break-keep">
                 {t('한국인들과 100% 동일한 법적 기준이 적용됩니다.')}
@@ -647,6 +621,7 @@ export default function HomePage() {
             </div>
           </div>
         </section>
+        <div className="h-[5px] w-full bg-gradient-to-r from-transparent via-[#b88c30] to-transparent" />
 
         {/* 안심 보장 비주얼 카드 섹션 */}
         <section className="py-16 bg-slate-50/50 relative overflow-hidden">
