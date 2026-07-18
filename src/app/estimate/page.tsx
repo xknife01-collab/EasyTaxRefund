@@ -3503,662 +3503,753 @@ export default function EstimatePage() {
             )}
 
             {step === 3 && (
-              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
-                <CardHeader className="text-center bg-slate-50/50 py-4 sm:py-10 border-b border-slate-100 relative">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => { setStep(2); saveProgress(2); }}
-                    className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    {t('이전')}
-                  </Button>
-                  <div className="mx-auto h-12 w-12 sm:h-16 sm:w-16 bg-primary/10 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-4">
-                    <Smartphone className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-                  </div>
-                  <CardTitle className="text-2xl sm:text-3xl font-black break-keep">
-                    {t('Step 3: 본인 인증 정보 입력')}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8">
-                  {/* Security Assurance Card - Embedded in Step 3 */}
-                  <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-primary/10 transition-colors" />
-                    <div className="relative flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-                      <div className="shrink-0 relative">
-                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
-                        <Image
-                          src="/certified_security_seal_premium_1774150786685.png"
-                          alt="Certified Security"
-                          width={80}
-                          height={80}
-                          className="relative transition-transform group-hover:scale-110"
-                        />
-                      </div>
-                      <div className="space-y-4 flex-1">
-                        <div className="space-y-1">
-                          <h4 className="text-xl font-black text-slate-800 flex items-center justify-center md:justify-start gap-2">
-                            {t('security_card_title')}
-                            <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20 leading-none py-0.5">{t('security_certified')}</Badge>
-                          </h4>
-                          <p className="text-sm font-bold text-slate-500">{t('security_card_subtitle')}</p>
-                        </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
-                              <Lock className="h-3 w-3 text-primary" />
-                              {t('security_item_encryption_title')}
-                            </div>
-                            <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_encryption_desc')}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
-                              <Database className="h-3 w-3 text-primary" />
-                              {t('security_item_no_storage_title')}
-                            </div>
-                            <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_no_storage_desc')}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
-                              <Shield className="h-3 w-3 text-primary" />
-                              {t('security_item_pippa_title')}
-                            </div>
-                            <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_pippa_desc')}</p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+              <div className="relative animate-in fade-in slide-in-from-bottom-8 duration-700">
+                {/* Corner Golden Borders for Premium Official Look */}
+                <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-[#b88c30] rounded-tl-3xl z-10 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-[#b88c30] rounded-tr-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-[#b88c30] rounded-bl-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-[#b88c30] rounded-br-3xl z-10 pointer-events-none" />
 
-                  <form onSubmit={handleContactSubmit} className="space-y-8">
-                    <div className="grid gap-6">
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        <div className="space-y-3">
-                          <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('휴대폰 번호')}</Label>
-                          <input
-                            id="step3-phone-input" placeholder="01012345678"
-                            className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg w-full outline-none focus:ring-2 focus:ring-primary/20"
-                            value={formData.phone}
-                            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                          />
-                        </div>
-                        <div className="space-y-3">
-                          <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('통신사')}</Label>
-                          <Select value={formData.carrier || undefined} onValueChange={(v) => setFormData({ ...formData, carrier: v })}>
-                            <SelectTrigger id="step3-carrier-select" className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg">
-                              <SelectValue placeholder={t('통신사 선택')} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              <SelectItem value="SKT">{t('SKT')}</SelectItem>
-                              <SelectItem value="KT">{t('KT')}</SelectItem>
-                              <SelectItem value="LGU+">{t('LGU+')}</SelectItem>
-                              <SelectItem value="SKT 알뜰폰">{t('SKT 알뜰폰')}</SelectItem>
-                              <SelectItem value="KT 알뜰폰">{t('KT 알뜰폰')}</SelectItem>
-                              <SelectItem value="LGU+ 알뜰폰">{t('LGU+ 알뜰폰')}</SelectItem>
-                            </SelectContent>
-                          </Select>
-                        </div>
-                      </div>
-
-                      <div className="space-y-4 p-6 bg-primary/5 rounded-[2.5rem] border border-primary/10 relative overflow-hidden">
-                        <div className="absolute top-0 right-0 p-4 opacity-10">
-                          <Sparkles className="h-24 w-24 text-primary" />
-                        </div>
-
-                        <div className="flex items-center justify-between mb-4">
-                          <div className="flex items-center gap-3">
-                            <div className="h-8 w-8 bg-primary rounded-xl flex items-center justify-center shadow-lg shadow-primary/20">
-                              <UserCheck className="h-4 w-4 text-white" />
-                            </div>
-                            <h4 className="text-base font-black text-slate-900">
-                              {isOptimizing ? t('AI 성명 최적화 분석 중...') : t('통신사 등록 성명 확인(필수)')}
-                            </h4>
-                          </div>
-                          {!isOptimizing && (
-                            <Button
-                              type="button"
-                              variant="ghost"
-                              size="sm"
-                              onClick={() => setIsNameHelpOpen(true)}
-                              className="text-[11px] h-8 px-3 font-black text-primary hover:bg-primary/10 rounded-xl flex items-center gap-1.5 transition-colors"
-                            >
-                              <HelpCircle className="w-3.5 h-3.5" />
-                              {t('정확한 등록 성함 확인 방법')}
-                            </Button>
-                          )}
-                        </div>
-
-                        {!isOptimizing && (
-                          <div className="mb-6 space-y-4">
-                            <div className="p-5 bg-white rounded-2xl border border-primary/10 shadow-sm">
-                              <div className="flex justify-between items-center mb-2">
-                                <span className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">{t('신분증상 성명')}</span>
-                                <Badge variant="secondary" className="bg-slate-100 text-slate-500 border-none font-black text-[10px]">{t('BASE')}</Badge>
-                              </div>
-                              <span className="text-xl font-black text-slate-400 line-through decoration-slate-300">{formData.officialName}</span>
-                            </div>
-
-                            <Alert className="bg-white border-amber-200 rounded-2xl shadow-sm">
-                              <Info className="h-4 w-4 text-amber-500" />
-                              <AlertDescription className="text-[11px] font-bold text-slate-500 leading-relaxed">
-                                {t('외국인은 통신사마다 이름 형식이 다를 수 있습니다. 아래 추천된 형식 중 본인의 [통신사 앱]에 등록된 것과 "완벽히 똑같은" 것을 선택해 주세요.')}
-                              </AlertDescription>
-                            </Alert>
-                          </div>
-                        )}
-
-                        <div className="grid grid-cols-1 gap-3 relative z-10">
-                          {isOptimizing && nameSuggestions.length === 0 ? (
-                            <div className="flex flex-col items-center justify-center py-16 gap-6 bg-white/50 rounded-3xl border border-dashed border-slate-200">
-                              <Loader2 className="h-12 w-12 animate-spin text-primary" />
-                              <div className="text-center space-y-2">
-                                <p className="text-base font-black text-slate-600">{t('성공 확률이 가장 높은 이름을 찾는 중...')}</p>
-                                <p className="text-xs font-bold text-slate-400">{t('통신사 전산망의 다양한 영문 표기법을 분석하고 있습니다.')}</p>
-                              </div>
-                            </div>
-                          ) : (
-                            <>
-                              {nameSuggestions.map((item, i) => (
-                                <div
-                                  key={i}
-                                  id={`step3-suggestion-${i}`}
-                                  onClick={() => {
-                                    setFormData({ ...formData, authName: item.name });
-                                    navigator.clipboard.writeText(item.name);
-                                    toast({
-                                      title: t("성명 복사 완료"),
-                                      description: t("'{name}'이(가) 클립보드에 복사되었습니다. PASS 앱에 그대로 붙여넣으세요.", { name: item.name })
-                                    });
-                                  }}
-                                  className={`group p-5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col gap-1.5 relative ${formData.authName === item.name ? 'bg-primary border-primary text-white shadow-xl scale-[1.02] z-20' : 'bg-white border-slate-100 text-slate-600 hover:border-primary/30'}`}
-                                >
-                                  <div className="flex justify-between items-center">
-                                    <span className="font-black text-xl tracking-tight">{item.name}</span>
-                                    {formData.authName === item.name ? (
-                                      <div className="h-6 w-6 bg-white rounded-full flex items-center justify-center">
-                                        <CheckCircle2 className="h-4 w-4 text-primary" />
-                                      </div>
-                                    ) : (
-                                      <div className="h-8 w-8 bg-slate-50 rounded-xl flex items-center justify-center group-hover:bg-primary/10 transition-colors">
-                                        <Copy className="h-4 w-4 text-slate-300 group-hover:text-primary" />
-                                      </div>
-                                    )}
-                                  </div>
-                                  <span className={cn("text-[11px] font-black uppercase tracking-wider", formData.authName === item.name ? "text-white/70" : "text-primary/70")}>
-                                    {t(item.label)}
-                                  </span>
-                                </div>
-                              ))}
-
-                              <div className="pt-6 border-t border-slate-100 mt-4 space-y-4">
-                                <div className="flex items-center justify-between px-1">
-                                  <Label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">{t('직접 입력하기')}</Label>
-                                  <span className="text-[10px] text-slate-300 font-bold">{t('추천 목록에 없는 경우')}</span>
-                                </div>
-                                <div className="relative group">
-                                  <input
-                                    placeholder={t('통신사에 등록된 이름을 그대로 입력')}
-                                    value={formData.authName}
-                                    onChange={(e) => setFormData({ ...formData, authName: e.target.value.toUpperCase() })}
-                                    className="h-16 px-6 rounded-2xl bg-white border-2 border-slate-100 font-black text-lg w-full outline-none focus:ring-4 focus:ring-primary/10 focus:border-primary transition-all pr-12"
-                                  />
-                                  <User className="absolute right-4 top-1/2 -translate-y-1/2 h-6 w-6 text-slate-300 group-focus-within:text-primary transition-colors" />
-                                </div>
-                              </div>
-                            </>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="p-8 bg-slate-900 text-white rounded-[2.5rem] flex items-start gap-5 shadow-2xl transition-all hover:scale-[1.01]">
-                      <Checkbox id="signup" checked={isSignUpAgreed} onCheckedChange={(c) => setIsSignUpAgreed(c as boolean)} className="mt-1.5 h-6 w-6 border-white/20" />
-                      <div className="space-y-2">
-                        <div className="flex items-center gap-3">
-                          <Label htmlFor="signup" className="text-lg lg:text-xl font-black cursor-pointer break-keep">{t('회원가입 및 환급 알림 받기')}</Label>
-                          <Badge className="bg-primary text-[10px] font-bold border-none h-5">{t('무료')}</Badge>
-                        </div>
-                        <p className="text-slate-400 text-xs font-bold leading-relaxed">{t('환급금 결과 및 진행 상황을 안전하게 안내해 드립니다.')}</p>
-                      </div>
-                    </div>
-                    <Button id="step3-submit-btn" type="submit" className="w-full h-20 sm:h-24 bg-primary text-xl sm:text-2xl font-black rounded-3xl shadow-2xl shadow-primary/20 hover:scale-[1.02] active:scale-[0.98] transition-all" disabled={loading}>
-                      {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('조회 정보 확인 완료')}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            )}
-
-            {step === 4 && (
-              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
-                {hasCertificate === null ? (
-                  <>
-                    <CardHeader className="text-center py-4 sm:py-12 bg-slate-50/50 relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => { setStep(3); saveProgress(3); }}
-                        className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
-                      >
-                        <ChevronLeft className="h-4 w-4 mr-1" />
-                        {t('이전')}
-                      </Button>
-                      <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-primary rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg">
-                        <UserCheck className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
-                      </div>
-                      <CardTitle className="text-2xl sm:text-3xl font-black text-slate-900 break-keep">
-                        {t('인증서가 스마트폰에 설치되어 있나요?')}
-                      </CardTitle>
-                      <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm mt-4">
-                        <div>
-                          {t('국세청 조회를 위해서는 본인 명의의 인증서가 반드시 필요합니다. 현재 아래 인증서 중 가입된 인증서가 있으신가요?')}
-                        </div>
-                        <div className="mt-4 p-4 bg-white/80 backdrop-blur rounded-2xl border border-slate-100 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 shadow-sm">
-                          <span className="text-[11px] sm:text-xs font-black text-slate-400 uppercase tracking-wider shrink-0">{t('💡 지원하는 인증서 종류')}</span>
-                          <div className="flex gap-2.5 flex-wrap justify-center">
-                            <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 text-[11px] sm:text-xs font-bold text-slate-700">
-                              <Image src="/images/logo/hana_1q.png" alt="Hana" width={14} height={14} className="object-contain" />
-                              {t('하나은행')}
-                            </div>
-                            <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 text-[11px] sm:text-xs font-bold text-slate-700">
-                              <Image src="/images/logo/pass.png" alt="PASS" width={14} height={14} className="object-contain" />
-                              {t('PASS')}
-                            </div>
-                            <div className="flex items-center gap-1.5 bg-slate-50 px-3 py-1 rounded-full border border-slate-100 text-[11px] sm:text-xs font-bold text-slate-700">
-                              <Image src="/images/logo/kakao.png" alt="Kakao" width={14} height={14} className="object-contain" />
-                              {t('카카오톡')}
-                            </div>
-                          </div>
-                        </div>
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-6">
-                      <div className="grid grid-cols-1 gap-4">
-                        <div
-                          id="step4-cert-yes" onClick={() => setHasCertificate(true)}
-                          className="p-6 rounded-[2rem] border-2 border-slate-100 hover:border-primary/50 cursor-pointer transition-all flex items-center gap-5 bg-white hover:bg-slate-50/50 shadow-sm hover:shadow"
-                        >
-                          <div className="h-14 w-14 bg-emerald-50 rounded-2xl flex items-center justify-center shrink-0">
-                            <CheckCircle2 className="h-8 w-8 text-emerald-500" />
-                          </div>
-                          <div className="flex-1 text-left">
-                            <h4 className="font-black text-lg text-slate-950">
-                              {t('네, 이미 가입된 인증서가 있습니다.')}
-                            </h4>
-                            <p className="text-sm text-slate-500 font-medium mt-1">
-                              {t('하나은행, PASS, 카카오톡 인증서 중 하나가 이미 휴대폰에 설치되어 있습니다.')}
-                            </p>
-                          </div>
-                        </div>
-
-                        <div
-                          id="step4-cert-no" onClick={() => setHasCertificate(false)}
-                          className="p-6 rounded-[2rem] border-2 border-slate-100 hover:border-amber-500/50 cursor-pointer transition-all flex items-center gap-5 bg-white hover:bg-slate-50/50 shadow-sm hover:shadow"
-                        >
-                          <div className="h-14 w-14 bg-amber-50 rounded-2xl flex items-center justify-center shrink-0">
-                            <AlertCircle className="h-8 w-8 text-amber-500 animate-pulse" />
-                          </div>
-                          <div className="flex-1 text-left">
-                            <h4 className="font-black text-lg text-slate-950">
-                              {t('아니오, 인증서가 없습니다 (설치/발급 필요)')}
-                            </h4>
-                            <p className="text-sm text-slate-500 font-medium mt-1">
-                              {t('인증서가 없으시다면, 먼저 설치 및 발급을 진행하셔야 환급 조회가 가능합니다.')}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </>
-                ) : hasCertificate === false ? (
-                  <>
-                    <CardHeader className="text-center py-4 sm:py-12 bg-slate-50/50 relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setHasCertificate(null)}
-                        className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
-                      >
-                        <ChevronLeft className="h-4 w-4 mr-1" />
-                        {t('이전')}
-                      </Button>
-                      <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-amber-500 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg">
-                        <Download className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
-                      </div>
-                      <CardTitle className="text-2xl sm:text-3xl font-black text-slate-900 break-keep">
-                        {t('인증서가 없으신가요? (추천)')}
-                      </CardTitle>
-                      <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm">
-                        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl text-left">
-                          <p className="text-[12px] sm:text-[13px] font-black text-amber-900 leading-relaxed flex items-start gap-2">
-                            <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
-                            {t('국세청 조회를 하려면 아래 인증서 중 하나가 반드시 설치되어 있어야 합니다. 안내에 따라 설치 및 발급을 완료해 주세요.')}
-                          </p>
-                        </div>
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8">
-                      {/* Selection Tabs in Guide Mode */}
-                      <div className="grid grid-cols-3 gap-2">
-                        {/* Hana */}
-                        <div
-                          onClick={() => setAuthMethod('hana')}
-                          className={cn(
-                            "p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2",
-                            authMethod === 'hana' ? "bg-emerald-50 border-[#008485]" : "bg-white border-slate-100 hover:border-slate-200"
-                          )}
-                        >
-                          <Image src="/images/logo/hana_1q.png" alt="Hana" width={32} height={32} className="object-contain" />
-                          <span className={cn("text-xs font-black", authMethod === 'hana' ? "text-[#008485]" : "text-slate-600")}>{t('하나은행')}</span>
-                        </div>
-                        {/* PASS */}
-                        <div
-                          onClick={() => setAuthMethod('app')}
-                          className={cn(
-                            "p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2",
-                            authMethod === 'app' ? "bg-red-50 border-red-500" : "bg-white border-slate-100 hover:border-slate-200"
-                          )}
-                        >
-                          <Image src="/images/logo/pass.png" alt="PASS" width={32} height={32} className="object-contain" />
-                          <span className={cn("text-xs font-black", authMethod === 'app' ? "text-red-700" : "text-slate-600")}>{t('PASS')}</span>
-                        </div>
-                        {/* Kakao */}
-                        <div
-                          onClick={() => setAuthMethod('kakao')}
-                          className={cn(
-                            "p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2",
-                            authMethod === 'kakao' ? "bg-yellow-50/50 border-[#FEE500]" : "bg-white border-slate-100 hover:border-slate-200"
-                          )}
-                        >
-                          <Image src="/images/logo/kakao.png" alt="Kakao" width={32} height={32} className="object-contain" />
-                          <span className={cn("text-xs font-black", authMethod === 'kakao' ? "text-[#191919]" : "text-slate-600")}>{t('카카오톡')}</span>
-                        </div>
-                      </div>
-
-                      {/* Guide Component */}
-                      {authMethod && (
-                        <div className="mt-2 animate-in fade-in slide-in-from-top-4 duration-500">
-                          <EmbeddedAuthGuide
-                            authMethod={authMethod}
-                            mode="registration"
-                            onClick={() => {
-                              if (authMethod === 'hana') {
-                                setHanaGuideMode('full');
-                                setIsHanaGuideOpen(true);
-                              } else if (authMethod === 'kakao') {
-                                setIsKakaoGuideOpen(true);
-                              } else {
-                                setIsGuideOpen(true);
-                              }
-                            }}
-                          />
-                        </div>
-                      )}
-
-                      <Button
-                        id="step4-cert-complete-btn"
-                        onClick={() => setHasCertificate(true)}
-                        className="w-full h-20 bg-primary text-xl sm:text-2xl font-black rounded-3xl shadow-xl shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all"
-                      >
-                        {t('인증서 설치 및 가입을 완료했습니다')}
-                      </Button>
-
-                      <div className="text-center">
-                        <button
-                          onClick={() => setHasCertificate(true)}
-                          className="text-sm font-bold text-slate-400 hover:text-slate-600 underline transition-colors"
-                        >
-                          {t('인증서가 있습니다. 바로 시작하기')}
-                        </button>
-                      </div>
-                    </CardContent>
-                  </>
-                ) : (
-                  <>
-                    <CardHeader className="text-center py-4 sm:py-12 bg-slate-50/50 relative">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => setHasCertificate(null)}
-                        className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
-                      >
-                        <ChevronLeft className="h-4 w-4 mr-1" />
-                        {t('이전')}
-                      </Button>
-                      <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-primary rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg"><UserCheck className="h-8 w-8 sm:h-10 sm:w-10 text-white" /></div>
-                      <CardTitle className="text-2xl sm:text-3xl font-black text-slate-900 break-keep">{t('Step 4: 인증 방식 선택')}</CardTitle>
-                      <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm">
-                        {t('가장 편리한 방법으로 본인을 인증해 주세요.')}
-                        <div className="mt-4 p-4 bg-amber-50 border border-amber-200 rounded-2xl">
-                          <p className="text-[12px] sm:text-[13px] font-black text-amber-900 leading-relaxed text-left flex items-start gap-2">
-                            <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
-                            {t('한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.')}
-                          </p>
-                        </div>
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8">
-                      {/* Selection Cards (Middle of CardContent) */}
-                      <div className="grid grid-cols-1 gap-4">
-                        {/* Hana Bank Card */}
-                        <div
-                          id="step4-method-hana" onClick={() => setAuthMethod('hana')}
-                          className={cn(
-                            "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
-                            authMethod === 'hana' ? "bg-emerald-50 border-[#008485] shadow-lg shadow-emerald-500/10" : "bg-white border-slate-100 hover:border-slate-200"
-                          )}
-                        >
-                          {authMethod === 'hana' && (
-                            <div className="absolute top-0 right-0 p-1 px-3 bg-[#008485] text-white text-[10px] font-black rounded-bl-xl uppercase">
-                              {t('외국인 추천')}
-                            </div>
-                          )}
-                          <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0", authMethod === 'hana' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
-                            <Image src="/images/logo/hana_1q.png" alt="Hana" width={40} height={40} className="w-full h-full object-contain" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-center mb-1">
-                              <h4 className={cn("font-black text-lg", authMethod === 'hana' ? "text-[#008485]" : "text-slate-900")}>{t('하나은행 인증서')}</h4>
-                              {authMethod === 'hana' && <CheckCircle2 className="h-5 w-5 text-[#008485]" />}
-                            </div>
-                            <p className="text-sm text-slate-500 font-medium">{t("하나은행 앱이 있다면 가장 간편해요")}</p>
-                          </div>
-                        </div>
-
-                        {/* PASS Card */}
-                        <div
-                          id="step4-method-pass" onClick={() => setAuthMethod('app')}
-                          className={cn(
-                            "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
-                            authMethod === 'app' ? "bg-red-50 border-red-500 shadow-lg shadow-red-500/10" : "bg-white border-slate-100 hover:border-slate-200"
-                          )}
-                        >
-                          <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0", authMethod === 'app' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
-                            <Image src="/images/logo/pass.png" alt="PASS" width={40} height={40} className="w-full h-full object-contain" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-center mb-1">
-                              <h4 className={cn("font-black text-lg", authMethod === 'app' ? "text-red-700" : "text-slate-900")}>{t('PASS 앱 설치 유저')}</h4>
-                              {authMethod === 'app' && <CheckCircle2 className="h-5 w-5 text-red-600" />}
-                            </div>
-                            <p className="text-sm text-slate-500 font-medium">{t("SKT, KT, LG 유저 휴대폰인증")}</p>
-                          </div>
-                        </div>
-
-                        {/* Kakao Card */}
-                        <div
-                          id="step4-method-kakao" onClick={() => setAuthMethod('kakao')}
-                          className={cn(
-                            "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
-                            authMethod === 'kakao' ? "bg-yellow-50/50 border-[#FEE500] shadow-lg shadow-yellow-500/10" : "bg-white border-slate-100 hover:border-slate-200"
-                          )}
-                        >
-                          <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0", authMethod === 'kakao' ? "bg-white p-2" : "bg-slate-100 text-slate-400 p-3")}>
-                            <Image src="/images/logo/kakao.png" alt="Kakao" width={40} height={40} className="w-full h-full object-contain" />
-                          </div>
-                          <div className="flex-1">
-                            <div className="flex justify-between items-center mb-1">
-                              <h4 className={cn("font-black text-lg", authMethod === 'kakao' ? "text-[#191919]" : "text-slate-900")}>{t('카카오톡 인증')}</h4>
-                              {authMethod === 'kakao' && <CheckCircle2 className="h-5 w-5 text-[#191919]" />}
-                            </div>
-                            <p className={cn("text-sm font-medium", authMethod === 'kakao' ? "text-slate-700" : "text-slate-500")}>{t("카카오페이 지갑 이용자 추천")}</p>
-                          </div>
-                        </div>
-                      </div>
-
-                      <Button id="step4-submit-btn" onClick={handleInitiateAuth} className="w-full h-20 bg-primary text-2xl font-black rounded-3xl shadow-xl shadow-primary/20 hover:scale-[1.01] active:scale-[0.99] transition-all" disabled={loading}>
-                        {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 요청하기')}
-                      </Button>
-
-                      <div className="text-center">
-                        <button
-                          onClick={() => setHasCertificate(false)}
-                          className="text-sm font-bold text-slate-400 hover:text-slate-600 underline transition-colors"
-                        >
-                          {t('인증서가 없으신가요? (추천)')}
-                        </button>
-                      </div>
-                    </CardContent>
-                  </>
-                )}
-              </Card>
-            )}
-
-            {step === 5 && (
-              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden">
-                <CardHeader id="step5-top-anchor" className="text-center py-12 bg-slate-50/50 relative">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => { setStep(4); saveProgress(4); }}
-                    className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    {t('이전')}
-                  </Button>
-                  <div className={cn("mx-auto h-20 w-20 rounded-3xl flex items-center justify-center mb-6 shadow-lg overflow-hidden p-3", authMethod === 'app' ? "bg-white border-2 border-red-500" : authMethod === 'hana' ? "bg-white border-2 border-[#008485]" : "bg-white border-2 border-[#FEE500]")}>
-                    <Image
-                      src={authMethod === 'app' ? "/images/logo/pass.png" : authMethod === 'hana' ? "/images/logo/hana_1q.png" : "/images/logo/kakao.png"}
-                      alt="Auth Method"
-                      width={64}
-                      height={64}
-                      className="w-full h-full object-contain"
+                <Card className="rounded-3xl border border-[#b88c30]/30 shadow-2xl overflow-hidden bg-[#0f1e36]">
+                  {/* Premium Header */}
+                  <CardHeader className="text-center py-8 sm:py-10 bg-[#0f1e36] text-white relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-[0.03]"
+                      style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
                     />
-                  </div>
-                  <CardTitle className="text-3xl font-black text-slate-900">{t('Step 5: 인증 확인')}</CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 sm:p-10 space-y-6 sm:space-y-10">
-                  <div className="text-center space-y-8 py-4">
-                    {!authSession ? (
-                      <div className="space-y-6">
-                        <div className="flex flex-col items-center justify-center py-12 gap-6 bg-slate-50 rounded-3xl border border-dashed border-slate-200">
-                          <Loader2 className="h-16 w-16 animate-spin text-primary" />
-                          <div className="space-y-2">
-                            <h2 className="text-2xl font-black text-slate-900">{authMethod === 'app' ? t("PASS 앱 인증 요청 중...") : authMethod === 'hana' ? t("하나은행 인증 요청 중...") : t("카카오톡 인증 요청 중...")}</h2>
-                            <p className="text-slate-500 font-bold">{t("잠시만 기다려 주세요.")}</p>
+                    <Button variant="ghost" size="sm"
+                      onClick={() => { setStep(2); saveProgress(2); }}
+                      className="absolute top-5 left-5 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />{t('이전')}
+                    </Button>
+
+                    <div className="relative z-10 flex items-center justify-center gap-3 mb-5">
+                      <div className="h-px w-8 bg-[#b88c30]" />
+                      <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-full px-4 py-1.5">
+                        <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">Step 03 — 본인 인증</span>
+                      </div>
+                      <div className="h-px w-8 bg-[#b88c30]" />
+                    </div>
+
+                    <div className="relative z-10 mx-auto mb-5 flex flex-col items-center gap-3">
+                      <div className="h-20 w-20 bg-white rounded-2xl flex items-center justify-center shadow-xl border border-[#b88c30]/20 overflow-hidden">
+                        <img src="/nts-logo.jpg" alt="국세청" className="h-16 w-16 object-contain" />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="h-px w-5 bg-[#b88c30]/40" />
+                        <span className="text-[9px] font-black text-[#b88c30]/60 uppercase tracking-widest">National Tax Service</span>
+                        <div className="h-px w-5 bg-[#b88c30]/40" />
+                      </div>
+                    </div>
+
+                    <CardTitle className="relative z-10 text-2xl sm:text-3xl font-black tracking-tight px-4 leading-tight text-white">
+                      {t('Step 3: 본인 인증 정보 입력')}
+                    </CardTitle>
+                    <p className="relative z-10 text-slate-400 font-bold text-sm mt-2">{t('통신사 인증을 위해 정확한 정보를 입력해 주세요.')}</p>
+                    <div className="relative z-10 h-px w-16 bg-[#b88c30] mx-auto mt-4" />
+                  </CardHeader>
+
+                  <CardContent className="p-5 sm:p-10 space-y-6 bg-[#0c182b] text-white">
+                    {/* Security Assurance Card - Styled for official look */}
+                    <div className="p-6 bg-[#0f2441] rounded-2xl border border-[#b88c30]/20 relative overflow-hidden group">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-[#b88c30]/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-[#b88c30]/10 transition-colors" />
+                      <div className="relative flex flex-col md:flex-row items-center gap-6 text-center md:text-left">
+                        <div className="shrink-0 relative">
+                          <div className="absolute inset-0 bg-[#b88c30]/20 rounded-full blur-xl animate-pulse" />
+                          <Image
+                            src="/certified_security_seal_premium_1774150786685.png"
+                            alt="Certified Security"
+                            width={72}
+                            height={72}
+                            className="relative transition-transform group-hover:scale-105"
+                          />
+                        </div>
+                        <div className="space-y-3 flex-1">
+                          <div className="space-y-1">
+                            <h4 className="text-lg font-black text-white flex items-center justify-center md:justify-start gap-2">
+                              {t('security_card_title')}
+                              <Badge className="bg-[#b88c30]/10 text-[#b88c30] border border-[#b88c30]/30 text-[9px] font-black py-0.5">{t('security_certified')}</Badge>
+                            </h4>
+                            <p className="text-xs font-bold text-slate-400">{t('security_card_subtitle')}</p>
+                          </div>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-1">
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-1.5 text-xs font-black text-[#b88c30]">
+                                <Lock className="h-3.5 w-3.5" />
+                                {t('security_item_encryption_title')}
+                              </div>
+                              <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_encryption_desc')}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-1.5 text-xs font-black text-[#b88c30]">
+                                <Database className="h-3.5 w-3.5" />
+                                {t('security_item_no_storage_title')}
+                              </div>
+                              <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_no_storage_desc')}</p>
+                            </div>
+                            <div className="space-y-1">
+                              <div className="flex items-center gap-1.5 text-xs font-black text-[#b88c30]">
+                                <Shield className="h-3.5 w-3.5" />
+                                {t('security_item_pippa_title')}
+                              </div>
+                              <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_pippa_desc')}</p>
+                            </div>
                           </div>
                         </div>
                       </div>
-                    ) : (
-                      <div className="space-y-4">
-                        <h2 className="text-2xl font-black text-slate-900">{t("휴대폰에서 '확인'을 눌러주세요")}</h2>
-                        <p className="text-lg font-bold text-slate-500 whitespace-pre-line">{authMethod === 'app' ? t("PASS 앱 알림 또는 문자를 확인한 뒤\n아래 버튼을 눌러주세요.") : authMethod === 'hana' ? t("하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.") : t("카카오 지갑 알림을 확인한 뒤\n아래 버튼을 눌러주세요.")}</p>
+                    </div>
+
+                    {/* Visa / Immigration Safety Guarantee */}
+                    <div className="flex items-start gap-3 p-4 bg-emerald-950/30 rounded-2xl border border-emerald-800/30">
+                      <div className="h-8 w-8 bg-emerald-900/50 rounded-xl flex items-center justify-center shrink-0">
+                        <ShieldCheck className="h-4.5 w-4.5 text-emerald-400" />
                       </div>
-                    )}
-                  </div>
+                      <p className="text-[11px] sm:text-xs font-bold text-emerald-400/90 leading-relaxed">
+                        {t('본 환급은 합법적 권리로, 비자(E-9, E-7, F-2 등) 연장이나 체류 자격에 어떠한 불이익도 없습니다.')}
+                      </p>
+                    </div>
 
-                  {authSession && (
-                    <div className="space-y-6">
-                      <div className="p-8 bg-slate-50 rounded-[2rem] border border-slate-100 space-y-6">
-                        <div className="flex items-center gap-3">
-                          <AlertTriangle className="h-6 w-6 text-amber-500" />
-                          <h4 className="text-lg font-black text-slate-900">{t('인증 알림이 오지 않나요?')}</h4>
+                    <form onSubmit={handleContactSubmit} className="space-y-6">
+                      <div className="grid gap-5">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                          <div className="space-y-2">
+                            <Label className="text-xs font-black text-[#b88c30] uppercase tracking-widest ml-1">{t('휴대폰 번호')}</Label>
+                            <input
+                              id="step3-phone-input"
+                              placeholder="01012345678"
+                              className="h-14 px-5 rounded-xl bg-[#0f2441] border border-slate-700/60 text-white font-bold text-base w-full outline-none focus:ring-2 focus:ring-[#b88c30]/50 focus:border-[#b88c30]/50 placeholder:text-slate-500 transition-all"
+                              value={formData.phone}
+                              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                            />
+                          </div>
+                          <div className="space-y-2">
+                            <Label className="text-xs font-black text-[#b88c30] uppercase tracking-widest ml-1">{t('통신사')}</Label>
+                            <Select value={formData.carrier || undefined} onValueChange={(v) => setFormData({ ...formData, carrier: v })}>
+                              <SelectTrigger id="step3-carrier-select" className="h-14 px-5 rounded-xl bg-[#0f2441] border border-slate-700/60 text-white font-bold text-base focus:ring-2 focus:ring-[#b88c30]/50 focus:border-[#b88c30]/50">
+                                <SelectValue placeholder={t('통신사 선택')} />
+                              </SelectTrigger>
+                              <SelectContent className="bg-[#0c182b] border border-slate-800 text-white">
+                                <SelectItem value="SKT">{t('SKT')}</SelectItem>
+                                <SelectItem value="KT">{t('KT')}</SelectItem>
+                                <SelectItem value="LGU+">{t('LGU+')}</SelectItem>
+                                <SelectItem value="SKT 알뜰폰">{t('SKT 알뜰폰')}</SelectItem>
+                                <SelectItem value="KT 알뜰폰">{t('KT 알뜰폰')}</SelectItem>
+                                <SelectItem value="LGU+ 알뜰폰">{t('LGU+ 알뜰폰')}</SelectItem>
+                              </SelectContent>
+                            </Select>
+                          </div>
                         </div>
-                        <p className="text-sm font-bold text-slate-500 leading-relaxed">
-                          {t('외국 국적자는 통신사에 등록된 이름이 신분증과 다른 경우가 많습니다. 알림이 오지 않는다면 AI가 제안해 준 추천 성명을 하나씩 시도해 보세요.')}
-                        </p>
 
-                        <div id="step5-auth-guide-container" className="pt-2 space-y-4">
-                          {true ? (
-                            <div className="space-y-4">
-                              <EmbeddedAuthGuide authMethod={authMethod} />
-                              {language !== 'ko' && preFilterEstimate >= 400000 && (
-                                <div className="p-4 bg-amber-400/10 rounded-2xl border border-amber-400/20">
-                                  <p className="text-[10px] font-black text-amber-600 uppercase tracking-widest mb-1">{t('VIP 전용 라이브 헬프')}</p>
-                                  <p className="text-sm font-bold text-slate-600">
-                                    {t('예상 환급액이 {amount}원이나 됩니다! 인증이 막히셨다면 전문 상담원이 즉시 도와드려요.', { amount: preFilterEstimate.toLocaleString() })}
-                                  </p>
+                        {/* AI Name Optimization Box */}
+                        <div className="space-y-4 p-5 bg-[#0f2441] rounded-2xl border border-slate-700/50 relative overflow-hidden">
+                          <div className="absolute top-0 right-0 p-4 opacity-5">
+                            <Sparkles className="h-20 w-20 text-[#b88c30]" />
+                          </div>
+
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-3">
+                              <div className="h-8 w-8 bg-[#b88c30] rounded-xl flex items-center justify-center shadow-lg shadow-[#b88c30]/20">
+                                <UserCheck className="h-4.5 w-4.5 text-[#0f1e36]" />
+                              </div>
+                              <h4 className="text-sm font-black text-white">
+                                {isOptimizing ? t('AI 성명 최적화 분석 중...') : t('통신사 등록 성명 확인(필수)')}
+                              </h4>
+                            </div>
+                            {!isOptimizing && (
+                              <Button
+                                type="button"
+                                variant="ghost"
+                                size="sm"
+                                onClick={() => setIsNameHelpOpen(true)}
+                                className="text-[11px] h-8 px-3 font-black text-[#b88c30] hover:bg-[#b88c30]/10 rounded-xl flex items-center gap-1.5 transition-colors"
+                              >
+                                <HelpCircle className="w-3.5 h-3.5" />
+                                {t('정확한 등록 성함 확인 방법')}
+                              </Button>
+                            )}
+                          </div>
+
+                          {!isOptimizing && (
+                            <div className="space-y-3">
+                              <div className="p-4 bg-[#0a1523] rounded-xl border border-slate-800">
+                                <div className="flex justify-between items-center mb-1">
+                                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">{t('신분증상 성명')}</span>
+                                  <Badge className="bg-slate-800 text-slate-400 border-none font-black text-[9px]">{t('BASE')}</Badge>
                                 </div>
-                              )}
-                              {preFilterEstimate >= 400000 && (
-                                <Button
-                                  onClick={() => setIsVipChatOpen(true)}
-                                  className="w-full h-16 bg-slate-900 text-white hover:bg-slate-800 text-lg font-black rounded-2xl shadow-xl flex items-center justify-center gap-2 group transition-all hover:scale-[1.02]"
-                                >
-                                  <MessageSquare className="h-6 w-6 text-amber-400 animate-bounce" /> {t('실시간 전문 상담원 채팅 시작')}
-                                </Button>
-                              )}
-                            </div>
-                          ) : null}
+                                <span className="text-lg font-black text-slate-400 line-through decoration-slate-600">{formData.officialName}</span>
+                              </div>
 
-                          {/* AI OCR 이름 추출 섹션 */}
-                          <div className="p-6 bg-blue-50/50 rounded-3xl border border-blue-100 mt-4 space-y-4">
-                            <div className="flex items-center gap-2">
-                              <Sparkles className="h-5 w-5 text-blue-500" />
-                              <h4 className="font-black text-blue-900">{t('ai_name_check_title')}</h4>
+                              <Alert className="bg-[#1c1815] border-amber-900/30 rounded-xl">
+                                <Info className="h-4 w-4 text-amber-500" />
+                                <AlertDescription className="text-[11px] font-bold text-amber-400/90 leading-relaxed">
+                                  {t('외국인은 통신사마다 이름 형식이 다를 수 있습니다. 아래 추천된 형식 중 본인의 [통신사 앱]에 등록된 것과 "완벽히 똑같은" 것을 선택해 주세요.')}
+                                </AlertDescription>
+                              </Alert>
                             </div>
-                            <p className="text-xs font-bold text-blue-700/70 leading-relaxed">
-                              {t('ai_name_check_desc')}
-                            </p>
+                          )}
 
-                            {!ocrResult ? (
-                              <div className="relative">
-                                <input
-                                  type="file"
-                                  accept="image/*"
-                                  onChange={handleCarrierOcrUpload}
-                                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
-                                  disabled={isOcrLoading}
-                                />
-                                <Button
-                                  variant="outline"
-                                  className="w-full h-14 border-blue-200 text-blue-600 hover:bg-blue-100/50 rounded-2xl flex items-center justify-center gap-2"
-                                  disabled={isOcrLoading}
-                                >
-                                  {isOcrLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
-                                  {isOcrLoading ? t('analyzing_screenshot') : t('upload_screenshot')}
-                                </Button>
+                          <div className="grid grid-cols-1 gap-3 relative z-10">
+                            {isOptimizing && nameSuggestions.length === 0 ? (
+                              <div className="flex flex-col items-center justify-center py-12 gap-4 bg-[#0a1523]/50 rounded-2xl border border-dashed border-slate-800">
+                                <Loader2 className="h-10 w-10 animate-spin text-[#b88c30]" />
+                                <div className="text-center space-y-1">
+                                  <p className="text-sm font-black text-slate-300">{t('성공 확률이 가장 높은 이름을 찾는 중...')}</p>
+                                  <p className="text-[11px] font-bold text-slate-500">{t('통신사 전산망의 다양한 영문 표기법을 분석하고 있습니다.')}</p>
+                                </div>
                               </div>
                             ) : (
-                              <div className="p-4 bg-white rounded-2xl border border-blue-200 space-y-4 animate-in zoom-in-95 duration-300">
-                                <div className="text-center space-y-1">
-                                  <p className="text-xs font-black text-blue-400 uppercase tracking-widest">{t('ocr_result_title')}</p>
-                                  <p className="text-xl font-black text-slate-900">"{ocrResult.extractedName}"</p>
+                              <>
+                                {nameSuggestions.map((item, i) => (
+                                  <div
+                                    key={i}
+                                    id={`step3-suggestion-${i}`}
+                                    onClick={() => {
+                                      setFormData({ ...formData, authName: item.name });
+                                      navigator.clipboard.writeText(item.name);
+                                      toast({
+                                        title: t("성명 복사 완료"),
+                                        description: t("'{name}'이(가) 클립보드에 복사되었습니다. PASS 앱에 그대로 붙여넣으세요.", { name: item.name })
+                                      });
+                                    }}
+                                    className={`group p-4 rounded-xl border cursor-pointer transition-all flex flex-col gap-1 relative ${formData.authName === item.name ? 'bg-[#b88c30] border-[#b88c30] text-[#0f1e36] shadow-xl scale-[1.01] z-20' : 'bg-[#0a1523] border-slate-800 text-white hover:border-[#b88c30]/40'}`}
+                                  >
+                                    <div className="flex justify-between items-center">
+                                      <span className="font-black text-lg tracking-tight">{item.name}</span>
+                                      {formData.authName === item.name ? (
+                                        <div className="h-5 w-5 bg-[#0f1e36] rounded-full flex items-center justify-center">
+                                          <CheckCircle2 className="h-3.5 w-3.5 text-[#b88c30]" />
+                                        </div>
+                                      ) : (
+                                        <div className="h-7 w-7 bg-slate-800 rounded-lg flex items-center justify-center group-hover:bg-[#b88c30]/20 transition-colors">
+                                          <Copy className="h-3.5 w-3.5 text-slate-500 group-hover:text-[#b88c30]" />
+                                        </div>
+                                      )}
+                                    </div>
+                                    <span className={cn("text-[9px] font-black uppercase tracking-wider", formData.authName === item.name ? "text-[#0f1e36]/75" : "text-[#b88c30]/75")}>
+                                      {t(item.label)}
+                                    </span>
+                                  </div>
+                                ))}
+
+                                <div className="pt-4 border-t border-slate-800 mt-2 space-y-3">
+                                  <div className="flex items-center justify-between px-1">
+                                    <Label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">{t('직접 입력하기')}</Label>
+                                    <span className="text-[9px] text-slate-500 font-bold">{t('추천 목록에 없는 경우')}</span>
+                                  </div>
+                                  <div className="relative group">
+                                    <input
+                                      placeholder={t('통신사에 등록된 이름을 그대로 입력')}
+                                      value={formData.authName}
+                                      onChange={(e) => setFormData({ ...formData, authName: e.target.value.toUpperCase() })}
+                                      className="h-14 px-5 rounded-xl bg-[#0a1523] border border-slate-850 font-black text-base w-full outline-none focus:ring-2 focus:ring-[#b88c30]/30 focus:border-[#b88c30] transition-all pr-12 text-white"
+                                    />
+                                    <User className="absolute right-4 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-600 group-focus-within:text-[#b88c30] transition-colors" />
+                                  </div>
                                 </div>
-                                <p className="text-xs font-bold text-slate-500 text-center">
-                                  {ocrResult.recommendation}
-                                </p>
-                                <div className="grid grid-cols-2 gap-2">
-                                  <Button variant="ghost" onClick={() => setOcrResult(null)} className="rounded-xl h-12 font-bold text-slate-400">
-                                    {t('다시 인증')}
-                                  </Button>
-                                  <Button onClick={applyOcrName} className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl h-12 font-black shadow-lg shadow-blue-200">
-                                    {t('use_this_name')}
-                                  </Button>
-                                </div>
-                              </div>
+                              </>
                             )}
                           </div>
                         </div>
                       </div>
-                    </div>
-                  )}
 
-                  <Button id="step5-submit-btn" onClick={handleFinalVerifyAndAnalyze} className="w-full h-20 bg-primary text-2xl font-black rounded-3xl shadow-xl shadow-primary/20" disabled={loading}>
-                    {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 완료 및 데이터 분석')}
-                  </Button>
-                </CardContent>
-              </Card>
+                      {/* Marketing / Notification consent checkbox */}
+                      <div className="p-5 bg-[#0f2441] border border-slate-700/50 rounded-2xl flex items-start gap-4 transition-all hover:border-[#b88c30]/20">
+                        <Checkbox id="signup" checked={isSignUpAgreed} onCheckedChange={(c) => setIsSignUpAgreed(c as boolean)} className="mt-1 h-5 w-5 border-slate-600" />
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-2.5">
+                            <Label htmlFor="signup" className="text-base font-black text-white cursor-pointer break-keep">{t('회원가입 및 환급 알림 받기')}</Label>
+                            <Badge className="bg-[#b88c30]/10 text-[#b88c30] border border-[#b88c30]/20 text-[9px] font-bold h-5">{t('무료')}</Badge>
+                          </div>
+                          <p className="text-slate-400 text-xs font-bold leading-relaxed">{t('환급금 결과 및 진행 상황을 안전하게 안내해 드립니다.')}</p>
+                        </div>
+                      </div>
+
+                      {/* NTS Legal Notice Link / Divider */}
+                      <div className="flex items-center justify-center gap-2 py-2">
+                        <div className="h-px flex-1 bg-slate-800" />
+                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">소득세법 제59조의 4 · 합법적 세금 환급</span>
+                        <div className="h-px flex-1 bg-slate-800" />
+                      </div>
+
+                      <Button
+                        id="step3-submit-btn"
+                        type="submit"
+                        className="w-full h-16 sm:h-20 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0f1e36] text-lg sm:text-xl font-black rounded-2xl shadow-xl shadow-[#b88c30]/10 flex items-center justify-center gap-3 transition-all hover:scale-[1.01] active:scale-[0.99] group"
+                        disabled={loading}
+                      >
+                        {loading ? <Loader2 className="animate-spin h-6 w-6" /> : (
+                          <>
+                            <span className="flex-1 text-left pl-4">{t('조회 정보 확인 완료')}</span>
+                            <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-1.5 shrink-0 pr-4" />
+                          </>
+                        )}
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="relative animate-in fade-in slide-in-from-bottom-8 duration-700">
+                {/* Corner Decorations */}
+                <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-[#b88c30] rounded-tl-3xl z-10 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-[#b88c30] rounded-tr-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-[#b88c30] rounded-bl-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-[#b88c30] rounded-br-3xl z-10 pointer-events-none" />
+
+                <Card className="rounded-3xl border border-[#b88c30]/30 shadow-2xl overflow-hidden bg-[#0b192c]">
+                  {hasCertificate === null ? (
+                    <>
+                      <CardHeader className="text-center py-6 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/15 relative overflow-hidden">
+                        <div className="absolute inset-0 opacity-[0.03]"
+                          style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => { setStep(3); saveProgress(3); }}
+                          className="absolute top-6 left-6 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
+                        >
+                          <ChevronLeft className="h-4 w-4 mr-1" />
+                          {t('이전')}
+                        </Button>
+                        <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg relative z-10">
+                          <UserCheck className="h-8 w-8 sm:h-10 sm:w-10 text-[#b88c30]" />
+                        </div>
+                        <CardTitle className="text-2xl sm:text-3xl font-black text-white break-keep relative z-10">
+                          {t('인증서가 스마트폰에 설치되어 있나요?')}
+                        </CardTitle>
+                        <div className="font-bold text-slate-400 text-xs sm:text-sm mt-4 relative z-10 space-y-4">
+                          <div>
+                            {t('국세청 조회를 위해서는 본인 명의의 인증서가 반드시 필요합니다. 현재 아래 인증서 중 가입된 인증서가 있으신가요?')}
+                          </div>
+                          <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 shadow-sm max-w-lg mx-auto">
+                            <span className="text-[11px] sm:text-xs font-black text-[#e2b659] uppercase tracking-wider shrink-0">{t('💡 지원하는 인증서 종류')}</span>
+                            <div className="flex gap-2.5 flex-wrap justify-center">
+                              <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1 rounded-full border border-white/10 text-[11px] sm:text-xs font-bold text-slate-300">
+                                <Image src="/images/logo/hana_1q.png" alt="Hana" width={14} height={14} className="object-contain" />
+                                {t('하나은행')}
+                              </div>
+                              <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1 rounded-full border border-white/10 text-[11px] sm:text-xs font-bold text-slate-300">
+                                <Image src="/images/logo/pass.png" alt="PASS" width={14} height={14} className="object-contain" />
+                                {t('PASS')}
+                              </div>
+                              <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1 rounded-full border border-white/10 text-[11px] sm:text-xs font-bold text-slate-300">
+                                <Image src="/images/logo/kakao.png" alt="Kakao" width={14} height={14} className="object-contain" />
+                                {t('카카오톡')}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-6 bg-[#0d1e30]">
+                        <div className="grid grid-cols-1 gap-4">
+                          <div
+                            id="step4-cert-yes" onClick={() => setHasCertificate(true)}
+                            className="p-6 rounded-[2rem] border border-white/10 hover:border-[#b88c30]/50 cursor-pointer transition-all flex items-center gap-5 bg-white/5 hover:bg-white/10 shadow-sm"
+                          >
+                            <div className="h-14 w-14 bg-emerald-950/40 border border-emerald-800/30 rounded-2xl flex items-center justify-center shrink-0">
+                              <CheckCircle2 className="h-8 w-8 text-emerald-400" />
+                            </div>
+                            <div className="flex-1 text-left">
+                              <h4 className="font-black text-lg text-white">
+                                {t('네, 이미 가입된 인증서가 있습니다.')}
+                              </h4>
+                              <p className="text-sm text-slate-400 font-medium mt-1">
+                                {t('하나은행, PASS, 카카오톡 인증서 중 하나가 이미 휴대폰에 설치되어 있습니다.')}
+                              </p>
+                            </div>
+                          </div>
+
+                          <div
+                            id="step4-cert-no" onClick={() => setHasCertificate(false)}
+                            className="p-6 rounded-[2rem] border border-white/10 hover:border-[#b88c30]/50 cursor-pointer transition-all flex items-center gap-5 bg-white/5 hover:bg-white/10 shadow-sm"
+                          >
+                            <div className="h-14 w-14 bg-amber-950/40 border border-amber-800/30 rounded-2xl flex items-center justify-center shrink-0">
+                              <AlertCircle className="h-8 w-8 text-amber-400 animate-pulse" />
+                            </div>
+                            <div className="flex-1 text-left">
+                              <h4 className="font-black text-lg text-white">
+                                {t('아니오, 인증서가 없습니다 (설치/발급 필요)')}
+                              </h4>
+                              <p className="text-sm text-slate-400 font-medium mt-1">
+                                {t('인증서가 없으시다면, 먼저 설치 및 발급을 진행하셔야 환급 조회가 가능합니다.')}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </>
+                  ) : hasCertificate === false ? (
+                    <>
+                      <CardHeader className="text-center py-6 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/15 relative overflow-hidden">
+                        <div className="absolute inset-0 opacity-[0.03]"
+                          style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setHasCertificate(null)}
+                          className="absolute top-6 left-6 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
+                        >
+                          <ChevronLeft className="h-4 w-4 mr-1" />
+                          {t('이전')}
+                        </Button>
+                        <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg relative z-10">
+                          <Download className="h-8 w-8 sm:h-10 sm:w-10 text-[#b88c30]" />
+                        </div>
+                        <CardTitle className="text-2xl sm:text-3xl font-black text-white break-keep relative z-10">
+                          {t('인증서가 없으신가요? (추천)')}
+                        </CardTitle>
+                        <div className="font-bold text-slate-400 text-xs sm:text-sm mt-4 relative z-10">
+                          <div className="p-4 bg-amber-950/30 border border-amber-800/30 rounded-2xl text-left max-w-lg mx-auto">
+                            <p className="text-[12px] sm:text-[13px] font-black text-amber-300 leading-relaxed flex items-start gap-2">
+                              <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
+                              {t('국세청 조회를 하려면 아래 인증서 중 하나가 반드시 설치되어 있어야 합니다. 안내에 따라 설치 및 발급을 완료해 주세요.')}
+                            </p>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8 bg-[#0d1e30]">
+                        {/* Selection Tabs in Guide Mode */}
+                        <div className="grid grid-cols-3 gap-2">
+                          {/* Hana */}
+                          <div
+                            onClick={() => setAuthMethod('hana')}
+                            className={cn(
+                              "p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2",
+                              authMethod === 'hana' ? "bg-emerald-950/40 border-[#008485]" : "bg-white/5 border-white/10 hover:border-slate-500 text-slate-400"
+                            )}
+                          >
+                            <Image src="/images/logo/hana_1q.png" alt="Hana" width={32} height={32} className="object-contain" />
+                            <span className={cn("text-xs font-black", authMethod === 'hana' ? "text-[#008485]" : "text-slate-400")}>{t('하나은행')}</span>
+                          </div>
+                          {/* PASS */}
+                          <div
+                            onClick={() => setAuthMethod('app')}
+                            className={cn(
+                              "p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2",
+                              authMethod === 'app' ? "bg-red-950/40 border-red-500" : "bg-white/5 border-white/10 hover:border-slate-500 text-slate-400"
+                            )}
+                          >
+                            <Image src="/images/logo/pass.png" alt="PASS" width={32} height={32} className="object-contain" />
+                            <span className={cn("text-xs font-black", authMethod === 'app' ? "text-red-400" : "text-slate-400")}>{t('PASS')}</span>
+                          </div>
+                          {/* Kakao */}
+                          <div
+                            onClick={() => setAuthMethod('kakao')}
+                            className={cn(
+                              "p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2",
+                              authMethod === 'kakao' ? "bg-amber-950/30 border-[#b88c30]" : "bg-white/5 border-white/10 hover:border-slate-500 text-slate-400"
+                            )}
+                          >
+                            <Image src="/images/logo/kakao.png" alt="Kakao" width={32} height={32} className="object-contain" />
+                            <span className={cn("text-xs font-black", authMethod === 'kakao' ? "text-[#e2b659]" : "text-slate-400")}>{t('카카오톡')}</span>
+                          </div>
+                        </div>
+
+                        {/* Guide Component */}
+                        {authMethod && (
+                          <div className="mt-2 animate-in fade-in slide-in-from-top-4 duration-500">
+                            <EmbeddedAuthGuide
+                              authMethod={authMethod}
+                              mode="registration"
+                              onClick={() => {
+                                if (authMethod === 'hana') {
+                                  setHanaGuideMode('full');
+                                  setIsHanaGuideOpen(true);
+                                } else if (authMethod === 'kakao') {
+                                  setIsKakaoGuideOpen(true);
+                                } else {
+                                  setIsGuideOpen(true);
+                                }
+                              }}
+                            />
+                          </div>
+                        )}
+
+                        <Button
+                          id="step4-cert-complete-btn"
+                          onClick={() => setHasCertificate(true)}
+                          className="w-full h-[5rem] bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl sm:text-2xl font-black rounded-2xl shadow-xl shadow-[#b88c30]/20 hover:scale-[1.01] active:scale-[0.99] transition-all"
+                        >
+                          {t('인증서 설치 및 가입을 완료했습니다')}
+                        </Button>
+
+                        <div className="text-center">
+                          <button
+                            onClick={() => setHasCertificate(true)}
+                            className="text-sm font-bold text-[#e2b659] hover:text-[#e2b659]/80 underline transition-colors"
+                          >
+                            {t('인증서가 있습니다. 바로 시작하기')}
+                          </button>
+                        </div>
+                      </CardContent>
+                    </>
+                  ) : (
+                    <>
+                      <CardHeader className="text-center py-6 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/15 relative overflow-hidden">
+                        <div className="absolute inset-0 opacity-[0.03]"
+                          style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
+                        />
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => setHasCertificate(null)}
+                          className="absolute top-6 left-6 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
+                        >
+                          <ChevronLeft className="h-4 w-4 mr-1" />
+                          {t('이전')}
+                        </Button>
+                        <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg relative z-10">
+                          <UserCheck className="h-8 w-8 sm:h-10 sm:w-10 text-[#b88c30]" />
+                        </div>
+                        <CardTitle className="text-2xl sm:text-3xl font-black text-white break-keep relative z-10">{t('Step 4: 인증 방식 선택')}</CardTitle>
+                        <div className="font-bold text-slate-400 text-xs sm:text-sm mt-4 relative z-10">
+                          {t('가장 편리한 방법으로 본인을 인증해 주세요.')}
+                          <div className="mt-4 p-4 bg-amber-950/30 border border-amber-800/30 rounded-2xl max-w-lg mx-auto">
+                            <p className="text-[12px] sm:text-[13px] font-black text-amber-300 leading-relaxed text-left flex items-start gap-2">
+                              <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
+                              {t('한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.')}
+                            </p>
+                          </div>
+                        </div>
+                      </CardHeader>
+                      <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8 bg-[#0d1e30]">
+                        {/* Selection Cards (Middle of CardContent) */}
+                        <div className="grid grid-cols-1 gap-4">
+                          {/* Hana Bank Card */}
+                          <div
+                            id="step4-method-hana" onClick={() => setAuthMethod('hana')}
+                            className={cn(
+                              "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
+                              authMethod === 'hana' ? "bg-emerald-950/40 border-[#008485] shadow-lg shadow-emerald-500/10" : "bg-white/5 border-white/10 hover:border-[#b88c30]/30"
+                            )}
+                          >
+                            {authMethod === 'hana' && (
+                              <div className="absolute top-0 right-0 p-1 px-3 bg-[#008485] text-white text-[10px] font-black rounded-bl-xl uppercase">
+                                {t('외국인 추천')}
+                              </div>
+                            )}
+                            <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0", authMethod === 'hana' ? "bg-white p-2" : "bg-white/10 text-slate-400 p-3")}>
+                              <Image src="/images/logo/hana_1q.png" alt="Hana" width={40} height={40} className="w-full h-full object-contain" />
+                            </div>
+                            <div className="flex-1 text-left">
+                              <div className="flex justify-between items-center mb-1">
+                                <h4 className={cn("font-black text-lg", authMethod === 'hana' ? "text-emerald-400" : "text-white")}>{t('하나은행 인증서')}</h4>
+                                {authMethod === 'hana' && <CheckCircle2 className="h-5 w-5 text-emerald-400" />}
+                              </div>
+                              <p className="text-sm text-slate-400 font-medium">{t("하나은행 앱이 있다면 가장 간편해요")}</p>
+                            </div>
+                          </div>
+
+                          {/* PASS Card */}
+                          <div
+                            id="step4-method-pass" onClick={() => setAuthMethod('app')}
+                            className={cn(
+                              "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
+                              authMethod === 'app' ? "bg-red-950/40 border-red-500 shadow-lg shadow-red-500/10" : "bg-white/5 border-white/10 hover:border-[#b88c30]/30"
+                            )}
+                          >
+                            <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0", authMethod === 'app' ? "bg-white p-2" : "bg-white/10 text-slate-400 p-3")}>
+                              <Image src="/images/logo/pass.png" alt="PASS" width={40} height={40} className="w-full h-full object-contain" />
+                            </div>
+                            <div className="flex-1 text-left">
+                              <div className="flex justify-between items-center mb-1">
+                                <h4 className={cn("font-black text-lg", authMethod === 'app' ? "text-red-400" : "text-white")}>{t('PASS 앱 설치 유저')}</h4>
+                                {authMethod === 'app' && <CheckCircle2 className="h-5 w-5 text-red-500" />}
+                              </div>
+                                <p className="text-sm text-slate-400 font-medium">{t("SKT, KT, LG 유저 휴대폰인증")}</p>
+                            </div>
+                          </div>
+
+                          {/* Kakao Card */}
+                          <div
+                            id="step4-method-kakao" onClick={() => setAuthMethod('kakao')}
+                            className={cn(
+                              "p-6 rounded-[2rem] border-2 cursor-pointer transition-all flex items-center gap-5 relative overflow-hidden",
+                              authMethod === 'kakao' ? "bg-amber-950/30 border-[#b88c30] shadow-lg shadow-amber-500/10" : "bg-white/5 border-white/10 hover:border-[#b88c30]/30"
+                            )}
+                          >
+                            <div className={cn("h-14 w-14 rounded-2xl flex items-center justify-center overflow-hidden shrink-0", authMethod === 'kakao' ? "bg-white p-2" : "bg-white/10 text-slate-400 p-3")}>
+                              <Image src="/images/logo/kakao.png" alt="Kakao" width={40} height={40} className="w-full h-full object-contain" />
+                            </div>
+                            <div className="flex-1 text-left">
+                              <div className="flex justify-between items-center mb-1">
+                                <h4 className={cn("font-black text-lg", authMethod === 'kakao' ? "text-[#e2b659]" : "text-white")}>{t('카카오톡 인증')}</h4>
+                                {authMethod === 'kakao' && <CheckCircle2 className="h-5 w-5 text-[#e2b659]" />}
+                              </div>
+                              <p className={cn("text-sm font-medium", authMethod === 'kakao' ? "text-slate-300" : "text-slate-400")}>{t("카카오페이 지갑 이용자 추천")}</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <Button id="step4-submit-btn" onClick={handleInitiateAuth} className="w-full h-[5rem] bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-2xl font-black rounded-2xl shadow-xl shadow-[#b88c30]/20 hover:scale-[1.01] active:scale-[0.99] transition-all" disabled={loading}>
+                          {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 요청하기')}
+                        </Button>
+
+                        <div className="text-center">
+                          <button
+                            onClick={() => setHasCertificate(false)}
+                            className="text-sm font-bold text-[#e2b659] hover:text-[#e2b659]/80 underline transition-colors"
+                          >
+                            {t('인증서가 없으신가요? (추천)')}
+                          </button>
+                        </div>
+                      </CardContent>
+                    </>
+                  )}
+                </Card>
+              </div>
+            )}
+
+            {step === 5 && (
+              <div className="relative animate-in fade-in slide-in-from-bottom-8 duration-700">
+                {/* Corner Decorations */}
+                <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-[#b88c30] rounded-tl-3xl z-10 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-[#b88c30] rounded-tr-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-[#b88c30] rounded-bl-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-[#b88c30] rounded-br-3xl z-10 pointer-events-none" />
+
+                <Card className="rounded-3xl border border-[#b88c30]/30 shadow-2xl overflow-hidden bg-[#0b192c]">
+                  <CardHeader id="step5-top-anchor" className="text-center py-8 sm:py-10 bg-[#0b192c] border-b border-[#b88c30]/15 relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-[0.03]"
+                      style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => { setStep(4); saveProgress(4); }}
+                      className="absolute top-6 left-6 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      {t('이전')}
+                    </Button>
+                    <div className="mx-auto h-20 w-20 rounded-3xl flex items-center justify-center mb-6 shadow-lg overflow-hidden p-3 bg-white border border-[#b88c30]/30 relative z-10">
+                      <Image
+                        src={authMethod === 'app' ? "/images/logo/pass.png" : authMethod === 'hana' ? "/images/logo/hana_1q.png" : "/images/logo/kakao.png"}
+                        alt="Auth Method"
+                        width={64}
+                        height={64}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
+                    <CardTitle className="text-3xl font-black text-white relative z-10">{t('Step 5: 인증 확인')}</CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-4 sm:p-10 space-y-6 sm:space-y-10 bg-[#0d1e30]">
+                    <div className="text-center space-y-8 py-4">
+                      {!authSession ? (
+                        <div className="space-y-6">
+                          <div className="flex flex-col items-center justify-center py-12 gap-6 bg-white/5 rounded-3xl border border-dashed border-[#b88c30]/30">
+                            <Loader2 className="h-16 w-16 animate-spin text-[#b88c30]" />
+                            <div className="space-y-2">
+                              <h2 className="text-2xl font-black text-white">{authMethod === 'app' ? t("PASS 앱 인증 요청 중...") : authMethod === 'hana' ? t("하나은행 인증 요청 중...") : t("카카오톡 인증 요청 중...")}</h2>
+                              <p className="text-slate-400 font-bold">{t("잠시만 기다려 주세요.")}</p>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="space-y-4">
+                          <h2 className="text-2xl font-black text-white">{t("휴대폰에서 '확인'을 눌러주세요")}</h2>
+                          <p className="text-lg font-bold text-slate-450 whitespace-pre-line">{authMethod === 'app' ? t("PASS 앱 알림 또는 문자를 확인한 뒤\n아래 버튼을 눌러주세요.") : authMethod === 'hana' ? t("하나은행 앱(하나원큐) 알림을 확인한 뒤\n아래 버튼을 눌러주세요.") : t("카카오 지갑 알림을 확인한 뒤\n아래 버튼을 눌러주세요.")}</p>
+                        </div>
+                      )}
+                    </div>
+
+                    {authSession && (
+                      <div className="space-y-6">
+                        <div className="p-8 bg-white/5 rounded-[2rem] border border-white/10 space-y-6">
+                          <div className="flex items-center gap-3">
+                            <AlertTriangle className="h-6 w-6 text-amber-400" />
+                            <h4 className="text-lg font-black text-white">{t('인증 알림이 오지 않나요?')}</h4>
+                          </div>
+                          <p className="text-sm font-bold text-slate-400 leading-relaxed text-left">
+                            {t('외국 국적자는 통신사에 등록된 이름이 신분증과 다른 경우가 많습니다. 알림이 오지 않는다면 AI가 제안해 준 추천 성명을 하나씩 시도해 보세요.')}
+                          </p>
+
+                          <div id="step5-auth-guide-container" className="pt-2 space-y-4">
+                            {true ? (
+                              <div className="space-y-4">
+                                <EmbeddedAuthGuide authMethod={authMethod} />
+                                {language !== 'ko' && preFilterEstimate >= 400000 && (
+                                  <div className="p-4 bg-amber-950/30 rounded-2xl border border-amber-800/30 text-left">
+                                    <p className="text-[10px] font-black text-amber-400 uppercase tracking-widest mb-1">{t('VIP 전용 라이브 헬프')}</p>
+                                    <p className="text-sm font-bold text-amber-350">
+                                      {t('예상 환급액이 {amount}원이나 됩니다! 인증이 막히셨다면 전문 상담원이 즉시 도와드려요.', { amount: preFilterEstimate.toLocaleString() })}
+                                    </p>
+                                  </div>
+                                )}
+                                {preFilterEstimate >= 400000 && (
+                                  <Button
+                                    onClick={() => setIsVipChatOpen(true)}
+                                    className="w-full h-16 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-lg font-black rounded-2xl shadow-xl flex items-center justify-center gap-2 group transition-all hover:scale-[1.02]"
+                                  >
+                                    <MessageSquare className="h-6 w-6 text-[#0b192c] animate-bounce" /> {t('실시간 전문 상담원 채팅 시작')}
+                                  </Button>
+                                )}
+                              </div>
+                            ) : null}
+
+                            {/* AI OCR 이름 추출 섹션 */}
+                            <div className="p-6 bg-white/5 rounded-3xl border border-white/10 mt-4 space-y-4 text-left">
+                              <div className="flex items-center gap-2">
+                                <Sparkles className="h-5 w-5 text-[#e2b659]" />
+                                <h4 className="font-black text-[#e2b659]">{t('ai_name_check_title')}</h4>
+                              </div>
+                              <p className="text-xs font-bold text-slate-400 leading-relaxed">
+                                {t('ai_name_check_desc')}
+                              </p>
+
+                              {!ocrResult ? (
+                                <div className="relative">
+                                  <input
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleCarrierOcrUpload}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                                    disabled={isOcrLoading}
+                                  />
+                                  <Button
+                                    variant="outline"
+                                    className="w-full h-14 border-[#b88c30]/30 text-[#e2b659] hover:bg-[#b88c30]/10 rounded-2xl flex items-center justify-center gap-2"
+                                    disabled={isOcrLoading}
+                                  >
+                                    {isOcrLoading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Camera className="h-5 w-5" />}
+                                    {isOcrLoading ? t('analyzing_screenshot') : t('upload_screenshot')}
+                                  </Button>
+                                </div>
+                              ) : (
+                                <div className="p-4 bg-[#0d1e30] rounded-2xl border border-[#b88c30]/30 space-y-4 animate-in zoom-in-95 duration-300">
+                                  <div className="text-center space-y-1">
+                                    <p className="text-xs font-black text-[#b88c30] uppercase tracking-widest">{t('ocr_result_title')}</p>
+                                    <p className="text-xl font-black text-white">"{ocrResult.extractedName}"</p>
+                                  </div>
+                                  <p className="text-xs font-bold text-slate-400 text-center">
+                                    {ocrResult.recommendation}
+                                  </p>
+                                  <div className="grid grid-cols-2 gap-2">
+                                    <Button variant="ghost" onClick={() => setOcrResult(null)} className="rounded-xl h-12 font-bold text-slate-450 hover:text-white">
+                                      {t('다시 인증')}
+                                    </Button>
+                                    <Button onClick={applyOcrName} className="bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] rounded-xl h-12 font-black shadow-lg">
+                                      {t('use_this_name')}
+                                    </Button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <Button id="step5-submit-btn" onClick={handleFinalVerifyAndAnalyze} className="w-full h-20 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-2xl font-black rounded-3xl shadow-xl shadow-[#b88c30]/20" disabled={loading}>
+                      {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 완료 및 데이터 분석')}
+                    </Button>
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {step === 6 && !analysisError && (
