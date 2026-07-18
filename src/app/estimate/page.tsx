@@ -2875,486 +2875,631 @@ export default function EstimatePage() {
 
           <div className="relative">
             {step === 0 && (
-              <Card className="premium-card rounded-2xl sm:rounded-[3rem] border-none shadow-2xl overflow-hidden bg-white animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <CardHeader className="text-center py-6 sm:py-12 bg-slate-900 text-white relative">
-                  <div className="absolute top-0 right-0 p-12 opacity-10"><Banknote className="h-64 w-64 text-primary" /></div>
-                  <div id="step0-sparkles" className="mx-auto h-16 w-16 bg-primary rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-primary/20 transition-transform duration-500">
-                    <Sparkles className="h-10 w-10 text-white" />
-                  </div>
-                  <CardTitle className="text-3xl sm:text-4xl font-black font-headline tracking-tight px-4 leading-tight">
-                    {t('나의 잠재 환급액')}<br />{t('10초 만에 확인하기')}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-4 sm:p-12 space-y-6 sm:space-y-12">
-                  {/* AI Real-time Age Eligibility Display */}
-                  <div className="p-4 sm:p-6 bg-primary/5 rounded-2xl sm:rounded-[2.5rem] border border-primary/20 relative overflow-hidden animate-in fade-in zoom-in duration-700">
-                    <div className="absolute top-0 right-0 p-4">
-                      <div className="flex items-center gap-2">
-                        <div className="h-2 w-2 rounded-full bg-primary animate-pulse" />
-                        <span className="text-[9px] font-black text-primary uppercase tracking-widest leading-none">{t('AI Live Tracker')}</span>
+              <div className="relative animate-in fade-in slide-in-from-bottom-8 duration-700">
+                {/* Corner Decorations */}
+                <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-[#b88c30] rounded-tl-3xl z-10 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-[#b88c30] rounded-tr-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-[#b88c30] rounded-bl-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-[#b88c30] rounded-br-3xl z-10 pointer-events-none" />
+
+                <Card className="rounded-3xl border border-[#b88c30]/30 shadow-2xl overflow-hidden bg-[#0b192c]">
+                  {/* Header */}
+                  <CardHeader className="text-center py-8 sm:py-12 bg-[#0b192c] text-white relative overflow-hidden">
+                    {/* BG Pattern */}
+                    <div className="absolute inset-0 opacity-[0.03]"
+                      style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
+                    />
+                    <div className="absolute top-0 right-0 p-10 opacity-5"><Banknote className="h-48 w-48 text-[#b88c30]" /></div>
+
+                    {/* Official Badge Line - 로고 없이 텍스트만 */}
+                    <div className="relative z-10 flex items-center justify-center gap-3 mb-6">
+                      <div className="h-px w-8 bg-[#b88c30]" />
+                      <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-full px-4 py-1.5">
+                        <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">대한민국 국세청 연동</span>
+                      </div>
+                      <div className="h-px w-8 bg-[#b88c30]" />
+                    </div>
+
+                    {/* 국세청 공식 로고 */}
+                    <div className="relative z-10 mx-auto mb-5 flex flex-col items-center gap-3">
+                      <div className="h-20 w-20 bg-white rounded-2xl flex items-center justify-center shadow-xl border border-[#b88c30]/20 overflow-hidden">
+                        <img src="/nts-logo.jpg" alt="국세청" className="h-16 w-16 object-contain" />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="h-px w-5 bg-[#b88c30]/40" />
+                        <span className="text-[9px] font-black text-[#b88c30]/60 uppercase tracking-widest">National Tax Service</span>
+                        <div className="h-px w-5 bg-[#b88c30]/40" />
                       </div>
                     </div>
-                    <div className="flex items-start gap-5">
-                      <div className="h-14 w-14 bg-white rounded-2xl flex items-center justify-center shrink-0 shadow-md">
-                        <Sparkles className="h-8 w-8 text-primary" />
+
+                    <CardTitle className="relative z-10 text-3xl sm:text-4xl font-black tracking-tight px-4 leading-tight text-white">
+                      {t('나의 잠재 환급액')}<br />
+                      <span className="text-[#b88c30]">{t('10초 만에 확인하기')}</span>
+                    </CardTitle>
+                    <div className="relative z-10 h-px w-16 bg-[#b88c30] mx-auto mt-4" />
+                  </CardHeader>
+
+                  {/* Content */}
+                  <CardContent className="p-5 sm:p-10 space-y-6 sm:space-y-8 bg-[#0d1e30]">
+                    {/* AI Live Tracker */}
+                    <div className="p-5 sm:p-6 bg-[#b88c30]/5 rounded-2xl border border-[#b88c30]/20 relative overflow-hidden">
+                      <div className="absolute top-3 right-4 flex items-center gap-2">
+                        <div className="h-2 w-2 rounded-full bg-[#b88c30] animate-pulse" />
+                        <span className="text-[9px] font-black text-[#b88c30] uppercase tracking-widest">{t('AI Live Tracker')}</span>
                       </div>
-                      <div className="space-y-3 text-left">
-                        <p className="font-black text-slate-800 text-lg sm:text-[22px] leading-tight">{t('대상 연령 안내 (실시간 업데이트)')}</p>
-                        <div className="flex flex-wrap items-center gap-y-3 gap-x-4">
-                          <Badge className="bg-primary text-white border-none font-black text-sm sm:text-[18px] px-3 py-1.5 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl shadow-xl shadow-primary/20">
-                            {t('만 15세 ~ 34세')}
-                          </Badge>
-                          <div className="flex items-center gap-2 sm:gap-3 bg-white/90 backdrop-blur-sm px-3 py-1.5 sm:px-6 sm:py-2.5 rounded-xl sm:rounded-2xl border-2 border-primary/10 shadow-sm">
-                            <FileText className="h-6 w-6 text-primary/60" />
-                            <p className="text-sm sm:text-[20px] font-black text-slate-700 leading-none mt-0.5">
-                              {eligibilityRange.start} ~ {eligibilityRange.end}
-                            </p>
+                      <div className="flex items-start gap-4">
+                        <div className="h-12 w-12 bg-[#b88c30]/10 border border-[#b88c30]/20 rounded-xl flex items-center justify-center shrink-0">
+                          <Sparkles className="h-6 w-6 text-[#b88c30]" />
+                        </div>
+                        <div className="space-y-2 text-left">
+                          <p className="font-black text-white text-base sm:text-lg leading-tight">{t('대상 연령 안내 (실시간 업데이트)')}</p>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge className="bg-[#b88c30] text-[#0b192c] border-none font-black text-sm px-4 py-1 rounded-xl shadow-lg">
+                              {t('만 15세 ~ 34세')}
+                            </Badge>
+                            <div className="flex items-center gap-2 bg-white/5 px-4 py-1.5 rounded-xl border border-white/10">
+                              <FileText className="h-4 w-4 text-[#b88c30]/60" />
+                              <p className="text-sm font-black text-slate-200 leading-none">
+                                {eligibilityRange.start} ~ {eligibilityRange.end}
+                              </p>
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  <div className="space-y-10">
-                    <div className="space-y-6">
-                      <div className="flex justify-between items-center px-1">
-                        <Label className="text-lg font-black text-slate-800">{t('최근 5년 한국 근무 기간')}</Label>
-                        <span className="text-2xl font-black text-primary">{preFilterData.workMonths}{t('개월')}</span>
+                    {/* Sliders */}
+                    <div className="space-y-8">
+                      {/* 근무 기간 슬라이더 */}
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <Label className="text-base font-black text-slate-200">{t('최근 5년 한국 근무 기간')}</Label>
+                          <span className="text-2xl font-black text-[#b88c30]">{preFilterData.workMonths}{t('개월')}</span>
+                        </div>
+                        <input
+                          type="range" min="1" max="60" step="1"
+                          id="step0-months-slider" value={preFilterData.workMonths}
+                          onChange={(e) => setPreFilterData({ ...preFilterData, workMonths: parseInt(e.target.value) })}
+                          className="w-full h-2 bg-white/10 rounded-lg appearance-none cursor-pointer accent-[#b88c30]"
+                        />
+                        <div className="flex justify-between text-[11px] font-black text-slate-500 uppercase tracking-widest">
+                          <span>1 {t('개월')}</span>
+                          <span>30 {t('개월')}</span>
+                          <span>60 {t('개월')}</span>
+                        </div>
                       </div>
-                      <input
-                        type="range" min="1" max="60" step="1"
-                        id="step0-months-slider" value={preFilterData.workMonths}
-                        onChange={(e) => setPreFilterData({ ...preFilterData, workMonths: parseInt(e.target.value) })}
-                        className="w-full h-3 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-primary"
-                      />
-                      <div className="flex justify-between text-[11px] font-black text-slate-400 uppercase tracking-widest px-1">
-                        <span>1 {t('개월')}</span>
-                        <span>30 {t('개월')}</span>
-                        <span>60 {t('개월')}</span>
+
+                      {/* 급여 선택 버튼 */}
+                      <div className="space-y-4">
+                        <div className="flex justify-between items-center">
+                          <Label className="text-base font-black text-slate-200">{t('평균 월 급여 (세전)')}</Label>
+                          <span className="text-2xl font-black text-[#b88c30]">{preFilterData.avgSalary}{t('만 원')}</span>
+                        </div>
+                        <div id="step0-salary-container" className="grid grid-cols-4 gap-2">
+                          {[150, 200, 250, 300, 350, 400, 500, 600].map((val, idx) => (
+                            <Button
+                              key={val}
+                              id={`step0-salary-${idx}`}
+                              onClick={() => setPreFilterData({ ...preFilterData, avgSalary: val })}
+                              className={cn(
+                                "h-12 font-black rounded-xl text-sm transition-all border",
+                                preFilterData.avgSalary === val
+                                  ? "bg-[#b88c30] text-[#0b192c] border-[#b88c30] scale-105 shadow-lg"
+                                  : "bg-white/5 border-white/10 text-slate-400 hover:border-[#b88c30]/40 hover:text-white"
+                              )}
+                            >
+                              {val === 600 ? '600+' : val}
+                            </Button>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
-                    <div className="space-y-6">
-                      <div className="flex justify-between items-center px-1">
-                        <Label className="text-lg font-black text-slate-800">{t('평균 월 급여 (세전)')}</Label>
-                        <span className="text-2xl font-black text-primary">{preFilterData.avgSalary}{t('만 원')}</span>
+                    {/* 예상 환급 금액 박스 */}
+                    <div className="relative p-8 sm:p-10 rounded-2xl border border-[#b88c30]/20 text-center space-y-3 overflow-hidden bg-gradient-to-br from-[#b88c30]/10 to-transparent">
+                      <div className="absolute top-3 left-4 h-px w-6 bg-[#b88c30]/40" />
+                      <div className="absolute top-3 right-4 h-px w-6 bg-[#b88c30]/40" />
+                      <p className="text-xs font-black text-[#b88c30] uppercase tracking-[0.25em]">{t('AI 예상 환급 가능 금액')}</p>
+                      <div className="flex items-center justify-center gap-2">
+                        <span className="text-5xl sm:text-6xl font-black text-[#e2b659] font-headline animate-in zoom-in-50 duration-500">
+                          ₩ <RefundCounter value={preFilterEstimate} />
+                        </span>
                       </div>
-                      <div id="step0-salary-container" className="grid grid-cols-4 gap-2">
-                        {[150, 200, 250, 300, 350, 400, 500, 600].map((val, idx) => (
-                          <Button
-                            key={val}
-                            id={`step0-salary-${idx}`}
-                            variant={preFilterData.avgSalary === val ? 'default' : 'outline'}
-                            onClick={() => setPreFilterData({ ...preFilterData, avgSalary: val })}
-                            className={cn(
-                              "h-12 font-black rounded-xl text-sm transition-all",
-                              preFilterData.avgSalary === val ? "bg-primary text-white scale-105 shadow-lg shadow-primary/20" : "border-slate-100 text-slate-400 hover:border-primary/20"
-                            )}
-                          >
-                            {val === 600 ? '600+' : val}
-                          </Button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-10 bg-primary/5 rounded-[2.5rem] border-2 border-primary/10 text-center space-y-4 relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
-                    <p className="text-sm font-black text-slate-500 uppercase tracking-widest">{t('AI 예상 환급 가능 금액')}</p>
-                    <div className="flex items-center justify-center gap-2">
-                      <span className="text-5xl font-black text-primary font-headline animate-in zoom-in-50 duration-500">
-                        ₩ {preFilterEstimate.toLocaleString()}
-                      </span>
-                    </div>
-                    <p className="text-[11px] font-bold text-slate-400 leading-relaxed bg-white/50 py-2 px-4 rounded-full border border-slate-100 backdrop-blur-sm inline-block">
-                      {t('* 실제 개인별 소득 공제 항목에 따라 차이가 발생할 수 있습니다.')}
-                    </p>
-                  </div>
-
-                  <div className="space-y-4 pt-4">
-                    {/* Free Risk Reversal Alert */}
-                    <div className="flex items-center gap-3 p-4 bg-emerald-50 rounded-2xl border border-emerald-100 mb-2 animate-in fade-in slide-in-from-bottom-4 duration-700 delay-500">
-                      <div className="h-8 w-8 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
-                        <CheckCircle2 className="h-5 w-5 text-emerald-600" />
-                      </div>
-                      <p className="text-[13px] font-black text-emerald-800 leading-tight">
-                        {t('예상 환급액을 확인하는 데는 비용이 전혀 들지 않습니다. 안심하고 확인해 보세요.')}
+                      <p className="text-[11px] font-bold text-slate-500 leading-relaxed bg-white/5 py-2 px-4 rounded-full border border-white/10 inline-block">
+                        {t('* 실제 개인별 소득 공제 항목에 따라 차이가 발생할 수 있습니다.')}
                       </p>
                     </div>
 
-                    <Button
-                      id="step0-submit-btn"
-                      onClick={() => {
-                        setStep(0.5);
-                        saveProgress(0.5);
-                      }}
-                      className="w-full h-auto min-h-[6rem] py-4 px-6 bg-slate-900 text-2xl font-black rounded-3xl shadow-2xl flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98] group whitespace-normal break-words"
-                    >
-                      <span className="flex-1">{t('이어서 정밀 진단 시작하기')}</span> <ArrowRight className="h-8 w-8 transition-transform group-hover:translate-x-2 shrink-0" />
-                    </Button>
-                    <p className="text-center text-[10px] text-slate-400 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-                      <ShieldCheck className="h-3 w-3" /> {t('9 step precision diagnostic flow initiated')}
-                    </p>
-                  </div>
-                </CardContent>
-              </Card>
+                    {/* CTA */}
+                    <div className="space-y-4 pt-2">
+                      {/* 무료 안심 배지 */}
+                      <div className="flex items-center gap-3 p-4 bg-emerald-950/40 rounded-2xl border border-emerald-800/30">
+                        <div className="h-8 w-8 bg-emerald-900/50 rounded-full flex items-center justify-center shrink-0">
+                          <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+                        </div>
+                        <p className="text-[13px] font-black text-emerald-400 leading-tight">
+                          {t('예상 환급액을 확인하는 데는 비용이 전혀 들지 않습니다. 안심하고 확인해 보세요.')}
+                        </p>
+                      </div>
+
+                      {/* 메인 CTA 버튼 */}
+                      <Button
+                        id="step0-submit-btn"
+                        onClick={() => { setStep(0.5); saveProgress(0.5); }}
+                        className="w-full h-auto min-h-[5rem] py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                      >
+                        <span className="flex-1 text-left">{t('이어서 정밀 진단 시작하기')}</span>
+                        <ArrowRight className="h-7 w-7 transition-transform group-hover:translate-x-2 shrink-0" />
+                      </Button>
+
+                      <p className="text-center text-[10px] text-slate-600 font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                        <ShieldCheck className="h-3 w-3 text-[#b88c30]" /> {t('9 step precision diagnostic flow initiated')}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {step === 0.5 && (
-              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-white animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <CardHeader className="text-center py-5 sm:py-10 bg-slate-900 text-white relative">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => { setStep(0); saveProgress(0); }}
-                    className="absolute top-6 left-6 text-white/40 hover:text-white font-bold flex items-center"
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    {t('이전')}
-                  </Button>
-                  <div className="mx-auto h-20 w-20 bg-white/10 rounded-[2rem] flex items-center justify-center mb-6 shadow-lg border border-white/15">
-                    <Sparkles className="h-10 w-10 text-white" />
-                  </div>
-                  <CardTitle className="text-2xl sm:text-3xl font-black font-headline tracking-tight">
-                    {t('숨은 세금 환급 과정 안내 🚀')}
-                  </CardTitle>
-                  <CardDescription className="text-slate-400 font-bold text-sm mt-3 leading-relaxed max-w-[340px] mx-auto">
-                    {t('안녕하세요! 숨은 세금 환급금을 찾아 통장으로 받기까지의 전체 핵심 4단계 과정을 안내해 드릴게요.')}
-                  </CardDescription>
-                </CardHeader>
+              <div className="relative animate-in fade-in slide-in-from-bottom-8 duration-700">
+                {/* Corner Decorations */}
+                <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-[#b88c30] rounded-tl-3xl z-10 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-[#b88c30] rounded-tr-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-[#b88c30] rounded-bl-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-[#b88c30] rounded-br-3xl z-10 pointer-events-none" />
 
-                <CardContent className="p-4 sm:p-10 space-y-6 sm:space-y-8 bg-slate-50/50">
-                  <div className="space-y-4 sm:space-y-6">
+                <Card className="rounded-3xl border border-[#b88c30]/30 shadow-2xl overflow-hidden bg-[#0b192c]">
+                  {/* Header */}
+                  <CardHeader className="text-center py-8 sm:py-10 bg-[#0b192c] text-white relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-[0.03]"
+                      style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
+                    />
+
+                    {/* 이전 버튼 */}
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => { setStep(0); saveProgress(0); }}
+                      className="absolute top-5 left-5 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />
+                      {t('이전')}
+                    </Button>
+
+                    {/* Official Badge */}
+                    <div className="relative z-10 flex items-center justify-center gap-3 mb-5">
+                      <div className="h-px w-8 bg-[#b88c30]" />
+                      <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-full px-4 py-1.5">
+                        <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">공식 절차 안내</span>
+                      </div>
+                      <div className="h-px w-8 bg-[#b88c30]" />
+                    </div>
+
+                    {/* 국세청 공식 로고 */}
+                    <div className="relative z-10 mx-auto mb-5 flex flex-col items-center gap-3">
+                      <div className="h-20 w-20 bg-white rounded-2xl flex items-center justify-center shadow-xl border border-[#b88c30]/20 overflow-hidden">
+                        <img src="/nts-logo.jpg" alt="국세청" className="h-16 w-16 object-contain" />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="h-px w-5 bg-[#b88c30]/40" />
+                        <span className="text-[9px] font-black text-[#b88c30]/60 uppercase tracking-widest">National Tax Service</span>
+                        <div className="h-px w-5 bg-[#b88c30]/40" />
+                      </div>
+                    </div>
+
+                    <CardTitle className="relative z-10 text-2xl sm:text-3xl font-black tracking-tight px-4 leading-tight text-white">
+                      {t('숨은 세금 환급 과정 안내')}
+                    </CardTitle>
+                    <p className="relative z-10 text-slate-400 font-bold text-sm mt-3 leading-relaxed max-w-[320px] mx-auto">
+                      {t('안녕하세요! 숨은 세금 환급금을 찾아 통장으로 받기까지의 전체 핵심 4단계 과정을 안내해 드릴게요.')}
+                    </p>
+                    <div className="relative z-10 h-px w-16 bg-[#b88c30] mx-auto mt-4" />
+                  </CardHeader>
+
+                  {/* Content */}
+                  <CardContent className="p-5 sm:p-8 space-y-4 bg-[#0d1e30]">
+
                     {/* Step 1 */}
-                    <div className="flex gap-3 sm:gap-4 p-4 sm:p-5 bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 bg-red-50 text-red-500 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
-                        <Camera className="h-5 w-5 sm:h-6 sm:w-6" />
+                    <div className="flex gap-4 p-5 bg-white/5 rounded-2xl border border-white/10 hover:border-[#b88c30]/30 transition-all">
+                      <div className="flex-shrink-0 h-10 w-10 bg-[#b88c30] text-[#0b192c] rounded-xl flex items-center justify-center font-black text-base shadow-lg shadow-[#b88c30]/20">
+                        01
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-sm sm:text-[15px] font-black text-slate-900 text-left">
-                          {t('1️⃣ [정부 필수] 신분증 확인 및 번호 입력')} <span className="text-[10px] sm:text-xs text-red-500 font-black ml-1">{t('(Step 1~3)')}</span>
-                        </h4>
-                        <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-black text-white text-left">
+                            {t('1️⃣ [정부 필수] 신분증 확인 및 번호 입력')}
+                          </h4>
+                          <span className="text-[10px] text-[#b88c30] font-black shrink-0">{t('(Step 1~3)')}</span>
+                        </div>
+                        <p className="text-[11px] font-semibold text-slate-400 leading-relaxed text-left">
                           {t('대한민국 국세청(NTS)에서 세금 환급 승인을 위해 법적으로 요구하는 필수 절차입니다. 제출하신 신분증 사진은 본인 확인 즉시 시스템에서 영구 파기(저장 NO!)되며, 금융권 수준의 강력한 암호화 보안 기술로 안전하게 보호되니 안심하고 촬영해 주세요.')}
                         </p>
                       </div>
                     </div>
 
                     {/* Step 2 */}
-                    <div className="flex gap-3 sm:gap-4 p-4 sm:p-5 bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 bg-emerald-50 text-emerald-500 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
-                        <Lock className="h-5 w-5 sm:h-6 sm:w-6" />
+                    <div className="flex gap-4 p-5 bg-white/5 rounded-2xl border border-white/10 hover:border-[#b88c30]/30 transition-all">
+                      <div className="flex-shrink-0 h-10 w-10 bg-[#b88c30] text-[#0b192c] rounded-xl flex items-center justify-center font-black text-base shadow-lg shadow-[#b88c30]/20">
+                        02
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-sm sm:text-[15px] font-black text-slate-900 text-left">
-                          {t('2️⃣ [가장 중요] 본인 인증서 설치 및 인증')} <span className="text-[10px] sm:text-xs text-emerald-600 font-black ml-1">{t('(Step 4~5)')}</span>
-                        </h4>
-                        <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-black text-white text-left">
+                            {t('2️⃣ [가장 중요] 본인 인증서 설치 및 인증')}
+                          </h4>
+                          <span className="text-[10px] text-[#b88c30] font-black shrink-0">{t('(Step 4~5)')}</span>
+                        </div>
+                        <p className="text-[11px] font-semibold text-slate-400 leading-relaxed text-left">
                           {t('한국 국세청(NTS) 전산망과 안전하게 연결하기 위해 카카오톡, PASS, 하나은행 등의 인증서로 본인 인증을 완료합니다. (인증서가 없으시면 1분 만에 발급받는 법을 친절히 안내해 드립니다.)')}
                         </p>
                       </div>
                     </div>
 
                     {/* Step 3 */}
-                    <div className="flex gap-3 sm:gap-4 p-4 sm:p-5 bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 bg-blue-50 text-blue-500 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
-                        <CreditCard className="h-5 w-5 sm:h-6 sm:w-6" />
+                    <div className="flex gap-4 p-5 bg-white/5 rounded-2xl border border-white/10 hover:border-[#b88c30]/30 transition-all">
+                      <div className="flex-shrink-0 h-10 w-10 bg-[#b88c30] text-[#0b192c] rounded-xl flex items-center justify-center font-black text-base shadow-lg shadow-[#b88c30]/20">
+                        03
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-sm sm:text-[15px] font-black text-slate-900 text-left">
-                          {t('3️⃣ 정확한 환급금 확인 및 후불 정산 등록')} <span className="text-[10px] sm:text-xs text-blue-600 font-black ml-1">{t('(Step 6~8)')}</span>
-                        </h4>
-                        <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-black text-white text-left">
+                            {t('3️⃣ 정확한 환급금 확인 및 후불 정산 등록')}
+                          </h4>
+                          <span className="text-[10px] text-[#b88c30] font-black shrink-0">{t('(Step 6~8)')}</span>
+                        </div>
+                        <p className="text-[11px] font-semibold text-slate-400 leading-relaxed text-left">
                           {t('최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 즉시 확인합니다. 환급금이 확인되면, 국세청에서 고객님 통장으로 환급금이 입금된 후에만 출금되는 후불제 정산(플랫폼 이용료 25%) 등록을 진행합니다. 환급 거절/실패 시 청구되는 금액은 0원입니다.')}
                         </p>
                       </div>
                     </div>
 
                     {/* Step 4 */}
-                    <div className="flex gap-3 sm:gap-4 p-4 sm:p-5 bg-white rounded-2xl sm:rounded-3xl border border-slate-100 shadow-sm transition-all hover:scale-[1.01]">
-                      <div className="h-10 w-10 sm:h-12 sm:w-12 bg-amber-50 text-amber-500 rounded-xl sm:rounded-2xl flex items-center justify-center shrink-0 shadow-sm">
-                        <FileText className="h-5 w-5 sm:h-6 sm:w-6" />
+                    <div className="flex gap-4 p-5 bg-white/5 rounded-2xl border border-white/10 hover:border-[#b88c30]/30 transition-all">
+                      <div className="flex-shrink-0 h-10 w-10 bg-[#b88c30] text-[#0b192c] rounded-xl flex items-center justify-center font-black text-base shadow-lg shadow-[#b88c30]/20">
+                        04
                       </div>
                       <div className="space-y-1">
-                        <h4 className="text-sm sm:text-[15px] font-black text-slate-900 text-left">
-                          {t('4️⃣ 계약서 서명 및 입금 신청')} <span className="text-[10px] sm:text-xs text-amber-600 font-black ml-1">{t('(Step 9)')}</span>
-                        </h4>
-                        <p className="text-[11px] sm:text-xs font-semibold text-slate-500 leading-relaxed text-left whitespace-pre-line">
+                        <div className="flex items-center gap-2">
+                          <h4 className="text-sm font-black text-white text-left">
+                            {t('4️⃣ 계약서 서명 및 입금 신청')}
+                          </h4>
+                          <span className="text-[10px] text-[#b88c30] font-black shrink-0">{t('(Step 9)')}</span>
+                        </div>
+                        <p className="text-[11px] font-semibold text-slate-400 leading-relaxed text-left">
                           {t('후불 정산 등록 완료 후, 모바일 서명을 통해 정식 세무대리 수임계약서가 투명하고 안전하게 작성되며 환급금을 입금받으실 본인 통장 계좌번호를 입력합니다. 이후 약 1~2개월 뒤 한국 국세청에서 고객님의 통장으로 환급금을 직접 송금해 드립니다.')}
                         </p>
                       </div>
                     </div>
-                  </div>
 
-                  <Button
-                    id="step05-submit-btn"
-                    onClick={() => { setStep(1); saveProgress(1); }}
-                    className="w-full h-20 bg-slate-900 hover:bg-slate-800 text-xl font-black rounded-3xl shadow-xl shadow-slate-900/10 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98]"
-                  >
-                    {t('확인했습니다. 시작하기')} <ArrowRight className="h-6 w-6" />
-                  </Button>
-                </CardContent>
-              </Card>
+                    {/* CTA */}
+                    <div className="pt-2 space-y-3">
+                      <Button
+                        id="step05-submit-btn"
+                        onClick={() => { setStep(1); saveProgress(1); }}
+                        className="w-full h-[5rem] bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                      >
+                        <span className="flex-1 text-left">{t('확인했습니다. 시작하기')}</span>
+                        <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-2 shrink-0" />
+                      </Button>
+                      <p className="text-center text-[10px] text-slate-600 font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                        <ShieldCheck className="h-3 w-3 text-[#b88c30]" /> {t('9 step precision diagnostic flow initiated')}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {step === 1 && (
-              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-white">
-                <CardHeader className="text-center py-4 sm:py-10 bg-slate-50/50 border-b border-slate-100">
-                  <div className="mx-auto flex flex-col items-center gap-4">
-                    <div className="relative group">
-                      <div className="absolute -inset-4 bg-primary/10 rounded-full blur-xl opacity-50" />
-                      <Image
-                        src="/official_nts_carrier_badge_v2_1774141326494.png"
-                        alt="Official NTS & Carrier Badge"
-                        width={120}
-                        height={120}
-                        className="relative rounded-2xl shadow-md border border-white transition-transform hover:scale-110"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Badge variant="outline" className="text-emerald-600 bg-emerald-50 border-emerald-100 text-[10px] font-black uppercase tracking-widest">{t('safe_and_secure')}</Badge>
-                      {/* 국세청 홉택스 점검 시간 배너 (KST 00:00~06:00) - Step 1 상단 */}
-                      {isNtsMaintenance && (
-                        <div className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-2xl p-4 text-left mt-3 animate-in fade-in duration-500">
-                          <div className="h-7 w-7 bg-amber-100 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
-                            <AlertCircle className="h-4 w-4 text-amber-600" />
-                          </div>
-                          <div>
-                            <p className="font-black text-amber-800 text-sm">{t('국세청 시스템 점검 중 (00:00 ~ 06:00)')}</p>
-                            <p className="text-amber-700 text-xs font-bold mt-0.5">{t('오전 6시 이후에 조회하시면 정상적으로 이용하실 수 있습니다.')}</p>
-                          </div>
+              <div className="relative animate-in fade-in slide-in-from-bottom-8 duration-700">
+                {/* Corner Decorations */}
+                <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-[#b88c30] rounded-tl-3xl z-10 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-[#b88c30] rounded-tr-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-[#b88c30] rounded-bl-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-[#b88c30] rounded-br-3xl z-10 pointer-events-none" />
+
+                <Card className="rounded-3xl border border-[#b88c30]/30 shadow-2xl overflow-hidden bg-[#0b192c]">
+
+                  {/* 상단 Header: NTS 배지 + 신뢰 문구 */}
+                  <CardHeader className="text-center py-6 sm:py-10 bg-[#0b192c] border-b border-[#b88c30]/15 relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-[0.03]"
+                      style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
+                    />
+                    <div className="mx-auto flex flex-col items-center gap-4 relative z-10">
+                      {/* Official Step Badge */}
+                      <div className="flex items-center justify-center gap-3 mb-1">
+                        <div className="h-px w-8 bg-[#b88c30]" />
+                        <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-full px-4 py-1.5">
+                          <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">Step 01 — 사전 준비</span>
                         </div>
-                      )}
-                      <h2 className="text-xl sm:text-2xl font-black text-slate-800">{t('nts_trust_title')}</h2>
-                      <p className="text-[13px] font-bold text-slate-500 leading-tight max-w-[280px] mx-auto opacity-80">{t('nts_trust_message')}</p>
-                    </div>
-                  </div>
-                </CardHeader>
+                        <div className="h-px w-8 bg-[#b88c30]" />
+                      </div>
 
-                <CardHeader className="text-center py-4 sm:py-12 bg-white">
-                  <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-slate-900 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg">
-                    <Sparkles className="h-8 w-8 sm:h-10 sm:w-10 text-white" />
-                  </div>
-                  <CardTitle className="text-2xl sm:text-3xl font-black text-slate-900 break-keep">
-                    {t('시작하기 전 필수 확인')}
-                  </CardTitle>
-                  <CardDescription className="font-bold text-slate-500 text-xs sm:text-sm">
-                    {t('성공적인 환급 조회를 위해 아래 사항을 준비해 주세요.')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-4 sm:p-10 space-y-6 sm:space-y-8">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div className="p-5 bg-emerald-50 rounded-3xl border border-emerald-100 flex items-center gap-4">
-                      <div className="h-10 w-10 bg-emerald-500 rounded-xl flex items-center justify-center shrink-0">
-                        <BadgeCheck className="h-6 w-6" />
+                      {/* NTS 배지 이미지 */}
+                      <div className="relative group">
+                        <div className="absolute -inset-4 bg-[#b88c30]/10 rounded-full blur-xl opacity-50" />
+                        <Image
+                          src="/official_nts_carrier_badge_v2_1774141326494.png"
+                          alt="Official NTS & Carrier Badge"
+                          width={120}
+                          height={120}
+                          className="relative rounded-2xl shadow-md border border-[#b88c30]/20 transition-transform hover:scale-110"
+                        />
                       </div>
-                      <div className="space-y-0.5">
-                        <p className="font-black text-emerald-900 text-sm">{t('외국인 등록증')}</p>
-                        <p className="text-[11px] text-emerald-700/70 font-bold">{t('실물 신분증 준비')}</p>
+
+                      <div className="space-y-2">
+                        <Badge className="bg-[#b88c30]/10 text-[#b88c30] border border-[#b88c30]/30 text-[10px] font-black uppercase tracking-widest">
+                          {t('safe_and_secure')}
+                        </Badge>
+
+                        {/* 국세청 점검 시간 배너 */}
+                        {isNtsMaintenance && (
+                          <div className="flex items-start gap-3 bg-amber-950/50 border border-amber-700/40 rounded-2xl p-4 text-left mt-3 animate-in fade-in duration-500">
+                            <div className="h-7 w-7 bg-amber-900/60 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                              <AlertCircle className="h-4 w-4 text-amber-400" />
+                            </div>
+                            <div>
+                              <p className="font-black text-amber-300 text-sm">{t('국세청 시스템 점검 중 (00:00 ~ 06:00)')}</p>
+                              <p className="text-amber-400/80 text-xs font-bold mt-0.5">{t('오전 6시 이후에 조회하시면 정상적으로 이용하실 수 있습니다.')}</p>
+                            </div>
+                          </div>
+                        )}
+
+                        <h2 className="text-xl sm:text-2xl font-black text-white">{t('nts_trust_title')}</h2>
+                        <p className="text-[13px] font-bold text-slate-400 leading-tight max-w-[280px] mx-auto">{t('nts_trust_message')}</p>
                       </div>
                     </div>
-                    <div className="p-5 bg-blue-50 rounded-3xl border border-blue-100 flex items-center gap-4">
-                      <div className="h-10 w-10 bg-blue-500 rounded-xl flex items-center justify-center shrink-0">
-                        <Phone className="h-6 w-6" />
+                  </CardHeader>
+
+                  {/* 하단 Header: 아이콘 + 제목 */}
+                  <CardHeader className="text-center py-6 sm:py-10 bg-[#0d1e30] border-b border-[#b88c30]/10">
+                    <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-5 shadow-lg">
+                      <Sparkles className="h-8 w-8 sm:h-10 sm:w-10 text-[#b88c30]" />
+                    </div>
+                    <CardTitle className="text-2xl sm:text-3xl font-black text-white break-keep">
+                      {t('시작하기 전 필수 확인')}
+                    </CardTitle>
+                    <p className="font-bold text-slate-400 text-xs sm:text-sm mt-2">
+                      {t('성공적인 환급 조회를 위해 아래 사항을 준비해 주세요.')}
+                    </p>
+                    <div className="h-px w-16 bg-[#b88c30] mx-auto mt-4" />
+                  </CardHeader>
+
+                  {/* Content */}
+                  <CardContent className="p-5 sm:p-10 space-y-6 sm:space-y-8 bg-[#0d1e30]">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div className="flex items-center gap-4 p-5 bg-white/5 rounded-3xl border border-white/10 hover:border-[#b88c30]/30 transition-all">
+                        <div className="h-11 w-11 bg-[#b88c30] rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-[#b88c30]/20">
+                          <BadgeCheck className="h-6 w-6 text-[#0b192c]" />
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="font-black text-white text-sm">{t('외국인 등록증')}</p>
+                          <p className="text-[11px] text-slate-400 font-bold">{t('실물 신분증 준비')}</p>
+                        </div>
                       </div>
-                      <div className="space-y-0.5">
-                        <p className="font-black text-blue-900 text-sm">{t('본인 명의 휴대폰')}</p>
-                        <p className="text-[11px] text-blue-700/70 font-bold">{t('통신사 가입자 본인')}</p>
+                      <div className="flex items-center gap-4 p-5 bg-white/5 rounded-3xl border border-white/10 hover:border-[#b88c30]/30 transition-all">
+                        <div className="h-11 w-11 bg-[#b88c30] rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-[#b88c30]/20">
+                          <Phone className="h-6 w-6 text-[#0b192c]" />
+                        </div>
+                        <div className="space-y-0.5">
+                          <p className="font-black text-white text-sm">{t('본인 명의 휴대폰')}</p>
+                          <p className="text-[11px] text-slate-400 font-bold">{t('통신사 가입자 본인')}</p>
+                        </div>
                       </div>
                     </div>
-                  </div>
 
-                  <Separator className="bg-slate-100" />
+                    <div className="h-px bg-[#b88c30]/10" />
 
-                  <div className="space-y-6">
-                    <div className="pt-2">
+                    <div className="space-y-4">
                       <Button
                         id="step1-submit-btn"
-                        variant="default"
                         onClick={() => { setStep(2); saveProgress(2); }}
-                        className="w-full h-16 bg-emerald-600 text-white font-black rounded-2xl hover:bg-emerald-700 shadow-lg shadow-emerald-200 transition-all flex items-center justify-center gap-2 group"
+                        className="w-full h-[5rem] bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] group"
                       >
-                        <BadgeCheck className="w-6 h-6 group-hover:scale-110 transition-transform" />
-                        {t('시작하기')}
+                        <BadgeCheck className="h-6 w-6 shrink-0 group-hover:scale-110 transition-transform" />
+                        <span className="flex-1 text-left">{t('시작하기')}</span>
+                        <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-2 shrink-0" />
                       </Button>
+                      <p className="text-center text-[10px] text-slate-600 font-black uppercase tracking-widest flex items-center justify-center gap-2">
+                        <ShieldCheck className="h-3 w-3 text-[#b88c30]" /> {t('safe_and_secure')}
+                      </p>
                     </div>
-                  </div>
 
-                  <Alert className="bg-amber-50 border-amber-200 rounded-3xl p-5">
-                    <AlertTriangle className="h-5 w-5 text-amber-600" />
-                    <AlertDescription className="text-[13px] font-bold text-amber-900 leading-relaxed ml-1">
-                      {t('중요: 통신사(핸드폰)에 등록된 영문 이름과 외국인 등록증의 이름이 단 한 글자라도 다르면 조회가 불가능합니다.')}
-                    </AlertDescription>
-                  </Alert>
-
-                </CardContent>
-              </Card>
+                    <div className="flex items-start gap-3 p-4 bg-amber-950/40 rounded-2xl border border-amber-700/30">
+                      <div className="h-8 w-8 bg-amber-900/50 rounded-xl flex items-center justify-center shrink-0 mt-0.5">
+                        <AlertTriangle className="h-4 w-4 text-amber-400" />
+                      </div>
+                      <p className="text-[12px] font-bold text-amber-300 leading-relaxed">
+                        {t('중요: 통신사(핸드폰)에 등록된 영문 이름과 외국인 등록증의 이름이 단 한 글자라도 다르면 조회가 불가능합니다.')}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {step === 2 && (
-              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-sm overflow-hidden">
-                <CardHeader className="text-center bg-slate-50/50 py-4 sm:py-10 border-b border-slate-100 relative">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => { setStep(1); saveProgress(1); }}
-                    className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    {t('이전')}
-                  </Button>
-                  <div className="mx-auto h-12 w-12 sm:h-16 sm:w-16 bg-primary/10 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-4"><Scan className="h-6 w-6 sm:h-8 sm:w-8 text-primary" /></div>
-                  <CardTitle className="text-2xl sm:text-3xl font-black break-keep">{t('Step 2: 외국인등록증 인증')}</CardTitle>
-                  <CardDescription className="font-bold text-slate-400 text-xs sm:text-sm">{t('신분증 정보를 확인하여 감면 대상을 판별합니다.')}</CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4 sm:space-y-8 p-4 sm:p-10">
-                  {/* Security Assurance Card - Embedded in Step 2 */}
-                  <div className="p-8 bg-slate-50 rounded-[2.5rem] border border-slate-100 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl group-hover:bg-primary/10 transition-colors" />
-                    <div className="relative flex flex-col md:flex-row items-center gap-8 text-center md:text-left">
-                      <div className="shrink-0 relative">
-                        <div className="absolute inset-0 bg-primary/20 rounded-full blur-xl animate-pulse" />
-                        <Image
-                          src="/certified_security_seal_premium_1774150786685.png"
-                          alt="Certified Security"
-                          width={80}
-                          height={80}
-                          className="relative transition-transform group-hover:scale-110"
-                        />
+              <div className="relative animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <div className="absolute top-0 left-0 w-12 h-12 border-t-2 border-l-2 border-[#b88c30] rounded-tl-3xl z-10 pointer-events-none" />
+                <div className="absolute top-0 right-0 w-12 h-12 border-t-2 border-r-2 border-[#b88c30] rounded-tr-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 left-0 w-12 h-12 border-b-2 border-l-2 border-[#b88c30] rounded-bl-3xl z-10 pointer-events-none" />
+                <div className="absolute bottom-0 right-0 w-12 h-12 border-b-2 border-r-2 border-[#b88c30] rounded-br-3xl z-10 pointer-events-none" />
+
+                <Card className="rounded-3xl border border-[#b88c30]/30 shadow-2xl overflow-hidden bg-[#0b192c]">
+                  {/* Header */}
+                  <CardHeader className="text-center py-8 sm:py-10 bg-[#0b192c] text-white relative overflow-hidden">
+                    <div className="absolute inset-0 opacity-[0.03]"
+                      style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
+                    />
+                    <Button variant="ghost" size="sm"
+                      onClick={() => { setStep(1); saveProgress(1); }}
+                      className="absolute top-5 left-5 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
+                    >
+                      <ChevronLeft className="h-4 w-4 mr-1" />{t('이전')}
+                    </Button>
+
+                    {/* Step Badge */}
+                    <div className="relative z-10 flex items-center justify-center gap-3 mb-5">
+                      <div className="h-px w-8 bg-[#b88c30]" />
+                      <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-full px-4 py-1.5">
+                        <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">Step 02 — 신분증 인증</span>
                       </div>
-                      <div className="space-y-4 flex-1">
-                        <div className="space-y-1">
-                          <h4 className="text-xl font-black text-slate-800 flex items-center justify-center md:justify-start gap-2">
-                            {t('security_card_title')}
-                            <Badge variant="outline" className="text-[10px] bg-primary/10 text-primary border-primary/20 leading-none py-0.5">{t('security_certified')}</Badge>
-                          </h4>
-                          <p className="text-sm font-bold text-slate-500">{t('security_card_subtitle')}</p>
+                      <div className="h-px w-8 bg-[#b88c30]" />
+                    </div>
+
+                    {/* NTS 로고 */}
+                    <div className="relative z-10 mx-auto mb-5 flex flex-col items-center gap-3">
+                      <div className="h-20 w-20 bg-white rounded-2xl flex items-center justify-center shadow-xl border border-[#b88c30]/20 overflow-hidden">
+                        <img src="/nts-logo.jpg" alt="국세청" className="h-16 w-16 object-contain" />
+                      </div>
+                      <div className="flex items-center gap-1.5">
+                        <div className="h-px w-5 bg-[#b88c30]/40" />
+                        <span className="text-[9px] font-black text-[#b88c30]/60 uppercase tracking-widest">National Tax Service</span>
+                        <div className="h-px w-5 bg-[#b88c30]/40" />
+                      </div>
+                    </div>
+
+                    <CardTitle className="relative z-10 text-2xl sm:text-3xl font-black tracking-tight px-4 leading-tight text-white">
+                      {t('Step 2: 외국인등록증 인증')}
+                    </CardTitle>
+                    <p className="relative z-10 text-slate-400 font-bold text-sm mt-2">{t('신분증 정보를 확인하여 감면 대상을 판별합니다.')}</p>
+                    <div className="relative z-10 h-px w-16 bg-[#b88c30] mx-auto mt-4" />
+                  </CardHeader>
+
+                  <CardContent className="space-y-5 p-5 sm:p-8 bg-[#0d1e30]">
+
+                    {/* 보안 인증 씰 + 3가지 약속 */}
+                    <div className="p-5 bg-white/5 rounded-2xl border border-[#b88c30]/20 relative overflow-hidden">
+                      <div className="absolute top-0 right-0 w-32 h-32 bg-[#b88c30]/5 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+                      <div className="relative flex flex-col sm:flex-row items-center gap-5">
+                        <div className="shrink-0 relative">
+                          <div className="absolute inset-0 bg-[#b88c30]/20 rounded-full blur-xl animate-pulse" />
+                          <Image src="/certified_security_seal_premium_1774150786685.png" alt="Certified Security" width={72} height={72} className="relative" />
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 pt-2">
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
-                              <Lock className="h-3 w-3 text-primary" />
-                              {t('security_item_encryption_title')}
+                        <div className="space-y-3 flex-1 text-center sm:text-left">
+                          <div className="flex items-center justify-center sm:justify-start gap-2">
+                            <h4 className="text-base font-black text-white">{t('security_card_title')}</h4>
+                            <Badge className="bg-[#b88c30]/10 text-[#b88c30] border border-[#b88c30]/30 text-[9px] font-black">{t('security_certified')}</Badge>
+                          </div>
+                          <p className="text-xs font-bold text-slate-400">{t('security_card_subtitle')}</p>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                            {[
+                              { icon: Lock, title: t('security_item_encryption_title'), desc: t('security_item_encryption_desc') },
+                              { icon: Database, title: t('security_item_no_storage_title'), desc: t('security_item_no_storage_desc') },
+                              { icon: Shield, title: t('security_item_pippa_title'), desc: t('security_item_pippa_desc') },
+                            ].map(({ icon: Icon, title, desc }) => (
+                              <div key={title} className="space-y-1">
+                                <div className="flex items-center gap-1.5 text-xs font-black text-[#b88c30]">
+                                  <Icon className="h-3 w-3" />{title}
+                                </div>
+                                <p className="text-[10px] font-medium text-slate-500 leading-tight">{desc}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* 카메라 / 촬영 영역 */}
+                    {!isCameraActive ? (
+                      <div onClick={startCamera} className="border-2 border-dashed border-[#b88c30]/30 rounded-2xl p-10 text-center bg-[#b88c30]/5 cursor-pointer hover:bg-[#b88c30]/10 transition-all group">
+                        <Camera className="h-12 w-12 text-[#b88c30] mx-auto mb-3 transition-transform group-hover:scale-110" />
+                        <h3 className="font-black text-white text-base">{t('외국인등록증 촬영하여 자동 입력')}</h3>
+                        <p className="text-xs font-bold text-slate-500 mt-2">{t('되도록 외국인 등록증을 촬영 해주세요. 그래야 정확한 정보가 입력 됩니다.')}</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="relative w-full aspect-video rounded-2xl overflow-hidden shadow-2xl bg-black">
+                          <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <div className="w-[85%] aspect-[1.58] border-4 border-dashed border-white/80 rounded-2xl shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center">
+                              <span className="text-white text-xs font-black bg-black/60 px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm animate-pulse">{t('신분증을 점선에 맞춰주세요')}</span>
                             </div>
-                            <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_encryption_desc')}</p>
                           </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
-                              <Database className="h-3 w-3 text-primary" />
-                              {t('security_item_no_storage_title')}
-                            </div>
-                            <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_no_storage_desc')}</p>
-                          </div>
-                          <div className="space-y-1">
-                            <div className="flex items-center gap-1.5 text-xs font-black text-slate-700">
-                              <Shield className="h-3 w-3 text-primary" />
-                              {t('security_item_pippa_title')}
-                            </div>
-                            <p className="text-[10px] font-medium text-slate-400 leading-tight">{t('security_item_pippa_desc')}</p>
-                          </div>
+                        </div>
+                        <div className="flex gap-4">
+                          <Button type="button" onClick={() => { const stream = videoRef.current?.srcObject as MediaStream; stream?.getTracks().forEach(track => track.stop()); setIsCameraActive(false); }}
+                            className="h-14 w-1/3 rounded-2xl font-bold bg-white/5 border border-white/10 text-slate-400 hover:bg-white/10" disabled={loading}>
+                            {t('취소')}
+                          </Button>
+                          <Button type="button" onClick={captureAndScan} className="flex-1 h-14 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-base font-black rounded-2xl shadow-xl" disabled={loading}>
+                            {loading ? <Loader2 className="animate-spin h-6 w-6" /> : t('촬영 및 정보 추출')}
+                          </Button>
+                        </div>
+                      </div>
+                    )}
+                    <canvas ref={canvasRef} className="hidden" />
+
+                    {/* 비자 안심 + 암호화 */}
+                    <div className="space-y-3">
+                      <div className="flex items-start gap-3 p-4 bg-emerald-950/40 rounded-2xl border border-emerald-800/30">
+                        <div className="h-8 w-8 bg-emerald-900/50 rounded-xl flex items-center justify-center shrink-0">
+                          <ShieldCheck className="h-4 w-4 text-emerald-400" />
+                        </div>
+                        <p className="text-[12px] font-black text-emerald-400 leading-relaxed">{t('본 환급은 합법적 권리로, 비자(E-9, E-7, F-2 등) 연장이나 체류 자격에 어떠한 불이익도 없습니다.')}</p>
+                      </div>
+                      <div className="flex items-start gap-3 p-4 bg-white/5 rounded-2xl border border-white/10">
+                        <div className="h-8 w-8 bg-[#b88c30]/10 rounded-xl flex items-center justify-center shrink-0">
+                          <Lock className="h-4 w-4 text-[#b88c30]" />
+                        </div>
+                        <div>
+                          <p className="text-[12px] font-black text-white">{t('입력하신 정보는 은행 수준(AES-256)으로 암호화됩니다.')}</p>
+                          <p className="text-[11px] font-bold text-slate-500 mt-1 leading-tight">{t('국세청 환급금 조회를 위해서만 1회 사용되며 서버에 절대 저장되지 않습니다. (평가 후 즉시 파기)')}</p>
                         </div>
                       </div>
                     </div>
-                  </div>
 
-                  {!isCameraActive ? (
-                    <div onClick={startCamera} className="border-2 border-dashed border-slate-200 rounded-[2.5rem] p-12 text-center bg-slate-50 cursor-pointer hover:bg-primary/5 transition-all group">
-                      <Camera className="h-14 w-14 text-primary mx-auto mb-4 transition-transform group-hover:scale-110" />
-                      <h3 className="font-black text-lg">{t('외국인등록증 촬영하여 자동 입력')}</h3>
-                      <p className="text-xs font-bold text-slate-400 mt-2">{t('되도록 외국인 등록증을 촬영 해주세요. 그래야 정확한 정보가 입력 됩니다.')}</p>
-                    </div>
-                  ) : (
-                    <div className="space-y-4">
-                      <div className="relative w-full aspect-video rounded-3xl overflow-hidden shadow-2xl bg-black">
-                        <video ref={videoRef} className="w-full h-full object-cover" autoPlay muted playsInline />
-                        
-                        {/* Dotted ID Card Guide Box Overlay */}
-                        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                          {/* Dotted Box: aspect ratio ~1.58 (standard ID card) */}
-                          <div className="w-[85%] aspect-[1.58] border-4 border-dashed border-white/80 rounded-2xl shadow-[0_0_0_9999px_rgba(0,0,0,0.5)] flex flex-col items-center justify-center">
-                            <span className="text-white text-xs font-black bg-black/60 px-3 py-1 rounded-full uppercase tracking-wider backdrop-blur-sm animate-pulse">
-                              {t('신분증을 점선에 맞춰주세요')}
-                            </span>
+                    {/* 입력 폼 */}
+                    <form onSubmit={handleOcrConfirm} className="space-y-5">
+                      <div className="grid gap-4">
+                        <div className="space-y-2">
+                          <div className="flex flex-col gap-1">
+                            <Label className="text-xs font-black text-[#b88c30] uppercase tracking-widest">{t('영문 성명 (NAME)')}</Label>
+                            <p className="text-[10px] text-amber-400 font-bold">{t('* 정확한 조회를 위해 성과 이름을 꼭 띄어서 입력해 주세요.')}</p>
                           </div>
+                          <input
+                            id="step2-name-input"
+                            placeholder={t("예: HONG GIL DONG")}
+                            value={formData.officialName}
+                            onChange={(e) => {
+                              const newName = e.target.value.toUpperCase();
+                              setFormData({ ...formData, officialName: newName });
+                              if (newName.length > 3) { prefetchNameOptimization(newName); }
+                            }}
+                            className="h-14 px-5 rounded-xl bg-white/10 border border-white/10 text-white font-bold text-base w-full outline-none focus:ring-2 focus:ring-[#b88c30]/50 focus:border-[#b88c30]/50 placeholder:text-slate-600 transition-all"
+                          />
+                        </div>
+                        <div className="space-y-2">
+                          <Label className="text-xs font-black text-[#b88c30] uppercase tracking-widest">{t('외국인 등록번호')}</Label>
+                          <input
+                            id="step2-reg-input"
+                            value={formData.registrationNumber}
+                            maxLength={13}
+                            onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })}
+                            className="h-14 px-5 rounded-xl bg-white/10 border border-white/10 text-white font-bold text-base w-full outline-none focus:ring-2 focus:ring-[#b88c30]/50 focus:border-[#b88c30]/50 placeholder:text-slate-600 transition-all"
+                          />
                         </div>
                       </div>
-                      
-                      <div className="flex gap-4">
-                        <Button 
-                          type="button"
-                          onClick={() => {
-                            const stream = videoRef.current?.srcObject as MediaStream;
-                            stream?.getTracks().forEach(track => track.stop());
-                            setIsCameraActive(false);
-                          }}
-                          variant="outline"
-                          className="h-16 w-1/3 rounded-2xl font-bold border-slate-200 text-slate-500"
-                          disabled={loading}
-                        >
-                          {t('취소')}
-                        </Button>
-                        <Button 
-                          type="button"
-                          onClick={captureAndScan} 
-                          className="flex-1 h-16 bg-primary text-lg font-black rounded-2xl shadow-xl shadow-primary/20" 
-                          disabled={loading}
-                        >
-                          {loading ? <Loader2 className="animate-spin h-6 w-6" /> : t('촬영 및 정보 추출')}
-                        </Button>
-                      </div>
-                    </div>
-                  )}
-                  <canvas ref={canvasRef} className="hidden" />
 
-                  {/* 추가된 신분증 입력뷰 Trust Indicators */}
-                  <div className="space-y-4 mb-2 mt-4">
-                    <Alert className="bg-emerald-50 border-emerald-200 rounded-2xl shadow-sm pb-3">
-                      <ShieldCheck className="h-5 w-5 text-emerald-600 mt-0.5" />
-                      <AlertDescription className="text-sm font-black text-emerald-800 leading-relaxed ml-1">
-                        {t('본 환급은 합법적 권리로, 비자(E-9, E-7, F-2 등) 연장이나 체류 자격에 어떠한 불이익도 없습니다.')}
-                      </AlertDescription>
-                    </Alert>
+                      {/* 법령 근거 */}
+                      <div className="flex items-center justify-center gap-2 py-2">
+                        <div className="h-px flex-1 bg-[#b88c30]/10" />
+                        <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider">소득세법 제59조의 4 · 합법적 세금 환급</span>
+                        <div className="h-px flex-1 bg-[#b88c30]/10" />
+                      </div>
 
-                    <div className="flex items-start gap-3 p-4 bg-slate-50 rounded-2xl border border-slate-100">
-                      <Lock className="w-6 h-6 text-slate-400 shrink-0 mt-0.5" />
-                      <div>
-                        <p className="text-[13px] font-black text-slate-700">{t('입력하신 정보는 은행 수준(AES-256)으로 암호화됩니다.')}</p>
-                        <p className="text-[11px] font-bold text-slate-500 mt-1 leading-tight">{t('국세청 환급금 조회를 위해서만 1회 사용되며 서버에 절대 저장되지 않습니다. (평가 후 즉시 파기)')}</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <form onSubmit={handleOcrConfirm} className="space-y-8">
-                    <div className="grid gap-6">
-                      <div className="space-y-3">
-                        <div className="flex flex-col gap-1.5 mb-1">
-                          <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('영문 성명 (NAME)')}</Label>
-                          <p className="text-[10px] text-amber-600 font-bold ml-1">{t('* 정확한 조회를 위해 성과 이름을 꼭 띄어서 입력해 주세요.')}</p>
-                        </div>
-                        <input
-                          id="step2-name-input"
-                          placeholder={t("예: HONG GIL DONG")}
-                          value={formData.officialName}
-                          onChange={(e) => {
-                            const newName = e.target.value.toUpperCase();
-                            setFormData({ ...formData, officialName: newName });
-                            // 실시간으로 미리 작업 시작 (최적화)
-                            if (newName.length > 3) {
-                              prefetchNameOptimization(newName);
-                            }
-                          }}
-                          className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg w-full outline-none focus:ring-2 focus:ring-primary/20"
-                        />
-                      </div>
-                      <div className="space-y-3">
-                        <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('외국인 등록번호')}</Label>
-                        <input id="step2-reg-input" value={formData.registrationNumber} maxLength={13} onChange={(e) => setFormData({ ...formData, registrationNumber: e.target.value })} className="h-14 px-6 rounded-2xl bg-slate-50 border-none font-bold text-lg w-full outline-none focus:ring-2 focus:ring-primary/20" />
-                      </div>
-                    </div>
-                    <Button id="step2-submit-btn" type="submit" className="w-full h-16 sm:h-20 bg-slate-900 text-lg sm:text-xl font-black rounded-2xl sm:rounded-3xl shadow-2xl" disabled={loading}>{t('다음 단계로 이동')}</Button>
-                  </form>
-                </CardContent>
-              </Card>
+                      <Button id="step2-submit-btn" type="submit"
+                        className="w-full h-[5rem] bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                        disabled={loading}>
+                        {loading ? <Loader2 className="animate-spin h-6 w-6" /> : (
+                          <><span className="flex-1 text-left">{t('다음 단계로 이동')}</span><ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-2 shrink-0" /></>
+                        )}
+                      </Button>
+                    </form>
+                  </CardContent>
+                </Card>
+              </div>
             )}
 
             {step === 3 && (

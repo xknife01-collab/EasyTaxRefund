@@ -31,7 +31,8 @@ import {
   Shield,
   X,
   Minimize2,
-  Banknote
+  Banknote,
+  Check
 } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "@/components/ui/badge";
@@ -682,6 +683,121 @@ export default function HomePage() {
                 </p>
               </div>
 
+            </div>
+          </div>
+        </section>
+        {/* 후불 FLOW TIMELINE - Added above comparison table */}
+        <section className="py-20 bg-white border-t border-slate-100 px-6">
+          <div className="max-w-6xl mx-auto space-y-14">
+            <div className="text-center space-y-3">
+              <div className="flex items-center justify-center gap-3">
+                <div className="h-px w-10 bg-[#b88c30]" />
+                <span className="text-[#b88c30] text-xs font-black tracking-[0.3em] uppercase">{t('후불 정산 순서')}</span>
+                <div className="h-px w-10 bg-[#b88c30]" />
+              </div>
+              <h2 className="text-2xl sm:text-4xl font-black text-[#0f1e36]">{t('신청부터 환급까지, 3단계')}</h2>
+            </div>
+
+            {/* Steps */}
+            <div className="relative">
+              {/* connecting gold line */}
+              <div className="hidden md:block absolute top-6 left-[calc(16.66%+24px)] right-[calc(16.66%+24px)] h-px bg-[#b88c30]" />
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-10 relative z-10">
+                {[
+                  {
+                    num: "01",
+                    icon: "⏱",
+                    tag: t("무료 · 즉시"),
+                    title: t("홈페이지 접속 및 조회"),
+                    desc: t("홈페이지 주소(또는 QR코드)로 접속하여 이름·외국인등록번호만 입력하면 30초 안에 예상 환급액을 무료로 확인할 수 있습니다."),
+                  },
+                  {
+                    num: "02",
+                    icon: "%",
+                    tag: t("선결제 없음"),
+                    title: t("전담 세무사 매칭 & 신청"),
+                    desc: t("전담 공인 세무사가 1:1로 배정되어 경정청구 서류를 대신 준비하고 국세청에 직접 제출합니다. 수수료 선결제 없이 진행됩니다."),
+                  },
+                  {
+                    num: "03",
+                    icon: "💰",
+                    tag: t("NO WIN, NO FEE"),
+                    title: t("환급금 입금 후 성공 보수"),
+                    desc: t("국세청에서 환급금이 본인 통장에 직접 입금된 뒤, 성공 보수를 수취합니다. 환급이 되지 않으면 수수료도 없습니다."),
+                  },
+                ].map((step, i) => (
+                  <div key={i} className="flex flex-col items-center text-center gap-5">
+                    {/* Number circle */}
+                    <div className="h-12 w-12 rounded-full bg-[#0f1e36] text-[#b88c30] font-black text-lg flex items-center justify-center shadow-lg ring-4 ring-white">
+                      {step.num}
+                    </div>
+                    {/* Icon circle */}
+                    <div className="h-14 w-14 rounded-full bg-[#f5f0e8] flex items-center justify-center text-xl shadow-sm">
+                      {step.icon}
+                    </div>
+                    {/* Tag */}
+                    <span className="text-xs font-black text-[#b88c30] italic tracking-wider border border-[#b88c30]/30 rounded-full px-3 py-1 bg-[#b88c30]/5">
+                      {step.tag}
+                    </span>
+                    {/* Title */}
+                    <h3 className="text-lg font-black text-[#0f1e36] leading-snug">{step.title}</h3>
+                    {/* Desc */}
+                    <p className="text-slate-500 font-bold text-sm leading-relaxed break-keep max-w-xs">{step.desc}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* COMPARISON TABLE - Added right below 3-Tier Guarantee */}
+        <section className="pb-20 md:pb-28 px-6 bg-white">
+          <div className="max-w-6xl mx-auto space-y-10">
+            <div className="h-px w-full bg-slate-100 mb-16" />
+            <div className="mb-10">
+              <div className="flex items-center gap-3 mb-5">
+                <div className="h-[2px] w-8 bg-[#b88c30]" />
+                <span className="text-[#b88c30] text-xs font-black uppercase tracking-[0.3em]">03 — Why Us</span>
+              </div>
+              <h2 className="text-3xl md:text-5xl font-black text-[#0f1e36] leading-tight tracking-tight break-keep mb-4">
+                {t('왜 Easy Tax Refund인가?')}
+              </h2>
+              <div className="h-1 w-12 bg-[#b88c30] rounded-full" />
+            </div>
+            <div className="overflow-hidden rounded-3xl border border-slate-200 shadow-lg">
+              <table className="w-full">
+                <thead>
+                  <tr>
+                    <th className="bg-slate-50 px-6 py-5 text-left text-xs md:text-sm font-black text-slate-400 uppercase tracking-widest w-1/3">{t('비교 항목')}</th>
+                    <th className="bg-slate-100 px-6 py-5 text-center text-xs md:text-sm font-black text-slate-500 w-1/3">{t('타 서비스 (선결제)')}</th>
+                    <th className="bg-[#0f1e36] px-6 py-5 text-center text-xs md:text-sm font-black text-[#b88c30] w-1/3">{t('Easy Tax Refund (후불제)')}</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {[
+                    { item: t("신청 초기 비용"), other: t("수만~수십만원"), us: t("완전 무료 (0원)") },
+                    { item: t("환급 실패 시"), other: t("수수료 환불 안 됨"), us: t("수수료 청구 없음") },
+                    { item: t("수수료 납부 시점"), other: t("신청 전 선결제"), us: t("환급금 입금 후 후납") },
+                    { item: t("세무사 직접 대행"), other: t("자동화 처리만"), us: t("공인 세무사 1:1 검토") },
+                    { item: t("고객 리스크"), other: t("높음 (선납 손실 위험)"), us: t("0% (No Win, No Fee)") },
+                  ].map((row, i) => (
+                    <tr key={i} className="hover:bg-slate-50 transition-colors">
+                      <td className="px-6 py-5 font-black text-xs md:text-sm text-[#0f1e36]">{row.item}</td>
+                      <td className="px-6 py-5 text-center">
+                        <div className="flex items-center justify-center gap-1 text-red-400 font-bold text-xs md:text-sm">
+                          <X className="h-4 w-4 shrink-0" />{row.other}
+                        </div>
+                      </td>
+                      <td className="px-6 py-5 text-center bg-[#0f1e36]/5">
+                        <div className="flex items-center justify-center gap-1 text-emerald-600 font-black text-xs md:text-sm">
+                          <Check className="h-4 w-4 shrink-0" />{row.us}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
             </div>
           </div>
         </section>
