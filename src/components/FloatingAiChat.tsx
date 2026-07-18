@@ -362,7 +362,7 @@ function FloatingConsultingPanelInner() {
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2.5 bg-[#FEE500] hover:bg-[#FEE500]/95 text-[#0f1e36] font-black rounded-2xl py-3.5 px-4 shadow-[0_4px_12px_rgba(254,229,0,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"
             >
-              <span className="text-base leading-none">💬</span>
+              <img src="/Kakao Talk.png" alt="KakaoTalk" className="h-5 w-5 object-contain shrink-0" />
               <span>{translate("카카오톡 실시간 상담")}</span>
             </a>
 
@@ -373,7 +373,7 @@ function FloatingConsultingPanelInner() {
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#25D366]/95 text-white font-black rounded-2xl py-3.5 px-4 shadow-[0_4px_12px_rgba(37,211,102,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"
             >
-              <span className="text-base leading-none">🟢</span>
+              <img src="/WhatsApp.png" alt="WhatsApp" className="h-5 w-5 object-contain shrink-0" />
               <span>{translate("왓츠앱 실시간 상담")}</span>
             </a>
 
@@ -384,7 +384,7 @@ function FloatingConsultingPanelInner() {
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2.5 bg-[#0088cc] hover:bg-[#0088cc]/95 text-white font-black rounded-2xl py-3.5 px-4 shadow-[0_4px_12px_rgba(0,136,204,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"
             >
-              <span className="text-base leading-none">✈️</span>
+              <img src="/Telegram.png" alt="Telegram" className="h-5 w-5 object-contain shrink-0" />
               <span>{translate("텔레그램 실시간 상담")}</span>
             </a>
 

@@ -691,64 +691,37 @@ export default function HomePage() {
         <section className="py-8 bg-slate-50/60 border-y border-slate-100/80 overflow-hidden">
           <div className="container mx-auto px-4 max-w-6xl">
             <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-6 md:gap-x-16">
-              
-              {/* 공인 세무사 직접 대행 */}
+
               <div className="flex items-center gap-2.5">
                 <CheckCircle2 className="h-6 w-6 text-[#b88c30] shrink-0" />
-                <span className="font-black text-base md:text-lg text-[#2b4c7e] tracking-tight whitespace-nowrap">
-                  {t('공인 세무사 직접 대행')}
-                </span>
+                <span className="font-black text-base md:text-lg text-[#2b4c7e] tracking-tight whitespace-nowrap">{t('공인 세무사 직접 대행')}</span>
               </div>
-              
+
               <div className="hidden md:block h-8 w-px bg-slate-200" />
-              
-              {/* 국세청 로고 */}
+
               <div className="flex items-center h-12 md:h-14">
-                <Image
-                  src="/nts-logo.jpg"
-                  alt="국세청"
-                  width={110}
-                  height={44}
-                  className="h-10 md:h-12 w-auto object-contain"
-                />
+                <Image src="/nts-logo.jpg" alt="국세청" width={110} height={44} className="h-10 md:h-12 w-auto object-contain" />
               </div>
-              
+
               <div className="hidden md:block h-8 w-px bg-slate-200" />
-              
-              {/* NTS Badge */}
+
               <div className="flex items-center h-12 md:h-14">
-                <Image
-                  src="/official_nts_carrier_badge_v2_1774141326494.png"
-                  alt="NTS Badge"
-                  width={48}
-                  height={48}
-                  className="h-10 md:h-12 w-auto object-contain"
-                />
+                <Image src="/official_nts_carrier_badge_v2_1774141326494.png" alt="NTS Badge" width={48} height={48} className="h-10 md:h-12 w-auto object-contain" />
               </div>
-              
+
               <div className="hidden md:block h-8 w-px bg-slate-200" />
-              
-              {/* Security Seal */}
+
               <div className="flex items-center h-12 md:h-14">
-                <Image
-                  src="/certified_security_seal_premium_1774150786685.png"
-                  alt="Security Seal"
-                  width={48}
-                  height={48}
-                  className="h-10 md:h-12 w-auto object-contain"
-                />
+                <Image src="/certified_security_seal_premium_1774150786685.png" alt="Security Seal" width={48} height={48} className="h-10 md:h-12 w-auto object-contain" />
               </div>
-              
+
               <div className="hidden md:block h-8 w-px bg-slate-200" />
-              
-              {/* 개인정보 보호 인증 */}
+
               <div className="flex items-center gap-2.5">
                 <ShieldCheck className="h-6 w-6 text-emerald-600 shrink-0" />
-                <span className="font-black text-base md:text-lg text-[#2b4c7e] tracking-tight whitespace-nowrap">
-                  {t('개인정보 보호 인증')}
-                </span>
+                <span className="font-black text-base md:text-lg text-[#2b4c7e] tracking-tight whitespace-nowrap">{t('개인정보 보호 인증')}</span>
               </div>
-              
+
             </div>
           </div>
         </section>
@@ -838,90 +811,126 @@ export default function HomePage() {
         </section>
 
         {/* 10단계 시뮬레이터 쇼케이스 */}
-        <section className="py-12 bg-slate-50/50">
+        <section className="py-0 bg-[#0b192c]">
           <div className="container mx-auto px-4">
             <TaxRefundSimulator />
           </div>
         </section>
 
         {/* 디자인 섹션 5: 문제 제기 */}
-        <section className="py-32 bg-white overflow-hidden">
-          <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-20 items-center max-w-7xl mx-auto">
+        <section className="py-24 md:py-32 bg-white overflow-hidden relative">
+          {/* 골드 장식 라인 */}
+          <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#b88c30]/40 to-transparent" />
+          {/* 배경 글로우 */}
+          <div className="absolute top-0 left-1/3 w-[500px] h-[500px] bg-[#b88c30]/4 rounded-full blur-[140px] pointer-events-none" />
+
+          <div className="container mx-auto px-6 max-w-7xl relative z-10">
+            <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+
+              {/* 왼쪽: 헤드라인 + 수치 */}
               <div className="space-y-10">
-                <div className="space-y-4">
-                  <Badge variant="outline" className="text-red-500 border-red-100 bg-red-50 px-4 py-1.5 font-bold uppercase tracking-widest">{t('실제 문제')}</Badge>
-                  <h2 className="text-4xl lg:text-6xl font-black font-headline text-slate-900 leading-tight whitespace-pre-line">
+                <div className="space-y-5">
+                  {/* 아이브로우 */}
+                  <div className="flex items-center gap-3">
+                    <div className="h-[3px] w-8 bg-[#b88c30]" />
+                    <span className="text-[#b88c30] text-xs font-black uppercase tracking-[0.3em]">{t('실제 문제')}</span>
+                  </div>
+                  <h2 className="text-4xl lg:text-6xl font-black font-headline text-[#0f1e36] leading-tight whitespace-pre-line border-l-4 border-[#b88c30] pl-6">
                     {t("Why didn't I know\nthis before?")}
                   </h2>
-                  <p className="text-2xl font-bold text-slate-400">{t('외국인 근로자 10명 중 9명이 환급을 받지 못하는 이유')}</p>
+                  <p className="text-lg font-bold text-slate-500">{t('외국인 근로자 10명 중 9명이 환급을 받지 못하는 이유')}</p>
                 </div>
-                <p className="text-xl text-slate-500 font-medium leading-relaxed max-w-xl">{t(`대한민국 정부는 중소기업에서 활약하는 젊은 인재들을 위해 강력한 세제 혜택를 제공합니다. 하지만 정작 혜택를 받아야 할 외국인 근로자들은 정보 부족과 까다로운 본인 인증 절차 때문에 매년 수백만 원을 국가에 남겨두고 있습니다.`)}</p>
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                  <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 text-center space-y-2">
-                    <div className="text-slate-400 font-bold text-xs uppercase tracking-widest">{t('매년 최대 환급액')}</div>
-                    <div className="text-2xl font-black text-primary">{t('200만 원')}</div>
-                  </div>
-                  <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 text-center space-y-2">
-                    <div className="text-slate-400 font-bold text-xs uppercase tracking-widest">{t('최대 환급액')}</div>
-                    <div className="text-2xl font-black text-primary">{t('1,000만 원')}</div>
-                  </div>
-                  <div className="p-6 bg-slate-50 rounded-3xl border border-slate-100 text-center space-y-2">
-                    <div className="text-slate-400 font-bold text-xs uppercase tracking-widest">{t('과거 내역 소급')}</div>
-                    <div className="text-2xl font-black text-primary">{t('과거 5년치')}</div>
-                  </div>
+                <p className="text-base text-slate-500 font-medium leading-relaxed max-w-xl break-keep">{t(`대한민국 정부는 중소기업에서 활약하는 젊은 인재들을 위해 강력한 세제 혜택를 제공합니다. 하지만 정작 혜택를 받아야 할 외국인 근로자들은 정보 부족과 까다로운 본인 인증 절차 때문에 매년 수백만 원을 국가에 남겨두고 있습니다.`)}</p>
+
+                {/* 수치 카드 3개 */}
+                <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { label: t('매년 최대 환급액'), value: t('200만 원') },
+                    { label: t('최대 환급액'), value: t('1,000만 원') },
+                    { label: t('과거 내역 소급'), value: t('과거 5년치') },
+                  ].map((item, i) => (
+                    <div key={i} className="p-5 bg-[#f5f0e8] border border-[#b88c30]/20 rounded-2xl text-center space-y-2 hover:border-[#b88c30]/40 transition-all">
+                      <div className="text-slate-500 font-bold text-[10px] uppercase tracking-widest">{item.label}</div>
+                      <div className="text-xl font-black text-[#0f1e36]">{item.value}</div>
+                    </div>
+                  ))}
                 </div>
               </div>
+
+              {/* 오른쪽: 이유 카드 */}
               <div className="relative">
-                <div className="absolute inset-0 bg-[#0b192c]/5 rounded-[4rem] -rotate-3" />
-                <Card className="relative premium-card rounded-[3.5rem] border-none p-10 lg:p-16 space-y-12 shadow-2xl overflow-hidden">
-                  <div className="absolute top-0 right-0 p-8 opacity-[0.03] text-primary"><AlertCircle className="h-48 w-48" /></div>
-                  <h3 className="text-2xl font-black text-slate-900 relative z-10">{t('왜 지금까지 못 받았을까요?')}</h3>
-                  <div className="space-y-6 relative z-10">
+                <div className="absolute inset-0 bg-[#0f1e36]/5 rounded-[3rem] -rotate-2 pointer-events-none" />
+                <div className="relative bg-slate-50 border border-slate-200 rounded-[2.5rem] p-8 lg:p-12 space-y-6 shadow-xl">
+                  {/* 코너 장식 */}
+                  <div className="absolute top-4 left-4 w-5 h-5 border-t-2 border-l-2 border-[#b88c30]/40 rounded-tl-xl" />
+                  <div className="absolute top-4 right-4 w-5 h-5 border-t-2 border-r-2 border-[#b88c30]/40 rounded-tr-xl" />
+                  <div className="absolute bottom-4 left-4 w-5 h-5 border-b-2 border-l-2 border-[#b88c30]/40 rounded-bl-xl" />
+                  <div className="absolute bottom-4 right-4 w-5 h-5 border-b-2 border-r-2 border-[#b88c30]/40 rounded-br-xl" />
+
+                  <div className="flex items-center gap-3 pb-2 border-b border-slate-200">
+                    <div className="h-2 w-2 rounded-full bg-[#b88c30]" />
+                    <h3 className="text-lg font-black text-[#0f1e36]">{t('왜 지금까지 못 받았을까요?')}</h3>
+                  </div>
+                  <div className="space-y-4">
                     {[t('복잡한 조세특례제한법 법률 용어'), t('통신사와 ARC 명의 불일치로 인한 인증 실패'), t('회사 인사팀에 직접 물어보기 껄끄러운 상황'), t('외국인 전문 상담 창구의 부재')].map((reason, idx) => (
-                      <div key={idx} className="flex items-start gap-4 p-5 bg-white rounded-2xl border border-slate-50 shadow-sm transition-all hover:border-primary/20">
-                        <div className="h-8 w-8 bg-red-50 rounded-full flex items-center justify-center shrink-0"><AlertCircle className="h-5 w-5 text-red-500" /></div>
-                        <span className="text-lg font-bold text-slate-600">{reason}</span>
+                      <div key={idx} className="flex items-center gap-4 p-4 bg-white border border-slate-100 rounded-xl hover:border-[#b88c30]/30 hover:shadow-sm transition-all group">
+                        <div className="h-8 w-8 bg-red-50 border border-red-100 rounded-lg flex items-center justify-center shrink-0">
+                          <AlertCircle className="h-4 w-4 text-red-500" />
+                        </div>
+                        <span className="text-sm font-bold text-slate-600 group-hover:text-[#0f1e36] transition-colors">{reason}</span>
                       </div>
                     ))}
                   </div>
-                </Card>
+                </div>
               </div>
+
             </div>
           </div>
         </section>
 
         {/* 디자인 섹션 4: 해결책 */}
-        <section className="py-32 bg-slate-50/50">
-          <div className="container mx-auto px-4 max-w-7xl">
-            <div className="text-center space-y-4 mb-20">
-              <h2 className="text-4xl lg:text-6xl font-black font-headline text-slate-900">
-                {t('가장 까다로운 인증을')}<br /><span className="text-primary">{t('가장 확실하게 해결합니다')}</span>
+        <section className="py-24 md:py-32 bg-[#0b192c] relative overflow-hidden">
+          {/* 장식 */}
+          <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#e2b659] to-transparent" />
+          <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#e2b659] to-transparent" />
+          <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[500px] h-[500px] bg-[#b88c30]/6 rounded-full blur-[140px] pointer-events-none" />
+
+          <div className="container mx-auto px-6 max-w-7xl relative z-10">
+            {/* 헤더 */}
+            <div className="text-center space-y-5 mb-16">
+              <div className="flex items-center justify-center gap-3">
+                <div className="h-px w-10 bg-[#e2b659]" />
+                <span className="text-[#e2b659] text-xs font-black uppercase tracking-[0.3em]">Our Solution</span>
+                <div className="h-px w-10 bg-[#e2b659]" />
+              </div>
+              <h2 className="text-4xl lg:text-5xl font-black font-headline text-white leading-tight">
+                {t('가장 까다로운 인증을')}<br />
+                <span className="text-[#e2b659]">{t('가장 확실하게 해결합니다')}</span>
               </h2>
-              <p className="text-xl text-slate-500 font-bold">{t('Easy Tax Refund만의 독자적인 기술력과 전문성을 경험하세요.')}</p>
+              <p className="text-slate-300 font-bold text-base max-w-xl mx-auto">{t('Easy Tax Refund만의 독자적인 기술력과 전문성을 경험하세요.')}</p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8">
-              <Card className="premium-card rounded-[2.5rem] border-none p-8 space-y-6 bg-white shadow-xl">
-                <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center"><ScanSearch className="h-8 w-8 text-primary" /></div>
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-black text-slate-900">{t('외국인 전용 성명 매칭 알고리즘')}</h3>
-                  <p className="text-slate-500 font-medium leading-relaxed">{t('ARC와 통신사 정보의 이름 형식이 달라 발생하는 고질적인 인증 오류를 저희만의 독자적인 알고리즘으로 해결했습니다.')}</p>
+
+            {/* 3열 카드 */}
+            <div className="grid md:grid-cols-3 gap-6">
+              {[
+                { icon: ScanSearch, title: t('외국인 전용 성명 매칭 알고리즘'), desc: t('ARC와 통신사 정보의 이름 형식이 달라 발생하는 고질적인 인증 오류를 저희만의 독자적인 알고리즘으로 해결했습니다.') },
+                { icon: UserCheck, title: t('국가 공인 세무 전문가의 검토'), desc: t('단순한 자동화 프로그램이 아닙니다. 모든 신청은 대한민국 공인 세무사의 철저한 검토를 거쳐 진행됩니다.') },
+                { icon: Lock, title: t('금융권 수준의 데이터 보안'), desc: t('당신의 소중한 개인정보는 은행급 암호화 프로토콜로 보호됩니다. 환급 목적 외 데이터 사용은 절대 금지됩니다.') },
+              ].map(({ icon: Icon, title, desc }, i) => (
+                <div key={i} className="group relative bg-white/5 border border-white/10 rounded-[2rem] p-8 space-y-5 hover:border-[#e2b659]/40 hover:bg-white/10 transition-all duration-300 hover:-translate-y-1">
+                  {/* 코너 골드 장식 */}
+                  <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-[#e2b659]/40 rounded-tl-lg group-hover:border-[#e2b659]/80 transition-colors" />
+                  <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-[#e2b659]/40 rounded-tr-lg group-hover:border-[#e2b659]/80 transition-colors" />
+
+                  <div className="h-14 w-14 bg-[#e2b659]/10 border border-[#e2b659]/20 rounded-2xl flex items-center justify-center group-hover:bg-[#e2b659]/20 transition-colors">
+                    <Icon className="h-7 w-7 text-[#e2b659]" />
+                  </div>
+                  <div className="space-y-3">
+                    <h3 className="text-xl font-black text-white leading-snug break-keep">{title}</h3>
+                    <p className="text-slate-400 font-medium leading-relaxed text-sm break-keep group-hover:text-slate-300 transition-colors">{desc}</p>
+                  </div>
                 </div>
-              </Card>
-              <Card className="premium-card rounded-[2.5rem] border-none p-8 space-y-6 bg-white shadow-xl">
-                <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center"><UserCheck className="h-8 w-8 text-primary" /></div>
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-black text-slate-900">{t('국가 공인 세무 전문가의 검토')}</h3>
-                  <p className="text-slate-500 font-medium leading-relaxed">{t('단순한 자동화 프로그램이 아닙니다. 모든 신청은 대한민국 공인 세무사의 철저한 검토를 거쳐 진행됩니다.')}</p>
-                </div>
-              </Card>
-              <Card className="premium-card rounded-[2.5rem] border-none p-8 space-y-6 bg-white shadow-xl">
-                <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center"><Lock className="h-8 w-8 text-primary" /></div>
-                <div className="space-y-4">
-                  <h3 className="text-2xl font-black text-slate-900">{t('금융권 수준의 데이터 보안')}</h3>
-                  <p className="text-slate-500 font-medium leading-relaxed">{t('당신의 소중한 개인정보는 은행급 암호화 프로토콜로 보호됩니다. 환급 목적 외 데이터 사용은 절대 금지됩니다.')}</p>
-                </div>
-              </Card>
+              ))}
             </div>
           </div>
         </section>
@@ -943,9 +952,9 @@ export default function HomePage() {
                 </Link>
               </Button>
               <div className="flex flex-col sm:flex-row items-center gap-6 p-6 rounded-3xl bg-white border border-slate-100 shadow-sm">
-                <div className="flex items-center gap-2 text-slate-900 font-black"><ShieldCheck className="h-6 w-6 text-primary" />{t('전문적인 서비스')}</div>
+                <div className="flex items-center gap-2 text-slate-900 font-black"><ShieldCheck className="h-6 w-6 text-[#b88c30]" />{t('전문적인 서비스')}</div>
                 <div className="hidden sm:block h-4 w-px bg-slate-200" />
-                <div className="flex items-center gap-2 text-slate-900 font-black"><RotateCcw className="h-6 w-6 text-primary" />{t('리스크 제로')}</div>
+                <div className="flex items-center gap-2 text-slate-900 font-black"><RotateCcw className="h-6 w-6 text-[#b88c30]" />{t('리스크 제로')}</div>
               </div>
               <p className="text-slate-400 font-bold max-lg">{t('우리는 단순히 계산기만 돌리는 앱이 아닙니다. 전문적인 서비스, 리스크는 제로. 환급 성공 시에만 수수료가 청구되며 실패 시 수수료는 0원입니다.')}</p>
             </div>
@@ -953,62 +962,62 @@ export default function HomePage() {
         </section>
 
         {/* 디자인 섹션 8: 보안 안심 보증서 */}
-        <section className="py-24 bg-white overflow-hidden">
-          <div className="container mx-auto px-4">
+        <section className="py-20 bg-[#faf6f0] overflow-hidden relative">
+          <div className="container mx-auto px-6 relative z-10">
             <div className="max-w-5xl mx-auto">
-              <div className="bg-slate-50 rounded-[4rem] p-10 md:p-20 relative overflow-hidden border border-slate-100 group">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-primary/5 rounded-full -translate-y-1/2 translate-x-1/4 blur-[100px] group-hover:bg-primary/10 transition-colors duration-1000 pointer-events-none" />
-                
-                <div className="relative flex flex-col lg:flex-row items-center gap-16">
-                  <div className="shrink-0 relative">
-                    <div className="absolute inset-0 bg-primary/20 rounded-full blur-[40px] animate-pulse" />
-                    <Image 
-                      src="/certified_security_seal_premium_1774150786685.png" 
-                      alt="Certified Security" 
-                      width={220} 
-                      height={220} 
-                      className="relative transition-transform duration-700 group-hover:scale-105"
+              {/* 남색 카드 — NTS 카드와 동일한 구조 */}
+              <div className="bg-[#0b192c] border border-[#e2b659]/25 rounded-[2rem] p-8 md:p-12 relative overflow-hidden">
+                {/* 코너 골드 장식 */}
+                <div className="absolute top-4 left-4 w-5 h-5 border-t-2 border-l-2 border-[#e2b659]/60 rounded-tl-lg" />
+                <div className="absolute top-4 right-4 w-5 h-5 border-t-2 border-r-2 border-[#e2b659]/60 rounded-tr-lg" />
+                <div className="absolute bottom-4 left-4 w-5 h-5 border-b-2 border-l-2 border-[#e2b659]/60 rounded-bl-lg" />
+                <div className="absolute bottom-4 right-4 w-5 h-5 border-b-2 border-r-2 border-[#e2b659]/60 rounded-br-lg" />
+                <div className="absolute top-0 right-0 w-64 h-64 bg-[#b88c30]/8 rounded-full -translate-y-1/2 translate-x-1/4 blur-[80px] pointer-events-none" />
+
+                <div className="relative flex flex-col lg:flex-row items-center gap-10">
+                  {/* 왼쪽: 흰색 박스 안 보안 씰 */}
+                  <div className="shrink-0 bg-white rounded-2xl p-5 shadow-lg flex items-center justify-center w-[150px] h-[150px]">
+                    <Image
+                      src="/certified_security_seal_premium_1774150786685.png"
+                      alt="Certified Security"
+                      width={120}
+                      height={120}
+                      className="object-contain"
                     />
                   </div>
-                  
-                  <div className="flex-1 space-y-10 text-center lg:text-left">
-                    <div className="space-y-4">
-                      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-primary/10 shadow-sm">
-                        <Badge variant="outline" className="border-none bg-primary p-1 rounded-full"><Lock className="h-3 w-3 text-white" /></Badge>
-                        <span className="text-sm font-black text-primary tracking-widest leading-none">{t('security_certified')}</span>
-                      </div>
-                      <h2 className="text-3xl md:text-5xl font-black text-slate-900 leading-tight break-keep">
+
+                  {/* 오른쪽 */}
+                  <div className="flex-1 space-y-5 text-center lg:text-left">
+                    {/* 배지 */}
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#e2b659]/10 border border-[#e2b659]/30">
+                      <Lock className="h-3 w-3 text-[#e2b659]" />
+                      <span className="text-xs font-black text-[#e2b659] tracking-[0.2em] uppercase">{t('security_certified')}</span>
+                    </div>
+
+                    <div className="space-y-2">
+                      <h2 className="text-2xl md:text-3xl font-black text-white leading-tight break-keep">
                         {t('security_card_title')}
                       </h2>
-                      <p className="text-xl text-slate-500 font-bold max-xl mx-auto lg:mx-0 leading-relaxed">
+                      <p className="text-sm text-slate-300 font-medium leading-relaxed">
                         {t('security_card_subtitle')}
                       </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-                      <div className="space-y-3 p-6 bg-white rounded-3xl shadow-sm border border-slate-100 transition-transform hover:-translate-y-1">
-                        <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
-                          <Lock className="h-6 w-6 text-primary" />
+                    {/* 3개 데이터 블록 */}
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                      {[
+                        { icon: Lock, label: t('security_item_encryption_title'), sub: t('security_item_encryption_desc') },
+                        { icon: Database, label: t('security_item_no_storage_title'), sub: t('security_item_no_storage_desc') },
+                        { icon: Shield, label: t('security_item_pippa_title'), sub: t('security_item_pippa_desc') },
+                      ].map(({ icon: Icon, label, sub }, i) => (
+                        <div key={i} className="flex items-start gap-3 p-4 bg-white/5 border border-white/10 rounded-xl hover:border-[#e2b659]/30 transition-all">
+                          <Icon className="h-4 w-4 text-[#e2b659] shrink-0 mt-0.5" />
+                          <div>
+                            <div className="text-[10px] font-black text-[#e2b659]/80 uppercase tracking-widest mb-0.5">{label}</div>
+                            <div className="text-xs font-bold text-slate-300 leading-snug">{sub}</div>
+                          </div>
                         </div>
-                        <h4 className="font-black text-slate-800">{t('security_item_encryption_title')}</h4>
-                        <p className="text-sm font-bold text-slate-400 leading-relaxed">{t('security_item_encryption_desc')}</p>
-                      </div>
-                      
-                      <div className="space-y-3 p-6 bg-white rounded-3xl shadow-sm border border-slate-100 transition-transform hover:-translate-y-1">
-                        <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
-                          <Database className="h-6 w-6 text-primary" />
-                        </div>
-                        <h4 className="font-black text-slate-800">{t('security_item_no_storage_title')}</h4>
-                        <p className="text-sm font-bold text-slate-400 leading-relaxed">{t('security_item_no_storage_desc')}</p>
-                      </div>
-
-                      <div className="space-y-3 p-6 bg-white rounded-3xl shadow-sm border border-slate-100 transition-transform hover:-translate-y-1">
-                        <div className="w-12 h-12 bg-primary/10 rounded-2xl flex items-center justify-center">
-                          <Shield className="h-6 w-6 text-primary" />
-                        </div>
-                        <h4 className="font-black text-slate-800">{t('security_item_pippa_title')}</h4>
-                        <p className="text-sm font-bold text-slate-400 leading-relaxed">{t('security_item_pippa_desc')}</p>
-                      </div>
+                      ))}
                     </div>
                   </div>
                 </div>
@@ -1018,39 +1027,73 @@ export default function HomePage() {
         </section>
 
         {/* 디자인 섹션 6: 미래 가치 */}
-        <section className="py-32 bg-slate-900 text-white overflow-hidden">
-          <div className="container mx-auto px-4 max-w-7xl relative">
-            <div className="absolute top-0 right-0 p-24 opacity-10"><Trophy className="h-96 w-96 text-primary" /></div>
-            <div className="grid lg:grid-cols-2 gap-20 items-center relative z-10">
-              <div className="space-y-8">
-                <div className="space-y-2">
-                  <Badge className="bg-primary text-white border-none px-4 py-1.5 font-bold uppercase tracking-widest">{t('당신의 미래 가치')}</Badge>
-                  <h2 className="text-4xl lg:text-6xl font-black font-headline leading-tight">
-                    {t('연간 200만 원,')}<br />{t('당신의 한국 생활이 달라집니다')}
+        <section className="py-24 md:py-32 bg-white overflow-hidden relative">
+          {/* 상단 골드 라인 */}
+          <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#b88c30]/50 to-transparent" />
+          {/* 배경 장식 */}
+          <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#b88c30]/4 rounded-full blur-[120px] pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-[#0b192c]/3 rounded-full blur-[100px] pointer-events-none" />
+
+          <div className="container mx-auto px-6 max-w-7xl relative z-10">
+            <div className="grid lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+
+              {/* 왼쪽: 헤드라인 + 인용구 */}
+              <div className="space-y-10">
+                <div className="space-y-5">
+                  {/* 아이브로우 */}
+                  <div className="flex items-center gap-3">
+                    <div className="h-[3px] w-8 bg-[#b88c30]" />
+                    <span className="text-[#b88c30] text-xs font-black uppercase tracking-[0.3em]">{t('당신의 미래 가치')}</span>
+                  </div>
+                  <h2 className="text-4xl lg:text-5xl font-black font-headline text-[#0b192c] leading-tight border-l-4 border-[#b88c30] pl-6">
+                    {t('연간 200만 원,')}<br />
+                    <span className="text-[#b88c30]">{t('당신의 한국 생활이 달라집니다')}</span>
                   </h2>
+                  <p className="text-base text-slate-500 font-medium leading-relaxed max-w-lg break-keep">
+                    {t('매년 한 달 치 월급을 보너스로 받는다고 상상해 보세요. Easy Tax Refund가 찾아드리는 환급금은 단순한 숫자가 아닌 당신의 미래를 위한 소중한 자산입니다.')}
+                  </p>
                 </div>
-                <p className="text-xl text-slate-400 font-medium leading-relaxed max-w-xl">{t('매년 한 달 치 월급을 보너스로 받는다고 상상해 보세요. Easy Tax Refund가 찾아드리는 환급금은 단순한 숫자가 아닌 당신의 미래를 위한 소중한 자산입니다.')}</p>
-                <div className="p-8 bg-white/5 rounded-[2.5rem] border border-white/10 space-y-4">
-                  <p className="text-lg font-bold text-slate-300">{t(`"절차가 어렵다는 이유만으로 당신의 소중한 돈을 포기하지 마세요. 저희가 그 과정을 쉽고 완벽하게 만들어 드립니다."`)}</p>
+
+                {/* 격조 있는 인용구 */}
+                <div className="relative p-7 bg-[#faf6f0] border-l-4 border-[#b88c30] rounded-r-2xl">
+                  <div className="absolute top-4 left-6 text-5xl text-[#b88c30]/20 font-serif leading-none">"</div>
+                  <p className="text-base font-bold text-slate-600 leading-relaxed pl-4 break-keep">
+                    {t('절차가 어렵다는 이유만으로 당신의 소중한 돈을 포기하지 마세요. 저희가 그 과정을 쉽고 완벽하게 만들어 드립니다.')}
+                  </p>
+                  <div className="mt-3 pl-4 flex items-center gap-2">
+                    <div className="h-px w-6 bg-[#b88c30]" />
+                    <span className="text-xs font-black text-[#b88c30] uppercase tracking-widest">Easy Tax Refund</span>
+                  </div>
                 </div>
               </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                <Card className="bg-white/5 border-white/10 p-8 rounded-[2rem] space-y-4 hover:bg-white/10 transition-colors">
-                  <div className="h-12 w-12 bg-primary/20 rounded-xl flex items-center justify-center"><Plane className="h-6 w-6 text-primary" /></div>
-                  <h4 className="text-xl font-black text-white">{t('고향 방문 왕복 항공권')}</h4>
-                  <p className="text-sm text-slate-400 font-medium">{t('가족들을 만나러 가는 비행기 표, 이제 부담 없이 예약하세요.')}</p>
-                </Card>
-                <Card className="bg-white/5 border-white/10 p-8 rounded-[2rem] space-y-4 hover:bg-white/10 transition-colors">
-                  <div className="h-12 w-12 bg-primary/20 rounded-xl flex items-center justify-center"><Home className="h-6 w-6 text-primary" /></div>
-                  <h4 className="text-xl font-black text-white">{t('수개월 치의 월세 및 생활비')}</h4>
-                  <p className="text-sm text-slate-400 font-medium">{t('고정 지출의 부담을 줄이고 여유 있는 한국 생활을 즐기세요.')}</p>
-                </Card>
-                <Card className="bg-white/5 border-white/10 p-8 rounded-[2rem] space-y-4 hover:bg-white/10 transition-colors sm:col-span-2">
-                  <div className="h-12 w-12 bg-primary/20 rounded-xl flex items-center justify-center"><Coins className="h-6 w-6 text-primary" /></div>
-                  <h4 className="text-xl font-black text-white">{t('당신의 미래를 위한 종잣돈')}</h4>
-                  <p className="text-sm text-slate-400 font-medium">{t('더 큰 꿈을 향한 투자의 시작, 환급금이 든든한 기반이 됩니다.')}</p>
-                </Card>
+
+              {/* 오른쪽: 카드 그리드 */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {[
+                  { icon: Plane, title: t('고향 방문 왕복 항공권'), desc: t('가족들을 만나러 가는 비행기 표, 이제 부담 없이 예약하세요.'), span: false },
+                  { icon: Home, title: t('수개월 치의 월세 및 생활비'), desc: t('고정 지출의 부담을 줄이고 여유 있는 한국 생활을 즐기세요.'), span: false },
+                  { icon: Coins, title: t('당신의 미래를 위한 종잣돈'), desc: t('더 큰 꿈을 향한 투자의 시작, 환급금이 든든한 기반이 됩니다.'), span: true },
+                ].map(({ icon: Icon, title, desc, span }, i) => (
+                  <div
+                    key={i}
+                    className={`group relative p-7 bg-[#faf6f0] border border-[#b88c30]/15 rounded-2xl hover:border-[#b88c30]/40 hover:bg-[#f5f0e8] hover:-translate-y-1 transition-all duration-200 ${span ? 'sm:col-span-2' : ''}`}
+                  >
+                    {/* 코너 장식 */}
+                    <div className="absolute top-3 right-3 w-3 h-3 border-t border-r border-[#b88c30]/30 rounded-tr-md group-hover:border-[#b88c30]/60 transition-colors" />
+
+                    <div className="flex items-start gap-4">
+                      <div className="h-11 w-11 bg-[#0b192c] rounded-xl flex items-center justify-center shrink-0 group-hover:bg-[#152a45] transition-colors">
+                        <Icon className="h-5 w-5 text-[#e2b659]" />
+                      </div>
+                      <div className="space-y-1.5">
+                        <h4 className="text-base font-black text-[#0b192c]">{title}</h4>
+                        <p className="text-sm text-slate-500 font-medium leading-relaxed break-keep">{desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
+
             </div>
           </div>
         </section>
@@ -1126,27 +1169,27 @@ export default function HomePage() {
                       <div className="p-8 space-y-6">
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-4">
-                            <div className="h-14 w-14 rounded-2xl bg-slate-50 flex items-center justify-center text-3xl shadow-inner leading-none group-hover:bg-primary/5 transition-colors">
+                            <div className="h-14 w-14 rounded-2xl bg-slate-50 flex items-center justify-center text-3xl shadow-inner leading-none group-hover:bg-[#b88c30]/5 transition-colors">
                               {review.flag}
                             </div>
                             <div>
                               <div className="flex items-center gap-2">
                                 <span className="font-black text-slate-900 text-lg tracking-tight">{review.name}</span>
-                                <Badge className="bg-primary/10 text-primary border-none font-bold text-[9px] h-4 px-2 uppercase tracking-wider">VERIFIED</Badge>
+                                <Badge className="bg-[#b88c30]/10 text-[#b88c30] border border-[#b88c30]/20 font-bold text-[9px] h-4 px-2 uppercase tracking-wider">VERIFIED</Badge>
                               </div>
                               <p className="text-xs text-slate-400 font-bold uppercase tracking-widest">{t(review.country)}</p>
                             </div>
                           </div>
                           <div className="flex flex-col items-end">
                             <div className="flex items-baseline gap-1">
-                              <span className="text-primary font-black text-2xl tracking-tighter">+{review.amount}</span>
+                              <span className="text-[#b88c30] font-black text-2xl tracking-tighter">+{review.amount}</span>
                               <span className="text-slate-400 font-black text-xs">{t('원')}</span>
                             </div>
-                            <p className="text-[9px] text-green-500 font-black uppercase mt-1">Deposited ✓</p>
+                            <p className="text-[9px] text-[#b88c30] font-black uppercase mt-1">Deposited ✓</p>
                           </div>
                         </div>
                         <div className="relative">
-                          <div className="absolute -top-3 -left-1 text-primary/10 text-5xl font-serif">"</div>
+                          <div className="absolute -top-3 -left-1 text-[#b88c30]/10 text-5xl font-serif">"</div>
                           <p className="text-slate-600 font-bold leading-relaxed text-base pl-4 relative z-10 break-words whitespace-normal line-clamp-4">
                             {t(review.text)}
                           </p>
@@ -1164,219 +1207,263 @@ export default function HomePage() {
         </section>
 
         {/* 디자인 섹션 7: FAQ/AI Assistant & Contact Us Grid */}
-        <section className="py-24 bg-white border-t border-slate-100">
+        <section className="py-24 bg-[#faf6f0] border-t border-slate-100">
           <div className="container mx-auto px-6 max-w-7xl">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-              
-              {/* Left/Middle Column (Col-span 2): FAQ List & AI assistant */}
-              <div className="lg:col-span-2 space-y-12">
-                <div className="space-y-4">
-                  <h2 className="text-3xl md:text-5xl font-black text-slate-900 leading-tight tracking-tight break-keep">
-                    {t('궁금한 점이 있으신가요?')}
-                  </h2>
-                  <p className="text-slate-500 text-lg font-bold">{t('Easy Tax Refund AI 비서와 상세 FAQ가 도와드립니다.')}</p>
-                </div>
+            {/* 1. AI 세무 비서에게 바로 물어보세요 */}
+            {isAiVisible ? (
+              <div className="bg-[#0b192c] border border-[#e2b659]/25 rounded-[2rem] p-8 md:p-12 relative overflow-hidden mb-16 shadow-xl animate-in fade-in zoom-in duration-500">
+                {/* 코너 장식 */}
+                <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-[#e2b659]/30 rounded-tl-md" />
+                <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-[#e2b659]/30 rounded-tr-md" />
+                <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-[#e2b659]/30 rounded-bl-md" />
+                <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-[#e2b659]/30 rounded-br-md" />
                 
-                {/* AI Assistant Card */}
-                {isAiVisible ? (
-                  <Card className="border border-slate-200/60 shadow-lg relative overflow-hidden bg-white rounded-[2.5rem] p-6 lg:p-10 animate-in fade-in zoom-in duration-500">
-                    <div className="absolute top-0 right-0 p-12 opacity-[0.03] text-[#e2b659] pointer-events-none">
-                      <MessageCircle className="h-64 w-64" />
+                <button 
+                  onClick={() => setIsAiVisible(false)}
+                  className="absolute top-6 right-6 p-2 rounded-xl bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white transition-all z-20"
+                  title={t("AI 비서 숨기기")}
+                >
+                  <Minimize2 className="h-5 w-5" />
+                </button>
+
+                <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-8">
+                  {/* 좌측 설명 */}
+                  <div className="space-y-4 text-center lg:text-left max-w-xl">
+                    <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#e2b659]/10 border border-[#e2b659]/20">
+                      <Sparkles className="h-3 w-3 text-[#e2b659]" />
+                      <span className="text-[10px] font-black text-[#e2b659] tracking-wider uppercase">AI ASSISTANT</span>
                     </div>
+                    <h2 className="text-2xl md:text-3xl font-black text-white leading-tight break-keep">
+                      {t('AI 세무 비서에게 바로 물어보세요')}
+                    </h2>
+                    <p className="text-sm text-slate-300 font-medium leading-relaxed">
+                      {t('대리인 동의요건, 지급 일정 등 무엇이든 질문하세요. 24시간 실시간으로 답변해 드립니다.')}
+                    </p>
+                    <div className="flex items-center justify-center lg:justify-start gap-2 pt-1">
+                      <span className="relative flex h-2 w-2">
+                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+                        <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+                      </span>
+                      <span className="text-[11px] text-green-400 font-bold tracking-tight">실시간 답변 처리율 99.8%</span>
+                    </div>
+                  </div>
+
+                  {/* 우측 질문 창 */}
+                  <div className="w-full lg:w-auto min-w-[300px] md:min-w-[450px]">
+                    <form onSubmit={handleAsk} className="flex gap-2 p-2 bg-white/5 border border-white/10 rounded-2xl focus-within:border-[#e2b659]/40 transition-all">
+                      <input 
+                        placeholder={t(`궁금한 사항이나 키워드를 입력해 주세요.`)} 
+                        className="bg-transparent text-white placeholder-slate-400 text-sm w-full px-4 outline-none border-none"
+                        value={question} 
+                        onChange={(e) => setQuestion(e.target.value)} 
+                      />
+                      <button 
+                        type="submit" 
+                        className="h-12 w-12 rounded-xl bg-[#e2b659] hover:bg-[#cfa54c] text-[#0b192c] flex items-center justify-center shrink-0 transition-colors disabled:opacity-50"
+                        disabled={loading}
+                      >
+                        {loading ? <Loader2 className="h-5 w-5 animate-spin" /> : <Send className="h-5 w-5" />}
+                      </button>
+                    </form>
+                  </div>
+                </div>
+
+                {/* AI 답변 영역 */}
+                {aiAnswer && (
+                  <div className="mt-8 p-6 bg-white/5 border border-white/10 rounded-2xl animate-in fade-in slide-in-from-bottom-4 duration-500 relative z-10">
                     <button 
-                      onClick={() => setIsAiVisible(false)}
-                      className="absolute top-8 right-8 p-3 rounded-2xl hover:bg-slate-50 text-slate-400 hover:text-slate-600 transition-all z-20 group"
-                      title={t("AI 비서 숨기기")}
+                      onClick={() => { setAiAnswer(null); setQuestion(""); }}
+                      className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-white/10 text-slate-400 hover:text-white transition-all"
                     >
-                      <Minimize2 className="h-6 w-6 group-hover:scale-110 transition-transform" />
+                      <X className="h-4 w-4" />
                     </button>
-                    <CardHeader className="relative z-10 px-0 pt-0">
-                      <div className="flex items-center gap-4 mb-4">
-                        <div className="h-14 w-14 bg-primary/10 rounded-2xl flex items-center justify-center">
-                          <Sparkles className="h-7 w-7 text-primary" />
-                        </div>
-                        <div>
-                          <CardTitle className="text-2xl font-bold">{t('Easy Tax Refund AI 비서')}</CardTitle>
-                          <CardDescription className="text-base font-medium">{t('어떤 질문이든 자유롭게 입력하세요. 365일 24시간 실시간 답변.')}</CardDescription>
-                        </div>
+                    <div className="flex gap-4">
+                      <div className="h-10 w-10 rounded-xl bg-[#e2b659]/10 border border-[#e2b659]/30 flex items-center justify-center shrink-0">
+                        <Sparkles className="h-5 w-5 text-[#e2b659]" />
                       </div>
-                    </CardHeader>
-                    <CardContent className="space-y-8 relative z-10 px-0 pb-0">
-                      <form onSubmit={handleAsk} className="flex flex-col sm:flex-row gap-4">
-                        <input 
-                          placeholder={t(`궁금한 점을 자유롭게 입력하세요.`)} 
-                          className="h-16 text-base rounded-[1.2rem] border-slate-200 focus:ring-primary shadow-inner bg-slate-50/50 w-full sm:flex-1 px-6 outline-none transition-all focus:bg-white" 
-                          value={question} 
-                          onChange={(e) => setQuestion(e.target.value)} 
-                        />
-                        <button type="submit" className="h-16 px-8 rounded-[1.2rem] bg-[#0b192c] hover:bg-[#152a45] text-white flex items-center justify-center shadow-lg disabled:opacity-50 transition-all w-full sm:w-auto min-w-[120px] font-black" disabled={loading}>
-                          {loading ? <Loader2 className="h-6 w-6 animate-spin" /> : <div className="flex items-center gap-2 text-base">{t('질문하기')} <Send className="h-5 w-5 text-[#e2b659]" /></div>}
-                        </button>
-                      </form>
-                      {aiAnswer && (
-                        <div className="p-8 bg-slate-900 text-white rounded-[2rem] border-none animate-in fade-in slide-in-from-bottom-6 duration-700 shadow-2xl relative">
-                          <div className="absolute top-6 right-8 flex items-center gap-4">
-                            <Badge variant="outline" className="text-primary border-primary/30">AI Verified</Badge>
-                            <button 
-                              onClick={() => { setAiAnswer(null); setQuestion(""); }}
-                              className="p-1 rounded-lg hover:bg-slate-800 text-slate-400 hover:text-white transition-all"
-                            >
-                              <X className="h-5 w-5" />
-                            </button>
-                          </div>
-                          <div className="flex gap-6">
-                            <div className="h-12 w-12 rounded-2xl bg-primary flex items-center justify-center shrink-0 shadow-lg shadow-primary/40">
-                              <Sparkles className="h-6 w-6 text-white" />
-                            </div>
-                            <div className="space-y-4">
-                              <p className="font-bold text-primary tracking-widest uppercase text-xs">{t('AI Assistant Response')}</p>
-                              <p className="text-lg text-slate-200 leading-relaxed font-medium whitespace-pre-wrap">{aiAnswer}</p>
-                            </div>
-                          </div>
+                      <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[10px] font-black text-[#e2b659] uppercase tracking-widest">AI RESPONSE</span>
+                          <span className="text-[9px] bg-green-500/10 text-green-400 border border-green-500/20 px-1.5 py-0.5 rounded font-black">VERIFIED</span>
                         </div>
-                      )}
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <div className="flex justify-center animate-in fade-in slide-in-from-top-4 duration-500">
-                    <Button 
-                      onClick={() => setIsAiVisible(true)}
-                      variant="outline" 
-                      className="rounded-full px-8 py-4 border-primary/20 hover:bg-primary/5 text-primary font-bold gap-3 shadow-lg shadow-primary/5 group h-auto"
-                    >
-                      {t('Easy Tax Refund AI 비서 호출하기')}
-                    </Button>
+                        <p className="text-sm text-slate-200 leading-relaxed font-medium whitespace-pre-wrap">{aiAnswer}</p>
+                      </div>
+                    </div>
                   </div>
                 )}
+              </div>
+            ) : (
+              <div className="flex justify-center mb-16 animate-in fade-in slide-in-from-top-4 duration-500">
+                <Button 
+                  onClick={() => setIsAiVisible(true)}
+                  className="rounded-full px-8 py-6 border border-[#e2b659]/30 hover:border-[#e2b659]/60 bg-[#0b192c] hover:bg-[#152a45] text-white font-black gap-3 shadow-xl group h-auto"
+                >
+                  <Sparkles className="h-5 w-5 text-[#e2b659]" />
+                  {t('Easy Tax Refund AI 비서 호출하기')}
+                </Button>
+              </div>
+            )}
 
-                {/* Accordion Questions */}
-                <div className="space-y-12">
-                  {faqData.map((section, sectionIdx) => (
-                    <div key={sectionIdx} className="space-y-6">
-                      <div className="flex items-center gap-4 px-2">
-                        <div className="h-8 w-1.5 bg-[#e2b659] rounded-full" />
-                        <h2 className="text-xl lg:text-2xl font-black font-headline text-slate-900">{section.category}</h2>
-                      </div>
+            {/* 2. 카테고리별 FAQ 그리드 */}
+            <div className="space-y-16">
+              {faqData.map((section, sectionIdx) => {
+                const match = section.category.match(/(\d+)\.\s*([^(]+)\s*(?:\(([^)]+)\))?/);
+                const num = match ? match[1].padStart(2, '0') : `0${sectionIdx + 1}`;
+                const title = match ? match[2].trim() : section.category;
+                const sub = match && match[3] ? match[3].trim() : '';
+
+                return (
+                  <div key={sectionIdx} className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12 pb-12 border-b border-[#b88c30]/10 last:border-none">
+                    {/* 카테고리명 (좌측) */}
+                    <div className="lg:col-span-1 space-y-3 lg:pr-6">
+                      <div className="text-3xl font-serif font-black text-[#b88c30]">{num}</div>
+                      <h3 className="text-xl lg:text-2xl font-black text-[#0b192c] leading-tight break-keep">{title}</h3>
+                      {sub && <p className="text-xs font-black text-[#b88c30]/65 uppercase tracking-widest">{sub}</p>}
+                    </div>
+
+                    {/* 아코디언 질문 리스트 (우측) */}
+                    <div className="lg:col-span-2">
                       <Accordion type="single" collapsible className="w-full space-y-4">
                         {section.items.map((item, itemIdx) => (
-                          <AccordionItem key={itemIdx} value={`section-${sectionIdx}-item-${itemIdx}`} className="border-none rounded-[1.8rem] bg-slate-50 shadow-sm hover:shadow-md transition-all px-6 py-1">
-                            <AccordionTrigger className="hover:no-underline font-bold text-base lg:text-lg py-5 text-left text-slate-800">
-                              <div className="flex items-center gap-3 pr-3">
-                                <HelpCircle className="h-5 w-5 text-slate-400 shrink-0" />
+                          <AccordionItem 
+                            key={itemIdx} 
+                            value={`section-${sectionIdx}-item-${itemIdx}`} 
+                            className="border border-[#b88c30]/15 rounded-2xl bg-white shadow-sm hover:shadow-md hover:border-[#b88c30]/35 transition-all px-6 py-1 overflow-hidden"
+                          >
+                            <AccordionTrigger className="hover:no-underline font-bold text-base lg:text-lg py-5 text-left text-[#0b192c] group">
+                              <div className="flex items-center gap-3 pr-3 break-keep">
+                                <HelpCircle className="h-5 w-5 text-[#b88c30]/60 shrink-0 group-hover:text-[#b88c30] transition-colors" />
                                 {item.q}
                               </div>
                             </AccordionTrigger>
-                            <AccordionContent className="text-slate-600 text-sm pb-8 pl-8 leading-relaxed font-medium border-t border-slate-200/50 pt-6">
+                            <AccordionContent className="text-slate-600 text-sm pb-8 pl-8 leading-relaxed font-medium border-t border-slate-100 pt-6 break-keep">
                               {item.a}
                             </AccordionContent>
                           </AccordionItem>
                         ))}
                       </Accordion>
                     </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* 3. 고객 만족도 배너 및 미니 리뷰 */}
+            <div className="mt-24 pt-16 border-t border-[#b88c30]/15 text-center space-y-12">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-2">
+                  <div className="h-px w-6 bg-[#b88c30]" />
+                  <span className="text-xs font-black text-[#b88c30] tracking-[0.2em] uppercase">{t('실제 고객 후기')}</span>
+                  <div className="h-px w-6 bg-[#b88c30]" />
+                </div>
+                <h3 className="text-3xl lg:text-4xl font-black text-[#0b192c] tracking-tight">{t('4.9점 고객 만족도')}</h3>
+                <div className="flex justify-center gap-1">
+                  {[...Array(5)].map((_, i) => (
+                    <span key={i} className="text-2xl text-[#e2b659]">★</span>
                   ))}
                 </div>
               </div>
 
-              {/* Right Column: Contact Us & Map Widget */}
-              <div className="space-y-8 lg:sticky lg:top-28 h-fit">
+              {/* 2개 미니 리뷰 카드 */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
+                <div className="bg-white border border-[#b88c30]/15 rounded-2xl p-7 text-left space-y-4 hover:border-[#b88c30]/35 hover:-translate-y-0.5 transition-all shadow-sm">
+                  <div className="flex gap-0.5 text-xs text-[#e2b659]">★★★★★</div>
+                  <p className="text-sm font-bold text-slate-600 leading-relaxed break-keep">
+                    "{t('회사에 통지 안 가고 제 개인 정보도 안전하다는 소식을 듣고 신청했습니다. 대만족입니다.')}"
+                  </p>
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100 text-xs">
+                    <span className="font-bold text-slate-700">Nguyen T.H. <span className="text-slate-400 font-medium">• {t('베트남')}</span></span>
+                    <span className="font-black text-[#b88c30] bg-[#b88c30]/10 px-2.5 py-1 rounded-full">{t('310만 원 환급')}</span>
+                  </div>
+                </div>
+
+                <div className="bg-white border border-[#b88c30]/15 rounded-2xl p-7 text-left space-y-4 hover:border-[#b88c30]/35 hover:-translate-y-0.5 transition-all shadow-sm">
+                  <div className="flex gap-0.5 text-xs text-[#e2b659]">★★★★★</div>
+                  <p className="text-sm font-bold text-slate-600 leading-relaxed break-keep">
+                    "{t('한국어 번역이 잘 되어 있고 카카오톡 상담사께서 친절하게 설명해주셨습니다. 수수료도 정말 합리적입니다.')}"
+                  </p>
+                  <div className="flex items-center justify-between pt-4 border-t border-slate-100 text-xs">
+                    <span className="font-bold text-slate-700">Maria S. <span className="text-slate-400 font-medium">• {t('필리핀')}</span></span>
+                    <span className="font-black text-[#b88c30] bg-[#b88c30]/10 px-2.5 py-1 rounded-full">{t('278만 원 환급')}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* 4대 안심 배지 */}
+              <div className="inline-flex flex-wrap justify-center items-center gap-x-8 gap-y-4 px-8 py-5 rounded-2xl bg-white border border-[#b88c30]/15 shadow-sm max-w-4xl mx-auto">
+                <div className="flex items-center gap-2">
+                  <BadgeCheck className="h-5 w-5 text-[#b88c30]" />
+                  <span className="text-xs font-black text-slate-700">{t('세무사 직접 검토')}</span>
+                </div>
+                <div className="hidden sm:block w-px h-4 bg-slate-200" />
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-5 w-5 text-[#b88c30]" />
+                  <span className="text-xs font-black text-slate-700">{t('금융권 수준 보안')}</span>
+                </div>
+                <div className="hidden sm:block w-px h-4 bg-slate-200" />
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-5 w-5 text-[#b88c30]" />
+                  <span className="text-xs font-black text-slate-700">{t('1분 간편 신청')}</span>
+                </div>
+                <div className="hidden sm:block w-px h-4 bg-slate-200" />
+                <div className="flex items-center gap-2">
+                  <Coins className="h-5 w-5 text-[#b88c30]" />
+                  <span className="text-xs font-black text-slate-700">{t('미환급 시 수수료 0원')}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* 4. 아직 궁금하신 게 있으신가요? (Contact Us Banner) */}
+            <div className="mt-24 max-w-4xl mx-auto bg-[#0b192c] border border-[#e2b659]/25 rounded-[2rem] p-8 md:p-12 relative overflow-hidden text-center space-y-6 shadow-2xl">
+              {/* 코너 장식 */}
+              <div className="absolute top-4 left-4 w-4 h-4 border-t-2 border-l-2 border-[#e2b659]/30 rounded-tl-md" />
+              <div className="absolute top-4 right-4 w-4 h-4 border-t-2 border-r-2 border-[#e2b659]/30 rounded-tr-md" />
+              <div className="absolute bottom-4 left-4 w-4 h-4 border-b-2 border-l-2 border-[#e2b659]/30 rounded-bl-md" />
+              <div className="absolute bottom-4 right-4 w-4 h-4 border-b-2 border-r-2 border-[#e2b659]/30 rounded-br-md" />
+
+              <div className="space-y-3 relative z-10">
+                <h3 className="text-2xl md:text-3xl font-black text-white">{t('아직 궁금하신 게 있으신가요?')}</h3>
+                <p className="text-lg font-bold text-[#e2b659]">{t('상담원과 직접 대화하세요')}</p>
+                <p className="text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
+                  {t('전담 세무사와 1:1 카카오톡 / WhatsApp 채널을 통해 언제든 실시간 질문이 가능합니다.')}
+                </p>
+              </div>
+
+              <div className="relative z-10 pt-4 flex flex-col gap-3 max-w-md mx-auto">
+                {/* 카카오톡 */}
+                <a 
+                  href="https://pf.kakao.com/_xxx" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-full h-14 rounded-full bg-[#fef01b] hover:bg-[#ebd905] text-[#0b192c] font-black text-base transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2.5"
+                >
+                  <img src="/Kakao Talk.png" alt="KakaoTalk" className="h-9 w-9 object-contain shrink-0" />
+                  {t('카카오톡 실시간 상담')}
+                </a>
                 
-                {/* Contact Us Card */}
-                <div className="bg-[#0b192c] text-white rounded-[2.5rem] p-8 border-t-4 border-[#e2b659] shadow-xl space-y-6 relative overflow-hidden">
-                  <div className="absolute top-0 right-0 p-8 opacity-[0.02] text-[#e2b659] pointer-events-none">
-                    <MessageCircle className="h-40 w-40" />
-                  </div>
-                  
-                  <h3 className="text-2xl font-black text-[#e2b659] tracking-tight">{t('Contact Us')}</h3>
-                  <p className="text-slate-300 text-sm font-medium leading-relaxed">{t('궁금한 사항이 있으시면 공식 상담원 채널로 1:1 직접 대화해보세요.')}</p>
-                  
-                  <div className="space-y-4">
-                    <a 
-                      href="https://pf.kakao.com/_xxx" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-4 bg-[#fef01b] text-slate-900 rounded-2xl p-4 font-black transition-all hover:scale-[1.03] active:scale-95 shadow-lg"
-                    >
-                      <span className="text-2xl shrink-0">💬</span>
-                      <div className="text-left leading-tight">
-                        <div className="text-[10px] font-bold opacity-70">{t('KakaoTalk Channel')}</div>
-                        <div className="text-base font-black">{t('KakaoTalk')}</div>
-                      </div>
-                    </a>
-                    
-                    <a 
-                      href="https://wa.me/82103259953" 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="flex items-center gap-4 bg-[#25d366] text-white rounded-2xl p-4 font-black transition-all hover:scale-[1.03] active:scale-95 shadow-lg"
-                    >
-                      <span className="text-2xl shrink-0">🟢</span>
-                      <div className="text-left leading-tight">
-                        <div className="text-[10px] font-bold opacity-80">{t('WhatsApp Channel')}</div>
-                        <div className="text-base font-black">{t('WhatsApp')}</div>
-                      </div>
-                    </a>
+                {/* 왓츠앱 */}
+                <a 
+                  href="https://wa.me/82103259953" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-full h-14 rounded-full bg-[#25d366] hover:bg-[#1ebd58] text-white font-black text-base transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2.5"
+                >
+                  <img src="/WhatsApp.png" alt="WhatsApp" className="h-9 w-9 object-contain shrink-0" />
+                  {t('왓츠앱 실시간 상담')}
+                </a>
 
-                    <a 
-                      href="tel:0103259953" 
-                      className="flex items-center gap-4 bg-white/5 border border-white/10 text-white rounded-2xl p-4 font-black transition-all hover:scale-[1.03] active:scale-95 hover:bg-white/10"
-                    >
-                      <span className="text-2xl shrink-0">📞</span>
-                      <div className="text-left leading-tight">
-                        <div className="text-[10px] text-slate-400">{t('Official Customer Center')}</div>
-                        <div className="text-base font-black">Official (010) 325-9953</div>
-                      </div>
-                    </a>
-                  </div>
-                </div>
-
-                {/* Map/Coverage Box */}
-                <div className="bg-slate-50 border border-slate-200/60 rounded-[2.5rem] p-6 space-y-4">
-                  <div className="text-slate-800 text-sm font-black tracking-tight">{t('Physical Locations Coverage')}</div>
-                  <div className="relative h-48 w-full rounded-2xl overflow-hidden shadow-inner border border-slate-200">
-                    <Image 
-                      src="/og-image.png" 
-                      alt="Office Map Coverage"
-                      fill
-                      className="object-cover opacity-80"
-                      unoptimized={true}
-                    />
-                    <div className="absolute inset-0 bg-[#0b192c]/5 flex items-center justify-center">
-                      <div className="bg-[#0b192c] text-white text-[10px] font-black px-3 py-1.5 rounded-full border border-[#e2b659] shadow-md flex items-center gap-1.5 animate-bounce">
-                        <span>📍</span>
-                        <span>Seoul, Korea</span>
-                      </div>
-                    </div>
-                  </div>
-                  <p className="text-[11px] text-slate-400 font-bold leading-normal">{t('* 대한민국 전역(서울, 경기, 경남 등) 모든 관할 세무서와의 전산망 연계로 빠르고 정확한 처리가 실시간으로 보장됩니다.')}</p>
-                </div>
-
-              </div>
-
-            </div>
-
-            <div className="text-center pt-20 pb-10 border-t border-slate-200/60 mt-20">
-              <div className="inline-flex flex-wrap justify-center items-center gap-6 px-10 py-5 rounded-3xl bg-white shadow-sm border border-slate-100">
-                <div className="flex items-center gap-2">
-                  <BadgeCheck className="h-6 w-6 text-primary" />
-                  <span className="font-bold text-slate-700">{t('세무사 직접 검토')}</span>
-                </div>
-                <div className="hidden sm:block w-px h-6 bg-slate-200" />
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-6 w-6 text-green-500" />
-                  <span className="font-bold text-slate-700">{t('금융권 수준 보안')}</span>
-                </div>
+                {/* 텔레그램 */}
+                <a 
+                  href="https://t.me/easytaxrefund" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="w-full h-14 rounded-full bg-[#0088cc] hover:bg-[#0077b5] text-white font-black text-base transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2.5"
+                >
+                  <img src="/Telegram.png" alt="Telegram" className="h-9 w-9 object-contain shrink-0" />
+                  {t('텔레그램 실시간 상담')}
+                </a>
               </div>
             </div>
-
-            <div className="text-center space-y-10">
-              <h3 className="text-2xl font-bold">{t('해결되지 않은 궁금증이 있나요?')}</h3>
-              <AiChatDialog>
-                <button className="inline-flex items-center justify-center rounded-2xl h-18 px-16 border-2 border-[#0b192c] text-[#0b192c] hover:bg-slate-50 text-xl font-black transition-all hover:scale-105 active:scale-95 shadow-sm">
-                  {t('상담원과 실시간 채팅하기')}
-                </button>
-              </AiChatDialog>
-            </div>
-
           </div>
         </section>
       </main>

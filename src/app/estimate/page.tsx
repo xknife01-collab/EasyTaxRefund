@@ -4705,37 +4705,6 @@ export default function EstimatePage() {
               </Card>
             )}
 
-            {/* Global App Install / In-App Browser Escape Banner (Visible across all steps) */}
-            <div className="flex flex-col gap-3 p-5 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-3xl border border-blue-100 shadow-md w-full mx-auto relative overflow-hidden mt-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-500">
-              <div className="absolute -top-4 -right-4 p-4 opacity-5"><Smartphone className="h-32 w-32" /></div>
-              <div className="flex items-start gap-4 relative z-10">
-                <div className="h-12 w-12 bg-blue-600 rounded-2xl flex items-center justify-center shrink-0 shadow-lg shadow-blue-600/30">
-                  <Smartphone className="h-6 w-6 text-white" />
-                </div>
-                <div className="flex-1 space-y-1 text-left">
-                  <p className="text-[15px] font-black text-blue-950 tracking-tight">
-                    {isInAppBrowser
-                      ? t("더 빠르고 편하게 환급받기 (기본 브라우저 권장)")
-                      : t("더 빠르고 편하게 환급받기 (앱 바로 설치)")}
-                  </p>
-                  <p className="text-[11px] font-bold text-blue-800/80 leading-snug">
-                    {isInAppBrowser
-                      ? t("현재 화면에서는 환급 기능이 제한될 수 있습니다. 아래 버튼을 눌러 기본 브라우저로 쾌적하게 진행해 보세요.")
-                      : t("1초 만에 앱을 설치하고 다음부터는 아이콘 터치 한 번으로 내 환급금을 확인하세요!")}
-                  </p>
-                </div>
-              </div>
-              <Button
-                onClick={handleInstallApp}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-black rounded-2xl h-14 shadow-lg shadow-blue-600/20 transition-all active:scale-95 flex items-center justify-center gap-2 mt-1 relative z-10 text-base"
-              >
-                {isInAppBrowser ? (
-                  <><ArrowRight className="h-5 w-5" /> {t("기본 브라우저 열기 (앱 설치)")}</>
-                ) : (
-                  <><Download className="h-5 w-5" /> {t("내 휴대폰에 이지텍스 앱 설치하기")}</>
-                )}
-              </Button>
-            </div>
           </div>
         </div>
       </main>

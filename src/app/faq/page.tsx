@@ -319,16 +319,43 @@ export default function FAQPage() {
                 전담 세무사와 1:1 실시간 채팅으로 빠르고 정확하게 해결해 드립니다.
               </p>
             </div>
-            <div className="flex flex-col gap-4">
-              <AiChatDialog>
-                <button className="w-full h-14 bg-[#b88c30] hover:bg-[#b88c30]/90 text-[#0f1e36] font-black rounded-2xl flex items-center justify-center gap-2 transition-all hover:scale-[1.02] shadow-xl text-base">
-                  <MessageSquare className="h-5 w-5" />
-                  상담원과 실시간 채팅하기
-                </button>
-              </AiChatDialog>
+            <div className="flex flex-col gap-3">
+              {/* 카카오톡 */}
+              <a 
+                href="https://pf.kakao.com/_xxx" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full h-14 rounded-full bg-[#fef01b] hover:bg-[#ebd905] text-[#0b192c] font-black text-base transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2.5"
+              >
+                <img src="/Kakao Talk.png" alt="KakaoTalk" className="h-9 w-9 object-contain shrink-0" />
+                {t('카카오톡 실시간 상담')}
+              </a>
+              
+              {/* 왓츠앱 */}
+              <a 
+                href="https://wa.me/82103259953" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full h-14 rounded-full bg-[#25d366] hover:bg-[#1ebd58] text-white font-black text-base transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2.5"
+              >
+                <img src="/WhatsApp.png" alt="WhatsApp" className="h-9 w-9 object-contain shrink-0" />
+                {t('왓츠앱 실시간 상담')}
+              </a>
+
+              {/* 텔레그램 */}
+              <a 
+                href="https://t.me/easytaxrefund" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-full h-14 rounded-full bg-[#0088cc] hover:bg-[#0077b5] text-white font-black text-base transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2.5"
+              >
+                <img src="/Telegram.png" alt="Telegram" className="h-9 w-9 object-contain shrink-0" />
+                {t('텔레그램 실시간 상담')}
+              </a>
+
               <Link href="/estimate"
-                className="w-full h-14 border border-slate-700 hover:border-[#b88c30] text-white font-black rounded-2xl flex items-center justify-center gap-2 transition-all text-base">
-                예상 환급액 무료 조회하기
+                className="w-full h-14 border border-slate-700 hover:border-[#b88c30] text-white font-black rounded-full flex items-center justify-center gap-2 transition-all text-base mt-2">
+                {t('예상 환급액 무료 조회하기')}
                 <ChevronRight className="h-4 w-4" />
               </Link>
             </div>

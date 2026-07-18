@@ -128,17 +128,20 @@ export default function TaxRefundSimulator() {
   }, [activeStep]);
 
   return (
-    <section className="w-full py-10 md:py-16 px-4 sm:px-6 md:px-8 bg-slate-950 text-white rounded-[2rem] md:rounded-[3.5rem] border border-slate-800 shadow-2xl relative overflow-hidden mb-12 md:mb-20 max-w-[1600px] mx-auto">
-      {/* 웅장한 백그라운드 그라디언트 글로우 */}
-      <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-emerald-500/5 rounded-full blur-[120px] pointer-events-none" />
+    <section className="w-full py-16 md:py-24 px-4 sm:px-6 md:px-8 bg-[#0b192c] text-white relative overflow-hidden mb-12 md:mb-20 max-w-[1600px] mx-auto">
+      {/* 상단/하단 골드 라인 */}
+      <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#e2b659] to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-[3px] bg-gradient-to-r from-transparent via-[#e2b659] to-transparent" />
+      {/* 배경 장식 글로우 */}
+      <div className="absolute top-1/4 right-0 w-[500px] h-[500px] bg-[#b88c30]/8 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-0 left-1/4 w-[400px] h-[400px] bg-indigo-900/30 rounded-full blur-[120px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center relative z-10">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center relative z-10">
         
         {/* 왼쪽: 베젤이 들어간 가상 스마트폰 목업 (5 cols) */}
         <div className="lg:col-span-5 flex flex-col items-center justify-center relative select-none w-full gap-4">
           
-          <div className="relative w-full max-w-[385px] h-[680px] sm:h-[780px] bg-slate-900 rounded-[2.5rem] sm:rounded-[3rem] p-[8px] sm:p-[10px] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.9),_0_0_0_1px_rgba(255,255,255,0.15)] border-4 border-slate-800 flex flex-col overflow-hidden">
+          <div className="relative w-full max-w-[385px] h-[680px] sm:h-[780px] bg-[#0f1e36] rounded-[2.5rem] sm:rounded-[3rem] p-[8px] sm:p-[10px] shadow-[0_32px_80px_-10px_rgba(15,30,54,0.45),_0_0_0_2px_rgba(184,140,48,0.3)] border-4 border-[#0f1e36] flex flex-col overflow-hidden">
             
             {/* 상단 다이나믹 아일랜드 노치 */}
             <div className="absolute top-3.5 left-1/2 -translate-x-1/2 w-28 h-6 bg-black rounded-full z-50 flex items-center justify-end px-4 gap-1">
@@ -147,7 +150,7 @@ export default function TaxRefundSimulator() {
             </div>
 
             {/* 상태 표시줄 */}
-            <div className="w-full h-8 flex justify-between items-center px-6 pt-1 text-[10px] font-bold text-white/95 z-40 bg-slate-950/60 backdrop-blur-sm">
+            <div className="w-full h-8 flex justify-between items-center px-6 pt-1 text-[10px] font-bold text-white/95 z-40 bg-[#0a1525]/80 backdrop-blur-sm">
               <span>12:09</span>
               <div className="flex items-center gap-1.5">
                 <span>5G</span>
@@ -216,142 +219,69 @@ export default function TaxRefundSimulator() {
         {/* 오른쪽: 설명 글 및 10단계 시뮬레이터 타임라인 (7 cols) */}
         <div className="lg:col-span-7 space-y-8 text-left">
           
-          <div className="space-y-4">
-            <span className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-black uppercase tracking-wider">
-              <Sparkles size={12} className="text-primary" /> Live Code Orchestration
-            </span>
-            <h2 className="text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+          <div className="space-y-5">
+            {/* 아이브로우 */}
+            <div className="flex items-center gap-3">
+              <div className="h-[3px] w-8 bg-[#e2b659]" />
+              <span className="inline-flex items-center gap-1.5 text-[#e2b659] text-xs font-black uppercase tracking-[0.3em]">
+                <Sparkles size={11} /> Live Process Showcase
+              </span>
+            </div>
+            <h2 className="text-3xl lg:text-4xl font-black tracking-tight leading-tight text-white border-l-4 border-[#e2b659] pl-5">
               {t("sim_title")} <br />
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-primary to-emerald-400">
+              <span className="text-[#e2b659]">
                 {t("실시간 리얼 인터랙티브")}
               </span>
             </h2>
-            <p className="text-slate-400 font-bold text-sm leading-relaxed max-w-xl break-keep">
+            <p className="text-slate-300 font-bold text-sm leading-relaxed max-w-xl break-keep">
               {t("sim_desc")}
             </p>
           </div>
 
           {/* 10단계 콤팩트 타임라인 리스트 */}
-          <div className="grid grid-cols-2 gap-2 max-w-xl">
-            {/* Step 0 */}
-            <div 
-              onClick={() => handleStepJump(0)}
-              className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-3 ${
-                activeStep === 0 ? 'bg-primary/10 border-primary/30 text-white' : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <div className={`w-5 h-5 rounded-lg flex items-center justify-center font-black text-[9px] ${activeStep === 0 ? 'bg-primary text-white' : 'bg-slate-800 text-slate-50'}`}>00</div>
-              <span className="text-[10px] font-black">{t("step_0")}</span>
-            </div>
-
-            {/* Step 0.5 & 1 */}
-            <div 
-              onClick={() => handleStepJump(0.5)}
-              className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-3 ${
-                (activeStep === 0.5 || activeStep === 1) ? 'bg-primary/10 border-primary/30 text-white' : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <div className={`w-5 h-5 rounded-lg flex items-center justify-center font-black text-[9px] ${(activeStep === 0.5 || activeStep === 1) ? 'bg-primary text-white' : 'bg-slate-800 text-slate-50'}`}>01</div>
-              <span className="text-[10px] font-black">{t("step_1")}</span>
-            </div>
-
-            {/* Step 2 */}
-            <div 
-              onClick={() => handleStepJump(2)}
-              className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-3 ${
-                activeStep === 2 ? 'bg-primary/10 border-primary/30 text-white' : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <div className={`w-5 h-5 rounded-lg flex items-center justify-center font-black text-[9px] ${activeStep === 2 ? 'bg-primary text-white' : 'bg-slate-800 text-slate-50'}`}>02</div>
-              <span className="text-[10px] font-black">{t("step_2")}</span>
-            </div>
-
-            {/* Step 3 */}
-            <div 
-              onClick={() => handleStepJump(3)}
-              className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-3 ${
-                activeStep === 3 ? 'bg-primary/10 border-primary/30 text-white' : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <div className={`w-5 h-5 rounded-lg flex items-center justify-center font-black text-[9px] ${activeStep === 3 ? 'bg-primary text-white' : 'bg-slate-800 text-slate-50'}`}>03</div>
-              <span className="text-[10px] font-black">{t("step_3")}</span>
-            </div>
-
-            {/* Step 4 & 5 */}
-            <div 
-              onClick={() => handleStepJump(4)}
-              className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-3 ${
-                (activeStep === 4 || activeStep === 5) ? 'bg-primary/10 border-primary/30 text-white' : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <div className={`w-5 h-5 rounded-lg flex items-center justify-center font-black text-[9px] ${(activeStep === 4 || activeStep === 5) ? 'bg-primary text-white' : 'bg-slate-800 text-slate-50'}`}>04</div>
-              <span className="text-[10px] font-black">{t("step_4")}</span>
-            </div>
-
-            {/* Step 6 */}
-            <div 
-              onClick={() => handleStepJump(6)}
-              className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-3 ${
-                activeStep === 6 ? 'bg-primary/10 border-primary/30 text-white' : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <div className={`w-5 h-5 rounded-lg flex items-center justify-center font-black text-[9px] ${activeStep === 6 ? 'bg-primary text-white' : 'bg-slate-800 text-slate-50'}`}>05</div>
-              <span className="text-[10px] font-black">{t("step_5")}</span>
-            </div>
-
-            {/* Step 7 */}
-            <div 
-              onClick={() => handleStepJump(7)}
-              className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-3 ${
-                activeStep === 7 ? 'bg-primary/10 border-primary/30 text-white' : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <div className={`w-5 h-5 rounded-lg flex items-center justify-center font-black text-[9px] ${activeStep === 7 ? 'bg-primary text-white' : 'bg-slate-800 text-slate-50'}`}>06</div>
-              <span className="text-[10px] font-black">{t("step_6")}</span>
-            </div>
-
-            {/* Step 8 */}
-            <div 
-              onClick={() => handleStepJump(8)}
-              className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-3 ${
-                activeStep === 8 ? 'bg-primary/10 border-primary/30 text-white' : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <div className={`w-5 h-5 rounded-lg flex items-center justify-center font-black text-[9px] ${activeStep === 8 ? 'bg-primary text-white' : 'bg-slate-800 text-slate-50'}`}>07</div>
-              <span className="text-[10px] font-black">{t("step_7")}</span>
-            </div>
-
-            {/* Step 9 */}
-            <div 
-              onClick={() => handleStepJump(9)}
-              className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-3 ${
-                activeStep === 9 ? 'bg-primary/10 border-primary/30 text-white' : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <div className={`w-5 h-5 rounded-lg flex items-center justify-center font-black text-[9px] ${activeStep === 9 ? 'bg-primary text-white' : 'bg-slate-800 text-slate-50'}`}>08</div>
-              <span className="text-[10px] font-black">{t("step_8")}</span>
-            </div>
-
-            {/* Done */}
-            <div 
-              onClick={() => handleStepJump('done')}
-              className={`p-3 rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-3 ${
-                activeStep === 'done' ? 'bg-primary/10 border-primary/30 text-white' : 'bg-slate-900/50 border-slate-800 text-slate-400 hover:border-slate-700'
-              }`}
-            >
-              <div className={`w-5 h-5 rounded-lg flex items-center justify-center font-black text-[9px] ${activeStep === 'done' ? 'bg-primary text-white' : 'bg-slate-800 text-slate-50'}`}>09</div>
-              <span className="text-[10px] font-black">{t("step_9")}</span>
-            </div>
+          <div className="grid grid-cols-2 gap-3 max-w-xl">
+            {[
+              { step: 0, label: t('step_0'), num: '01' },
+              { step: 0.5, label: t('step_1'), num: '02', alt: 1 },
+              { step: 2, label: t('step_2'), num: '03' },
+              { step: 3, label: t('step_3'), num: '04' },
+              { step: 4, label: t('step_4'), num: '05', alt: 5 },
+              { step: 6, label: t('step_5'), num: '06' },
+              { step: 7, label: t('step_6'), num: '07' },
+              { step: 8, label: t('step_7'), num: '08' },
+              { step: 9, label: t('step_8'), num: '09' },
+              { step: 'done' as const, label: t('step_9'), num: '10' },
+            ].map(({ step, label, num, alt }) => {
+              const isActive = activeStep === step || (alt !== undefined && activeStep === alt);
+              return (
+                <div
+                  key={String(step)}
+                  onClick={() => handleStepJump(step)}
+                  className={`p-3.5 rounded-xl border transition-all duration-200 cursor-pointer flex items-center gap-3 group ${
+                    isActive
+                      ? 'bg-[#e2b659] border-[#e2b659] shadow-lg shadow-[#e2b659]/20'
+                      : 'bg-white/5 border-white/10 hover:border-[#e2b659]/40 hover:bg-white/10'
+                  }`}
+                >
+                  <div className={`w-6 h-6 rounded-lg flex items-center justify-center font-black text-[9px] shrink-0 ${
+                    isActive ? 'bg-[#0b192c] text-[#e2b659]' : 'bg-white/10 text-[#e2b659]'
+                  }`}>{num}</div>
+                  <span className={`text-[10px] font-black leading-tight ${
+                    isActive ? 'text-[#0b192c]' : 'text-slate-300 group-hover:text-white'
+                  }`}>{label}</span>
+                </div>
+              );
+            })}
           </div>
 
           {/* 재생 제어 컨트롤 버튼 */}
-          <div className="flex items-center gap-4 border-t border-slate-800 pt-6">
+          <div className="flex items-center gap-4 border-t border-white/10 pt-6">
             <button
               onClick={handleTogglePlay}
-              className={`px-5 py-3 rounded-xl font-black text-xs flex items-center gap-2 cursor-pointer shadow-lg transition-all ${
+              className={`px-6 py-3 rounded-xl font-black text-xs flex items-center gap-2 cursor-pointer shadow-lg transition-all ${
                 isPlaying 
-                  ? 'bg-slate-800 text-white hover:bg-slate-750 border border-slate-700' 
-                  : 'bg-primary text-white hover:bg-primary/80'
+                  ? 'bg-[#e2b659] text-[#0b192c] hover:bg-[#c9a040]' 
+                  : 'bg-white/10 text-white border border-white/20 hover:bg-white/20'
               }`}
             >
               {isPlaying ? (
@@ -366,7 +296,7 @@ export default function TaxRefundSimulator() {
             </button>
             <button
               onClick={handleRestart}
-              className="px-5 py-3 bg-slate-800 border border-slate-700 text-slate-350 hover:text-white hover:bg-slate-750 rounded-xl font-black text-xs flex items-center gap-2 cursor-pointer transition-all"
+              className="px-6 py-3 bg-white/5 border border-white/15 text-slate-300 hover:text-white hover:bg-white/15 rounded-xl font-black text-xs flex items-center gap-2 cursor-pointer transition-all"
             >
               <RotateCcw size={12} /> {t("restart_btn")}
             </button>
