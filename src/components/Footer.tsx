@@ -45,16 +45,13 @@ export function Footer() {
           <div className="col-span-1 md:col-span-2 space-y-6">
             <Link href="/" className="flex items-center gap-3 group">
               <img 
-                src="/1625.png" 
+                src="/1625-1.png" 
                 alt="KOREA Easy Tax Refund Logo" 
                 className="h-10 w-10 object-contain shrink-0 transition-transform duration-300 group-hover:scale-105"
               />
-              <span className="text-xl font-black font-headline tracking-tighter text-white flex flex-col uppercase leading-[1.0]">
+              <span className="text-xl font-black font-headline tracking-tighter text-white flex items-center gap-1.5 uppercase leading-none">
                 <span className="text-[#b88c30]">Korea</span>
-                <span className="flex gap-1.5">
-                  <span>Easy Tax</span>
-                  <span>Refund</span>
-                </span>
+                <span>Easy Tax Refund</span>
               </span>
             </Link>
             <p className="text-slate-400 text-sm font-medium max-w-sm leading-relaxed">

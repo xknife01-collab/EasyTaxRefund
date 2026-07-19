@@ -3801,10 +3801,16 @@ export default function EstimatePage() {
                 <Card className="rounded-3xl border border-[#b88c30]/30 shadow-2xl overflow-hidden bg-[#0b192c]">
                   {hasCertificate === null ? (
                     <>
-                      <CardHeader className="text-center py-6 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/15 relative overflow-hidden">
+                      {/* ★ 프리미엄 관공서 스타일 Step 4 헤더 */}
+                      <CardHeader className="text-center py-8 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/20 relative overflow-hidden">
+                        {/* 배경 패턴 */}
                         <div className="absolute inset-0 opacity-[0.03]"
                           style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
                         />
+                        {/* 상단 골드 글로우 */}
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-24 bg-[#b88c30]/15 rounded-full blur-3xl pointer-events-none" />
+
+                        {/* 이전 버튼 */}
                         <Button
                           variant="ghost"
                           size="sm"
@@ -3814,101 +3820,207 @@ export default function EstimatePage() {
                           <ChevronLeft className="h-4 w-4 mr-1" />
                           {t('이전')}
                         </Button>
-                        <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg relative z-10">
-                          <UserCheck className="h-8 w-8 sm:h-10 sm:w-10 text-[#b88c30]" />
+
+                        {/* 공식 배지 */}
+                        <div className="relative z-10 flex items-center justify-center gap-3 mb-7">
+                          <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#b88c30]/60" />
+                          <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/40 rounded-full px-5 py-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#b88c30] animate-pulse" />
+                            <span className="text-[#b88c30] text-[10px] font-black tracking-[0.25em] uppercase">Step 04 — 본인 인증</span>
+                          </div>
+                          <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#b88c30]/60" />
                         </div>
+
+                        {/* ★ 국세청 로고 — 중앙 크게 */}
+                        <div className="relative z-10 mx-auto mb-7 flex flex-col items-center">
+                          <div className="relative">
+                            {/* 외부 링 애니메이션 */}
+                            <div className="absolute -inset-5 rounded-full border border-[#b88c30]/15 animate-pulse" />
+                            <div className="absolute -inset-3 rounded-full border border-[#b88c30]/25" />
+                            {/* 로고 박스 */}
+                            <div className="relative h-28 w-28 bg-white rounded-3xl overflow-hidden shadow-2xl border-2 border-[#b88c30]/50">
+                              <img src="/nts-logo.jpg" alt="국세청" className="w-full h-full object-contain p-3" />
+                            </div>
+                            {/* 인증 배지 */}
+                            <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-[#b88c30] rounded-full flex items-center justify-center border-2 border-[#0b192c] shadow-xl">
+                              <ShieldCheck className="h-4 w-4 text-[#0b192c]" />
+                            </div>
+                          </div>
+                          {/* 로고 레이블 */}
+                          <div className="mt-4 flex flex-col items-center gap-1">
+                            <div className="flex items-center gap-2">
+                              <div className="h-px w-8 bg-[#b88c30]/50" />
+                              <span className="text-[10px] font-black text-[#b88c30]/80 uppercase tracking-[0.3em]">국세청 / NTS</span>
+                              <div className="h-px w-8 bg-[#b88c30]/50" />
+                            </div>
+                            <span className="text-[9px] font-bold text-slate-500 tracking-widest">NATIONAL TAX SERVICE KOREA</span>
+                          </div>
+                        </div>
+
+                        {/* 골드 구분선 */}
+                        <div className="relative z-10 flex items-center gap-3 px-6 mb-5">
+                          <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#b88c30]/40" />
+                          <div className="flex gap-1">
+                            <div className="h-1 w-1 rounded-full bg-[#b88c30]" />
+                            <div className="h-1 w-1 rounded-full bg-[#b88c30]/50" />
+                            <div className="h-1 w-1 rounded-full bg-[#b88c30]" />
+                          </div>
+                          <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#b88c30]/40" />
+                        </div>
+
                         <CardTitle className="text-2xl sm:text-3xl font-black text-white break-keep relative z-10">
                           {t('인증서가 스마트폰에 설치되어 있나요?')}
                         </CardTitle>
-                        <div className="font-bold text-slate-400 text-xs sm:text-sm mt-4 relative z-10 space-y-4">
-                          <div>
-                            {t('국세청 조회를 위해서는 본인 명의의 인증서가 반드시 필요합니다. 현재 아래 인증서 중 가입된 인증서가 있으신가요?')}
-                          </div>
-                          <div className="p-4 bg-white/5 rounded-2xl border border-white/10 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4 shadow-sm max-w-lg mx-auto">
-                            <span className="text-[11px] sm:text-xs font-black text-[#e2b659] uppercase tracking-wider shrink-0">{t('💡 지원하는 인증서 종류')}</span>
-                            <div className="flex gap-2.5 flex-wrap justify-center">
-                              <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1 rounded-full border border-white/10 text-[11px] sm:text-xs font-bold text-slate-300">
-                                <Image src="/images/logo/hana_1q.png" alt="Hana" width={14} height={14} className="object-contain" />
-                                {t('하나은행')}
+                        <p className="font-bold text-slate-400 text-sm mt-3 relative z-10 max-w-sm mx-auto leading-relaxed">
+                          {t('국세청 조회를 위해서는 본인 명의의 인증서가 반드시 필요합니다. 현재 아래 인증서 중 가입된 인증서가 있으신가요?')}
+                        </p>
+
+                        {/* 지원 인증서 배지 */}
+                        <div className="relative z-10 mt-5 flex flex-col items-center gap-3">
+                          <span className="text-[10px] font-black text-[#b88c30]/70 uppercase tracking-[0.2em]">지원 인증서</span>
+                          <div className="flex gap-2 flex-wrap justify-center">
+                            {[
+                              { src: "/images/logo/hana_1q.png", label: "하나은행" },
+                              { src: "/images/logo/pass.png", label: "PASS" },
+                              { src: "/images/logo/kakao.png", label: "카카오톡" },
+                            ].map(({ src, label }) => (
+                              <div key={label} className="flex items-center gap-1.5 bg-white/5 border border-[#b88c30]/20 px-3 py-1.5 rounded-full">
+                                <Image src={src} alt={label} width={14} height={14} className="object-contain" />
+                                <span className="text-[11px] font-black text-slate-300">{t(label)}</span>
                               </div>
-                              <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1 rounded-full border border-white/10 text-[11px] sm:text-xs font-bold text-slate-300">
-                                <Image src="/images/logo/pass.png" alt="PASS" width={14} height={14} className="object-contain" />
-                                {t('PASS')}
-                              </div>
-                              <div className="flex items-center gap-1.5 bg-white/5 px-3 py-1 rounded-full border border-white/10 text-[11px] sm:text-xs font-bold text-slate-300">
-                                <Image src="/images/logo/kakao.png" alt="Kakao" width={14} height={14} className="object-contain" />
-                                {t('카카오톡')}
-                              </div>
-                            </div>
+                            ))}
                           </div>
                         </div>
                       </CardHeader>
-                      <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-6 bg-[#0d1e30]">
+
+                      {/* 선택 카드 */}
+                      <CardContent className="p-5 sm:p-8 space-y-4 bg-[#0d1e30]">
                         <div className="grid grid-cols-1 gap-4">
+                          {/* YES 카드 */}
                           <div
-                            id="step4-cert-yes" onClick={() => setHasCertificate(true)}
-                            className="p-6 rounded-[2rem] border border-white/10 hover:border-[#b88c30]/50 cursor-pointer transition-all flex items-center gap-5 bg-white/5 hover:bg-white/10 shadow-sm"
+                            id="step4-cert-yes"
+                            onClick={() => setHasCertificate(true)}
+                            className="group relative p-6 rounded-2xl border border-emerald-800/30 hover:border-emerald-500/60 cursor-pointer transition-all flex items-center gap-5 bg-emerald-950/20 hover:bg-emerald-950/40 shadow-sm hover:shadow-emerald-900/20 hover:shadow-lg"
                           >
-                            <div className="h-14 w-14 bg-emerald-950/40 border border-emerald-800/30 rounded-2xl flex items-center justify-center shrink-0">
+                            <div className="h-14 w-14 bg-emerald-900/40 border border-emerald-700/40 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                               <CheckCircle2 className="h-8 w-8 text-emerald-400" />
                             </div>
                             <div className="flex-1 text-left">
-                              <h4 className="font-black text-lg text-white">
+                              <h4 className="font-black text-lg text-white leading-tight">
                                 {t('네, 이미 가입된 인증서가 있습니다.')}
                               </h4>
                               <p className="text-sm text-slate-400 font-medium mt-1">
                                 {t('하나은행, PASS, 카카오톡 인증서 중 하나가 이미 휴대폰에 설치되어 있습니다.')}
                               </p>
                             </div>
+                            <div className="shrink-0 h-8 w-8 rounded-full border border-emerald-700/40 flex items-center justify-center group-hover:bg-emerald-800/30 transition-colors">
+                              <ArrowRight className="h-4 w-4 text-emerald-400" />
+                            </div>
                           </div>
 
+                          {/* NO 카드 */}
                           <div
-                            id="step4-cert-no" onClick={() => setHasCertificate(false)}
-                            className="p-6 rounded-[2rem] border border-white/10 hover:border-[#b88c30]/50 cursor-pointer transition-all flex items-center gap-5 bg-white/5 hover:bg-white/10 shadow-sm"
+                            id="step4-cert-no"
+                            onClick={() => setHasCertificate(false)}
+                            className="group relative p-6 rounded-2xl border border-amber-800/30 hover:border-amber-500/60 cursor-pointer transition-all flex items-center gap-5 bg-amber-950/20 hover:bg-amber-950/40 shadow-sm hover:shadow-amber-900/20 hover:shadow-lg"
                           >
-                            <div className="h-14 w-14 bg-amber-950/40 border border-amber-800/30 rounded-2xl flex items-center justify-center shrink-0">
+                            <div className="h-14 w-14 bg-amber-900/40 border border-amber-700/40 rounded-2xl flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
                               <AlertCircle className="h-8 w-8 text-amber-400 animate-pulse" />
                             </div>
                             <div className="flex-1 text-left">
-                              <h4 className="font-black text-lg text-white">
+                              <h4 className="font-black text-lg text-white leading-tight">
                                 {t('아니오, 인증서가 없습니다 (설치/발급 필요)')}
                               </h4>
                               <p className="text-sm text-slate-400 font-medium mt-1">
                                 {t('인증서가 없으시다면, 먼저 설치 및 발급을 진행하셔야 환급 조회가 가능합니다.')}
                               </p>
                             </div>
+                            <div className="shrink-0 h-8 w-8 rounded-full border border-amber-700/40 flex items-center justify-center group-hover:bg-amber-800/30 transition-colors">
+                              <ArrowRight className="h-4 w-4 text-[#b88c30]" />
+                            </div>
                           </div>
+                        </div>
+
+                        {/* 하단 국세청 신뢰 배지 */}
+                        <div className="flex items-center gap-3 pt-2">
+                          <div className="flex-1 h-px bg-[#b88c30]/15" />
+                          <div className="flex items-center gap-2">
+                            <div className="h-5 w-5 bg-white rounded-lg flex items-center justify-center overflow-hidden shadow-sm border border-[#b88c30]/20">
+                              <img src="/nts-logo.jpg" alt="NTS" className="h-4 w-4 object-contain" />
+                            </div>
+                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">국세청 공식 인증 연동</span>
+                          </div>
+                          <div className="flex-1 h-px bg-[#b88c30]/15" />
                         </div>
                       </CardContent>
                     </>
                   ) : hasCertificate === false ? (
                     <>
-                      <CardHeader className="text-center py-6 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/15 relative overflow-hidden">
+                      <CardHeader className="text-center py-8 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/20 relative overflow-hidden">
                         <div className="absolute inset-0 opacity-[0.03]"
                           style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
                         />
-                        <Button
-                          variant="ghost"
-                          size="sm"
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-24 bg-[#b88c30]/15 rounded-full blur-3xl pointer-events-none" />
+
+                        <Button variant="ghost" size="sm"
                           onClick={() => setHasCertificate(null)}
                           className="absolute top-6 left-6 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
                         >
                           <ChevronLeft className="h-4 w-4 mr-1" />
                           {t('이전')}
                         </Button>
-                        <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg relative z-10">
-                          <Download className="h-8 w-8 sm:h-10 sm:w-10 text-[#b88c30]" />
+
+                        {/* 공식 배지 */}
+                        <div className="relative z-10 flex items-center justify-center gap-3 mb-7">
+                          <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#b88c30]/60" />
+                          <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/40 rounded-full px-5 py-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#b88c30] animate-pulse" />
+                            <span className="text-[#b88c30] text-[10px] font-black tracking-[0.25em] uppercase">Step 04 — 인증서 발급</span>
+                          </div>
+                          <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#b88c30]/60" />
                         </div>
+
+                        {/* 국세청 로고 */}
+                        <div className="relative z-10 mx-auto mb-7 flex flex-col items-center">
+                          <div className="relative">
+                            <div className="absolute -inset-5 rounded-full border border-[#b88c30]/15 animate-pulse" />
+                            <div className="absolute -inset-3 rounded-full border border-[#b88c30]/25" />
+                            <div className="relative h-28 w-28 bg-white rounded-3xl overflow-hidden shadow-2xl border-2 border-[#b88c30]/50">
+                              <img src="/nts-logo.jpg" alt="국세청" className="w-full h-full object-contain p-3" />
+                            </div>
+                            <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-[#b88c30] rounded-full flex items-center justify-center border-2 border-[#0b192c] shadow-xl">
+                              <ShieldCheck className="h-4 w-4 text-[#0b192c]" />
+                            </div>
+                          </div>
+                          <div className="mt-4 flex flex-col items-center gap-1">
+                            <div className="flex items-center gap-2">
+                              <div className="h-px w-8 bg-[#b88c30]/50" />
+                              <span className="text-[10px] font-black text-[#b88c30]/80 uppercase tracking-[0.3em]">국세청 / NTS</span>
+                              <div className="h-px w-8 bg-[#b88c30]/50" />
+                            </div>
+                            <span className="text-[9px] font-bold text-slate-500 tracking-widest">NATIONAL TAX SERVICE KOREA</span>
+                          </div>
+                        </div>
+
+                        {/* 골드 구분선 */}
+                        <div className="relative z-10 flex items-center gap-3 px-6 mb-5">
+                          <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#b88c30]/40" />
+                          <div className="flex gap-1">
+                            <div className="h-1 w-1 rounded-full bg-[#b88c30]" />
+                            <div className="h-1 w-1 rounded-full bg-[#b88c30]/50" />
+                            <div className="h-1 w-1 rounded-full bg-[#b88c30]" />
+                          </div>
+                          <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#b88c30]/40" />
+                        </div>
+
                         <CardTitle className="text-2xl sm:text-3xl font-black text-white break-keep relative z-10">
                           {t('인증서가 없으신가요? (추천)')}
                         </CardTitle>
-                        <div className="font-bold text-slate-400 text-xs sm:text-sm mt-4 relative z-10">
-                          <div className="p-4 bg-amber-950/30 border border-amber-800/30 rounded-2xl text-left max-w-lg mx-auto">
-                            <p className="text-[12px] sm:text-[13px] font-black text-amber-300 leading-relaxed flex items-start gap-2">
-                              <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
-                              {t('국세청 조회를 하려면 아래 인증서 중 하나가 반드시 설치되어 있어야 합니다. 안내에 따라 설치 및 발급을 완료해 주세요.')}
-                            </p>
-                          </div>
+                        <div className="relative z-10 mt-4 p-4 bg-amber-950/30 border border-amber-800/30 rounded-2xl text-left max-w-lg mx-auto">
+                          <p className="text-[12px] sm:text-[13px] font-black text-amber-300 leading-relaxed flex items-start gap-2">
+                            <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
+                            {t('국세청 조회를 하려면 아래 인증서 중 하나가 반드시 설치되어 있어야 합니다. 안내에 따라 설치 및 발급을 완료해 주세요.')}
+                          </p>
                         </div>
                       </CardHeader>
                       <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8 bg-[#0d1e30]">
@@ -3989,10 +4101,15 @@ export default function EstimatePage() {
                     </>
                   ) : (
                     <>
-                      <CardHeader className="text-center py-6 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/15 relative overflow-hidden">
+                      <CardHeader className="text-center py-8 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/20 relative overflow-hidden">
+                        {/* 배경 패턴 */}
                         <div className="absolute inset-0 opacity-[0.03]"
                           style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
                         />
+                        {/* 상단 골드 글로우 */}
+                        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-80 h-24 bg-[#b88c30]/15 rounded-full blur-3xl pointer-events-none" />
+
+                        {/* 이전 버튼 */}
                         <Button
                           variant="ghost"
                           size="sm"
@@ -4002,18 +4119,59 @@ export default function EstimatePage() {
                           <ChevronLeft className="h-4 w-4 mr-1" />
                           {t('이전')}
                         </Button>
-                        <div className="mx-auto h-16 w-16 sm:h-20 sm:w-20 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-2xl sm:rounded-3xl flex items-center justify-center mb-6 shadow-lg relative z-10">
-                          <UserCheck className="h-8 w-8 sm:h-10 sm:w-10 text-[#b88c30]" />
-                        </div>
-                        <CardTitle className="text-2xl sm:text-3xl font-black text-white break-keep relative z-10">{t('Step 4: 인증 방식 선택')}</CardTitle>
-                        <div className="font-bold text-slate-400 text-xs sm:text-sm mt-4 relative z-10">
-                          {t('가장 편리한 방법으로 본인을 인증해 주세요.')}
-                          <div className="mt-4 p-4 bg-amber-950/30 border border-amber-800/30 rounded-2xl max-w-lg mx-auto">
-                            <p className="text-[12px] sm:text-[13px] font-black text-amber-300 leading-relaxed text-left flex items-start gap-2">
-                              <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
-                              {t('한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.')}
-                            </p>
+
+                        {/* 공식 배지 */}
+                        <div className="relative z-10 flex items-center justify-center gap-3 mb-7">
+                          <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#b88c30]/60" />
+                          <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/40 rounded-full px-5 py-1.5">
+                            <div className="w-1.5 h-1.5 rounded-full bg-[#b88c30] animate-pulse" />
+                            <span className="text-[#b88c30] text-[10px] font-black tracking-[0.25em] uppercase">Step 04 — 인증 방식 선택</span>
                           </div>
+                          <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#b88c30]/60" />
+                        </div>
+
+                        {/* ★ 국세청 로고 중앙 배치 */}
+                        <div className="relative z-10 mx-auto mb-7 flex flex-col items-center">
+                          <div className="relative">
+                            <div className="absolute -inset-5 rounded-full border border-[#b88c30]/15 animate-pulse" />
+                            <div className="absolute -inset-3 rounded-full border border-[#b88c30]/25" />
+                            <div className="relative h-28 w-28 bg-white rounded-3xl overflow-hidden shadow-2xl border-2 border-[#b88c30]/50">
+                              <img src="/nts-logo.jpg" alt="국세청" className="w-full h-full object-contain p-3" />
+                            </div>
+                            <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-[#b88c30] rounded-full flex items-center justify-center border-2 border-[#0b192c] shadow-xl">
+                              <ShieldCheck className="h-4 w-4 text-[#0b192c]" />
+                            </div>
+                          </div>
+                          <div className="mt-4 flex flex-col items-center gap-1">
+                            <div className="flex items-center gap-2">
+                              <div className="h-px w-8 bg-[#b88c30]/50" />
+                              <span className="text-[10px] font-black text-[#b88c30]/80 uppercase tracking-[0.3em]">국세청 / NTS</span>
+                              <div className="h-px w-8 bg-[#b88c30]/50" />
+                            </div>
+                            <span className="text-[9px] font-bold text-slate-500 tracking-widest">NATIONAL TAX SERVICE KOREA</span>
+                          </div>
+                        </div>
+
+                        {/* 골드 구분선 */}
+                        <div className="relative z-10 flex items-center gap-3 px-6 mb-5">
+                          <div className="flex-1 h-px bg-gradient-to-r from-transparent to-[#b88c30]/40" />
+                          <div className="flex gap-1">
+                            <div className="h-1 w-1 rounded-full bg-[#b88c30]" />
+                            <div className="h-1 w-1 rounded-full bg-[#b88c30]/50" />
+                            <div className="h-1 w-1 rounded-full bg-[#b88c30]" />
+                          </div>
+                          <div className="flex-1 h-px bg-gradient-to-l from-transparent to-[#b88c30]/40" />
+                        </div>
+
+                        <CardTitle className="text-2xl sm:text-3xl font-black text-white break-keep relative z-10">{t('Step 4: 인증 방식 선택')}</CardTitle>
+                        <p className="font-bold text-slate-400 text-sm mt-3 relative z-10 max-w-sm mx-auto">
+                          {t('가장 편리한 방법으로 본인을 인증해 주세요.')}
+                        </p>
+                        <div className="relative z-10 mt-4 p-4 bg-amber-950/30 border border-amber-800/30 rounded-2xl max-w-lg mx-auto">
+                          <p className="text-[12px] sm:text-[13px] font-black text-amber-300 leading-relaxed text-left flex items-start gap-2">
+                            <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
+                            {t('한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.')}
+                          </p>
                         </div>
                       </CardHeader>
                       <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8 bg-[#0d1e30]">

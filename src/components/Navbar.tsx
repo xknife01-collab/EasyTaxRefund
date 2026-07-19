@@ -61,16 +61,13 @@ export function Navbar() {
       <div className="container mx-auto flex items-center justify-between px-6 lg:px-12">
         <Link href="/" className="flex items-center gap-3 sm:gap-4 group">
           <img 
-            src="/1625.png" 
+            src="/1625-1.png" 
             alt="KOREA Easy Tax Refund Logo" 
             className="h-10 w-10 sm:h-12 sm:w-12 object-contain shrink-0 transition-transform duration-300 group-hover:scale-110 active:scale-95"
           />
-          <span className="text-sm sm:text-base font-black tracking-tighter text-[#0b192c] font-headline uppercase flex flex-col leading-[1.0] whitespace-nowrap">
+          <span className="text-sm sm:text-base font-black tracking-tighter text-[#0b192c] font-headline uppercase flex items-center gap-1.5 whitespace-nowrap">
             <span className="text-[#b88c30]">Korea</span>
-            <span className="flex gap-1">
-              <span>Easy Tax</span>
-              <span>Refund</span>
-            </span>
+            <span>Easy Tax Refund</span>
           </span>
         </Link>
 

@@ -9,19 +9,19 @@
   "theme_color": "#0ea5e9",
   "icons": [
     {
-      "src": "/icon-512.png",
+      "src": "/1625-1.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/icon-192.png",
+      "src": "/1625-1.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/icon-512.png",
+      "src": "/1625-1.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"

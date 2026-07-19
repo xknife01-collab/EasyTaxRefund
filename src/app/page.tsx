@@ -167,14 +167,19 @@ export default function HomePage() {
       <div className="min-h-screen flex flex-col items-center justify-center bg-slate-50 relative overflow-hidden">
         <div className="absolute top-0 right-0 -translate-y-1/2 translate-x-1/4 w-96 h-96 bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
         <div className="relative flex flex-col items-center gap-8 animate-fade-in">
-          <div className="flex items-center gap-4 group">
-            <div className="flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-gradient-to-br from-primary via-primary/90 to-indigo-700 text-white shadow-[0_15px_35px_-5px_rgba(99,102,241,0.4)]">
-              <Globe className="h-9 w-9 animate-pulse" />
-            </div>
-            <span className="text-4xl font-black tracking-tighter text-slate-900 font-headline">Easy Tax Refund</span>
+          <div className="flex flex-col sm:flex-row items-center gap-4 group">
+            <img 
+              src="/1625-1.png" 
+              alt="KOREA Easy Tax Refund Logo" 
+              className="h-16 w-16 sm:h-20 sm:w-20 object-contain shrink-0 transition-transform duration-300 group-hover:scale-110 active:scale-95"
+            />
+            <span className="text-2xl sm:text-3xl font-black tracking-tighter font-headline uppercase flex items-center gap-2 whitespace-nowrap">
+              <span className="text-[#b88c30]">Korea</span>
+              <span className="text-[#0b192c]">Easy Tax Refund</span>
+            </span>
           </div>
-          <div className="h-2 w-16 bg-slate-200 rounded-full overflow-hidden">
-            <div className="h-full bg-primary animate-progress-indefinite" />
+          <div className="h-1.5 w-24 bg-slate-200 rounded-full overflow-hidden">
+            <div className="h-full bg-[#b88c30] animate-progress-indefinite" />
           </div>
         </div>
       </div>
