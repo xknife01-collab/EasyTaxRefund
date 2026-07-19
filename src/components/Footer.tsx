@@ -49,9 +49,9 @@ export function Footer() {
                 alt="KOREA Easy Tax Refund Logo" 
                 className="h-10 w-10 object-contain shrink-0 transition-transform duration-300 group-hover:scale-105"
               />
-              <span className="text-xl font-black font-headline tracking-tighter text-white flex items-center gap-1.5 uppercase leading-none">
-                <span className="text-[#b88c30]">Korea</span>
-                <span>Easy Tax Refund</span>
+              <span className="font-black text-white font-headline uppercase flex flex-col items-start leading-none">
+                <span className="text-[#b88c30] text-[10px] sm:text-xs font-black tracking-[0.05em] mb-0.5">Korea</span>
+                <span className="text-xs sm:text-sm tracking-tighter whitespace-nowrap">Easy Tax Refund</span>
               </span>
             </Link>
             <p className="text-slate-400 text-sm font-medium max-w-sm leading-relaxed">
