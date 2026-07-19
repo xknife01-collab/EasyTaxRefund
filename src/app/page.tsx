@@ -547,14 +547,6 @@ export default function HomePage() {
                       <div className="flex items-center gap-4 bg-[#f5f0e8] border border-[#b88c30]/20 rounded-2xl px-6 py-5 shadow-sm">
                         <ShieldCheck className="h-6 w-6 text-[#b88c30] shrink-0" />
                         <div>
-                          <div className="text-[#0f1e36] font-black text-base">성과 기반 후불 정산 (No Win, No Fee)</div>
-                          <div className="text-slate-500 font-bold text-xs mt-1">착수금이나 선결제 없이 환급 후 정산합니다.</div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  ↑↑↑ ORIGINAL VERSION END ↑↑↑ */}
-
                   {/* ── 정리된 새 버전 ── */}
                   <div className="bg-slate-50 rounded-3xl p-8 lg:p-10 border border-[#b88c30]/15 shadow-[0_16px_48px_rgba(15,30,54,0.06)]">
 
@@ -639,7 +631,7 @@ export default function HomePage() {
             <div className="mb-14">
               <div className="flex items-center gap-3 mb-5">
                 <div className="h-[2px] w-8 bg-[#b88c30]" />
-                <span className="text-[#b88c30] text-xs font-black uppercase tracking-[0.3em]">3-Tier Guarantee · No Win, No Fee</span>
+                <span className="text-[#b88c30] text-xs font-black uppercase tracking-[0.3em]">02 — 3-Tier Guarantee · No Win, No Fee</span>
               </div>
               <h2
                 className="text-3xl md:text-5xl font-black text-[#0f1e36] leading-tight tracking-tight break-keep mb-4"
