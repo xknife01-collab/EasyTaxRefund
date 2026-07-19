@@ -4784,67 +4784,71 @@ export default function EstimatePage() {
             )}
 
             {step === 8 && (
-              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-white animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <CardHeader className="text-center py-6 sm:py-12 bg-slate-900 text-white relative">
+              <Card className="rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-[#0b192c] animate-in fade-in slide-in-from-bottom-8 duration-700">
+                <CardHeader className="text-center py-6 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/20 relative overflow-hidden">
+                  {/* 배경 패턴 */}
+                  <div className="absolute inset-0 opacity-[0.03]"
+                    style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
+                  />
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => { setStep(7); saveProgress(7); }}
-                    className="absolute top-6 left-6 text-white/40 hover:text-white font-bold flex items-center"
+                    className="absolute top-6 left-6 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
                   >
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     {t('이전')}
                   </Button>
-                  <CardTitle className="text-3xl font-black font-headline">{t('Step 8: 대한민국 국세청 회원가입 대행')}</CardTitle>
+                  <CardTitle className="text-3xl font-black font-headline text-white relative z-10">{t('Step 8: 대한민국 국세청 회원가입 대행')}</CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-8 p-4 sm:p-10">
-                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100 space-y-4">
-                    <p className="text-slate-600 font-bold text-base leading-relaxed">
+                <CardContent className="space-y-8 p-4 sm:p-10 bg-[#0d1e30]">
+                  <div className="p-6 bg-white/5 rounded-2xl border border-[#b88c30]/20 space-y-4">
+                    <p className="text-slate-300 font-bold text-base leading-relaxed">
                       {t('안전한 대한민국 국세청 회원가입 대행 및 환급금 지급 현황 모니터링을 위해 국세청 보안 계정을 생성합니다. 아래의 본인 확인 인증(SMS)을 완료하시면 가입 절차가 자동으로 완료됩니다.')}
                     </p>
                   </div>
 
-                  <div className="p-6 bg-primary/5 rounded-2xl border border-primary/20 space-y-3">
+                  <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-3">
                     <div className="flex justify-between items-center">
-                      <span className="font-bold text-slate-500">{t('국세청 자동 생성 ID')}</span>
+                      <span className="font-bold text-slate-400">{t('국세청 자동 생성 ID')}</span>
                       {isIdChecking ? (
                         <div className="flex items-center gap-2">
-                          <Loader2 className="animate-spin h-4 w-4 text-primary" />
-                          <span className="text-xs font-bold text-primary">{t('중복 확인 중...')}</span>
+                          <Loader2 className="animate-spin h-4 w-4 text-[#b88c30]" />
+                          <span className="text-xs font-bold text-[#b88c30]">{t('중복 확인 중...')}</span>
                         </div>
                       ) : isIdDuplicateChecked ? (
-                        <Badge className="bg-emerald-500 hover:bg-emerald-600 text-white font-bold px-3 py-1 text-sm rounded-lg flex items-center gap-1">
+                        <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold px-3 py-1 text-sm rounded-lg flex items-center gap-1">
                           <BadgeCheck className="h-4 w-4" /> {hometaxId}
                         </Badge>
                       ) : (
-                        <span className="text-sm font-bold text-red-500">{t('ID 미생성')}</span>
+                        <span className="text-sm font-bold text-red-400">{t('ID 미생성')}</span>
                       )}
                     </div>
-                    <p className="text-xs font-semibold text-slate-400">
+                    <p className="text-xs font-semibold text-slate-500">
                       {t('* 국세청 가입 정보는 당사 이용약관 및 개인정보 처리방침의 \'국세청 가입 대행 및 계정 관리\' 조항에 따라 안전하게 암호화 관리됩니다.')}
                     </p>
                   </div>
 
                   {!isSmsRequested ? (
                     <div className="space-y-6">
-                      <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-amber-800 text-sm font-semibold">
+                      <div className="p-4 bg-amber-950/20 border border-amber-800/30 rounded-2xl text-amber-400 text-sm font-semibold">
                         {t('휴대폰 본인인증(SMS) 문자를 발송하여 회원가입을 완료합니다. 본인 명의의 휴대폰 번호로 인증을 시도해 주세요.')}
                       </div>
                       <Button
                         id="step8-signup-request-btn"
                         onClick={handleRequestSignupSms}
                         disabled={loading || isIdChecking || !isIdDuplicateChecked}
-                        className="w-full h-24 bg-slate-900 text-2xl font-black rounded-[2rem] shadow-xl hover:scale-[1.01] transition-all disabled:opacity-50"
+                        className="w-full h-20 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-[2rem] shadow-xl hover:scale-[1.01] transition-all disabled:opacity-50"
                       >
-                        {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증문자 발송하기')}
+                        {loading ? <Loader2 className="animate-spin h-8 w-8 text-[#0b192c]" /> : t('인증문자 발송하기')}
                       </Button>
                     </div>
                   ) : (
                     <div className="space-y-6">
                       <div className="space-y-3">
                         <div className="flex justify-between items-center">
-                          <Label className="text-sm font-black text-slate-700 ml-1">{t('인증번호 6자리 입력')}</Label>
-                          <span className="text-sm font-black text-primary mr-1">
+                          <Label className="text-sm font-black text-slate-300 ml-1">{t('인증번호 6자리 입력')}</Label>
+                          <span className="text-sm font-black text-[#b88c30] mr-1">
                             {formatTimer(smsTimer)}
                           </span>
                         </div>
@@ -4854,7 +4858,7 @@ export default function EstimatePage() {
                           maxLength={6}
                           value={smsCode}
                           onChange={(e) => setSmsCode(e.target.value)}
-                          className="h-16 rounded-2xl font-black bg-slate-50 border-none px-6 text-lg w-full text-center tracking-widest outline-none focus:ring-2 focus:ring-primary/20"
+                          className="h-16 rounded-2xl font-black bg-white/5 border border-white/10 text-white px-6 text-lg w-full text-center tracking-widest outline-none focus:border-[#b88c30] focus:ring-1 focus:ring-[#b88c30]"
                         />
                       </div>
 
@@ -4862,9 +4866,9 @@ export default function EstimatePage() {
                         id="step8-signup-complete-btn"
                         onClick={handleCompleteSignup}
                         disabled={isVerifyingSms || smsCode.length !== 6}
-                        className="w-full h-24 bg-primary text-3xl font-black rounded-[2rem] shadow-xl shadow-primary/20 hover:scale-[1.01] transition-all disabled:opacity-50"
+                        className="w-full h-20 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-[2rem] shadow-xl shadow-[#b88c30]/20 hover:scale-[1.01] transition-all disabled:opacity-50"
                       >
-                        {isVerifyingSms ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 완료 및 가입 대행')}
+                        {isVerifyingSms ? <Loader2 className="animate-spin h-8 w-8 text-[#0b192c]" /> : t('인증 완료 및 가입 대행')}
                       </Button>
 
                       <div className="text-center">
@@ -4872,7 +4876,7 @@ export default function EstimatePage() {
                           type="button"
                           onClick={handleRequestSignupSms}
                           disabled={loading}
-                          className="text-sm font-bold text-slate-400 hover:text-slate-600 hover:underline"
+                          className="text-sm font-bold text-slate-400 hover:text-[#b88c30] hover:underline"
                         >
                           {t('인증문자 다시 받기')}
                         </button>
