@@ -4421,9 +4421,16 @@ export default function EstimatePage() {
                 />
                 <CardContent className="space-y-10 relative z-10">
                   <div className="relative mx-auto w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center">
-                    <Database className="h-16 w-16 sm:h-20 sm:w-20 text-[#b88c30] animate-pulse" />
-                    <div className="absolute inset-0 bg-[#b88c30]/10 rounded-full blur-2xl animate-ping" />
-                    <div className="absolute inset-2 rounded-full border border-[#b88c30]/20 animate-[spin_10s_linear_infinite]" />
+                    <div className="absolute -inset-4 bg-[#b88c30]/15 rounded-full blur-xl opacity-60 animate-pulse" />
+                    <div className="relative h-20 w-20 sm:h-24 sm:w-24 bg-white rounded-3xl p-3 overflow-hidden shadow-2xl border border-[#b88c30]/30 flex items-center justify-center">
+                      <Image
+                        src="/official_nts_carrier_badge_v2_1774141326494.png"
+                        alt="Official NTS Badge"
+                        width={96}
+                        height={96}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                   </div>
                   <div className="space-y-8">
                     <div className="space-y-3">
