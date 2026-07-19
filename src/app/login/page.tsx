@@ -75,7 +75,7 @@ export default function LoginPage() {
       const appDoc = querySnapshot.docs[0];
       const appData = appDoc.data();
       setTargetAppId(appDoc.id);
-      setTargetAppName(appData.fullName || "사용자");
+      setTargetAppName(appData.fullName || t("사용자"));
 
       if (appData.password) {
         // Has password -> prompt password input
@@ -126,7 +126,7 @@ export default function LoginPage() {
       if (appData.password === password) {
         toast({ title: t("로그인 성공"), description: t("환급 고객 포털로 안전하게 이동합니다.") });
         sessionStorage.setItem('myApplicationId', appDoc.id);
-        sessionStorage.setItem('myFullName', appData.fullName || "사용자");
+        sessionStorage.setItem('myFullName', appData.fullName || t("사용자"));
         await new Promise(r => setTimeout(r, 500));
         router.push("/portal");
       } else {
@@ -201,7 +201,7 @@ export default function LoginPage() {
 
       toast({ title: t("비밀번호 설정 완료"), description: t("비밀번호가 성공적으로 설정되었습니다. 포털로 이동합니다.") });
       sessionStorage.setItem('myApplicationId', targetAppId);
-      sessionStorage.setItem('myFullName', targetAppName || "사용자");
+      sessionStorage.setItem('myFullName', targetAppName || t("사용자"));
       await new Promise(r => setTimeout(r, 500));
       router.push("/portal");
     } catch (err) {

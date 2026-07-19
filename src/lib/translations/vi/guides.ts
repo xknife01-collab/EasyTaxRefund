@@ -25,7 +25,6 @@ export const guides = {
   "하단의 '하나원큐 시작하기' 버튼을 눌러주세요.": "Vui lòng nhấn nút 'Bắt đầu Hana One Q' ở dưới.",
   "분석 완료! 클릭하여 복사": "Phân tích hoàn tất! Nhấp để sao chép",
   "패스 앱의 성명란에 붙여넣으세요.": "Dán vào ô tên trong ứng dụng PASS.",
-  "내 추천 성명": "Tên đầy đủ được đề xuất của tôi",
   "설치가 완료되었습니다 '열기'를 눌러 앱을 실행해 주세요": "Cài đặt đã hoàn tất. Vui lòng nhấn 'Mở' để chạy ứng dụng.",
   "앞으로 앱 실행 시 사용할 숫자 6자리 비밀번호를 설정해 주세요": "Vui lòng đặt mật khẩu 6 chữ số để sử dụng khi chạy ứng dụng trong tương lai.",
   "설치가 완료되었습니다. '열기'를 눌러 하나원큐를 실행해 주세요.": "Cài đặt đã hoàn tất. Vui lòng nhấn 'Mở' để chạy Hana One Q.",
@@ -117,7 +116,6 @@ export const guides = {
   "카카오톡 앱의 성명란에 붙여넣으세요.": "Dán vào ô tên trong ứng dụng KakaoTalk.",
   "원활한 서비스 이용을 위해 내용을 확인하신 후 '확인'을 눌러주세요.": "Để sử dụng dịch vụ một cách suôn sẻ, vui lòng kiểm tra nội dung và nhấn 'Xác nhận'.",
   "성명, 외국인등록번호 앞 7자리, 통신사, 휴대폰번호를 정확히 입력해 주세요.": "Vui lòng nhập chính xác họ tên, 7 chữ số đầu tiên của số đăng ký người nước ngoài, nhà mạng và số điện thoại di động.",
-  "외국인 등록증 성명({name})과 통신사(PASS) 등록 성명이 다릅니다.": "Tên trên thẻ đăng ký người nước ngoài ({name}) và tên đăng ký với nhà mạng (PASS) khác nhau.",
   "국세청에서 인증 요청이 도착했습니다. 상단 알림을 눌러 하나원큐 앱을 열어주세요.": "Yêu cầu xác thực đã đến từ Cục Thuế Quốc gia. Vui lòng nhấn thông báo ở trên để mở ứng dụng HanaOneQ.",
   "동의를 마친 후 '다음' 버튼을 눌러주세요": "Sau khi đồng ý, vui lòng nhấn nút 'Tiếp theo'.",
   "약관에 동의하신 후 하단의 '확인' 혹은 '동의' 버튼을 눌러주세요.": "Sau khi đồng ý với các điều khoản, vui lòng nhấn nút 'Xác nhận' hoặc 'Đồng ý' ở dưới.",
@@ -187,7 +185,6 @@ export const guides = {
   "문자가 오면 인증번호 입력 후 넘어가시면 됩니다. 하지만 문자가 오지 않는다면, 휴대폰을 처음 개통할 때 상담사가 입력한 이름 방식과 현재 외국인등록증 영문 이름이 다를 가능성이 높습니다. 이름이 조금이라도 다르면 조회가 불가능하니, 외국인등록증을 촬영하시고 AI가 추천해 주는 이름으로 다시 시도해 보세요!": "Khi nhận được tin nhắn, bạn có thể nhập số xác thực và tiếp tục. Tuy nhiên, nếu bạn không nhận được tin nhắn, có khả năng tên bạn đã được nhập bởi nhân viên tư vấn khi bạn lần đầu mở điện thoại và tên tiếng Anh trên thẻ đăng ký người nước ngoài hiện tại của bạn khác nhau. Nếu tên khác dù chỉ một chút, việc tra cứu sẽ không thể thực hiện được, vì vậy vui lòng chụp ảnh thẻ đăng ký người nước ngoài của bạn và thử lại với tên được AI đề xuất!",
   "본인 통신사에 맞는 PASS 앱을 설치해 주세요": "Vui lòng cài đặt ứng dụng PASS phù hợp với nhà mạng của bạn.",
   "인증서 발급을 위해 오른쪽 상단의 'X'를 눌러주세요.": "Vui lòng nhấn 'X' ở góc trên bên phải để cấp chứng nhận.",
-  "인증번호 입력 후 '다음' 버튼을 눌러주세요": "Sau khi nhập mã xác thực, vui lòng nhấn nút 'Tiếp theo'.",
   "인증 승인 따라하기 가이드": "Hướng dẫn theo dõi phê duyệt xác thực",
   "입력 후 하단의 '확인' 버튼을 눌러 다음으로 진행해 주세요.": "Sau khi nhập, vui lòng nhấn nút 'Xác nhận' ở dưới để tiếp tục.",
 };

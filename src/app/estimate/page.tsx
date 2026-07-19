@@ -99,6 +99,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/components/LanguageContext";
+const translate = (s: string) => s;
 import { db } from "@/lib/firebase";
 import {
   collection,
@@ -162,14 +163,14 @@ export default function EstimatePage() {
 
 
   const BANK_LOGOS: Record<string, React.ReactNode> = {
-    "하나은행": (
+    [translate("하나은행")]: (
       <div className="h-8 w-8 bg-[#008485] rounded-lg flex items-center justify-center shrink-0 shadow-sm border border-white/10">
         <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
           <path d="M12 2L4.5 20.29l.71.71L12 18l6.79 3 .71-.71z" />
         </svg>
       </div>
     ),
-    "KB국민은행": (
+    [translate("KB국민은행")]: (
       <div className="h-8 w-8 bg-[#ffbc00] rounded-lg flex items-center justify-center shrink-0 shadow-sm border border-white/10 overflow-hidden text-[#4b413a] font-black text-[10px]">
         <div className="flex flex-col items-center leading-none">
           <span>K</span>
@@ -177,21 +178,21 @@ export default function EstimatePage() {
         </div>
       </div>
     ),
-    "신한은행": (
+    [translate("신한은행")]: (
       <div className="h-8 w-8 bg-[#0046ff] rounded-full flex items-center justify-center shrink-0 shadow-sm border border-white/20 p-1">
         <svg viewBox="0 0 24 24" className="w-full h-full fill-white">
           <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v2h-2zm0 4h2v7h-2z" />
         </svg>
       </div>
     ),
-    "우리은행": (
+    [translate("우리은행")]: (
       <div className="h-8 w-8 bg-[#0067ac] rounded-full flex items-center justify-center shrink-0 shadow-sm border border-white/10">
         <div className="h-5 w-5 rounded-full border-2 border-white flex items-center justify-center">
           <span className="text-[10px] font-black text-white">W</span>
         </div>
       </div>
     ),
-    "NH농협은행": (
+    [translate("NH농협은행")]: (
       <div className="h-8 w-8 bg-[#00a35c] rounded-lg flex items-center justify-center shrink-0 shadow-sm border border-white/10">
         <div className="flex flex-col items-center leading-none text-white font-black text-[9px]">
           <span>N</span>
@@ -199,29 +200,29 @@ export default function EstimatePage() {
         </div>
       </div>
     ),
-    "카카오뱅크": (
+    [translate("카카오뱅크")]: (
       <div className="h-8 w-8 bg-[#fee500] rounded-lg flex items-center justify-center shrink-0 shadow-sm border border-black/5">
         <span className="text-[14px] font-black text-black">B</span>
       </div>
     ),
-    "토스뱅크": (
+    [translate("토스뱅크")]: (
       <div className="h-8 w-8 bg-[#0064ff] rounded-lg flex items-center justify-center shrink-0 shadow-sm border border-white/10">
         <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
           <path d="M12 2L2 12l10 10 10-10L12 2z" />
         </svg>
       </div>
     ),
-    "IBK기업은행": (
+    [translate("IBK기업은행")]: (
       <div className="h-8 w-8 bg-[#0053a1] rounded-lg flex items-center justify-center shrink-0 shadow-sm border border-white/10">
         <span className="text-[8px] font-black text-white">IBK</span>
       </div>
     ),
-    "케이뱅크": (
+    [translate("케이뱅크")]: (
       <div className="h-8 w-8 bg-[#00235a] rounded-lg flex items-center justify-center shrink-0 shadow-sm border border-white/10">
         <span className="text-[10px] font-black text-white italic">K</span>
       </div>
     ),
-    "우체국": (
+    [translate("우체국")]: (
       <div className="h-8 w-8 bg-[#ed1c24] rounded-lg flex items-center justify-center shrink-0 shadow-sm border border-white/10">
         <svg viewBox="0 0 24 24" className="w-5 h-5 fill-white">
           <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" />
@@ -1410,7 +1411,7 @@ export default function EstimatePage() {
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
           isDraft: true,
-          fullName: formData.officialName || '문의고객(익명)',
+          fullName: formData.officialName || t('문의고객(익명)'),
           userLanguage: language || 'ko'
         });
         targetDraftId = newDoc.id;
@@ -1458,40 +1459,40 @@ export default function EstimatePage() {
   // Recompile trigger for translations: 2026-05-29T21:28
   const FAQ_REPLIES = [
     {
-      title: "환급은 어떻게 받나요?",
-      content: "안녕하세요! 숨은 세금 환급금을 찾아 통장으로 받기까지의 전체 핵심 4단계 과정을 안내해 드릴게요. 🚀\n\n1️⃣ [정부 필수] 신분증 확인 및 번호 입력 (Step 1~3)\n대한민국 국세청(NTS)에서 세금 환급 승인을 위해 법적으로 요구하는 필수 절차입니다. 제출하신 신분증 사진은 본인 확인 즉시 시스템에서 영구 파기(저장 NO!)되며, 금융권 수준의 강력한 암호화 보안 기술로 안전하게 보호되니 안심하고 촬영해 주세요.\n\n2️⃣ [가장 중요] 홈택스 1분 가입 또는 로그인 (Step 4~5)\n한국 국세청(NTS) 전산망과 안전하게 연결하기 위해 홈택스 아이디/비밀번호로 로그인을 완료합니다. (아이디가 없으시면 1분 만에 바로 가입하실 수 있습니다.)\n\n3️⃣ 정확한 환급금 확인 및 후불제 계좌 등록 (Step 6~8)\n최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 즉시 확인합니다. 지금 신청하시는 단계에서는 단 1원도 결제하실 필요가 없습니다 (신청 수수료 0원). 환급금을 안전하게 돌려받으실 본인 명의의 은행 계좌를 등록합니다.\n\n4️⃣ 계약서 서명 및 입금 신청 (Step 9)\n결제 완료 후, 모바일 서명을 통해 정식 세무대리 수임계약서가 투명하고 안전하게 작성되며 환급금을 입금받으실 본인 통장 계좌번호를 입력합니다. 이후 약 1~2개월 뒤 한국 국세청에서 고객님의 통장으로 환급금을 직접 송금해 드립니다.\n\n💬 지금 해야 할 일!\n대화창을 닫고, 화면에 보이는 [로그인] 또는 [회원가입]을 진행해 보세요. 막히는 부분이 있다면 언제든 다시 질문해 주세요!"
+      title: t("환급은 어떻게 받나요?"),
+      content: t("안녕하세요! 숨은 세금 환급금을 찾아 통장으로 받기까지의 전체 핵심 4단계 과정을 안내해 드릴게요. 🚀\n\n1️⃣ [정부 필수] 신분증 확인 및 번호 입력 (Step 1~3)\n대한민국 국세청(NTS)에서 세금 환급 승인을 위해 법적으로 요구하는 필수 절차입니다. 제출하신 신분증 사진은 본인 확인 즉시 시스템에서 영구 파기(저장 NO!)되며, 금융권 수준의 강력한 암호화 보안 기술로 안전하게 보호되니 안심하고 촬영해 주세요.\n\n2️⃣ [가장 중요] 홈택스 1분 가입 또는 로그인 (Step 4~5)\n한국 국세청(NTS) 전산망과 안전하게 연결하기 위해 홈택스 아이디/비밀번호로 로그인을 완료합니다. (아이디가 없으시면 1분 만에 바로 가입하실 수 있습니다.)\n\n3️⃣ 정확한 환급금 확인 및 후불제 계좌 등록 (Step 6~8)\n최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 즉시 확인합니다. 지금 신청하시는 단계에서는 단 1원도 결제하실 필요가 없습니다 (신청 수수료 0원). 환급금을 안전하게 돌려받으실 본인 명의의 은행 계좌를 등록합니다.\n\n4️⃣ 계약서 서명 및 입금 신청 (Step 9)\n결제 완료 후, 모바일 서명을 통해 정식 세무대리 수임계약서가 투명하고 안전하게 작성되며 환급금을 입금받으실 본인 통장 계좌번호를 입력합니다. 이후 약 1~2개월 뒤 한국 국세청에서 고객님의 통장으로 환급금을 직접 송금해 드립니다.\n\n💬 지금 해야 할 일!\n대화창을 닫고, 화면에 보이는 [로그인] 또는 [회원가입]을 진행해 보세요. 막히는 부분이 있다면 언제든 다시 질문해 주세요!")
     },
     {
-      title: "홈택스 계정이 꼭 필요한가요?",
-      content: "네, 선택이 아닌 필수입니다! 🚨\n\n한국 국세청(NTS)은 개인의 민감한 세금 및 금융 정보를 다루기 때문에, 보안이 가장 강력한 국세청 홈택스 계정 정보가 없으면 그 누구도 고객님의 세금 기록을 열람할 수 없습니다.\n\n홈택스 계정은 국세청 금고를 열어 고객님의 숨은 돈을 확인하는 유일한 '디지털 열쇠'입니다. 🔑\n계정이 없으면 전문 세무사조차도 고객님의 환급금이 얼마인지 확인하거나 환급을 신청할 방법이 전혀 없습니다. \n\n조금 번거로우시더라도, 소중한 내 돈을 안전하게 돌려받기 위한 필수 정부 보안 절차이니 꼭 안내에 따라 1분 회원가입을 완료하거나 로그인을 진행해 주시길 부탁드립니다!"
+      title: t("홈택스 계정이 꼭 필요한가요?"),
+      content: t("네, 선택이 아닌 필수입니다! 🚨\n\n한국 국세청(NTS)은 개인의 민감한 세금 및 금융 정보를 다루기 때문에, 보안이 가장 강력한 국세청 홈택스 계정 정보가 없으면 그 누구도 고객님의 세금 기록을 열람할 수 없습니다.\n\n홈택스 계정은 국세청 금고를 열어 고객님의 숨은 돈을 확인하는 유일한 '디지털 열쇠'입니다. 🔑\n계정이 없으면 전문 세무사조차도 고객님의 환급금이 얼마인지 확인하거나 환급을 신청할 방법이 전혀 없습니다. \n\n조금 번거로우시더라도, 소중한 내 돈을 안전하게 돌려받기 위한 필수 정부 보안 절차이니 꼭 안내에 따라 1분 회원가입을 완료하거나 로그인을 진행해 주시길 부탁드립니다!")
     },
     {
-      title: "이지택스, 믿을 수 있나요?",
-      content: "네, 안심하고 이용하셔도 좋습니다! 이지택스를 믿을 수 있는 3가지 확실한 이유를 말씀드릴게요. 🛡️\n\n1️⃣ 100% 한국 국세청(NTS)에서 직접 입금해 드립니다.\n가장 많이 걱정하시는 부분이죠! 저희는 고객님의 환급금에 절대 손대지 않습니다. 신고가 완료되면 환급금은 저희를 거치지 않고, 한국 국세청에서 고객님 본인 명의의 계좌로 직접 송금합니다.\n\n2️⃣ 국가 공인 전문 세무사가 전담합니다.\n모든 환급 절차는 엄격한 자격을 갖춘 대한민국 국가 공인 전문 세무사가 합법적이고 꼼꼼하게 처리합니다.\n\n3️⃣ 철저한 개인정보 보호\n본인 인증과 개인정보는 오직 정부(국세청) 시스템에 세금 환급을 신고하기 위한 목적으로만 사용되며, 철저한 보안 속에 안전하게 보호됩니다.\n\n매년 수많은 외국인 근로자분들이 잘 몰라서 놓치고 있는 '정당하게 돌려받아야 할 내 돈'을 안전하게 찾아드리고 있습니다. 안심하고 화면의 안내에 따라 조회를 시작해 보세요! 👍"
+      title: t("이지택스, 믿을 수 있나요?"),
+      content: t("네, 안심하고 이용하셔도 좋습니다! 이지택스를 믿을 수 있는 3가지 확실한 이유를 말씀드릴게요. 🛡️\n\n1️⃣ 100% 한국 국세청(NTS)에서 직접 입금해 드립니다.\n가장 많이 걱정하시는 부분이죠! 저희는 고객님의 환급금에 절대 손대지 않습니다. 신고가 완료되면 환급금은 저희를 거치지 않고, 한국 국세청에서 고객님 본인 명의의 계좌로 직접 송금합니다.\n\n2️⃣ 국가 공인 전문 세무사가 전담합니다.\n모든 환급 절차는 엄격한 자격을 갖춘 대한민국 국가 공인 전문 세무사가 합법적이고 꼼꼼하게 처리합니다.\n\n3️⃣ 철저한 개인정보 보호\n본인 인증과 개인정보는 오직 정부(국세청) 시스템에 세금 환급을 신고하기 위한 목적으로만 사용되며, 철저한 보안 속에 안전하게 보호됩니다.\n\n매년 수많은 외국인 근로자분들이 잘 몰라서 놓치고 있는 '정당하게 돌려받아야 할 내 돈'을 안전하게 찾아드리고 있습니다. 안심하고 화면의 안내에 따라 조회를 시작해 보세요! 👍")
     },
     {
-      title: "수수료는 왜 내야 하나요?",
-      content: "수수료 25%는 고객님의 세금을 꼼꼼하게 다시 계산해서 국세청에 대신 신고해 주는 '전문 세무사'의 정당한 수임료(인건비)입니다. 👨‍💼💼\n\n세금 환급은 단순히 버튼만 누른다고 돈이 나오는 것이 아니라, 과거 5년 치의 복잡한 세금 기록을 세무사가 직접 분석하고 국세청에 신고 서류를 제출해야 하는 까다로운 법적 절차입니다.\n\n💎 신청 시 결제 금액 0원! 100% 후불 결제 원칙\n저희 이지택스는 \"선결제 0원 / 후불제 수수료\" 정책을 적용하고 있습니다. 신청 단계에서는 비용이 전혀 청구되지 않으며, 한국 국세청에서 고객님의 통장으로 환급금이 실제로 입금된 것이 확인된 후에만 수수료(25%) 결제가 진행됩니다.\n\n⚠️ 환급 실패 시 수수료 0원 (100% 안심 보장)\n세무사의 최종 검토 결과 환급이 불가능하거나 국세청에서 환급금이 나오지 않는 경우에는 수수료를 단 1원도 청구하지 않습니다. 고객님께는 어떠한 금전적 위험도 없으니 안심하고 신청하셔도 됩니다!"
+      title: t("수수료는 왜 내야 하나요?"),
+      content: t("수수료 25%는 고객님의 세금을 꼼꼼하게 다시 계산해서 국세청에 대신 신고해 주는 '전문 세무사'의 정당한 수임료(인건비)입니다. 👨‍💼💼\n\n세금 환급은 단순히 버튼만 누른다고 돈이 나오는 것이 아니라, 과거 5년 치의 복잡한 세금 기록을 세무사가 직접 분석하고 국세청에 신고 서류를 제출해야 하는 까다로운 법적 절차입니다.\n\n💎 신청 시 결제 금액 0원! 100% 후불 결제 원칙\n저희 이지택스는 '선결제 0원 / 후불제 수수료' 정책을 적용하고 있습니다. 신청 단계에서는 비용이 전혀 청구되지 않으며, 한국 국세청에서 고객님의 통장으로 환급금이 실제로 입금된 것이 확인된 후에만 수수료(25%) 결제가 진행됩니다.\n\n⚠️ 환급 실패 시 수수료 0원 (100% 안심 보장)\n세무사의 최종 검토 결과 환급이 불가능하거나 국세청에서 환급금이 나오지 않는 경우에는 수수료를 단 1원도 청구하지 않습니다. 고객님께는 어떠한 금전적 위험도 없으니 안심하고 신청하셔도 됩니다!")
     },
     {
-      title: "언제 입금되나요?",
-      content: "환급 신청을 완료하신 후, 실제 통장으로 돈이 입금되기까지는 보통 45일에서 최대 60일 정도 소요됩니다. ⏳\n\n시간이 꽤 걸리는 이유는, 한국 국세청(NTS)의 공무원들이 고객님의 지난 5년 치 세금 기록을 하나하나 꼼꼼히 확인하고 승인하는 심사 기간이 필요하기 때문입니다. (관할 세무서의 업무량에 따라 조금 더 빠르거나 늦어질 수 있습니다.)\n\n환급 진행 상황은 언제든지 이지택스의 [나의 환급 진행사항] 메뉴에서 실시간으로 확인하실 수 있으니 안심하고 기다려 주세요!"
+      title: t("언제 입금되나요?"),
+      content: t("환급 신청을 완료하신 후, 실제 통장으로 돈이 입금되기까지는 보통 45일에서 최대 60일 정도 소요됩니다. ⏳\n\n시간이 꽤 걸리는 이유는, 한국 국세청(NTS)의 공무원들이 고객님의 지난 5년 치 세금 기록을 하나하나 꼼꼼히 확인하고 승인하는 심사 기간이 필요하기 때문입니다. (관할 세무서의 업무량에 따라 조금 더 빠르거나 늦어질 수 있습니다.)\n\n환급 진행 상황은 언제든지 이지택스의 [나의 환급 진행사항] 메뉴에서 실시간으로 확인하실 수 있으니 안심하고 기다려 주세요!")
     },
     {
-      title: "신분증 사진, 안전한가요?",
-      content: "네, 100% 안전합니다! 신분증 사진이 혹시라도 나쁜 곳에 쓰일까 걱정하시는 마음, 충분히 이해합니다. 이지택스의 철저한 보안 원칙 3가지를 약속드립니다. 🔒\n\n1️⃣ 전송 즉시 영구 삭제 (저장 NO!)\n촬영하신 신분증 사진은 저희 서버나 휴대폰에 절대 '저장'되지 않습니다. 오직 세무서에 본인 확인용으로 제출되는 즉시 영구적으로 파기됩니다.\n\n2️⃣ 국세청(정부) 필수 제출 서류\n한국 국세청(NTS)에서 세금 환급을 승인하려면, '이 사람이 진짜 본인이 맞는지' 확인하기 위해 반드시 신분증 사본을 요구합니다. 저희는 이 필수 서류를 국세청에 대신 내드리는 역할만 할 뿐, 대출이나 휴대폰 개통 등 다른 어떤 목적으로도 절대 사용할 수 없습니다.\n\n3️⃣ 은행급 암호화 보안\n고객님의 모든 정보는 한국의 대형 은행들과 동일한 수준의 강력한 암호화 시스템을 통해 국세청으로만 바로 전송됩니다. \n\n내 소중한 개인정보가 유출될 일은 절대 없으니, 안심하고 안내에 따라 신분증을 촬영해 주세요!"
+      title: t("신분증 사진, 안전한가요?"),
+      content: t("네, 100% 안전합니다! 신분증 사진이 혹시라도 나쁜 곳에 쓰일까 걱정하시는 마음, 충분히 이해합니다. 이지택스의 철저한 보안 원칙 3가지를 약속드립니다. 🔒\n\n1️⃣ 전송 즉시 영구 삭제 (저장 NO!)\n촬영하신 신분증 사진은 저희 서버나 휴대폰에 절대 '저장'되지 않습니다. 오직 세무서에 본인 확인용으로 제출되는 즉시 영구적으로 파기됩니다.\n\n2️⃣ 국세청(정부) 필수 제출 서류\n한국 국세청(NTS)에서 세금 환급을 승인하려면, '이 사람이 진짜 본인이 맞는지' 확인하기 위해 반드시 신분증 사본을 요구합니다. 저희는 이 필수 서류를 국세청에 대신 내드리는 역할만 할 뿐, 대출이나 휴대폰 개통 등 다른 어떤 목적으로도 절대 사용할 수 없습니다.\n\n3️⃣ 은행급 암호화 보안\n고객님의 모든 정보는 한국의 대형 은행들과 동일한 수준의 강력한 암호화 시스템을 통해 국세청으로만 바로 전송됩니다. \n\n내 소중한 개인정보가 유출될 일은 절대 없으니, 안심하고 안내에 따라 신분증을 촬영해 주세요!")
     },
     {
-      title: "환급액이 0원이라고 나오는데 왜 그런가요?",
-      content: "조회 결과 환급액이 0원으로 나오셨나요? 이는 정상적인 결과일 수 있습니다. 📊\n\n세금 환급은 '내가 낸 세금' 중에서 '돌려받을 자격이 있는 세금'을 돌려받는 것입니다. 만약 과거에 다니던 회사에서 연말정산을 완벽하게 잘 처리해주었거나, 납부한 세금 자체가 적었다면 돌려받을 추가 금액(숨은 세금)이 없을 수 있습니다. \n\n이번에는 환급액이 0원이더라도, 내년이나 이직 후에 다시 조회해 보시면 환급금이 발생할 수 있으니 내년에 이지택스를 다시 꼭 찾아주세요!"
+      title: t("환급액이 0원이라고 나오는데 왜 그런가요?"),
+      content: t("조회 결과 환급액이 0원으로 나오셨나요? 이는 정상적인 결과일 수 있습니다. 📊\n\n세금 환급은 '내가 낸 세금' 중에서 '돌려받을 자격이 있는 세금'을 돌려받는 것입니다. 만약 과거에 다니던 회사에서 연말정산을 완벽하게 잘 처리해주었거나, 납부한 세금 자체가 적었다면 돌려받을 추가 금액(숨은 세금)이 없을 수 있습니다. \n\n이번에는 환급액이 0원이더라도, 내년이나 이직 후에 다시 조회해 보시면 환급금이 발생할 수 있으니 내년에 이지택스를 다시 꼭 찾아주세요!")
     },
     {
-      title: "다른 사람 명의 은행 계좌로 받을 수 있나요?",
-      content: "아니요, 절대 불가능합니다! 🚫\n\n금융 사기 및 명의 도용을 방지하기 위해 한국 국세청(NTS)은 '환급을 신청한 본인 이름'과 정확히 일치하는 은행 계좌로만 돈을 입금합니다. \n\n따라서 반드시 환급자 본인 명의로 된 한국 은행 계좌를 입력해 주셔야 하며, 다른 일체의 계좌 번호를 입력하시면 국세청에서 환급금 송금을 거절하게 됩니다."
+      title: t("다른 사람 명의 은행 계좌로 받을 수 있나요?"),
+      content: t("아니요, 절대 불가능합니다! 🚫\n\n금융 사기 및 명의 도용을 방지하기 위해 한국 국세청(NTS)은 '환급을 신청한 본인 이름'과 정확히 일치하는 은행 계좌로만 돈을 입금합니다. \n\n따라서 반드시 환급자 본인 명의로 된 한국 은행 계좌를 입력해 주셔야 하며, 다른 일체의 계좌 번호를 입력하시면 국세청에서 환급금 송금을 거절하게 됩니다.")
     },
     {
-      title: "이미 한국을 떠났는데 환급받을 수 있나요?",
-      content: "네, 조건만 맞으면 가능합니다! ✈️\n\n비록 현재 한국에 없더라도, 아래 두 가지 조건만 충족하신다면 이지택스를 통해 환급 신청이 가능합니다.\n\n1. 본인 인증 통과: 현재 가입되어 있는 한국 통신사(알뜰폰 포함) 번호를 통해 본인 인증(PASS 문자 등)을 받을 수 있어야 합니다.\n2. 한국 은행 계좌 유지: 환급금을 입금받을 수 있는 본인 명의의 '한국 은행 계좌'가 아직 정지되지 않고 열려 있어야 합니다.\n\n위 두 가지가 가능하시다면 타국에서도 문제없이 앱을 통해 환급을 신청하실 수 있습니다!"
+      title: t("이미 한국을 떠났는데 환급받을 수 있나요?"),
+      content: t("네, 조건만 맞으면 가능합니다! ✈️\n\n비록 현재 한국에 없더라도, 아래 두 가지 조건만 충족하신다면 이지택스를 통해 환급 신청이 가능합니다.\n\n1. 본인 인증 통과: 현재 가입되어 있는 한국 통신사(알뜰폰 포함) 번호를 통해 본인 인증(PASS 문자 등)을 받을 수 있어야 합니다.\n2. 한국 은행 계좌 유지: 환급금을 입금받을 수 있는 본인 명의의 '한국 은행 계좌'가 아직 정지되지 않고 열려 있어야 합니다.\n\n위 두 가지가 가능하시다면 타국에서도 문제없이 앱을 통해 환급을 신청하실 수 있습니다!")
     }
   ];
 
@@ -1516,7 +1517,7 @@ export default function EstimatePage() {
           createdAt: serverTimestamp(),
           updatedAt: serverTimestamp(),
           isDraft: true,
-          fullName: formData.officialName || '문의고객(익명)',
+          fullName: formData.officialName || t('문의고객(익명)'),
           userLanguage: language || 'ko'
         });
         targetDraftId = newDoc.id;
@@ -1525,14 +1526,14 @@ export default function EstimatePage() {
       }
 
       await addDoc(collection(db, 'applications', targetDraftId, 'chat_messages'), {
-        text: "상담원과 직접 채팅하기",
+        text: t("상담원과 직접 채팅하기"),
         sender: 'User',
         isAutoReply: true,
         timestamp: serverTimestamp()
       });
 
       await addDoc(collection(db, 'applications', targetDraftId, 'chat_messages'), {
-        text: "전문 상담원으로 연결합니다. 무엇을 도와드릴까요?",
+        text: t("전문 상담원으로 연결합니다. 무엇을 도와드릴까요?"),
         sender: 'System',
         isAutoReply: true,
         timestamp: serverTimestamp()
@@ -1634,9 +1635,9 @@ export default function EstimatePage() {
             // Restore result
             if (data.estimatedRefundAmount !== undefined) {
               const caseType = data.caseType || 'D';
-              const message = caseType === 'A' ? "축하합니다! {amount}을 찾았습니다." :
-                              caseType === 'B' ? "이미 감면 혜택를 받고 계시네요!" :
-                              caseType === 'C' ? "납부하신 세금이 없어 환급액이 0원입니다." : "조회된 데이터가 없습니다.";
+              const message = caseType === 'A' ? t("축하합니다! {amount}을 찾았습니다.") :
+                              caseType === 'B' ? t("이미 감면 혜택를 받고 계시네요!") :
+                              caseType === 'C' ? t("납부하신 세금이 없어 환급액이 0원입니다.") : t("조회된 데이터가 없습니다.");
               
               const restoredResult = {
                 success: true,
@@ -1863,9 +1864,9 @@ export default function EstimatePage() {
     if (carrier === "SKT") return "0";
     if (carrier === "KT") return "1";
     if (carrier === "LGU+") return "2";
-    if (carrier.includes("SKT 알뜰폰")) return "3";
-    if (carrier.includes("KT 알뜰폰")) return "4";
-    if (carrier.includes("LGU+ 알뜰폰")) return "5";
+    if (carrier.includes(translate("SKT 알뜰폰"))) return "3";
+    if (carrier.includes(translate("KT 알뜰폰"))) return "4";
+    if (carrier.includes(translate("LGU+ 알뜰폰"))) return "5";
     return "0"; // fallback
   };
 
@@ -2091,7 +2092,7 @@ export default function EstimatePage() {
         setStep(9);
         saveProgress(9);
       } else {
-        if (res.message.includes("이미 등록") || res.message.includes("가입된") || res.message.includes("이미 회원")) {
+        if (res.message.includes(translate("이미 등록")) || res.message.includes(translate("가입된")) || res.message.includes(translate("이미 회원"))) {
           toast({
             variant: "destructive",
             title: t("이미 가입된 사용자"),
@@ -2431,10 +2432,10 @@ export default function EstimatePage() {
         resAttrYear: "2024",
         resIncomeSpecList: JSON.stringify(persona.breakdown),
         caseType: persona.refund > 0 ? "A" : "D",
-        message: persona.refund > 0 ? "축하합니다! {amount}을 찾았습니다." : "조회된 데이터가 없습니다.",
+        message: persona.refund > 0 ? t("축하합니다! {amount}을 찾았습니다.") : t("조회된 데이터가 없습니다."),
         details: persona.breakdown.map(b => ({
           year: b.year,
-          company: "(주)가상상사",
+          company: t("(주)가상상사"),
           amount: b.amount,
           isEligible: true
         })),
@@ -2895,7 +2896,7 @@ export default function EstimatePage() {
                     <div className="relative z-10 flex items-center justify-center gap-3 mb-6">
                       <div className="h-px w-8 bg-[#b88c30]" />
                       <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-full px-4 py-1.5">
-                        <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">대한민국 국세청 연동</span>
+                        <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">{t('대한민국 국세청 연동')}</span>
                       </div>
                       <div className="h-px w-8 bg-[#b88c30]" />
                     </div>
@@ -2903,7 +2904,7 @@ export default function EstimatePage() {
                     {/* 국세청 공식 로고 */}
                     <div className="relative z-10 mx-auto mb-5 flex flex-col items-center gap-3">
                       <div className="h-20 w-20 bg-white rounded-2xl flex items-center justify-center shadow-xl border border-[#b88c30]/20 overflow-hidden">
-                        <img src="/nts-logo.jpg" alt="국세청" className="h-16 w-16 object-contain" />
+                        <img src="/nts-logo.jpg" alt={t("국세청")} className="h-16 w-16 object-contain" />
                       </div>
                       <div className="flex items-center gap-1.5">
                         <div className="h-px w-5 bg-[#b88c30]/40" />
@@ -3071,7 +3072,7 @@ export default function EstimatePage() {
                     <div className="relative z-10 flex items-center justify-center gap-3 mb-5">
                       <div className="h-px w-8 bg-[#b88c30]" />
                       <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-full px-4 py-1.5">
-                        <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">공식 절차 안내</span>
+                        <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">{t('공식 절차 안내')}</span>
                       </div>
                       <div className="h-px w-8 bg-[#b88c30]" />
                     </div>
@@ -3079,7 +3080,7 @@ export default function EstimatePage() {
                     {/* 국세청 공식 로고 */}
                     <div className="relative z-10 mx-auto mb-5 flex flex-col items-center gap-3">
                       <div className="h-20 w-20 bg-white rounded-2xl flex items-center justify-center shadow-xl border border-[#b88c30]/20 overflow-hidden">
-                        <img src="/nts-logo.jpg" alt="국세청" className="h-16 w-16 object-contain" />
+                        <img src="/nts-logo.jpg" alt={t("국세청")} className="h-16 w-16 object-contain" />
                       </div>
                       <div className="flex items-center gap-1.5">
                         <div className="h-px w-5 bg-[#b88c30]/40" />
@@ -3211,7 +3212,7 @@ export default function EstimatePage() {
                       <div className="flex items-center justify-center gap-3 mb-1">
                         <div className="h-px w-8 bg-[#b88c30]" />
                         <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-full px-4 py-1.5">
-                          <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">Step 01 — 사전 준비</span>
+                          <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">{t('Step 01 — 사전 준비')}</span>
                         </div>
                         <div className="h-px w-8 bg-[#b88c30]" />
                       </div>
@@ -3343,7 +3344,7 @@ export default function EstimatePage() {
                     <div className="relative z-10 flex items-center justify-center gap-3 mb-5">
                       <div className="h-px w-8 bg-[#b88c30]" />
                       <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-full px-4 py-1.5">
-                        <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">Step 02 — 신분증 인증</span>
+                        <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">{t('Step 02 — 신분증 인증')}</span>
                       </div>
                       <div className="h-px w-8 bg-[#b88c30]" />
                     </div>
@@ -3351,7 +3352,7 @@ export default function EstimatePage() {
                     {/* NTS 로고 */}
                     <div className="relative z-10 mx-auto mb-5 flex flex-col items-center gap-3">
                       <div className="h-20 w-20 bg-white rounded-2xl flex items-center justify-center shadow-xl border border-[#b88c30]/20 overflow-hidden">
-                        <img src="/nts-logo.jpg" alt="국세청" className="h-16 w-16 object-contain" />
+                        <img src="/nts-logo.jpg" alt={t("국세청")} className="h-16 w-16 object-contain" />
                       </div>
                       <div className="flex items-center gap-1.5">
                         <div className="h-px w-5 bg-[#b88c30]/40" />
@@ -3485,7 +3486,7 @@ export default function EstimatePage() {
                       {/* 법령 근거 */}
                       <div className="flex items-center justify-center gap-2 py-2">
                         <div className="h-px flex-1 bg-[#b88c30]/10" />
-                        <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider">소득세법 제59조의 4 · 합법적 세금 환급</span>
+                        <span className="text-[10px] font-black text-slate-600 uppercase tracking-wider">{t('소득세법 제59조의 4 · 합법적 세금 환급')}</span>
                         <div className="h-px flex-1 bg-[#b88c30]/10" />
                       </div>
 
@@ -3526,14 +3527,14 @@ export default function EstimatePage() {
                     <div className="relative z-10 flex items-center justify-center gap-3 mb-5">
                       <div className="h-px w-8 bg-[#b88c30]" />
                       <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/30 rounded-full px-4 py-1.5">
-                        <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">Step 03 — 본인 인증</span>
+                        <span className="text-[#b88c30] text-[10px] font-black tracking-[0.2em] uppercase">{t('Step 03 — 본인 인증')}</span>
                       </div>
                       <div className="h-px w-8 bg-[#b88c30]" />
                     </div>
 
                     <div className="relative z-10 mx-auto mb-5 flex flex-col items-center gap-3">
                       <div className="h-20 w-20 bg-white rounded-2xl flex items-center justify-center shadow-xl border border-[#b88c30]/20 overflow-hidden">
-                        <img src="/nts-logo.jpg" alt="국세청" className="h-16 w-16 object-contain" />
+                        <img src="/nts-logo.jpg" alt={t("국세청")} className="h-16 w-16 object-contain" />
                       </div>
                       <div className="flex items-center gap-1.5">
                         <div className="h-px w-5 bg-[#b88c30]/40" />
@@ -3767,7 +3768,7 @@ export default function EstimatePage() {
                       {/* NTS Legal Notice Link / Divider */}
                       <div className="flex items-center justify-center gap-2 py-2">
                         <div className="h-px flex-1 bg-slate-800" />
-                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">소득세법 제59조의 4 · 합법적 세금 환급</span>
+                        <span className="text-[10px] font-black text-slate-500 uppercase tracking-wider">{t('소득세법 제59조의 4 · 합법적 세금 환급')}</span>
                         <div className="h-px flex-1 bg-slate-800" />
                       </div>
 
@@ -3826,7 +3827,7 @@ export default function EstimatePage() {
                           <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#b88c30]/60" />
                           <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/40 rounded-full px-5 py-1.5">
                             <div className="w-1.5 h-1.5 rounded-full bg-[#b88c30] animate-pulse" />
-                            <span className="text-[#b88c30] text-[10px] font-black tracking-[0.25em] uppercase">Step 04 — 본인 인증</span>
+                            <span className="text-[#b88c30] text-[10px] font-black tracking-[0.25em] uppercase">{t('Step 04 — 본인 인증')}</span>
                           </div>
                           <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#b88c30]/60" />
                         </div>
@@ -3839,7 +3840,7 @@ export default function EstimatePage() {
                             <div className="absolute -inset-3 rounded-full border border-[#b88c30]/25" />
                             {/* 로고 박스 */}
                             <div className="relative h-28 w-28 bg-white rounded-3xl overflow-hidden shadow-2xl border-2 border-[#b88c30]/50">
-                              <img src="/nts-logo.jpg" alt="국세청" className="w-full h-full object-contain p-3" />
+                              <img src="/nts-logo.jpg" alt={t("국세청")} className="w-full h-full object-contain p-3" />
                             </div>
                             {/* 인증 배지 */}
                             <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-[#b88c30] rounded-full flex items-center justify-center border-2 border-[#0b192c] shadow-xl">
@@ -3850,7 +3851,7 @@ export default function EstimatePage() {
                           <div className="mt-4 flex flex-col items-center gap-1">
                             <div className="flex items-center gap-2">
                               <div className="h-px w-8 bg-[#b88c30]/50" />
-                              <span className="text-[10px] font-black text-[#b88c30]/80 uppercase tracking-[0.3em]">국세청 / NTS</span>
+                              <span className="text-[10px] font-black text-[#b88c30]/80 uppercase tracking-[0.3em]">{t('국세청 / NTS')}</span>
                               <div className="h-px w-8 bg-[#b88c30]/50" />
                             </div>
                             <span className="text-[9px] font-bold text-slate-500 tracking-widest">NATIONAL TAX SERVICE KOREA</span>
@@ -3875,14 +3876,14 @@ export default function EstimatePage() {
                           {t('국세청 조회를 위해서는 본인 명의의 인증서가 반드시 필요합니다. 현재 아래 인증서 중 가입된 인증서가 있으신가요?')}
                         </p>
 
-                        {/* 지원 인증서 배지 */}
+                        {/* {t('지원 인증서')} 배지 */}
                         <div className="relative z-10 mt-5 flex flex-col items-center gap-3">
-                          <span className="text-[10px] font-black text-[#b88c30]/70 uppercase tracking-[0.2em]">지원 인증서</span>
+                          <span className="text-[10px] font-black text-[#b88c30]/70 uppercase tracking-[0.2em]">{t('지원 인증서')}</span>
                           <div className="flex gap-2 flex-wrap justify-center">
                             {[
-                              { src: "/images/logo/hana_1q.png", label: "하나은행" },
+                              { src: "/images/logo/hana_1q.png", label: t("하나은행") },
                               { src: "/images/logo/pass.png", label: "PASS" },
-                              { src: "/images/logo/kakao.png", label: "카카오톡" },
+                              { src: "/images/logo/kakao.png", label: t("카카오톡") },
                             ].map(({ src, label }) => (
                               <div key={label} className="flex items-center gap-1.5 bg-white/5 border border-[#b88c30]/20 px-3 py-1.5 rounded-full">
                                 <Image src={src} alt={label} width={14} height={14} className="object-contain" />
@@ -3948,7 +3949,7 @@ export default function EstimatePage() {
                             <div className="h-5 w-5 bg-white rounded-lg flex items-center justify-center overflow-hidden shadow-sm border border-[#b88c30]/20">
                               <img src="/nts-logo.jpg" alt="NTS" className="h-4 w-4 object-contain" />
                             </div>
-                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">국세청 공식 인증 연동</span>
+                            <span className="text-[9px] font-black text-slate-500 uppercase tracking-widest">{t('국세청 공식 인증 연동')}</span>
                           </div>
                           <div className="flex-1 h-px bg-[#b88c30]/15" />
                         </div>
@@ -3975,7 +3976,7 @@ export default function EstimatePage() {
                           <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#b88c30]/60" />
                           <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/40 rounded-full px-5 py-1.5">
                             <div className="w-1.5 h-1.5 rounded-full bg-[#b88c30] animate-pulse" />
-                            <span className="text-[#b88c30] text-[10px] font-black tracking-[0.25em] uppercase">Step 04 — 인증서 발급</span>
+                            <span className="text-[#b88c30] text-[10px] font-black tracking-[0.25em] uppercase">{t('Step 04 — 인증서 발급')}</span>
                           </div>
                           <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#b88c30]/60" />
                         </div>
@@ -3986,7 +3987,7 @@ export default function EstimatePage() {
                             <div className="absolute -inset-5 rounded-full border border-[#b88c30]/15 animate-pulse" />
                             <div className="absolute -inset-3 rounded-full border border-[#b88c30]/25" />
                             <div className="relative h-28 w-28 bg-white rounded-3xl overflow-hidden shadow-2xl border-2 border-[#b88c30]/50">
-                              <img src="/nts-logo.jpg" alt="국세청" className="w-full h-full object-contain p-3" />
+                              <img src="/nts-logo.jpg" alt={t("국세청")} className="w-full h-full object-contain p-3" />
                             </div>
                             <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-[#b88c30] rounded-full flex items-center justify-center border-2 border-[#0b192c] shadow-xl">
                               <ShieldCheck className="h-4 w-4 text-[#0b192c]" />
@@ -3995,7 +3996,7 @@ export default function EstimatePage() {
                           <div className="mt-4 flex flex-col items-center gap-1">
                             <div className="flex items-center gap-2">
                               <div className="h-px w-8 bg-[#b88c30]/50" />
-                              <span className="text-[10px] font-black text-[#b88c30]/80 uppercase tracking-[0.3em]">국세청 / NTS</span>
+                              <span className="text-[10px] font-black text-[#b88c30]/80 uppercase tracking-[0.3em]">{t('국세청 / NTS')}</span>
                               <div className="h-px w-8 bg-[#b88c30]/50" />
                             </div>
                             <span className="text-[9px] font-bold text-slate-500 tracking-widest">NATIONAL TAX SERVICE KOREA</span>
@@ -4125,7 +4126,7 @@ export default function EstimatePage() {
                           <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#b88c30]/60" />
                           <div className="flex items-center gap-2 bg-[#b88c30]/10 border border-[#b88c30]/40 rounded-full px-5 py-1.5">
                             <div className="w-1.5 h-1.5 rounded-full bg-[#b88c30] animate-pulse" />
-                            <span className="text-[#b88c30] text-[10px] font-black tracking-[0.25em] uppercase">Step 04 — 인증 방식 선택</span>
+                            <span className="text-[#b88c30] text-[10px] font-black tracking-[0.25em] uppercase">{t('Step 04 — 인증 방식 선택')}</span>
                           </div>
                           <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#b88c30]/60" />
                         </div>
@@ -4136,7 +4137,7 @@ export default function EstimatePage() {
                             <div className="absolute -inset-5 rounded-full border border-[#b88c30]/15 animate-pulse" />
                             <div className="absolute -inset-3 rounded-full border border-[#b88c30]/25" />
                             <div className="relative h-28 w-28 bg-white rounded-3xl overflow-hidden shadow-2xl border-2 border-[#b88c30]/50">
-                              <img src="/nts-logo.jpg" alt="국세청" className="w-full h-full object-contain p-3" />
+                              <img src="/nts-logo.jpg" alt={t("국세청")} className="w-full h-full object-contain p-3" />
                             </div>
                             <div className="absolute -bottom-2 -right-2 h-8 w-8 bg-[#b88c30] rounded-full flex items-center justify-center border-2 border-[#0b192c] shadow-xl">
                               <ShieldCheck className="h-4 w-4 text-[#0b192c]" />
@@ -4145,7 +4146,7 @@ export default function EstimatePage() {
                           <div className="mt-4 flex flex-col items-center gap-1">
                             <div className="flex items-center gap-2">
                               <div className="h-px w-8 bg-[#b88c30]/50" />
-                              <span className="text-[10px] font-black text-[#b88c30]/80 uppercase tracking-[0.3em]">국세청 / NTS</span>
+                              <span className="text-[10px] font-black text-[#b88c30]/80 uppercase tracking-[0.3em]">{t('국세청 / NTS')}</span>
                               <div className="h-px w-8 bg-[#b88c30]/50" />
                             </div>
                             <span className="text-[9px] font-bold text-slate-500 tracking-widest">NATIONAL TAX SERVICE KOREA</span>
@@ -4527,7 +4528,7 @@ export default function EstimatePage() {
                     <div className="h-px w-10 bg-gradient-to-r from-transparent to-[#b88c30]/60" />
                     <div className="flex items-center gap-2 bg-red-500/10 border border-red-500/30 rounded-full px-4 py-1.5">
                       <div className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
-                      <span className="text-red-400 text-[10px] font-black tracking-[0.25em] uppercase">Step 06 — 오류 진단 리포트</span>
+                      <span className="text-red-400 text-[10px] font-black tracking-[0.25em] uppercase">{t('Step 06 — 오류 진단 리포트')}</span>
                     </div>
                     <div className="h-px w-10 bg-gradient-to-l from-transparent to-[#b88c30]/60" />
                   </div>
@@ -5047,7 +5048,7 @@ export default function EstimatePage() {
                       {BANK_LOGOS[formData.bankName] || <CreditCard className="h-8 w-8 text-slate-400" />}
                       <div>
                         <p className="font-black text-white text-lg">{t(formData.bankName || '등록된 은행 없음')}</p>
-                        <p className="text-base font-bold text-slate-400">{formData.accountNumber} (예금주: {formData.accountHolder})</p>
+                        <p className="text-base font-bold text-slate-400">{formData.accountNumber} ({t("예금주")}: {formData.accountHolder})</p>
                       </div>
                     </div>
                   </div>
@@ -5606,7 +5607,7 @@ export default function EstimatePage() {
               className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs sm:text-sm px-4 py-3 rounded-full shadow-2xl border border-slate-700/50 hover:scale-105 active:scale-95 transition-all duration-200"
             >
               <Sliders className="h-4 w-4 text-emerald-400 animate-pulse" />
-              <span>🛠️ 시뮬레이션 제어판</span>
+              <span>{t("🛠️ 시뮬레이션 제어판")}</span>
             </button>
           ) : (
             <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/50 w-[360px] sm:w-[380px] rounded-3xl p-6 shadow-2xl text-slate-100 flex flex-col gap-4 animate-in slide-in-from-bottom-5 duration-300">
@@ -5629,20 +5630,20 @@ export default function EstimatePage() {
                   <Button
                     onClick={() => {
                       setFormData({
-                        officialName: "홍길동 (GILDONG HONG)",
-                        authName: "홍길동",
+                        officialName: translate("홍길동 (GILDONG HONG)"),
+                        authName: translate("홍길동"),
                         registrationNumber: "900101-5123456",
                         issueDate: "2020-01-01",
                         phone: "010-1234-5678",
                         carrier: "SKT",
                         otpCode: "123456",
-                        bankName: "KB국민은행",
+                        bankName: translate("KB국민은행"),
                         accountNumber: "123-456789-01-012",
                         cardNumber: "1234-5678-1234-5678",
                         expiryDate: "12/28",
                         cvc: "123",
-                        depositorName: "홍길동",
-                        accountHolder: "홍길동"
+                        depositorName: translate("홍길동"),
+                        accountHolder: translate("홍길동")
                       });
                       setResult({
                         refundEstimate: 2350000,
@@ -5652,7 +5653,7 @@ export default function EstimatePage() {
                         resIncomeSpecList: "[]",
                         caseType: "D",
                         details: [
-                          { year: "2024", companyName: "(주)가상상사", incomeAmount: 30000000, taxAmount: 1500000, deductedAmount: 1500000, isEligible: true }
+                          { year: "2024", companyName: t("(주)가상상사"), incomeAmount: 30000000, taxAmount: 1500000, deductedAmount: 1500000, isEligible: true }
                         ]
                       });
                       setIs1WonVerified(true);
@@ -5664,20 +5665,20 @@ export default function EstimatePage() {
                       setStep(9);
                       saveProgress(9);
                       toast({
-                        title: "9단계 강제 이동 완료",
-                        description: "0.1초 만에 모크 데이터 주입 및 CMS 동의 테스트 화면으로 이동했습니다."
+                        title: t("9단계 강제 이동 완료"),
+                        description: t("0.1초 만에 모크 데이터 주입 및 CMS 동의 테스트 화면으로 이동했습니다.")
                       });
                     }}
                     className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
                   >
                     <Sparkles className="h-4 w-4" />
-                    <span>환급 9단계 즉시 이동 (CMS 테스트)</span>
+                    <span>{t("환급 9단계 즉시 이동 (CMS 테스트)")}</span>
                   </Button>
                 </div>
 
                 {/* Step pills */}
                 <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">단계별 빠른 이동</label>
+                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t('단계별 빠른 이동')}</label>
                   <div className="grid grid-cols-6 gap-1.5 text-center">
                     {[0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((s) => (
                       <button
@@ -5687,8 +5688,8 @@ export default function EstimatePage() {
                           setStep(s);
                           saveProgress(s);
                           toast({
-                            title: `Step ${s} 이동`,
-                            description: `수동으로 ${s}단계 화면으로 변경되었습니다.`
+                            title: t("Step {s} 이동", { s: String(s) }),
+                            description: t("수동으로 {s}단계 화면으로 변경되었습니다.", { s: String(s) })
                           });
                         }}
                         className={cn(
@@ -5707,8 +5708,8 @@ export default function EstimatePage() {
                 {/* isSimulation Toggle */}
                 <div className="flex items-center justify-between bg-slate-800/50 p-3 rounded-2xl border border-slate-800">
                   <div className="flex flex-col">
-                    <span className="text-xs font-black text-slate-200">시뮬레이션 모드 (isSimulation)</span>
-                    <span className="text-[10px] text-slate-400">활성화 시 실명/본인인증을 모킹합니다.</span>
+                    <span className="text-xs font-black text-slate-200">{t("시뮬레이션 모드 (isSimulation)")}</span>
+                    <span className="text-[10px] text-slate-400">{t("활성화 시 실명/본인인증을 모킹합니다.")}</span>
                   </div>
                   <Checkbox
                     id="dev-sim-toggle"
@@ -5716,8 +5717,8 @@ export default function EstimatePage() {
                     onCheckedChange={(val) => {
                       setIsSimulation(!!val);
                       toast({
-                        title: `시뮬레이션 모드 ${!!val ? "활성화" : "비활성화"}`,
-                        description: `인증 및 API 호출이 ${!!val ? "가상 시뮬레이션" : "실제 API"}으로 동작합니다.`
+                        title: t("시뮬레이션 모드 {status}", { status: !!val ? t("활성화") : t("비활성화") }),
+                        description: t("인증 및 API 호출이 {mode}으로 동작합니다.", { mode: !!val ? t("가상 시뮬레이션") : t("실제 API") })
                       });
                     }}
                     className="h-5 w-5 border-slate-600 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
@@ -5725,7 +5726,7 @@ export default function EstimatePage() {
                 </div>
 
                 <div className="text-[10px] text-slate-500 leading-normal text-center pt-2 border-t border-slate-800">
-                  인증 프로세스 우회 및 최종 9단계 CMS 서명 동의서 규제 준수(보기 팝업, 서명 가두기 및 전송 기능) 테스트용 도구입니다.
+                  {t("인증 프로세스 우회 및 최종 9단계 CMS 서명 동의서 규제 준수(보기 팝업, 서명 가두기 및 전송 기능) 테스트용 도구입니다.")}
                 </div>
               </div>
             </div>

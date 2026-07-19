@@ -1,5 +1,4 @@
 export const notifications = {
-  "업데이트 완료": "Yangilanish yakunlandi",
   "서버 접속에 실패했습니다.": "Serverga ulanib bo‘lmadi.",
   "신청 정보를 찾을 수 없습니다. 다시 시도해 주세요.": "Ariza ma'lumotlari topilmadi. Iltimos, qaytadan urunib ko'ring.",
   "다시 촬영해 주세요.": "Iltimos, qayta rasmga oling.",
@@ -9,7 +8,6 @@ export const notifications = {
   "문자 발송에 실패했습니다.": "SMS yuborish muvaffaqiyatsiz tugadi.",
   "전문 세무사가 검토를 시작합니다.": "Mutaxassis koʻrib chiqishni boshlaydi.",
   "전자서명 칸에 서명을 완료해 주세요.": "Iltimos, elektron imzo maydonini toʻldiring.",
-  "서류 보완 요청": "Hujjatlarni to'ldirish so'ralmoqda",
   "휴대폰 번호를 정확히 입력해 주세요.": "Iltimos, telefon raqamingizni to'g'ri kiriting.",
   "인증번호가 틀렸습니다.": "Tasdiqlash kodi noto‘g‘ri.",
   "비밀번호 설정 중 오류가 발생했습니다.": "Parolni sozlashda xatolik yuz berdi.",

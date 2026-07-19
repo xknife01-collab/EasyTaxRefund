@@ -1,1 +1,2 @@
-export const guidesNepali = { name: "test" };
+export const guidesNepali = {
+};

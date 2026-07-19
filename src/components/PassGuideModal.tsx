@@ -1,5 +1,7 @@
 "use client";
 
+const t = (s: string) => s;
+
 import React, { useState } from "react";
 import {
   Dialog,
@@ -81,159 +83,159 @@ export const PASS_GUIDE_STEPS: GuideStep[] = [
 
 // Step 1 (pass_01)
 PASS_GUIDE_STEPS[0].markers = [
-  { x: 50, y: 18, text: "SKT 알뜰폰→SKT / KT 알뜰폰→KT / LG 알뜰폰→LG 선택" },
-  { x: 45, y: 39, text: "본인 통신사에 맞는 PASS 앱을 설치해 주세요" },
+  { x: 50, y: 18, text: t("SKT 알뜰폰→SKT / KT 알뜰폰→KT / LG 알뜰폰→LG 선택") },
+  { x: 45, y: 39, text: t("본인 통신사에 맞는 PASS 앱을 설치해 주세요") },
 ];
 
 // Step 2 (pass_02)
 PASS_GUIDE_STEPS[1].markers = [
-  { x: 50, y: 16, text: "이용 중인 통신사의 PASS 앱을 설치해 주세요" },
+  { x: 50, y: 16, text: t("이용 중인 통신사의 PASS 앱을 설치해 주세요") },
 ];
 
 // Step 3 (pass_03)
 PASS_GUIDE_STEPS[2].markers = [
-  { x: 50, y: 20, text: "설치가 완료되었습니다 '열기'를 눌러 앱을 실행해 주세요", hideBox: true },
+  { x: 50, y: 20, text: t("설치가 완료되었습니다 '열기'를 눌러 앱을 실행해 주세요"), hideBox: true },
   { x: 74, y: 25, text: "" },
 ];
 
 // Step 4 (pass_04)
 PASS_GUIDE_STEPS[3].markers = [
-  { x: 50, y: 55, text: "아래로 스크롤하여 모든 내용을 확인해 주세요", hideBox: true },
-  { x: 50, y: 89, text: "앱 이용 권한 안내입니다. '확인'을 눌러주세요" },
+  { x: 50, y: 55, text: t("아래로 스크롤하여 모든 내용을 확인해 주세요"), hideBox: true },
+  { x: 50, y: 89, text: t("앱 이용 권한 안내입니다. '확인'을 눌러주세요") },
 ];
 
 // Step 5 (pass_05)
 PASS_GUIDE_STEPS[4].markers = [
-  { x: 50, y: 80, text: "'허용'을 눌러 앱 알림 권한을 승인해 주세요" },
+  { x: 50, y: 80, text: t("'허용'을 눌러 앱 알림 권한을 승인해 주세요") },
 ];
 
 // Step 6 (pass_06)
 PASS_GUIDE_STEPS[5].markers = [
-  { x: 50, y: 80, text: "'허용'을 눌러 전화 관리 권한을 승인해 주세요" },
+  { x: 50, y: 80, text: t("'허용'을 눌러 전화 관리 권한을 승인해 주세요") },
 ];
 
 // Step 7 (pass_07)
 PASS_GUIDE_STEPS[6].markers = [
-  { x: 50, y: 20.5, text: "성명을 입력해 주세요" },
-  { x: 50, y: 34.3, text: "외국인 등록번호를 입력해 주세요" },
-  { x: 50, y: 46.5, text: "휴대폰 번호를 입력해 주세요" },
-  { x: 50, y: 88, text: "정보 입력 후 '다음'을 눌러주세요" },
+  { x: 50, y: 20.5, text: t("성명을 입력해 주세요") },
+  { x: 50, y: 34.3, text: t("외국인 등록번호를 입력해 주세요") },
+  { x: 50, y: 46.5, text: t("휴대폰 번호를 입력해 주세요") },
+  { x: 50, y: 88, text: t("정보 입력 후 '다음'을 눌러주세요") },
 ];
 
 // Step 8 (pass_08)
 PASS_GUIDE_STEPS[7].markers = [
-  { x: 50, y: 47.5, text: "PASS 필수 항목을 선택하여 모두 동의해 주세요" },
-  { x: 50, y: 88.5, text: "동의를 마친 후 '다음' 버튼을 눌러주세요" },
+  { x: 50, y: 47.5, text: t("PASS 필수 항목을 선택하여 모두 동의해 주세요") },
+  { x: 50, y: 88.5, text: t("동의를 마친 후 '다음' 버튼을 눌러주세요") },
 ];
 
 // Step 9 (pass_09)
 PASS_GUIDE_STEPS[8].markers = [
-  { x: 50, y: 17.5, text: "휴대폰 문자로 받은 인증번호 6자리를 입력해 주세요" },
-  { x: 50, y: 88.5, text: "번호를 모두 입력한 후 '다음' 버튼을 눌러주세요" },
+  { x: 50, y: 17.5, text: t("휴대폰 문자로 받은 인증번호 6자리를 입력해 주세요") },
+  { x: 50, y: 88.5, text: t("번호를 모두 입력한 후 '다음' 버튼을 눌러주세요") },
 ];
 
 // Step 10 (pass_10)
 PASS_GUIDE_STEPS[9].markers = [
-  { x: 50, y: 30, text: "앞으로 앱 실행 시 사용할 숫자 6자리 비밀번호를 설정해 주세요" },
-  { x: 50, y: 68, text: "연속된 숫자나 생년월일 등 쉬운 번호를 피해서 입력해 주세요" },
+  { x: 50, y: 30, text: t("앞으로 앱 실행 시 사용할 숫자 6자리 비밀번호를 설정해 주세요") },
+  { x: 50, y: 68, text: t("연속된 숫자나 생년월일 등 쉬운 번호를 피해서 입력해 주세요") },
 ];
 
 // Step 11 (pass_11)
 PASS_GUIDE_STEPS[10].markers = [
-  { x: 50, y: 25, text: "설정한 비밀번호를 확인하기 위해 한 번 더 입력해 주세요" },
+  { x: 50, y: 25, text: t("설정한 비밀번호를 확인하기 위해 한 번 더 입력해 주세요") },
 ];
 
 // Step 12 (pass_12)
 PASS_GUIDE_STEPS[11].markers = [
-  { x: 50, y: 89, text: "PASS 가입이 완료되었습니다 인증서 발급을 위해 하단의 '다음'을 눌러 이동해 주세요" },
-  { x: 50, y: 55, text: "생체 인증은 건너뛰고 '다음'을 눌러주세요", hideBox: true },
+  { x: 50, y: 89, text: t("PASS 가입이 완료되었습니다 인증서 발급을 위해 하단의 '다음'을 눌러 이동해 주세요") },
+  { x: 50, y: 55, text: t("생체 인증은 건너뛰고 '다음'을 눌러주세요"), hideBox: true },
 ];
 
 // Step 13 (pass_13)
 PASS_GUIDE_STEPS[12].markers = [
-  { x: 50, y: 36.5, text: "인증서를 발급받기 위해 화면 중앙의 '인증서 관리' 메뉴를 눌러주세요" },
+  { x: 50, y: 36.5, text: t("인증서를 발급받기 위해 화면 중앙의 '인증서 관리' 메뉴를 눌러주세요") },
 ];
 
 // Step 14 (pass_14)
 PASS_GUIDE_STEPS[13].markers = [
-  { x: 50, y: 55, text: "초록색 팝업창 중앙의 '인증서 발급 받기' 버튼을 눌러주세요" },
+  { x: 50, y: 55, text: t("초록색 팝업창 중앙의 '인증서 발급 받기' 버튼을 눌러주세요") },
 ];
 
 // Step 15 (pass_15)
 PASS_GUIDE_STEPS[14].markers = [
-  { x: 50, y: 51, text: "인증서 서비스를 이용하기 위해 필수 항목을 선택하여 모두 동의해 주세요", hideBox: true },
+  { x: 50, y: 51, text: t("인증서 서비스를 이용하기 위해 필수 항목을 선택하여 모두 동의해 주세요"), hideBox: true },
   { x: 9, y: 56.5, text: "" }, // Just box on the checkbox
-  { x: 50, y: 80.5, text: "모든 항목에 동의한 후 하단의 '발급' 버튼을 눌러주세요" },
+  { x: 50, y: 80.5, text: t("모든 항목에 동의한 후 하단의 '발급' 버튼을 눌러주세요") },
 ];
 
 // Step 16 (pass_16)
 PASS_GUIDE_STEPS[15].markers = [
-  { x: 50, y: 20.5, text: "이름을 실명으로 입력해 주세요" },
-  { x: 50, y: 32.5, text: "가입된 휴대폰 번호를 숫자만 입력해 주세요" },
-  { x: 50, y: 41.5, text: "'인증번호요청' 버튼을 누른 후 문자로 받은 번호를 입력해 주세요", position: "bottom" },
-  { x: 50, y: 88.5, text: "정보 입력 후 '다음' 버튼을 눌러주세요" },
+  { x: 50, y: 20.5, text: t("이름을 실명으로 입력해 주세요") },
+  { x: 50, y: 32.5, text: t("가입된 휴대폰 번호를 숫자만 입력해 주세요") },
+  { x: 50, y: 41.5, text: t("'인증번호요청' 버튼을 누른 후 문자로 받은 번호를 입력해 주세요"), position: "bottom" },
+  { x: 50, y: 88.5, text: t("정보 입력 후 '다음' 버튼을 눌러주세요") },
 ];
 
 // Step 17 (pass_17)
 PASS_GUIDE_STEPS[16].markers = [
-  { x: 50, y: 42.5, text: "문자로 받은 인증번호 6자리를 입력해 주세요" },
-  { x: 50, y: 88.5, text: "번호를 입력한 후 하단의 '다음' 버튼을 눌러주세요" },
+  { x: 50, y: 42.5, text: t("문자로 받은 인증번호 6자리를 입력해 주세요") },
+  { x: 50, y: 88.5, text: t("번호를 입력한 후 하단의 '다음' 버튼을 눌러주세요") },
 ];
 
 // Step 18 (pass_18)
 PASS_GUIDE_STEPS[17].markers = [
-  { x: 50, y: 18, text: "본인이 사용 중인 은행을 목록에서 선택해 주세요" },
-  { x: 50, y: 33, text: "본인 명의의 계좌번호를 하이픈(-) 없이 숫자만 입력해 주세요", position: "bottom" },
-  { x: 50, y: 48, text: "'인증요청' 버튼을 누르면 해당 계좌로 1원이 입금됩니다", position: "bottom" },
+  { x: 50, y: 18, text: t("본인이 사용 중인 은행을 목록에서 선택해 주세요") },
+  { x: 50, y: 33, text: t("본인 명의의 계좌번호를 하이픈(-) 없이 숫자만 입력해 주세요"), position: "bottom" },
+  { x: 50, y: 48, text: t("'인증요청' 버튼을 누르면 해당 계좌로 1원이 입금됩니다"), position: "bottom" },
 ];
 
 // Step 19 (pass_19)
 PASS_GUIDE_STEPS[18].markers = [
-  { x: 50, y: 8.5, text: "해당 은행 앱의 거래내역에서 'SKT또는 LGU또는 KT' 뒤에 적힌 숫자 3자리를 확인해 주세요" },
-  { x: 50, y: 45.5, text: "확인한 숫자 3자리를 아래 입력창에 넣어주세요" },
-  { x: 50, y: 88.5, text: "입력을 마친 후 하단의 '다음' 버튼을 눌러주세요" },
+  { x: 50, y: 8.5, text: t("해당 은행 앱의 거래내역에서 'SKT또는 LGU또는 KT' 뒤에 적힌 숫자 3자리를 확인해 주세요") },
+  { x: 50, y: 45.5, text: t("확인한 숫자 3자리를 아래 입력창에 넣어주세요") },
+  { x: 50, y: 88.5, text: t("입력을 마친 후 하단의 '다음' 버튼을 눌러주세요") },
 ];
 
 // Step 20 (pass_20)
 PASS_GUIDE_STEPS[19].markers = [
-  { x: 50, y: 8, text: "은행 앱에서 1원 입금 내역을 보면 'SKT또는 LGU또는 KT' 뒤에 숫자 3자리가 적혀 있습니다.", hideBox: true },
-  { x: 50, y: 15, text: "사진 속 '510'처럼 적힌 숫자 3자리를 기억해 주세요", hideBox: true },
+  { x: 50, y: 8, text: t("은행 앱에서 1원 입금 내역을 보면 'SKT또는 LGU또는 KT' 뒤에 숫자 3자리가 적혀 있습니다."), hideBox: true },
+  { x: 50, y: 15, text: t("사진 속 '510'처럼 적힌 숫자 3자리를 기억해 주세요"), hideBox: true },
   { x: 15, y: 18, text: "" },
 ];
 
 // Step 21 (pass_21)
 PASS_GUIDE_STEPS[20].markers = [
-  { x: 50, y: 46, text: "확인된 입금자명 중 3자리 숫자를 입력해 주세요" },
-  { x: 50, y: 88, text: "입력 후 하단의 '다음' 버튼을 눌러주세요", position: "bottom" },
+  { x: 50, y: 46, text: t("확인된 입금자명 중 3자리 숫자를 입력해 주세요") },
+  { x: 50, y: 88, text: t("입력 후 하단의 '다음' 버튼을 눌러주세요"), position: "bottom" },
 ];
 
 // Step 22 (pass_22)
 PASS_GUIDE_STEPS[21].markers = [
-  { x: 50, y: 26, text: "앱에서 사용할 비밀번호 6자리를 설정해 주세요", position: "bottom" },
+  { x: 50, y: 26, text: t("앱에서 사용할 비밀번호 6자리를 설정해 주세요"), position: "bottom" },
 ];
 
 // Step 23 (pass_23)
 PASS_GUIDE_STEPS[22].markers = [
-  { x: 50, y: 46, text: "PASS 인증서 발급이 완료되었습니다!" },
-  { x: 50, y: 55, text: "가운데 '확인' 버튼을 눌러주세요", position: "bottom" },
+  { x: 50, y: 46, text: t("PASS 인증서 발급이 완료되었습니다!") },
+  { x: 50, y: 55, text: t("가운데 '확인' 버튼을 눌러주세요"), position: "bottom" },
 ];
 
 // Step 24: New Step (KakaoTalk image) - Already defined in array
 
 // Step 25 (pass_24)
 PASS_GUIDE_STEPS[24].markers = [
-  { x: 50, y: 15, text: "상단의 빨간색 '홈택스 인증 요청' 알림을 눌러주세요", position: "bottom" },
+  { x: 50, y: 15, text: t("상단의 빨간색 '홈택스 인증 요청' 알림을 눌러주세요"), position: "bottom" },
 ];
 
 // Step 26 (pass_25)
 PASS_GUIDE_STEPS[25].markers = [
-  { x: 50, y: 64, text: "제3자 제공 동의에 체크해 주세요" },
-  { x: 68, y: 76, text: "우측 하단의 '인증' 버튼을 눌러주세요", position: "bottom" },
+  { x: 50, y: 64, text: t("제3자 제공 동의에 체크해 주세요") },
+  { x: 68, y: 76, text: t("우측 하단의 '인증' 버튼을 눌러주세요"), position: "bottom" },
 ];
 
 // Step 27 (pass_26)
 PASS_GUIDE_STEPS[26].markers = [
-  { x: 50, y: 36, text: "조금 전 가입할 때 설정하신 비밀번호 6자리를 입력하세요", position: "bottom" },
+  { x: 50, y: 36, text: t("조금 전 가입할 때 설정하신 비밀번호 6자리를 입력하세요"), position: "bottom" },
 ];
 
 // Step 28 (pass_27)
@@ -242,11 +244,11 @@ PASS_GUIDE_STEPS[27].markers = [
 ];
 
 const CHAPTERS = [
-  { title: "PASS 시작", start: 0, icon: "📱" },
-  { title: "회원가입", start: 6, icon: "⚠️" },
-  { title: "인증서 발급", start: 12, icon: "🎫" },
-  { title: "계좌 인증 완료", start: 17, icon: "🏦" },
-  { title: "인증 승인", start: 24, icon: "✅" },
+  { title: t("PASS 시작"), start: 0, icon: "📱" },
+  { title: t("회원가입"), start: 6, icon: "⚠️" },
+  { title: t("인증서 발급"), start: 12, icon: "🎫" },
+  { title: t("계좌 인증 완료"), start: 17, icon: "🏦" },
+  { title: t("인증 승인"), start: 24, icon: "✅" },
 ];
 
 export function PassGuideModal({ 
@@ -375,7 +377,7 @@ export function PassGuideModal({
             <button
                onClick={(e) => { e.stopPropagation(); setDismissAiCard(true); }}
                className="absolute top-3 right-3 p-1.5 rounded-full text-amber-500 hover:bg-amber-200/50 hover:text-amber-700 transition-colors"
-               aria-label="닫기"
+               aria-label={t("닫기")}
             >
                <X className="h-4 w-4" />
             </button>

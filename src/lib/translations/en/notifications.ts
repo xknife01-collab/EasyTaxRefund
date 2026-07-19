@@ -1,5 +1,4 @@
 export const notifications = {
-  "업데이트 완료": "Update Complete",
   "서버 접속에 실패했습니다.": "Failed to connect to the server.",
   "신청 정보를 찾을 수 없습니다. 다시 시도해 주세요.": "Application details not found. Please try again.",
   "다시 촬영해 주세요.": "Please take the photo again.",
@@ -9,7 +8,6 @@ export const notifications = {
   "문자 발송에 실패했습니다.": "Failed to send SMS.",
   "전문 세무사가 검토를 시작합니다.": "A professional tax accountant is starting the review.",
   "전자서명 칸에 서명을 완료해 주세요.": "Please complete the signature in the electronic signature box.",
-  "서류 보완 요청": "Supplementary Document Request",
   "휴대폰 번호를 정확히 입력해 주세요.": "Please enter your mobile phone number correctly.",
   "인증번호가 틀렸습니다.": "The verification number is incorrect.",
   "비밀번호 설정 중 오류가 발생했습니다.": "An error occurred during password setup.",

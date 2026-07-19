@@ -37,7 +37,7 @@ export default function FAQPage() {
   const faqSections = [
     {
       category: t("비자 및 체류 자격"),
-      subtitle: "비자 종류와 체류 상태에 따른 신청 가능 여부를 확인하세요.",
+      subtitle: t("비자 종류와 체류 상태에 따른 신청 가능 여부를 확인하세요."),
       items: [
         { q: t("비자 종류(E-7, E-9, F-2 등)에 상관없이 신청할 수 있나요?"), a: t("네, 비자 종류보다는 '거주자(183일 이상 한국 거주)' 여부와 '중소기업 근무' 여부가 중요합니다. 요건만 충족한다면 대부분의 취업 비자 소지자가 혜택 대상입니다.") },
         { q: t("지금은 회사를 그만두고 구직 중(D-10)이거나 본국으로 돌아갈 예정인데 가능한가요?"), a: t("과거 5년 이내에 한국 중소기업에서 일하며 세금을 냈던 기록이 있다면, 현재 무직 상태이거나 출국 예정이라도 지난 세금을 돌려받을 수 있습니다.") },
@@ -46,7 +46,7 @@ export default function FAQPage() {
     },
     {
       category: t("회사와의 관계"),
-      subtitle: "사장님 몰래, 회사를 통하지 않고 신청할 수 있는지 확인하세요.",
+      subtitle: t("사장님 몰래, 회사를 통하지 않고 신청할 수 있는지 확인하세요."),
       items: [
         { q: t("회사 몰래 신청할 수 있나요? 사장님이 알면 싫어하실까 봐 걱정돼요."), a: t("과거의 세금을 돌려받는 '경정청구'는 회사를 통하지 않고 본인이 직접 세무서에 신청하는 것입니다. 회사에는 어떠한 통보도 가지 않으며, 회사가 비용을 부담하는 것도 아니니 안심하고 신청하셔도 됩니다.") },
         { q: t("회사가 중소기업인지 어떻게 확인하나요?"), a: t("저희 앱에 접속하여 사업자 번호만 입력하시면, 저희 AI 시스템이 해당 기업이 감면 대상인 '중소기업 기본법'상의 중소기업인지 즉시 판별해 드립니다.") }
@@ -54,7 +54,7 @@ export default function FAQPage() {
     },
     {
       category: t("환급 및 세금"),
-      subtitle: "환급 금액, 입금 시기, 수수료 구조에 대한 모든 궁금증을 해결합니다.",
+      subtitle: t("환급 금액, 입금 시기, 수수료 구조에 대한 모든 궁금증을 해결합니다."),
       items: [
         { q: t("이미 연말정산을 했는데 또 받을 수 있는 게 있나요?"), a: t("네, 연말정산 때 이 감면 혜택(90% 감면)을 적용받지 못했다면, 놓친 금액만큼을 '경정청구'라는 절차를 통해 별도로 돌려받을 수 있습니다.") },
         { q: t("돈은 언제, 어디로 들어오나요?"), a: t("신청 후 세무서의 검토를 거쳐 보통 1~2개월 이내에 신청 시 입력하신 본인 명의의 한국 은행 계좌로 국세청에서 직접 입금됩니다.") },
@@ -63,7 +63,7 @@ export default function FAQPage() {
     },
     {
       category: t("본인 인증 및 오류"),
-      subtitle: "외국인 이름 불일치나 휴대폰 인증 문제를 해결하는 방법을 안내합니다.",
+      subtitle: t("외국인 이름 불일치나 휴대폰 인증 문제를 해결하는 방법을 안내합니다."),
       items: [
         { q: t("이름이 외국인 등록증(ARC)이랑 통신사에 등록된 게 다른데 어떡하죠?"), a: t("외국인들이 가장 많이 겪는 문제입니다. 저희 앱의 'AI 이름 최적화' 기능을 사용하면, 다양한 이름 조합을 자동으로 테스트하여 인증에 성공할 수 있도록 도와드립니다.") },
         { q: t("한국 핸드폰 번호가 없으면 신청이 불가능한가요?"), a: t("앱을 통한 자동 조회를 위해서는 본인 명의의 휴대폰 인증이 필수입니다. 만약 본인 명의의 휴대폰이 없으시다면, 가까운 주민센터나 세무서에서 원천징수영수증을 발급받아 실시간 상담원 채팅으로 보내주세요.") }
@@ -71,7 +71,7 @@ export default function FAQPage() {
     },
     {
       category: t("연령 및 기간"),
-      subtitle: "나이 제한과 신청 가능 기간에 대한 오해를 바로잡습니다.",
+      subtitle: t("나이 제한과 신청 가능 기간에 대한 오해를 바로잡습니다."),
       items: [
         { q: t("저는 만 34세가 넘었는데 아예 방법이 없나요?"), a: t("현재 나이가 만 34세가 넘었더라도, '취업 당시' 나이가 만 34세 이하였다면 그 시점부터 5년 동안의 세금은 환급받을 수 있습니다. 포기하기 전에 꼭 확인해 보세요.") },
         { q: t("한국에 온 지 1년밖에 안 됐는데 신청 가능한가요?"), a: t("네, 입사한 날로부터 바로 혜택이 시작됩니다. 작년에 냈던 세금을 지금 바로 환급 신청하세요.") }
@@ -80,8 +80,8 @@ export default function FAQPage() {
   ];
 
   const reviews = [
-    { name: "Nguyen T.H.", country: "🇻🇳 베트남", text: "회사에 말도 안 했는데 3개월치 세금을 돌려받았어요. 진짜 신기했습니다.", amount: "약 142만원 환급" },
-    { name: "Ahmad R.", country: "🇮🇩 인도네시아", text: "한국어 모르는데 세무사님이 다 도와주셔서 정말 편했어요. 수수료도 입금 후에 냈습니다.", amount: "약 198만원 환급" },
+    { name: "Nguyen T.H.", country: "🇻🇳 " + t("베트남"), text: t("회사에 말도 안 했는데 3개월치 세금을 돌려받았어요. 진짜 신기했습니다."), amount: t("약 142만원 환급") },
+    { name: "Ahmad R.", country: "🇮🇩 " + t("인도네시아"), text: t("한국어 모르는데 세무사님이 다 도와주셔서 정말 편했어요. 수수료도 입금 후에 냈습니다."), amount: t("약 198만원 환급") },
   ];
 
   return (
@@ -101,17 +101,17 @@ export default function FAQPage() {
               <div className="h-px w-10 bg-[#b88c30]" />
             </div>
             <h1 className="text-4xl sm:text-6xl font-black text-white leading-tight tracking-tight">
-              당신의 궁금증을<br />
-              <span className="text-[#b88c30]">명쾌하게 해결해 드립니다</span>
+              {t("당신의 궁금증을")}<br />
+              <span className="text-[#b88c30]">{t("명쾌하게 해결해 드립니다")}</span>
             </h1>
             <div className="h-px w-20 bg-[#b88c30] mx-auto" />
             <p className="text-slate-300 text-base sm:text-xl font-bold max-w-2xl mx-auto leading-relaxed break-keep">
-              외국인 근로자의 권리, 이제는 전문가와 AI에게 물어보세요.
+              {t("외국인 근로자의 권리, 이제는 전문가와 AI에게 물어보세요.")}
             </p>
             <div className="flex items-center justify-center gap-2 text-slate-500 text-sm font-bold pt-4">
-              <Link href="/" className="hover:text-[#b88c30] transition-colors">홈</Link>
+              <Link href="/" className="hover:text-[#b88c30] transition-colors">{t("홈")}</Link>
               <ChevronRight className="h-3 w-3" />
-              <span className="text-[#b88c30]">자주 묻는 질문</span>
+              <span className="text-[#b88c30]">{t("자주 묻는 질문")}</span>
             </div>
           </div>
         </div>
@@ -121,18 +121,18 @@ export default function FAQPage() {
         <section className="w-full bg-white border-b border-slate-100 py-8 px-6">
           <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-10">
             <div className="flex flex-col items-center gap-2">
-              <img src="/nts-logo.jpg" alt="국세청" className="h-16 object-contain" />
-              <span className="text-xs font-black text-slate-400 tracking-wide">대한민국 국세청</span>
+              <img src="/nts-logo.jpg" alt={t("국세청")} className="h-16 object-contain" />
+              <span className="text-xs font-black text-slate-400 tracking-wide">{t("대한민국 국세청")}</span>
             </div>
             <div className="h-12 w-px bg-slate-200 hidden sm:block" />
             <div className="flex flex-col items-center gap-2">
-              <img src="/official_nts_carrier_badge_v2_1774141326494.png" alt="국세청 공식 연동" className="h-16 object-contain" />
-              <span className="text-xs font-black text-slate-400 tracking-wide">공인 세무사 직접 대행</span>
+              <img src="/official_nts_carrier_badge_v2_1774141326494.png" alt={t("국세청 공식 연동")} className="h-16 object-contain" />
+              <span className="text-xs font-black text-slate-400 tracking-wide">{t("공인 세무사 직접 대행")}</span>
             </div>
             <div className="h-12 w-px bg-slate-200 hidden sm:block" />
             <div className="flex flex-col items-center gap-2">
-              <img src="/certified_security_seal_premium_1774150786685.png" alt="보안 인증" className="h-16 object-contain" />
-              <span className="text-xs font-black text-slate-400 tracking-wide">개인정보 보호 인증</span>
+              <img src="/certified_security_seal_premium_1774150786685.png" alt={t("보안 인증")} className="h-16 object-contain" />
+              <span className="text-xs font-black text-slate-400 tracking-wide">{t("개인정보 보호 인증")}</span>
             </div>
           </div>
         </section>
@@ -141,10 +141,10 @@ export default function FAQPage() {
         <section className="w-full bg-[#b88c30] py-10 px-6">
           <div className="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-6 text-center divide-x divide-[#0f1e36]/20">
             {[
-              { value: "5년치", label: "소급 환급 가능" },
-              { value: "180만원", label: "평균 환급액" },
-              { value: "1~2개월", label: "평균 입금 기간" },
-              { value: "0원", label: "실패 시 수수료" },
+              { value: t("5년치"), label: t("소급 환급 가능") },
+              { value: t("180만원"), label: t("평균 환급액") },
+              { value: t("1~2개월"), label: t("평균 입금 기간") },
+              { value: t("0원"), label: t("실패 시 수수료") },
             ].map((s, i) => (
               <div key={i} className="space-y-1 px-4">
                 <div className="text-2xl sm:text-3xl font-black text-[#0f1e36]">{s.value}</div>
@@ -164,15 +164,15 @@ export default function FAQPage() {
               <div className="lg:col-span-2 space-y-5">
                 <span className="text-xs font-black text-[#b88c30] uppercase tracking-widest">AI Assistant</span>
                 <h2 className="text-3xl sm:text-4xl font-black text-white leading-tight">
-                  AI 세무 비서에게<br />바로 물어보세요
+                  {t("AI 세무 비서에게")}<br />{t("바로 물어보세요")}
                 </h2>
                 <div className="h-1 w-10 bg-[#b88c30] rounded-full" />
                 <p className="text-slate-400 font-bold text-base leading-relaxed break-keep">
-                  어떤 질문이든 자유롭게 입력하세요.<br />365일 24시간 실시간 답변.
+                  {t("어떤 질문이든 자유롭게 입력하세요.")}<br />{t("365일 24시간 실시간 답변.")}
                 </p>
                 <div className="flex items-center gap-3 text-xs font-black text-slate-500">
                   <ShieldCheck className="h-4 w-4 text-emerald-500" />
-                  개인정보 암호화 처리
+                  {t("개인정보 암호화 처리")}
                 </div>
               </div>
               <div className="lg:col-span-3 bg-[#0f1e36] border border-[#b88c30]/20 rounded-3xl p-8 space-y-6 shadow-2xl">
@@ -180,7 +180,7 @@ export default function FAQPage() {
                   <div className="h-10 w-10 bg-[#b88c30]/10 rounded-xl flex items-center justify-center text-[#b88c30]">
                     <Sparkles className="h-5 w-5" />
                   </div>
-                  <span className="text-sm font-black text-white">Easy Tax Refund AI 비서</span>
+                  <span className="text-sm font-black text-white">{t("Easy Tax Refund AI 비서")}</span>
                 </div>
                 <form onSubmit={handleAsk} className="flex flex-col sm:flex-row gap-3">
                   <input
@@ -261,8 +261,8 @@ export default function FAQPage() {
         <section className="w-full bg-[#0f1e36] py-20 px-6 border-t border-slate-800">
           <div className="max-w-5xl mx-auto space-y-12">
             <div className="text-center space-y-3">
-              <span className="text-xs font-black text-[#b88c30] uppercase tracking-widest">실제 고객 후기</span>
-              <h2 className="text-3xl font-black text-white">4.9점 고객 만족도</h2>
+              <span className="text-xs font-black text-[#b88c30] uppercase tracking-widest">{t("실제 고객 후기")}</span>
+              <h2 className="text-3xl font-black text-white">{t("4.9점 고객 만족도")}</h2>
               <div className="flex justify-center gap-1 text-amber-400">
                 {[...Array(5)].map((_, i) => <Star key={i} className="h-5 w-5 fill-current" />)}
               </div>
@@ -291,10 +291,10 @@ export default function FAQPage() {
         <section className="w-full bg-white border-t border-slate-200 py-12 px-6">
           <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-6">
             {[
-              { icon: <BadgeCheck className="h-5 w-5 text-[#b88c30]" />, label: "세무사 직접 검토" },
-              { icon: <ShieldCheck className="h-5 w-5 text-emerald-600" />, label: "금융권 수준 보안" },
-              { icon: <Sparkles className="h-5 w-5 text-[#b88c30]" />, label: "AI 정밀 분석" },
-              { icon: <HelpCircle className="h-5 w-5 text-[#0f1e36]" />, label: "24시간 실시간 답변" },
+              { icon: <BadgeCheck className="h-5 w-5 text-[#b88c30]" />, label: t("세무사 직접 검토") },
+              { icon: <ShieldCheck className="h-5 w-5 text-emerald-600" />, label: t("금융권 수준 보안") },
+              { icon: <Sparkles className="h-5 w-5 text-[#b88c30]" />, label: t("AI 정밀 분석") },
+              { icon: <HelpCircle className="h-5 w-5 text-[#0f1e36]" />, label: t("24시간 실시간 답변") },
             ].map((item, i) => (
               <div key={i} className="flex items-center gap-2 px-5 py-3 bg-slate-50 border border-slate-200 rounded-2xl hover:border-[#b88c30]/40 transition-all">
                 {item.icon}
@@ -310,13 +310,13 @@ export default function FAQPage() {
             <div className="space-y-5">
               <div className="flex items-center gap-3">
                 <div className="h-px w-8 bg-[#b88c30]" />
-                <span className="text-[#b88c30] text-xs font-black uppercase tracking-widest">해결되지 않은 궁금증</span>
+                <span className="text-[#b88c30] text-xs font-black uppercase tracking-widest">{t("해결되지 않은 궁금증")}</span>
               </div>
               <h2 className="text-3xl sm:text-4xl font-black text-white leading-tight break-keep">
-                아직 궁금하신 게 있으신가요?<br />상담원과 직접 대화하세요
+                {t("아직 궁금하신 게 있으신가요?")}<br />{t("상담원과 직접 대화하세요")}
               </h2>
               <p className="text-slate-400 font-bold text-base break-keep">
-                전담 세무사와 1:1 실시간 채팅으로 빠르고 정확하게 해결해 드립니다.
+                {t("전담 세무사와 1:1 실시간 채팅으로 빠르고 정확하게 해결해 드립니다.")}
               </p>
             </div>
             <div className="flex flex-col gap-3">

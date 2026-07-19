@@ -27,7 +27,7 @@ export const legal = {
   "대한민국 국세청(NTS)의 직접 입금 원칙에 따라, 수수료는 신청 시점에 선결제(선임료) 방식으로 지급되어야 합니다.": "Koreya Respublikasi Milliy Soliq Xizmati (NTS)ning to'g'ridan-to'g'ri to'lov prinsipi asosida, xizmat to'lovi ariza topshirish vaqtida oldindan to'lov (platforma xizmati to'lovi) shaklida amalga oshirilishi lozim.",
   "국세청 검토 과정에서 세무서의 추가 소명 요청이 있을 경우, 이용자는 성실히 협조해야 합니다.": "Soliq idorasi tekshiruvi jarayonida qoʻshimcha tushuntirishlar talab qilsa, foydalanuvchi samimiy hamkorlik qilishi kerak.",
   "4. 개인정보의 보유 및 이용 기간": "4. Shaxsiy maʼlumotlarni saqlash va foydalanish muddati",
-  "본 약관은 더윤컴퍼니(이하 \"회사\")가 운영하는 \"Easy Tax Refund\" 서비스를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.": "Ushbu shartlar THE YOON COMPANY (keyingi oʻrinlarda \"Kompaniya\") tomonidan boshqariladigan \"Easy Tax Refund\" xizmatidan foydalanishda Kompaniya va foydalanuvchining huquqlari, majburiyatlari va javobgarligini belgilashga qaratilgan.",
+  "본 약관은 더윤컴퍼니(이하 \"회사\")가 운영하는 \"Easy Tax Refund\" 서비스를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.": "Ushbu shartlar THE YOON COMPANY (keyingi oʻrinlarda \\",
   "본 서비스는 환급 성공 시에만 수수료를 지급하는 성공 조건부 후불제(CMS 자동이체) 방식으로 운영됩니다.": "Ushbu xizmat muvaffaqiyatga asoslangan kechiktirilgan to'lov tizimida (CMS avtomatik hisobdan chiqarish) ishlaydi, bunda to'lov faqat soliq muvaffaqiyatli qaytarilgandan keyingina to'lanadi.",
   "제 2 조 (서비스 수수료 및 후불 정산)": "2-modda (Xizmat haqi va kechiktirilgan hisob-kitob)",
   "증빙 서류: 외국인등록증 사진, 급여명세서, 세무 대리 수임 동의서(전자서명 포함)": "Tasdiqlovchi hujjatlar: Chet el fuqarosining ro'yxatga olish kartasi fotosurati, ish haqi varaqasi, Koreya Milliy Tasdiqlangan Hamkor Soliq Agentining xizmat ko'rsatishga rozilik xati (elektron imzo bilan birga).",

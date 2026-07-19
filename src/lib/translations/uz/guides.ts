@@ -25,7 +25,6 @@ export const guides = {
   "하단의 '하나원큐 시작하기' 버튼을 눌러주세요.": "Pastdagi 'HanaOneQni boshlash' tugmasini bosing.",
   "분석 완료! 클릭하여 복사": "Tahlil yakunlandi! Nusxalash uchun bosing",
   "패스 앱의 성명란에 붙여넣으세요.": "PASS ilovasidagi ism maydoniga joylashtiring.",
-  "내 추천 성명": "Mening tavsiya etilgan ism-sharifim",
   "설치가 완료되었습니다 '열기'를 눌러 앱을 실행해 주세요": "O'rnatish yakunlandi. Ilovani ishga tushirish uchun 'Ochish' tugmasini bosing.",
   "앞으로 앱 실행 시 사용할 숫자 6자리 비밀번호를 설정해 주세요": "Keyinchalik ilovani ishga tushirishda foydalanadigan 6 xonali parolni o'rnating.",
   "설치가 완료되었습니다. '열기'를 눌러 하나원큐를 실행해 주세요.": "O'rnatish yakunlandi. Hana One Q ni ishga tushirish uchun 'Ochish' tugmasini bosing.",
@@ -117,7 +116,6 @@ export const guides = {
   "카카오톡 앱의 성명란에 붙여넣으세요.": "KakaoTalk ilovasidagi ism maydoniga joylashtiring.",
   "원활한 서비스 이용을 위해 내용을 확인하신 후 '확인'을 눌러주세요.": "Xizmatdan muammosiz foydalanish uchun tarkibni tekshirgandan so'ng 'Tasdiqlash' tugmasini bosing.",
   "성명, 외국인등록번호 앞 7자리, 통신사, 휴대폰번호를 정확히 입력해 주세요.": "Iltimos, ism, xorijlikni ro'yxatga olish raqamining dastlabki 7 raqami, telekom operatori va mobil telefon raqamini to'g'ri kiriting.",
-  "외국인 등록증 성명({name})과 통신사(PASS) 등록 성명이 다릅니다.": "Xorijlik ro'yxatdan o'tish kartasidagi ism({name}) va aloqa operatori (PASS) ro'yxatidan o'tgan ism farq qiladi.",
   "국세청에서 인증 요청이 도착했습니다. 상단 알림을 눌러 하나원큐 앱을 열어주세요.": "Soliq xizmatidan tasdiqlash so'rovi keldi. Yuqori bildirishnomani bosib HanaOneQ ilovasini oching.",
   "동의를 마친 후 '다음' 버튼을 눌러주세요": "Rozilikni tugatgandan so'ng, 'Keyingi' tugmasini bosing.",
   "약관에 동의하신 후 하단의 '확인' 혹은 '동의' 버튼을 눌러주세요.": "Shartlarga rozi bo'lgandan so'ng, pastdagi 'Tasdiqlash' yoki 'Rozi bo'lish' tugmasini bosing.",
@@ -187,7 +185,6 @@ export const guides = {
   "문자가 오면 인증번호 입력 후 넘어가시면 됩니다. 하지만 문자가 오지 않는다면, 휴대폰을 처음 개통할 때 상담사가 입력한 이름 방식과 현재 외국인등록증 영문 이름이 다를 가능성이 높습니다. 이름이 조금이라도 다르면 조회가 불가능하니, 외국인등록증을 촬영하시고 AI가 추천해 주는 이름으로 다시 시도해 보세요!": "Agar SMS kelsa, tasdiqlash kodini kiriting va davom eting. Agar SMS kelmasa, telefonni birinchi marta ulaganingizda maslahatchi tomonidan kiritilgan ism uslubi va hozirgi xorijlik ro'yxatdan o'tish guvohnomasidagi inglizcha ism farq qilishi ehtimoli yuqori. Agar ismlar biroz bo'lsa ham farq qilsa, qidiruv mumkin emas, shuning uchun xorijlik ro'yxatdan o'tish guvohnomasini suratga oling va AI tavsiya qilgan ism bilan qayta urinib ko'ring!",
   "본인 통신사에 맞는 PASS 앱을 설치해 주세요": "O'zingizning mobil operatoringizga mos keladigan PASS ilovasini o'rnating.",
   "인증서 발급을 위해 오른쪽 상단의 'X'를 눌러주세요.": "Sertifikat berish uchun yuqori o'ng burchakdagi 'X' tugmasini bosing.",
-  "인증번호 입력 후 '다음' 버튼을 눌러주세요": "Tasdiqlash kodini kiritgandan so'ng, 'Keyingi' tugmasini bosing.",
   "인증 승인 따라하기 가이드": "Tasdiqlashni qadam-baqadam bajarish bo'yicha qo'llanma",
   "입력 후 하단의 '확인' 버튼을 눌러 다음으로 진행해 주세요.": "Kiritgandan so'ng, davom etish uchun pastdagi 'Tasdiqlash' tugmasini bosing.",
 };

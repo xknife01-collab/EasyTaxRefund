@@ -55,7 +55,7 @@ export default function SupportPage() {
             <a href="tel:010-4885-8575" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <Phone className="h-5 w-5 shrink-0" />
               <div>
-                <div className="text-[10px] font-black uppercase tracking-widest opacity-70">전화 상담</div>
+                <div className="text-[10px] font-black uppercase tracking-widest opacity-70">{t("전화 상담")}</div>
                 <div className="text-base font-black">010-4885-8575</div>
               </div>
             </a>
@@ -63,7 +63,7 @@ export default function SupportPage() {
             <a href="mailto:zkfnth01@naver.com" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <Mail className="h-5 w-5 shrink-0" />
               <div>
-                <div className="text-[10px] font-black uppercase tracking-widest opacity-70">이메일</div>
+                <div className="text-[10px] font-black uppercase tracking-widest opacity-70">{t("이메일")}</div>
                 <div className="text-base font-black">zkfnth01@naver.com</div>
               </div>
             </a>
@@ -71,8 +71,8 @@ export default function SupportPage() {
             <div className="flex items-center gap-3">
               <Clock className="h-5 w-5 shrink-0" />
               <div>
-                <div className="text-[10px] font-black uppercase tracking-widest opacity-70">상담 시간</div>
-                <div className="text-base font-black">평일 09:00 — 18:00</div>
+                <div className="text-[10px] font-black uppercase tracking-widest opacity-70">{t("상담 시간")}</div>
+                <div className="text-base font-black">{t("평일 09:00 — 18:00")}</div>
               </div>
             </div>
           </div>
@@ -92,7 +92,7 @@ export default function SupportPage() {
                   </h2>
                   <div className="h-1 w-12 bg-[#b88c30] rounded-full" />
                   <p className="text-slate-500 font-bold text-base leading-relaxed break-keep">
-                    궁금하신 사항은 아래 연락처로 문의주시거나, 우측 양식을 통해 문의를 남겨주세요. 담당 세무사가 신속히 답변드립니다.
+                    {t("궁금하신 사항은 아래 연락처로 문의주시거나, 우측 양식을 통해 문의를 남겨주세요. 담당 세무사가 신속히 답변드립니다.")}
                   </p>
                 </div>
 
@@ -108,7 +108,7 @@ export default function SupportPage() {
                     <a href="tel:010-4885-8575" className="text-2xl font-black text-[#0f1e36] hover:text-[#b88c30] transition-colors block">
                       010-4885-8575
                     </a>
-                    <p className="text-slate-400 text-xs font-bold">평일 09:00 ~ 18:00 (주말·공휴일 휴무)</p>
+                    <p className="text-slate-400 text-xs font-bold">{t("평일 09:00 ~ 18:00 (주말·공휴일 휴무)")}</p>
                   </div>
 
                   <div className="bg-white border border-t-4 border-t-[#0f1e36] border-x-slate-200 border-b-slate-200 rounded-3xl p-7 space-y-3 shadow-sm hover:shadow-md transition-all duration-300">
@@ -121,7 +121,7 @@ export default function SupportPage() {
                     <a href="mailto:zkfnth01@naver.com" className="text-lg font-black text-[#0f1e36] hover:text-[#b88c30] transition-colors block break-all">
                       zkfnth01@naver.com
                     </a>
-                    <p className="text-slate-400 text-xs font-bold">24시간 접수 · 영업일 기준 1일 내 답변</p>
+                    <p className="text-slate-400 text-xs font-bold">{t("24시간 접수 · 영업일 기준 1일 내 답변")}</p>
                   </div>
 
                   <div className="bg-white border border-slate-200 rounded-3xl p-7 space-y-3 shadow-sm hover:shadow-md transition-all duration-300">
@@ -132,7 +132,7 @@ export default function SupportPage() {
                       <h3 className="text-base font-black text-[#0f1e36]">{t("회사 위치")}</h3>
                     </div>
                     <p className="text-slate-600 text-sm font-bold leading-relaxed break-keep">
-                      경기도 남양주시 부평로 48번길 140, 107-1102
+                      {t("경기도 남양주시 부평로 48번길 140, 107-1102")}
                     </p>
                   </div>
                 </div>
@@ -140,7 +140,7 @@ export default function SupportPage() {
                 {/* Satisfaction Badge */}
                 <div className="bg-slate-50 border border-slate-200 rounded-2xl py-5 px-7 flex items-center justify-between">
                   <div>
-                    <div className="text-xs font-black text-slate-400 uppercase tracking-wider mb-1">고객 만족도</div>
+                    <div className="text-xs font-black text-slate-400 uppercase tracking-wider mb-1">{t("고객 만족도")}</div>
                     <div className="text-2xl font-black text-[#0f1e36]">4.9 / 5.0</div>
                   </div>
                   <div className="flex gap-1 text-amber-400">
@@ -154,7 +154,7 @@ export default function SupportPage() {
                 <div className="flex items-start gap-3 p-5 bg-[#0f1e36]/3 rounded-2xl border border-slate-200">
                   <ShieldCheck className="h-5 w-5 text-[#b88c30] shrink-0 mt-0.5" />
                   <p className="text-slate-500 text-xs font-bold leading-relaxed break-keep">
-                    본 서비스는 정식 제휴된 공인 세무사가 직접 대행합니다. 개인정보는 암호화되어 안전하게 보호됩니다.
+                    {t("본 서비스는 정식 제휴된 공인 세무사가 직접 대행합니다. 개인정보는 암호화되어 안전하게 보호됩니다.")}
                   </p>
                 </div>
               </div>
@@ -173,7 +173,7 @@ export default function SupportPage() {
                 </div>
 
                 <form
-                  onSubmit={(e) => { e.preventDefault(); alert("문의가 접수되었습니다. 빠른 시일 내 답변드리겠습니다."); }}
+                  onSubmit={(e) => { e.preventDefault(); alert(t("문의가 접수되었습니다. 빠른 시일 내 답변드리겠습니다.")); }}
                   className="space-y-6"
                 >
                   <div>
@@ -258,20 +258,20 @@ export default function SupportPage() {
           <div className="max-w-3xl mx-auto text-center space-y-6">
             <div className="flex items-center justify-center gap-3">
               <div className="h-px w-10 bg-[#b88c30]" />
-              <span className="text-[#b88c30] text-xs font-black tracking-widest uppercase">무료 환급액 조회</span>
+              <span className="text-[#b88c30] text-xs font-black tracking-widest uppercase">{t("무료 환급액 조회")}</span>
               <div className="h-px w-10 bg-[#b88c30]" />
             </div>
             <h2 className="text-3xl sm:text-4xl font-black text-white leading-tight break-keep">
-              지금 바로 내 환급액을<br />30초 만에 확인하세요
+              {t("지금 바로 내 환급액을")}<br />{t("30초 만에 확인하세요")}
             </h2>
             <p className="text-slate-400 font-bold text-base break-keep max-w-xl mx-auto">
-              선결제 없이, 환급 성공 후 성공 보수만 수취합니다. (No Win, No Fee)
+              {t("선결제 없이, 환급 성공 후 성공 보수만 수취합니다. (No Win, No Fee)")}
             </p>
             <Link
               href="/estimate"
               className="inline-flex items-center gap-2 bg-[#b88c30] hover:bg-[#b88c30]/90 text-[#0f1e36] font-black text-base px-10 py-5 rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-xl shadow-[#b88c30]/20"
             >
-              예상 환급액 무료 조회하기
+              {t("예상 환급액 무료 조회하기")}
               <ExternalLink className="h-4 w-4" />
             </Link>
           </div>

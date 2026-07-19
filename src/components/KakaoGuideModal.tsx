@@ -1,5 +1,7 @@
 "use client";
 
+const t = (s: string) => s;
+
 import React, { useState } from "react";
 import {
   Dialog,
@@ -90,10 +92,10 @@ export const KAKAO_GUIDE_STEPS: GuideStep[] = [
 ];
 
 const CHAPTERS = [
-  { title: "카카오톡 시작", start: 0, icon: "📱" },
-  { title: "회원가입", start: 2, icon: "📝" },
-  { title: "인증서 발급", start: 20, icon: "🔐" },
-  { title: "인증 승인", start: 32, icon: "✅" },
+  { title: t("카카오톡 시작"), start: 0, icon: "📱" },
+  { title: t("회원가입"), start: 2, icon: "📝" },
+  { title: t("인증서 발급"), start: 20, icon: "🔐" },
+  { title: t("인증 승인"), start: 32, icon: "✅" },
 ];
 
 // We'll manually specify each step's markers in the next turns.
@@ -102,7 +104,7 @@ KAKAO_GUIDE_STEPS[0].markers = [
   {
     x: 84,
     y: 23,
-    text: "Play 스토어에서 '카카오톡'을 검색하여 설치해 주세요.",
+    text: t("Play 스토어에서 '카카오톡'을 검색하여 설치해 주세요."),
     textX: 50,
     textY: 15,
   },
@@ -112,7 +114,7 @@ KAKAO_GUIDE_STEPS[1].markers = [
   {
     x: 88,
     y: 24,
-    text: "설치가 완료되었습니다. '열기'를 눌러 카카오톡을 실행해 주세요.",
+    text: t("설치가 완료되었습니다. '열기'를 눌러 카카오톡을 실행해 주세요."),
     textX: 50,
     textY: 14
   },
@@ -122,7 +124,7 @@ KAKAO_GUIDE_STEPS[2].markers = [
   {
     x: 50,
     y: 42,
-    text: "카카오톡이 처음이라면 '새로운 카카오계정 만들기'를 눌러 가입을 시작해 주세요.",
+    text: t("카카오톡이 처음이라면 '새로운 카카오계정 만들기'를 눌러 가입을 시작해 주세요."),
     textX: 50,
     textY: 35
   },
@@ -132,7 +134,7 @@ KAKAO_GUIDE_STEPS[3].markers = [
   {
     x: 7,
     y: 16.5,
-    text: "이용 약관에 모두 동의해 주세요.",
+    text: t("이용 약관에 모두 동의해 주세요."),
     textX: 35,
     textY: 8,
     position: "bottom"
@@ -140,7 +142,7 @@ KAKAO_GUIDE_STEPS[3].markers = [
   {
     x: 50,
     y: 72,
-    text: "'동의하고 계속 진행합니다' 버튼을 눌러 다음으로 넘어가세요.",
+    text: t("'동의하고 계속 진행합니다' 버튼을 눌러 다음으로 넘어가세요."),
     textX: 50,
     textY: 65
   },
@@ -150,7 +152,7 @@ KAKAO_GUIDE_STEPS[4].markers = [
   {
     x: 78,
     y: 55.5,
-    text: "원활한 가입을 위해 '확인'을 눌러 전화 권한을 허용해 주세요.",
+    text: t("원활한 가입을 위해 '확인'을 눌러 전화 권한을 허용해 주세요."),
     textX: 50,
     textY: 42
   },
@@ -160,14 +162,14 @@ KAKAO_GUIDE_STEPS[5].markers = [
   {
     x: 50,
     y: 81,
-    text: "시스템 팝업창에서 '허용'을 눌러주세요.",
+    text: t("시스템 팝업창에서 '허용'을 눌러주세요."),
     textX: 50,
     textY: 74
   },
   {
     x: 50,
     y: 10,
-    text: "안내 문구가 가려져 보이지 않는다면 화면을 아래로 내려보세요.",
+    text: t("안내 문구가 가려져 보이지 않는다면 화면을 아래로 내려보세요."),
     hideBox: true,
     textX: 50,
     textY: 10
@@ -178,7 +180,7 @@ KAKAO_GUIDE_STEPS[6].markers = [
   {
     x: 50,
     y: 34.5,
-    text: "전화번호가 자동으로 입력되었습니다. '확인'을 눌러 다음 단계로 넘어가 주세요.",
+    text: t("전화번호가 자동으로 입력되었습니다. '확인'을 눌러 다음 단계로 넘어가 주세요."),
     textX: 50,
     textY: 45
   },
@@ -188,14 +190,14 @@ KAKAO_GUIDE_STEPS[7].markers = [
   {
     x: 50,
     y: 19,
-    text: "문자로 받은 인증번호 6자리를 입력해 주세요.",
+    text: t("문자로 받은 인증번호 6자리를 입력해 주세요."),
     textX: 50,
     textY: 9
   },
   {
     x: 50,
     y: 32,
-    text: "인증번호 입력 후 '다음' 버튼을 눌러주세요.",
+    text: t("인증번호 입력 후 '다음' 버튼을 눌러주세요."),
     textX: 50,
     textY: 42,
     position: "bottom"
@@ -206,14 +208,14 @@ KAKAO_GUIDE_STEPS[8].markers = [
   {
     x: 50,
     y: 31,
-    text: "사용하실 비밀번호를 위,아래 동일하게 한번씩 입력해 주세요.",
+    text: t("사용하실 비밀번호를 위,아래 동일하게 한번씩 입력해 주세요."),
     textX: 50,
     textY: 20
   },
   {
     x: 50,
     y: 47,
-    text: "비밀번호 설정 후 '확인'을 눌러주세요.",
+    text: t("비밀번호 설정 후 '확인'을 눌러주세요."),
     textX: 50,
     textY: 55,
     position: "bottom"
@@ -224,7 +226,7 @@ KAKAO_GUIDE_STEPS[9].markers = [
   {
     x: 50,
     y: 47.5,
-    text: "비밀번호를 모두 입력하셨다면 '확인'을 눌러주세요.",
+    text: t("비밀번호를 모두 입력하셨다면 '확인'을 눌러주세요."),
     textX: 50,
     textY: 60,
     position: "bottom"
@@ -235,17 +237,17 @@ KAKAO_GUIDE_STEPS[10].markers = [
   {
     x: 50,
     y: 23,
-    text: "사용하실 닉네임을 입력해 주세요.",
+    text: t("사용하실 닉네임을 입력해 주세요."),
   },
   {
     x: 50,
     y: 29,
-    text: "생일을 선택해 주세요.",
+    text: t("생일을 선택해 주세요."),
   },
   {
     x: 50,
     y: 35,
-    text: "성별을 선택해 주세요. (남성은 '남성', 여성은 '여성'을 선택)",
+    text: t("성별을 선택해 주세요. (남성은 '남성', 여성은 '여성'을 선택)"),
     textX: 50,
     textY: 42,
     position: "bottom"
@@ -253,7 +255,7 @@ KAKAO_GUIDE_STEPS[10].markers = [
   {
     x: 50,
     y: 54,
-    text: "모든 정보 입력 후 '확인'을 눌러주세요.",
+    text: t("모든 정보 입력 후 '확인'을 눌러주세요."),
     textX: 50,
     textY: 65,
     position: "bottom"
@@ -264,7 +266,7 @@ KAKAO_GUIDE_STEPS[11].markers = [
   {
     x: 50,
     y: 54,
-    text: "입력하신 정보를 다시 한번 확인하신 후 '확인'을 눌러주세요.",
+    text: t("입력하신 정보를 다시 한번 확인하신 후 '확인'을 눌러주세요."),
     textX: 50,
     textY: 65,
     position: "bottom"
@@ -275,7 +277,7 @@ KAKAO_GUIDE_STEPS[12].markers = [
   {
     x: 50,
     y: 41,
-    text: "빠른 진행을 위해 '나중에 하기'를 눌러 다음 단계로 넘어가 주세요.",
+    text: t("빠른 진행을 위해 '나중에 하기'를 눌러 다음 단계로 넘어가 주세요."),
     textX: 50,
     textY: 52,
     position: "bottom"
@@ -286,14 +288,14 @@ KAKAO_GUIDE_STEPS[13].markers = [
   {
     x: 50,
     y: 89,
-    text: "원활한 서비스 이용을 위해 내용을 확인하신 후 '확인'을 눌러주세요.",
+    text: t("원활한 서비스 이용을 위해 내용을 확인하신 후 '확인'을 눌러주세요."),
     textX: 50,
     textY: 82
   },
   {
     x: 50,
     y: 10,
-    text: "안내 내용이 더 있으니 화면을 아래로 내려보세요.",
+    text: t("안내 내용이 더 있으니 화면을 아래로 내려보세요."),
     hideBox: true,
     textX: 50,
     textY: 10
@@ -304,7 +306,7 @@ KAKAO_GUIDE_STEPS[14].markers = [
   {
     x: 50,
     y: 81,
-    text: "시스템 팝업창에서 '허용'을 눌러주세요.",
+    text: t("시스템 팝업창에서 '허용'을 눌러주세요."),
     textX: 50,
     textY: 74,
     position: "top"
@@ -312,7 +314,7 @@ KAKAO_GUIDE_STEPS[14].markers = [
   {
     x: 50,
     y: 10,
-    text: "안내 내용이 더 있으니 화면을 아래로 내려보세요.",
+    text: t("안내 내용이 더 있으니 화면을 아래로 내려보세요."),
     hideBox: true,
     textX: 50,
     textY: 10
@@ -323,7 +325,7 @@ KAKAO_GUIDE_STEPS[15].markers = [
   {
     x: 50,
     y: 81,
-    text: "시스템 팝업창에서 '허용'을 눌러주세요.",
+    text: t("시스템 팝업창에서 '허용'을 눌러주세요."),
     textX: 50,
     textY: 74,
     position: "top"
@@ -331,7 +333,7 @@ KAKAO_GUIDE_STEPS[15].markers = [
   {
     x: 50,
     y: 10,
-    text: "안내 내용이 더 있으니 화면을 아래로 내려보세요.",
+    text: t("안내 내용이 더 있으니 화면을 아래로 내려보세요."),
     hideBox: true,
     textX: 50,
     textY: 10
@@ -342,7 +344,7 @@ KAKAO_GUIDE_STEPS[16].markers = [
   {
     x: 78,
     y: 59.5,
-    text: "원활한 서비스 사용을 위해 '확인'을 눌러주세요.",
+    text: t("원활한 서비스 사용을 위해 '확인'을 눌러주세요."),
     textX: 50,
     textY: 50,
     position: "top"
@@ -353,7 +355,7 @@ KAKAO_GUIDE_STEPS[17].markers = [
   {
     x: 78,
     y: 59.5,
-    text: "원활한 서비스 사용을 위해 '확인'을 눌러주세요.",
+    text: t("원활한 서비스 사용을 위해 '확인'을 눌러주세요."),
     textX: 50,
     textY: 50,
     position: "top"
@@ -364,14 +366,14 @@ KAKAO_GUIDE_STEPS[18].markers = [
   {
     x: 88,
     y: 91,
-    text: "더보기 메뉴로 가기 위해 하단의 '...' 아이콘을 눌러주세요.",
+    text: t("더보기 메뉴로 가기 위해 하단의 '...' 아이콘을 눌러주세요."),
     textX: 50,
     textY: 82
   },
   {
     x: 50,
     y: 10,
-    text: "안내 내용이 더 있으니 화면을 아래로 내려보세요.",
+    text: t("안내 내용이 더 있으니 화면을 아래로 내려보세요."),
     hideBox: true,
     textX: 50,
     textY: 10
@@ -382,7 +384,7 @@ KAKAO_GUIDE_STEPS[19].markers = [
   {
     x: 27,
     y: 12.5,
-    text: "인증서 확인을 위해 상단의 '지갑' 탭을 눌러주세요.",
+    text: t("인증서 확인을 위해 상단의 '지갑' 탭을 눌러주세요."),
     textX: 50,
     textY: 4
   },
@@ -392,7 +394,7 @@ KAKAO_GUIDE_STEPS[20].markers = [
   {
     x: 50,
     y: 66,
-    text: "다른 서비스들이 많으니 주의하세요! '인증서 발급'을 정확히 눌러주세요.",
+    text: t("다른 서비스들이 많으니 주의하세요! '인증서 발급'을 정확히 눌러주세요."),
     textX: 50,
     textY: 58,
     position: "top",
@@ -404,14 +406,14 @@ KAKAO_GUIDE_STEPS[21].markers = [
   {
     x: 7,
     y: 24.5,
-    text: "원활한 진행을 위해 '전체 동의'를 체크해 주세요.",
+    text: t("원활한 진행을 위해 '전체 동의'를 체크해 주세요."),
     textX: 50,
     textY: 17
   },
   {
     x: 50,
     y: 89,
-    text: "동의 후 하단의 '계속 진행하기' 버튼을 눌러주세요.",
+    text: t("동의 후 하단의 '계속 진행하기' 버튼을 눌러주세요."),
     textX: 50,
     textY: 82,
     position: "top"
@@ -422,7 +424,7 @@ KAKAO_GUIDE_STEPS[22].markers = [
   {
     x: 50,
     y: 27,
-    text: "본인 성함을 입력해 주세요.",
+    text: t("본인 성함을 입력해 주세요."),
     textX: 50,
     textY: 27,
     isSmall: true,
@@ -432,7 +434,7 @@ KAKAO_GUIDE_STEPS[22].markers = [
   {
     x: 50,
     y: 33,
-    text: "외국인등록번호 앞 6자리와 뒤 1자리를 입력해 주세요.",
+    text: t("외국인등록번호 앞 6자리와 뒤 1자리를 입력해 주세요."),
     textX: 50,
     textY: 33,
     isSmall: true,
@@ -442,7 +444,7 @@ KAKAO_GUIDE_STEPS[22].markers = [
   {
     x: 50,
     y: 39,
-    text: "이용 중인 통신사를 선택해 주세요. (알뜰폰은 하단 탭 확인)",
+    text: t("이용 중인 통신사를 선택해 주세요. (알뜰폰은 하단 탭 확인)"),
     textX: 50,
     textY: 39,
     isSmall: true,
@@ -452,7 +454,7 @@ KAKAO_GUIDE_STEPS[22].markers = [
   {
     x: 35.5,
     y: 45,
-    text: "본인 휴대폰 번호를 입력해 주세요.",
+    text: t("본인 휴대폰 번호를 입력해 주세요."),
     textX: 35.5,
     textY: 45,
     isSmall: true,
@@ -462,7 +464,7 @@ KAKAO_GUIDE_STEPS[22].markers = [
   {
     x: 85,
     y: 45,
-    text: "인증요청",
+    text: t("인증요청"),
     textX: 85,
     textY: 45,
     isSmall: true,
@@ -475,7 +477,7 @@ KAKAO_GUIDE_STEPS[23].markers = [
   {
     x: 22,
     y: 56,
-    text: "알뜰폰 사용자를 위한 추가 동의입니다. '동의합니다'를 체크해 주세요.",
+    text: t("알뜰폰 사용자를 위한 추가 동의입니다. '동의합니다'를 체크해 주세요."),
     textX: 50,
     textY: 48,
     isSmall: true,
@@ -484,7 +486,7 @@ KAKAO_GUIDE_STEPS[23].markers = [
   {
     x: 50,
     y: 64.5,
-    text: "'확인'을 눌러 계속 진행해 주세요.",
+    text: t("'확인'을 눌러 계속 진행해 주세요."),
     textX: 50,
     textY: 73,
     hideArrow: true
@@ -495,7 +497,7 @@ KAKAO_GUIDE_STEPS[24].markers = [
   {
     x: 50,
     y: 51,
-    text: "문자로 받은 인증번호 6자리를 입력해 주세요.",
+    text: t("문자로 받은 인증번호 6자리를 입력해 주세요."),
     textX: 50,
     textY: 43,
     isSmall: true,
@@ -504,7 +506,7 @@ KAKAO_GUIDE_STEPS[24].markers = [
   {
     x: 50,
     y: 61,
-    text: "인증번호 입력 후 '다음' 버튼을 눌러주세요.",
+    text: t("인증번호 입력 후 '다음' 버튼을 눌러주세요."),
     textX: 50,
     textY: 70,
     hideArrow: true
@@ -515,7 +517,7 @@ KAKAO_GUIDE_STEPS[25].markers = [
   {
     x: 50,
     y: 64,
-    text: "본인이 이용 중인 은행을 선택해 주세요.",
+    text: t("본인이 이용 중인 은행을 선택해 주세요."),
     textX: 50,
     textY: 35,
     isLarge: true,
@@ -527,7 +529,7 @@ KAKAO_GUIDE_STEPS[26].markers = [
   {
     x: 50,
     y: 48,
-    text: "본인 명의의 계좌번호를 숫자만 입력해 주세요.",
+    text: t("본인 명의의 계좌번호를 숫자만 입력해 주세요."),
     textX: 50,
     textY: 38,
     isSmall: true,
@@ -536,7 +538,7 @@ KAKAO_GUIDE_STEPS[26].markers = [
   {
     x: 50,
     y: 89,
-    text: "정보 입력 후 '1원 송금하기'를 눌러주세요.",
+    text: t("정보 입력 후 '1원 송금하기'를 눌러주세요."),
     textX: 50,
     textY: 80,
     hideArrow: true
@@ -547,7 +549,7 @@ KAKAO_GUIDE_STEPS[27].markers = [
   {
     x: 50,
     y: 44,
-    text: "입금자명 '카카오' 뒤의 숫자 3자리를 입력해 주세요.",
+    text: t("입금자명 '카카오' 뒤의 숫자 3자리를 입력해 주세요."),
     textX: 50,
     textY: 34,
     isSmall: true,
@@ -556,7 +558,7 @@ KAKAO_GUIDE_STEPS[27].markers = [
   {
     x: 50,
     y: 89,
-    text: "숫자 3자리 입력 후 '확인'을 눌러주세요.",
+    text: t("숫자 3자리 입력 후 '확인'을 눌러주세요."),
     textX: 50,
     textY: 80,
     hideArrow: true
@@ -567,7 +569,7 @@ KAKAO_GUIDE_STEPS[28].markers = [
   {
     x: 23,
     y: 18,
-    text: "은행 앱의 입금 내역에서 '카카오' 뒤의 숫자 3자리를 확인해 주세요.",
+    text: t("은행 앱의 입금 내역에서 '카카오' 뒤의 숫자 3자리를 확인해 주세요."),
     textX: 50,
     textY: 30,
     isSmall: true,
@@ -579,7 +581,7 @@ KAKAO_GUIDE_STEPS[29].markers = [
   {
     x: 12,
     y: 44,
-    text: "은행 앱에서 확인하신 숫자 3자리를 입력해 주세요.",
+    text: t("은행 앱에서 확인하신 숫자 3자리를 입력해 주세요."),
     textX: 50,
     textY: 34,
     isSmall: true,
@@ -588,7 +590,7 @@ KAKAO_GUIDE_STEPS[29].markers = [
   {
     x: 50,
     y: 89,
-    text: "입력 후 하단의 '확인' 버튼을 눌러 다음으로 진행해 주세요.",
+    text: t("입력 후 하단의 '확인' 버튼을 눌러 다음으로 진행해 주세요."),
     textX: 50,
     textY: 80,
     hideArrow: true
@@ -599,7 +601,7 @@ KAKAO_GUIDE_STEPS[30].markers = [
   {
     x: 50,
     y: 89,
-    text: "카카오 인증서 사용 시 필요한 My 비밀번호 6자리를 만들어주세요.",
+    text: t("카카오 인증서 사용 시 필요한 My 비밀번호 6자리를 만들어주세요."),
     textX: 50,
     textY: 80,
     hideArrow: true
@@ -621,7 +623,7 @@ KAKAO_GUIDE_STEPS[33].markers = [
   {
     x: 50,
     y: 32,
-    text: "카카오톡 지갑 채팅방으로 온 인증 요청 메시지를 클릭해 주세요.",
+    text: t("카카오톡 지갑 채팅방으로 온 인증 요청 메시지를 클릭해 주세요."),
     textX: 50,
     textY: 42,
     hideArrow: true
@@ -632,7 +634,7 @@ KAKAO_GUIDE_STEPS[34].markers = [
   {
     x: 50,
     y: 61,
-    text: "받은 메시지에서 '인증하기' 버튼을 눌러주세요.",
+    text: t("받은 메시지에서 '인증하기' 버튼을 눌러주세요."),
     textX: 50,
     textY: 51,
     hideArrow: true
@@ -643,7 +645,7 @@ KAKAO_GUIDE_STEPS[35].markers = [
   {
     x: 50,
     y: 89,
-    text: "개인정보 제공 동의 후 하단의 '인증하기' 버튼을 눌러주세요.",
+    text: t("개인정보 제공 동의 후 하단의 '인증하기' 버튼을 눌러주세요."),
     textX: 50,
     textY: 80,
     hideArrow: true
@@ -654,7 +656,7 @@ KAKAO_GUIDE_STEPS[36].markers = [
   {
     x: 50,
     y: 89,
-    text: "인증이 완료되었습니다! '확인'을 누르신 후 앱으로 돌아가 다음 단계를 진행해 주세요.",
+    text: t("인증이 완료되었습니다! '확인'을 누르신 후 앱으로 돌아가 다음 단계를 진행해 주세요."),
     textX: 50,
     textY: 80,
     hideArrow: true

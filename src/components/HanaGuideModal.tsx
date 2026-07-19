@@ -1,5 +1,7 @@
 "use client";
 
+const t = (s: string) => s;
+
 import React, { useState } from "react";
 import {
   Dialog,
@@ -80,10 +82,10 @@ export const HANA_GUIDE_STEPS: GuideStep[] = [
 ];
 
 const CHAPTERS = [
-  { title: "하나원큐 시작", start: 0, icon: "🚀" },
-  { title: "회원가입", start: 6, icon: "📝" },
-  { title: "인증서 발급", start: 16, icon: "🔐" },
-  { title: "인증 승인", start: 26, icon: "✅" },
+  { title: t("하나원큐 시작"), start: 0, icon: "🚀" },
+  { title: t("회원가입"), start: 6, icon: "📝" },
+  { title: t("인증서 발급"), start: 16, icon: "🔐" },
+  { title: t("인증 승인"), start: 26, icon: "✅" },
 ];
 
 // Define markers for Hana with precise coordinates based on renamed files
@@ -92,7 +94,7 @@ HANA_GUIDE_STEPS[0].markers = [{
   y: 38.7,
   width: 78,
   height: 5.5,
-  text: "Play 스토어에서 '하나원큐'를 검색하여 설치해 주세요.",
+  text: t("Play 스토어에서 '하나원큐'를 검색하여 설치해 주세요."),
   textY: 30
 }];
 HANA_GUIDE_STEPS[1].markers = [{
@@ -100,7 +102,7 @@ HANA_GUIDE_STEPS[1].markers = [{
   y: 25,
   width: 42,
   height: 5.5,
-  text: "설치가 완료되었습니다. '열기'를 눌러 하나원큐를 실행해 주세요.",
+  text: t("설치가 완료되었습니다. '열기'를 눌러 하나원큐를 실행해 주세요."),
   textY: 15
 }];
 HANA_GUIDE_STEPS[2].markers = [{
@@ -108,7 +110,7 @@ HANA_GUIDE_STEPS[2].markers = [{
   y: 88,
   width: 90,
   height: 7,
-  text: "원활한 가입을 위해 안내 내용을 확인하신 후 '확인'을 눌러주세요.",
+  text: t("원활한 가입을 위해 안내 내용을 확인하신 후 '확인'을 눌러주세요."),
   textY: 75
 }];
 HANA_GUIDE_STEPS[3].markers = [{
@@ -116,7 +118,7 @@ HANA_GUIDE_STEPS[3].markers = [{
   y: 81,
   width: 30,
   height: 6,
-  text: "알림 권한 '허용'을 눌러주세요.",
+  text: t("알림 권한 '허용'을 눌러주세요."),
   textY: 70
 }];
 HANA_GUIDE_STEPS[4].markers = [{
@@ -124,7 +126,7 @@ HANA_GUIDE_STEPS[4].markers = [{
   y: 81,
   width: 30,
   height: 6,
-  text: "전화 권한 '허용'을 눌러주세요.",
+  text: t("전화 권한 '허용'을 눌러주세요."),
   textY: 70
 }];
 HANA_GUIDE_STEPS[5].markers = [{
@@ -132,7 +134,7 @@ HANA_GUIDE_STEPS[5].markers = [{
   y: 7,
   width: 12,
   height: 6,
-  text: "인증서 발급을 위해 오른쪽 상단의 'X'를 눌러주세요.",
+  text: t("인증서 발급을 위해 오른쪽 상단의 'X'를 눌러주세요."),
   textY: 15,
   position: "bottom"
 }];
@@ -141,7 +143,7 @@ HANA_GUIDE_STEPS[6].markers = [{
   y: 85,
   width: 90,
   height: 8,
-  text: "하단의 '하나원큐 시작하기' 버튼을 눌러주세요.",
+  text: t("하단의 '하나원큐 시작하기' 버튼을 눌러주세요."),
   textY: 75
 }];
 HANA_GUIDE_STEPS[7].markers = [{
@@ -149,28 +151,28 @@ HANA_GUIDE_STEPS[7].markers = [{
   y: 58,
   width: 85,
   height: 6,
-  text: "인증서 발급을 위해 '휴대폰인증'을 선택해 주세요.",
+  text: t("인증서 발급을 위해 '휴대폰인증'을 선택해 주세요."),
   textY: 45
 }];
 HANA_GUIDE_STEPS[8].markers = [
   {
     x: 50,
     y: 10,
-    text: "성명, 외국인등록번호 앞 7자리, 통신사, 휴대폰번호를 정확히 입력해 주세요.",
+    text: t("성명, 외국인등록번호 앞 7자리, 통신사, 휴대폰번호를 정확히 입력해 주세요."),
     hideBox: true
   },
-  { x: 40, y: 32, text: "성명 (Name)", isLabel: true },
-  { x: 30, y: 47, text: "등록번호 앞 6자리", isLabel: true },
-  { x: 60, y: 47, text: "7번째 자리", isLabel: true },
-  { x: 45, y: 60, text: "통신사 선택", isLabel: true },
-  { x: 45, y: 75, text: "휴대폰 번호 입력", isLabel: true }
+  { x: 40, y: 32, text: t("성명 (Name)"), isLabel: true },
+  { x: 30, y: 47, text: t("등록번호 앞 6자리"), isLabel: true },
+  { x: 60, y: 47, text: t("7번째 자리"), isLabel: true },
+  { x: 45, y: 60, text: t("통신사 선택"), isLabel: true },
+  { x: 45, y: 75, text: t("휴대폰 번호 입력"), isLabel: true }
 ];
 HANA_GUIDE_STEPS[9].markers = [{
   x: 50,
   y: 62,
   width: 88,
   height: 75,
-  text: "통신사를 선택하고 '인증번호 요청'을 눌러주세요.",
+  text: t("통신사를 선택하고 '인증번호 요청'을 눌러주세요."),
   textY: 28
 }];
 HANA_GUIDE_STEPS[10].markers = [{
@@ -178,7 +180,7 @@ HANA_GUIDE_STEPS[10].markers = [{
   y: 89,
   width: 90,
   height: 8,
-  text: "선택한 통신사가 맞는지 확인하고, 하단의 '인증번호 요청' 버튼을 눌러주세요.",
+  text: t("선택한 통신사가 맞는지 확인하고, 하단의 '인증번호 요청' 버튼을 눌러주세요."),
   textY: 75
 }];
 HANA_GUIDE_STEPS[11].markers = [
@@ -186,7 +188,7 @@ HANA_GUIDE_STEPS[11].markers = [
     x: 14,
     y: 53,
     isSmall: true,
-    text: "서비스 이용 약관에 '전체동의'를 체크해 주세요.",
+    text: t("서비스 이용 약관에 '전체동의'를 체크해 주세요."),
     textY: 43,
     textX: 45
   },
@@ -195,7 +197,7 @@ HANA_GUIDE_STEPS[11].markers = [
     y: 89,
     width: 70,
     height: 8,
-    text: "체크 후 하단의 '다음' 버튼을 클릭해 주세요.",
+    text: t("체크 후 하단의 '다음' 버튼을 클릭해 주세요."),
     textY: 78
   }
 ];
@@ -205,7 +207,7 @@ HANA_GUIDE_STEPS[12].markers = [
     y: 30,
     width: 90,
     height: 12,
-    text: "문자로 받은 인증번호 6자리를 입력해 주세요.",
+    text: t("문자로 받은 인증번호 6자리를 입력해 주세요."),
     textY: 15
   },
   {
@@ -213,7 +215,7 @@ HANA_GUIDE_STEPS[12].markers = [
     y: 90,
     width: 90,
     height: 8,
-    text: "입력 후 하단의 '인증하기' 버튼을 눌러주세요.",
+    text: t("입력 후 하단의 '인증하기' 버튼을 눌러주세요."),
     textY: 77
   }
 ];
@@ -222,7 +224,7 @@ HANA_GUIDE_STEPS[13].markers = [
     x: 16,
     y: 24,
     isSmall: true,
-    text: "약관에 체크해 주세요.",
+    text: t("약관에 체크해 주세요."),
     textY: 16
   },
   {
@@ -230,7 +232,7 @@ HANA_GUIDE_STEPS[13].markers = [
     y: 89,
     width: 70,
     height: 8,
-    text: "체크 후 하단의 '다음' 버튼을 클릭해 주세요.",
+    text: t("체크 후 하단의 '다음' 버튼을 클릭해 주세요."),
     textY: 78
   }
 ];
@@ -239,7 +241,7 @@ HANA_GUIDE_STEPS[14].markers = [{
   y: 87,
   width: 90,
   height: 8,
-  text: "약관에 동의하신 후 하단의 '확인' 혹은 '동의' 버튼을 눌러주세요.",
+  text: t("약관에 동의하신 후 하단의 '확인' 혹은 '동의' 버튼을 눌러주세요."),
   textY: 79
 }];
 HANA_GUIDE_STEPS[15].markers = [
@@ -247,7 +249,7 @@ HANA_GUIDE_STEPS[15].markers = [
     x: 16,
     y: 24,
     isSmall: true,
-    text: "약관에 체크해 주세요.",
+    text: t("약관에 체크해 주세요."),
     textY: 16
   },
   {
@@ -255,7 +257,7 @@ HANA_GUIDE_STEPS[15].markers = [
     y: 89,
     width: 70,
     height: 8,
-    text: "체크 후 하단의 '다음' 버튼을 클릭해 주세요.",
+    text: t("체크 후 하단의 '다음' 버튼을 클릭해 주세요."),
     textY: 78
   }
 ];
@@ -264,7 +266,7 @@ HANA_GUIDE_STEPS[16].markers = [{
   y: 75,
   width: 90,
   height: 8,
-  text: "본인 인증을 위해 사용하실 '여권(Passport)'을 선택해 주세요.",
+  text: t("본인 인증을 위해 사용하실 '여권(Passport)'을 선택해 주세요."),
   textY: 63
 }];
 HANA_GUIDE_STEPS[17].markers = [
@@ -273,7 +275,7 @@ HANA_GUIDE_STEPS[17].markers = [
     y: 55,
     width: 90,
     height: 35,
-    text: "사각형 가이드 라인에 맞춰 '여권(Passport)'을 촬영해 주세요.",
+    text: t("사각형 가이드 라인에 맞춰 '여권(Passport)'을 촬영해 주세요."),
     textY: 30
   },
   {
@@ -282,7 +284,7 @@ HANA_GUIDE_STEPS[17].markers = [
     width: 80,
     isSmall: false,
     height: 10,
-    text: "카메라 권한 팝업이 뜨면 '앱 사용 중에만 허용'을 눌러주세요.",
+    text: t("카메라 권한 팝업이 뜨면 '앱 사용 중에만 허용'을 눌러주세요."),
     textY: 65
   }
 ];
@@ -292,7 +294,7 @@ HANA_GUIDE_STEPS[18].markers = [
     y: 45,
     width: 90,
     height: 8,
-    text: "여권에서 인식된 이름이 자동으로 입력됩니다.",
+    text: t("여권에서 인식된 이름이 자동으로 입력됩니다."),
     textY: 37
   },
   {
@@ -300,7 +302,7 @@ HANA_GUIDE_STEPS[18].markers = [
     y: 89,
     width: 60,
     height: 8,
-    text: "정보가 맞는지 확인한 후 하단의 '다음' 버튼을 눌러주세요.",
+    text: t("정보가 맞는지 확인한 후 하단의 '다음' 버튼을 눌러주세요."),
     textY: 80
   }
 ];
@@ -310,7 +312,7 @@ HANA_GUIDE_STEPS[19].markers = [
     y: 42,
     width: 90,
     height: 12,
-    text: "본인 인증을 진행할 '계좌'를 선택해 주세요.",
+    text: t("본인 인증을 진행할 '계좌'를 선택해 주세요."),
     textY: 30
   },
   {
@@ -318,7 +320,7 @@ HANA_GUIDE_STEPS[19].markers = [
     y: 89,
     width: 60,
     height: 8,
-    text: "선택 후 하단의 '다음' 버튼을 눌러주세요.",
+    text: t("선택 후 하단의 '다음' 버튼을 눌러주세요."),
     textY: 80
   }
 ];
@@ -327,7 +329,7 @@ HANA_GUIDE_STEPS[20].markers = [{
   y: 75,
   width: 75,
   height: 45,
-  text: "해당 계좌의 비밀번호 4자리를 키패드로 입력해 주세요.",
+  text: t("해당 계좌의 비밀번호 4자리를 키패드로 입력해 주세요."),
   textY: 35
 }];
 HANA_GUIDE_STEPS[21].markers = [
@@ -335,7 +337,7 @@ HANA_GUIDE_STEPS[21].markers = [
     x: 14,
     y: 52,
     isSmall: true,
-    text: "클라우드 서비스 이용약관에 체크해 주세요.",
+    text: t("클라우드 서비스 이용약관에 체크해 주세요."),
     textY: 40
   },
   {
@@ -343,7 +345,7 @@ HANA_GUIDE_STEPS[21].markers = [
     y: 89,
     width: 75,
     height: 8,
-    text: "하단의 '저장' 버튼을 눌러주세요.",
+    text: t("하단의 '저장' 버튼을 눌러주세요."),
     textY: 80
   }
 ];
@@ -352,7 +354,7 @@ HANA_GUIDE_STEPS[22].markers = [{
   y: 89,
   width: 90,
   height: 8,
-  text: "약관 내용을 확인하고 하단의 '동의'를 눌러주세요.",
+  text: t("약관 내용을 확인하고 하단의 '동의'를 눌러주세요."),
   textY: 80
 }];
 HANA_GUIDE_STEPS[23].markers = [
@@ -360,7 +362,7 @@ HANA_GUIDE_STEPS[23].markers = [
     x: 14,
     y: 52,
     isSmall: true,
-    text: "클라우드 서비스 이용약관에 체크해 주세요.",
+    text: t("클라우드 서비스 이용약관에 체크해 주세요."),
     textY: 40
   },
   {
@@ -368,7 +370,7 @@ HANA_GUIDE_STEPS[23].markers = [
     y: 89,
     width: 75,
     height: 8,
-    text: "하단의 '저장' 버튼을 눌러주세요.",
+    text: t("하단의 '저장' 버튼을 눌러주세요."),
     textY: 80
   }
 ];
@@ -377,7 +379,7 @@ HANA_GUIDE_STEPS[24].markers = [{
   y: 43,
   width: 44,
   height: 6,
-  text: "인증서에서 사용할 비밀번호 6자리를 설정해 주세요.",
+  text: t("인증서에서 사용할 비밀번호 6자리를 설정해 주세요."),
   textY: 40
 }];
 HANA_GUIDE_STEPS[25].markers = [{
@@ -385,7 +387,7 @@ HANA_GUIDE_STEPS[25].markers = [{
   y: 90,
   width: 36,
   height: 8,
-  text: "축하합니다! 하나인증서 발급이 완료되었습니다. 다음 화면으로 넘기기 위해 '다음에'를 눌러주세요.",
+  text: t("축하합니다! 하나인증서 발급이 완료되었습니다. 다음 화면으로 넘기기 위해 '다음에'를 눌러주세요."),
   textY: 80
 }];
 
@@ -394,7 +396,7 @@ HANA_GUIDE_STEPS[27].markers = [{
   y: 12,
   width: 90,
   height: 12,
-  text: "국세청에서 인증 요청이 도착했습니다. 상단 알림을 눌러 하나원큐 앱을 열어주세요.",
+  text: t("국세청에서 인증 요청이 도착했습니다. 상단 알림을 눌러 하나원큐 앱을 열어주세요."),
   textY: 28,
   position: "bottom"
 }];
@@ -403,7 +405,7 @@ HANA_GUIDE_STEPS[28].markers = [
     x: 14,
     y: 50,
     isSmall: true,
-    text: "개인정보 제3자 제공 동의 체크박스를 눌러주세요.",
+    text: t("개인정보 제3자 제공 동의 체크박스를 눌러주세요."),
     textY: 43
   },
   {
@@ -411,7 +413,7 @@ HANA_GUIDE_STEPS[28].markers = [
     y: 87,
     width: 90,
     height: 8,
-    text: "그 다음, 하단의 '인증 요청' 버튼을 눌러주세요.",
+    text: t("그 다음, 하단의 '인증 요청' 버튼을 눌러주세요."),
     textY: 79
   }
 ];
@@ -420,7 +422,7 @@ HANA_GUIDE_STEPS[29].markers = [{
   y: 89,
   width: 90,
   height: 8,
-  text: "하단의 '인증하기' 버튼을 눌러 인증을 진행합니다.",
+  text: t("하단의 '인증하기' 버튼을 눌러 인증을 진행합니다."),
   textY: 78
 }];
 HANA_GUIDE_STEPS[30].markers = [{
@@ -428,7 +430,7 @@ HANA_GUIDE_STEPS[30].markers = [{
   y: 57,
   width: 44,
   height: 6,
-  text: "하나인증서 비밀번호 6자리를 입력해 주세요.",
+  text: t("하나인증서 비밀번호 6자리를 입력해 주세요."),
   textY: 47
 }];
 HANA_GUIDE_STEPS[31].markers = [{
@@ -436,7 +438,7 @@ HANA_GUIDE_STEPS[31].markers = [{
   y: 90,
   width: 88,
   height: 8,
-  text: "인증이 완료되었습니다! '확인'을 눌러주세요.\n\n그 후 이지텍스리펀드 웹페이지로 돌아가 '인증 완료'를 누르세요!",
+  text: t("인증이 완료되었습니다! '확인'을 눌러주세요.\n\n그 후 이지텍스리펀드 웹페이지로 돌아가 '인증 완료'를 누르세요!"),
   textY: 78
 }];
 
@@ -472,7 +474,7 @@ export function HanaGuideModal({
   }, [mode]);
 
   const displayChapters = React.useMemo(() => {
-    if (mode === 'auth') return [{ title: "인증 승인", start: 0, icon: "✅" }];
+    if (mode === 'auth') return [{ title: t("인증 승인"), start: 0, icon: "✅" }];
     return CHAPTERS;
   }, [mode]);
 

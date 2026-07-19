@@ -25,7 +25,6 @@ export const guides = {
   "하단의 '하나원큐 시작하기' 버튼을 눌러주세요.": "Silakan tekan tombol 'Mulai Hana One Q' di bagian bawah.",
   "분석 완료! 클릭하여 복사": "Analisis selesai! Klik untuk menyalin",
   "패스 앱의 성명란에 붙여넣으세요.": "Tempel di kolom nama pada aplikasi PASS.",
-  "내 추천 성명": "Nama Lengkap Rekomendasi Saya",
   "설치가 완료되었습니다 '열기'를 눌러 앱을 실행해 주세요": "Instalasi telah selesai. Tekan 'Buka' untuk menjalankan aplikasi",
   "앞으로 앱 실행 시 사용할 숫자 6자리 비밀번호를 설정해 주세요": "Atur kata sandi 6 digit yang akan digunakan saat menjalankan aplikasi di masa mendatang",
   "설치가 완료되었습니다. '열기'를 눌러 하나원큐를 실행해 주세요.": "Instalasi telah selesai. Tekan 'Buka' untuk menjalankan HanaOneQ.",
@@ -117,7 +116,6 @@ export const guides = {
   "카카오톡 앱의 성명란에 붙여넣으세요.": "Tempel di kolom nama pada aplikasi KakaoTalk.",
   "원활한 서비스 이용을 위해 내용을 확인하신 후 '확인'을 눌러주세요.": "Untuk penggunaan layanan yang lancar, harap periksa isinya lalu tekan 'Konfirmasi'.",
   "성명, 외국인등록번호 앞 7자리, 통신사, 휴대폰번호를 정확히 입력해 주세요.": "Masukkan nama lengkap, 7 digit pertama nomor registrasi asing, operator telekomunikasi, dan nomor ponsel dengan benar.",
-  "외국인 등록증 성명({name})과 통신사(PASS) 등록 성명이 다릅니다.": "Nama pada kartu pendaftaran orang asing ({name}) dan nama pendaftaran operator telekomunikasi (PASS) berbeda.",
   "국세청에서 인증 요청이 도착했습니다. 상단 알림을 눌러 하나원큐 앱을 열어주세요.": "Permintaan verifikasi telah tiba dari Layanan Pajak Nasional. Tekan notifikasi di bagian atas untuk membuka aplikasi Hana One Q.",
   "동의를 마친 후 '다음' 버튼을 눌러주세요": "Setelah menyetujui, mohon tekan tombol 'Berikutnya'.",
   "약관에 동의하신 후 하단의 '확인' 혹은 '동의' 버튼을 눌러주세요.": "Setelah menyetujui syarat dan ketentuan, tekan tombol 'Konfirmasi' atau 'Setuju' di bagian bawah.",
@@ -187,7 +185,6 @@ export const guides = {
   "문자가 오면 인증번호 입력 후 넘어가시면 됩니다. 하지만 문자가 오지 않는다면, 휴대폰을 처음 개통할 때 상담사가 입력한 이름 방식과 현재 외국인등록증 영문 이름이 다를 가능성이 높습니다. 이름이 조금이라도 다르면 조회가 불가능하니, 외국인등록증을 촬영하시고 AI가 추천해 주는 이름으로 다시 시도해 보세요!": "Jika Anda menerima pesan teks, Anda dapat memasukkan nomor verifikasi dan melanjutkan. Namun, jika Anda tidak menerima pesan teks, kemungkinan besar format nama yang dimasukkan oleh konsultan saat pertama kali membuka nomor ponsel Anda berbeda dengan nama Inggris di kartu identitas orang asing Anda saat ini. Karena pencarian tidak dapat dilakukan jika nama sedikit berbeda, harap ambil foto kartu identitas orang asing Anda dan coba lagi dengan nama yang direkomendasikan AI!",
   "본인 통신사에 맞는 PASS 앱을 설치해 주세요": "Instal aplikasi PASS yang sesuai dengan operator Anda.",
   "인증서 발급을 위해 오른쪽 상단의 'X'를 눌러주세요.": "Untuk menerbitkan sertifikat, mohon tekan 'X' di kanan atas.",
-  "인증번호 입력 후 '다음' 버튼을 눌러주세요": "Setelah memasukkan kode verifikasi, tekan tombol 'Berikutnya'.",
   "인증 승인 따라하기 가이드": "Panduan mengikuti persetujuan verifikasi",
   "입력 후 하단의 '확인' 버튼을 눌러 다음으로 진행해 주세요.": "Setelah memasukkan, tekan tombol 'Konfirmasi' di bagian bawah untuk melanjutkan.",
 };

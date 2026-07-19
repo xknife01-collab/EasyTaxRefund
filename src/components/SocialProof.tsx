@@ -5,8 +5,9 @@ import { useTranslation } from "@/components/LanguageContext";
 import { cn } from "@/lib/utils";
 import { User, CheckCircle2, Globe, Sparkles } from "lucide-react";
 
-const COUNTRIES = ["베트남", "중국", "네팔", "캄보디아", "태국", "우즈베키스탄", "필리핀", "몽골", "미얀마"];
-const ACTIONS = ["방금 환급액 확인", "환급 신청 완료", "서류 업로드 완료", "본인 인증 완료"];
+const t = (s: string) => s;
+const COUNTRIES = [t("베트남"), t("중국"), t("네팔"), t("캄보디아"), t("태국"), t("우즈베키스탄"), t("필리핀"), t("몽골"), t("미얀마")];
+const ACTIONS = [t("방금 환급액 확인"), t("환급 신청 완료"), t("서류 업로드 완료"), t("본인 인증 완료")];
 
 interface Notification {
   id: number;

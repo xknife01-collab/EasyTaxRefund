@@ -56,7 +56,7 @@ import { doc, onSnapshot, collection, query, orderBy, addDoc, serverTimestamp, u
 
 export default function ClientPortal() {
   const { t, language } = useTranslation();
-  const user: any = { uid: "mock-uid", displayName: "사용자" };
+  const user: any = { uid: "mock-uid", displayName: t("사용자") };
   const router = useRouter();
   const { toast } = useToast();
 
@@ -180,7 +180,7 @@ export default function ClientPortal() {
   };
 
   const [userProfile, setUserProfile] = useState<any>({
-    fullName: "사용자",
+    fullName: t("사용자"),
     foreignerRegistrationNumber: "",
     phoneNumber: "",
   });
@@ -188,13 +188,13 @@ export default function ClientPortal() {
   useEffect(() => {
     if (typeof window !== 'undefined') {
       setUserProfile({
-        fullName: currentApp?.fullName || sessionStorage.getItem('myFullName') || "사용자",
+        fullName: currentApp?.fullName || sessionStorage.getItem('myFullName') || t("사용자"),
         foreignerRegistrationNumber: currentApp?.registrationNumber || "",
         phoneNumber: currentApp?.phone || "",
       });
     } else {
         setUserProfile({
-           fullName: currentApp?.fullName || "사용자",
+           fullName: currentApp?.fullName || t("사용자"),
            foreignerRegistrationNumber: currentApp?.registrationNumber || "",
            phoneNumber: currentApp?.phone || "",
         });
@@ -432,7 +432,7 @@ export default function ClientPortal() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <div className="space-y-2">
               <h1 className="text-3xl lg:text-4xl font-black font-headline text-slate-900">
-                {t('안녕하세요, {fullName}님', { fullName: userProfile?.fullName || user?.displayName || "사용자" })}
+                {t('안녕하세요, {fullName}님', { fullName: userProfile?.fullName || user?.displayName || t("사용자") })}
               </h1>
               <p className="text-slate-500 font-medium">{t('환급 진행 상황을 실시간으로 확인하는 곳입니다.')}</p>
             </div>

@@ -1,5 +1,4 @@
 export const notifications = {
-  "업데이트 완료": "Cập nhật hoàn tất",
   "서버 접속에 실패했습니다.": "Kết nối với máy chủ thất bại.",
   "신청 정보를 찾을 수 없습니다. 다시 시도해 주세요.": "Không tìm thấy thông tin đăng ký. Vui lòng thử lại.",
   "다시 촬영해 주세요.": "Vui lòng chụp lại.",
@@ -9,7 +8,6 @@ export const notifications = {
   "문자 발송에 실패했습니다.": "Gửi tin nhắn SMS thất bại.",
   "전문 세무사가 검토를 시작합니다.": "Kế toán thuế chuyên nghiệp sẽ bắt đầu xem xét hồ sơ.",
   "전자서명 칸에 서명을 완료해 주세요.": "Vui lòng ký tên vào ô chữ ký điện tử.",
-  "서류 보완 요청": "Yêu cầu bổ sung hồ sơ",
   "휴대폰 번호를 정확히 입력해 주세요.": "Vui lòng nhập chính xác số điện thoại di động.",
   "인증번호가 틀렸습니다.": "Mã xác thực không chính xác.",
   "비밀번호 설정 중 오류가 발생했습니다.": "Đã xảy ra lỗi trong quá trình thiết lập mật khẩu.",

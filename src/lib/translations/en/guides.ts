@@ -25,7 +25,6 @@ export const guides = {
   "하단의 '하나원큐 시작하기' 버튼을 눌러주세요.": "Please press the 'Start HanaOneQ' button at the bottom.",
   "분석 완료! 클릭하여 복사": "Analysis complete! Click to copy",
   "패스 앱의 성명란에 붙여넣으세요.": "Paste it into the name field of the PASS app.",
-  "내 추천 성명": "My recommended full name",
   "설치가 완료되었습니다 '열기'를 눌러 앱을 실행해 주세요": "Installation is complete. Please press 'Open' to run the app.",
   "앞으로 앱 실행 시 사용할 숫자 6자리 비밀번호를 설정해 주세요": "Please set a 6-digit numeric password to use when running the app from now on",
   "설치가 완료되었습니다. '열기'를 눌러 하나원큐를 실행해 주세요.": "Installation is complete. Please tap 'Open' to launch Hana One Q.",
@@ -117,7 +116,6 @@ export const guides = {
   "카카오톡 앱의 성명란에 붙여넣으세요.": "Please paste into the name field of the KakaoTalk app.",
   "원활한 서비스 이용을 위해 내용을 확인하신 후 '확인'을 눌러주세요.": "To use the service smoothly, please confirm the content and then tap 'Confirm'.",
   "성명, 외국인등록번호 앞 7자리, 통신사, 휴대폰번호를 정확히 입력해 주세요.": "Please accurately enter your name, the first 7 digits of your alien registration number, mobile carrier, and mobile phone number.",
-  "외국인 등록증 성명({name})과 통신사(PASS) 등록 성명이 다릅니다.": "The name on the alien registration card ({name}) and the name registered with the mobile carrier (PASS) are different.",
   "국세청에서 인증 요청이 도착했습니다. 상단 알림을 눌러 하나원큐 앱을 열어주세요.": "A verification request has arrived from the National Tax Service. Please tap the notification at the top to open the Hana One Q app.",
   "동의를 마친 후 '다음' 버튼을 눌러주세요": "After completing consent, please tap the 'Next' button.",
   "약관에 동의하신 후 하단의 '확인' 혹은 '동의' 버튼을 눌러주세요.": "After agreeing to the terms, press the 'Confirm' or 'Agree' button at the bottom.",
@@ -187,7 +185,6 @@ export const guides = {
   "문자가 오면 인증번호 입력 후 넘어가시면 됩니다. 하지만 문자가 오지 않는다면, 휴대폰을 처음 개통할 때 상담사가 입력한 이름 방식과 현재 외국인등록증 영문 이름이 다를 가능성이 높습니다. 이름이 조금이라도 다르면 조회가 불가능하니, 외국인등록증을 촬영하시고 AI가 추천해 주는 이름으로 다시 시도해 보세요!": "When you receive the text message, you can proceed after entering the verification number. However, if you do not receive a text message, it is highly likely that the name format entered by the consultant when you first opened your mobile phone differs from the English name on your current Alien Registration Card. If the names differ even slightly, inquiry is not possible, so please take a photo of your Alien Registration Card and try again with the name recommended by AI!",
   "본인 통신사에 맞는 PASS 앱을 설치해 주세요": "Please install the PASS app that matches your carrier",
   "인증서 발급을 위해 오른쪽 상단의 'X'를 눌러주세요.": "To issue the certificate, please tap 'X' at the top right.",
-  "인증번호 입력 후 '다음' 버튼을 눌러주세요": "After entering the verification code, please press the 'Next' button.",
   "인증 승인 따라하기 가이드": "Verification Approval Guide",
   "입력 후 하단의 '확인' 버튼을 눌러 다음으로 진행해 주세요.": "After entering, press the 'Confirm' button at the bottom to proceed.",
 };
