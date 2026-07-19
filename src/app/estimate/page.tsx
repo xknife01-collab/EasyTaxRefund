@@ -4679,46 +4679,59 @@ export default function EstimatePage() {
 
 
             {step === 7 && !result && (
-              <Card className="premium-card rounded-[3rem] border-none shadow-2xl overflow-hidden bg-white p-8 sm:p-16 text-center flex flex-col items-center justify-center min-h-[300px]">
-                <Loader2 className="h-12 w-12 text-primary animate-spin mb-6" />
-                <h3 className="text-xl font-bold text-slate-800">{t('환급 결과를 복구하는 중입니다...')}</h3>
+              <Card className="rounded-[3rem] border-none shadow-2xl overflow-hidden bg-[#0b192c] p-8 sm:p-16 text-center flex flex-col items-center justify-center min-h-[300px]">
+                <Loader2 className="h-12 w-12 text-[#b88c30] animate-spin mb-6" />
+                <h3 className="text-xl font-bold text-white">{t('환급 결과를 복구하는 중입니다...')}</h3>
                 <p className="text-sm text-slate-400 mt-2">{t('잠시만 기다려 주세요.')}</p>
               </Card>
             )}
 
             {step === 7 && result && (
-              <Card className="premium-card rounded-[3rem] border-none shadow-2xl overflow-hidden bg-white">
-                <CardHeader className="text-center py-8 sm:py-16 bg-slate-50/50 relative">
+              <Card className="rounded-2xl sm:rounded-[3rem] border-none shadow-2xl overflow-hidden bg-[#0b192c]">
+                <CardHeader className="text-center py-8 sm:py-16 bg-[#0b192c] border-b border-[#b88c30]/20 relative overflow-hidden">
+                  {/* 배경 패턴 */}
+                  <div className="absolute inset-0 opacity-[0.03]"
+                    style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
+                  />
                   <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => { setStep(4); saveProgress(4); }}
-                    className="absolute top-6 left-6 text-slate-400 hover:text-slate-600 font-bold flex items-center"
+                    className="absolute top-6 left-6 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
                   >
                     <ChevronLeft className="h-4 w-4 mr-1" />
                     {t('이전')}
                   </Button>
-                  <div className={`mx-auto h-24 w-24 rounded-[2.5rem] flex items-center justify-center mb-8 shadow-xl ${result.caseType === 'A' ? 'bg-yellow-400' : 'bg-slate-400'}`}>
-                    {result.caseType === 'A' ? <Trophy className="h-12 w-12 text-white" /> : <Info className="h-12 w-12 text-white" />}
+                  <div className="relative mx-auto w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center mb-8 relative z-10">
+                    <div className="absolute -inset-4 bg-[#b88c30]/15 rounded-full blur-xl opacity-60 animate-pulse" />
+                    <div className="relative h-20 w-20 sm:h-24 sm:w-24 bg-white rounded-3xl p-3 overflow-hidden shadow-2xl border border-[#b88c30]/30 flex items-center justify-center">
+                      <Image
+                        src="/nts-logo.jpg"
+                        alt="Official NTS Logo"
+                        width={96}
+                        height={96}
+                        className="w-full h-full object-contain"
+                      />
+                    </div>
                   </div>
-                  <CardTitle className="text-2xl sm:text-4xl lg:text-[2.5rem] font-black font-headline text-slate-900 leading-tight">
+                  <CardTitle className="text-2xl sm:text-4xl lg:text-[2.5rem] font-black font-headline text-white leading-tight relative z-10">
                     {t(result.message, { amount: `₩${result.refundEstimate?.toLocaleString()}` })}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-8 sm:space-y-16 py-8 sm:py-16 px-4 sm:px-10">
+                <CardContent className="space-y-8 sm:space-y-16 py-8 sm:py-16 px-4 sm:px-10 bg-[#0d1e30]">
                   {result.caseType === 'A' && (
                     <div className="text-center space-y-10">
                       <div className="space-y-4">
                         <p className="text-slate-400 font-black uppercase tracking-widest text-sm">{t('최종 예상 환급액')}</p>
-                        <h2 className="text-7xl font-black text-[#fbbf24] font-headline">₩ {result.refundEstimate?.toLocaleString()}</h2>
+                        <h2 className="text-5xl sm:text-7xl font-black text-[#b88c30] font-headline">₩ {result.refundEstimate?.toLocaleString()}</h2>
                       </div>
-                      <div className="max-w-md mx-auto space-y-4 text-left p-8 bg-slate-50 rounded-3xl border border-slate-100 shadow-inner">
+                      <div className="max-w-md mx-auto space-y-4 text-left p-8 bg-white/5 rounded-3xl border border-white/10 shadow-inner">
                         <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">{t('연도별 상세 내역 (적격 여부 검증 완료)')}</p>
                         <div className="space-y-3">
                           {result.details?.map((detail: any, i: number) => (
                             <div key={i} className="flex justify-between items-center group">
-                              <span className="text-lg font-black text-slate-800">{detail.year}: ₩{detail.amount.toLocaleString()}</span>
-                              <span className="text-[11px] font-bold text-slate-400">{detail.company}</span>
+                              <span className="text-lg font-black text-slate-200">{detail.year}: ₩{detail.amount.toLocaleString()}</span>
+                              <span className="text-[11px] font-bold text-[#b88c30]/80">{detail.company}</span>
                             </div>
                           ))}
                         </div>
@@ -4727,7 +4740,7 @@ export default function EstimatePage() {
                   )}
                   {result.refundEstimate === 0 ? (
                     <div className="space-y-6 text-center">
-                      <p className="text-lg lg:text-xl font-bold text-slate-500 py-8 px-4 bg-slate-50 rounded-3xl border border-slate-100 leading-relaxed shadow-sm">
+                      <p className="text-lg lg:text-xl font-bold text-slate-300 py-8 px-4 bg-white/5 rounded-3xl border border-white/10 leading-relaxed shadow-sm">
                         {t('올해 한국에서 근로하며 세금을 더 납부하신 후, 내년에 이지택스를 통해 다시 조회해 보세요.')}
                       </p>
                       <Button onClick={() => {
@@ -4735,8 +4748,8 @@ export default function EstimatePage() {
                           updateDoc(doc(db, 'applications', draftAppId), { status: 'ZeroRefund', lastStep: 7 });
                         }
                         router.push('/');
-                      }} className="w-full h-24 bg-slate-200 hover:bg-slate-300 text-slate-700 text-2xl lg:text-3xl font-black rounded-[2rem] shadow-sm flex items-center justify-center gap-4 transition-all hover:scale-[1.02]">
-                        <ArrowLeft className="h-8 w-8 text-slate-500" /> {t('홈으로 돌아가기')}
+                      }} className="w-full h-20 bg-white/10 hover:bg-white/15 text-white text-xl lg:text-2xl font-black rounded-[2rem] shadow-sm flex items-center justify-center gap-4 transition-all hover:scale-[1.02]">
+                        <ArrowLeft className="h-6 w-6 text-slate-400" /> {t('홈으로 돌아가기')}
                       </Button>
                     </div>
                   ) : (
@@ -4752,16 +4765,16 @@ export default function EstimatePage() {
                         }
                       }}
                       disabled={isIdGenerating}
-                      className="w-full h-24 bg-slate-900 text-2xl lg:text-3xl font-black rounded-[2rem] shadow-2xl flex items-center justify-center gap-4 transition-transform active:scale-95 disabled:opacity-50"
+                      className="w-full h-20 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl lg:text-2xl font-black rounded-[2rem] shadow-2xl flex items-center justify-center gap-4 transition-transform active:scale-95 disabled:opacity-50"
                     >
                       {isIdGenerating ? (
                         <>
-                          <Loader2 className="animate-spin h-10 w-10 text-white" />
+                          <Loader2 className="animate-spin h-8 w-8 text-[#0b192c]" />
                           <span>{t('보안 계정 생성 중...')}</span>
                         </>
                       ) : (
                         <>
-                          {t('지금 환급 신청하기')} <ArrowRight className="h-10 w-10 text-white" />
+                          {t('지금 환급 신청하기')} <ArrowRight className="h-8 w-8 text-[#0b192c]" />
                         </>
                       )}
                     </Button>
