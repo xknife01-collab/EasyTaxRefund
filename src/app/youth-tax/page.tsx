@@ -34,10 +34,13 @@ export default function YouthTaxPage() {
 
         {/* ─── HERO ─── */}
         <div className="relative w-full h-[70vh] overflow-hidden flex items-center justify-center">
-          <img
+          <Image
             src="/KakaoTalk_20260712_205355534.png"
             alt="Youth Tax Reduction Hero"
-            className="absolute inset-0 w-full h-full object-cover object-center"
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-center"
           />
 
           <div className="relative z-20 text-center px-6 space-y-5">

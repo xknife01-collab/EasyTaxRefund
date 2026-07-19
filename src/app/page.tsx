@@ -195,10 +195,13 @@ export default function HomePage() {
         <section className="relative h-[750px] overflow-hidden bg-white flex items-center">
           {/* Full-width background image */}
           <div className="absolute inset-0 z-0 select-none">
-            <img
-              src="/MAIN.png?v=1"
+            <Image
+              src="/MAIN.png"
               alt="National Assembly Background"
-              className="absolute inset-0 w-full h-full object-cover object-right"
+              fill
+              priority
+              sizes="100vw"
+              className="object-cover object-right"
             />
           </div>
           
@@ -296,15 +299,16 @@ export default function HomePage() {
                 {/* 뒤 골드 장식 */}
                 <div className="absolute top-4 -left-3 w-full h-full rounded-3xl border-2 border-[#b88c30]/20 bg-[#f5f0e8]/50 -z-0" />
 
-                <div className="relative z-10 w-full rounded-3xl overflow-hidden shadow-[0_32px_80px_rgba(15,30,54,0.18)]">
-                  <img
+                 <div className="relative z-10 w-full rounded-3xl overflow-hidden shadow-[0_32px_80px_rgba(15,30,54,0.18)]" style={{ height: '520px' }}>
+                  <Image
                     src="/images/manager.png"
                     alt="김준현 공식 매니저"
-                    className="w-full object-cover object-top"
-                    style={{ height: '520px' }}
+                    fill
+                    sizes="(max-width: 768px) 100vw, 480px"
+                    className="object-cover object-top"
                   />
                   {/* 하단 페이드 */}
-                  <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#0f1e36]/90 to-transparent" />
+                  <div className="absolute bottom-0 left-0 right-0 h-28 bg-gradient-to-t from-[#0f1e36]/90 to-transparent z-10" />
                   {/* 상단 Official Manager 라인 */}
                   <div className="absolute top-5 left-5 right-5 flex items-center gap-2">
                     <div className="h-px flex-1 bg-[#b88c30]/40" />
