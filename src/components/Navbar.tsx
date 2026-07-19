@@ -66,8 +66,8 @@ export function Navbar() {
             className="h-10 w-10 sm:h-12 sm:w-12 object-contain shrink-0 transition-transform duration-300 group-hover:scale-110 active:scale-95"
           />
           <span className="font-black text-[#0b192c] font-headline uppercase flex flex-col items-start leading-none">
-            <span className="text-[#b88c30] text-[10px] sm:text-xs font-black tracking-[0.05em] mb-0.5">Korea</span>
-            <span className="text-xs sm:text-sm tracking-tighter whitespace-nowrap">Easy Tax Refund</span>
+            <span className="text-[#b88c30] text-[11px] sm:text-[13px] font-black tracking-[0.05em] mb-0.5">Korea</span>
+            <span className="text-sm sm:text-base tracking-tighter whitespace-nowrap">Easy Tax Refund</span>
           </span>
         </Link>
 
