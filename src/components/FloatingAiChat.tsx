@@ -451,7 +451,7 @@ function FloatingConsultingPanelInner() {
 
             {/* Telegram */}
             <a
-              href="https://t.me/easytaxrefund"
+              href="https://t.me/ktrs_support_bot"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2.5 bg-[#0088cc] hover:bg-[#0088cc]/95 text-white font-black rounded-2xl py-3.5 px-4 shadow-[0_4px_12px_rgba(0,136,204,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"

@@ -344,7 +344,7 @@ export default function FAQPage() {
 
               {/* 텔레그램 */}
               <a 
-                href="https://t.me/easytaxrefund" 
+                href="https://t.me/ktrs_support_bot" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-full h-14 rounded-full bg-[#0088cc] hover:bg-[#0077b5] text-white font-black text-base transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2.5"
