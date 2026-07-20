@@ -21,7 +21,15 @@ export async function POST(req: Request) {
     const userName = (`${firstName} ${lastName}`.trim() || username || `Customer #${telegramChatId}`).trim();
 
     // 1. AI Auto language detection & translation to Korean
-    const { sourceLang, translatedText } = await translateIncomingTelegramMessage(rawText);
+    let sourceLang = 'en';
+    let translatedText = rawText;
+    try {
+      const translationResult = await translateIncomingTelegramMessage(rawText);
+      sourceLang = translationResult.sourceLang || 'en';
+      translatedText = translationResult.translatedText || rawText;
+    } catch (err) {
+      console.error('[Telegram Webhook] AI Translation failed, falling back to raw text:', err);
+    }
 
     // 2. Load or create the unified Support Chat Session in Supabase
     let chatSession = null;
