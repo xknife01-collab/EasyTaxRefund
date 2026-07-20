@@ -182,6 +182,27 @@ export function useOmniChat(isOpen: boolean, initialChatId?: string | null) {
         throw new Error(data.error || "메시지 발송 실패");
       }
 
+      // Local state update fallback (in case Supabase realtime replication is disabled or slow)
+      const newAdminMsg: SupportMessage = {
+        id: Math.random().toString(), // temporary client-side ID
+        chat_id: selectedChat.id,
+        sender_type: 'admin',
+        original_text: text,
+        translated_text: data.translatedText || text,
+        source_lang: 'ko',
+        target_lang: data.targetLang || 'en',
+        is_read: true,
+        created_at: new Date().toISOString()
+      };
+      
+      setMessages((prev) => {
+        // Prevent duplicate messages if realtime subscription already processed it
+        if (prev.some(m => m.original_text === text && m.sender_type === 'admin')) {
+          return prev;
+        }
+        return [...prev, newAdminMsg];
+      });
+
       toast({
         title: "✅ 번역 메시지 발송 성공",
         description: `${selectedChat.channel.toUpperCase()} 고객에게 번역 전송되었습니다.`,
