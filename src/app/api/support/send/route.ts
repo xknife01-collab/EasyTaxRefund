@@ -30,8 +30,34 @@ export async function POST(req: Request) {
         console.warn('[OmniChat] Telegram Bot Token is missing in environment variables.');
       }
     } else if (channel === 'whatsapp') {
-      // Stub for WhatsApp Business Cloud API integration
-      console.log(`[OmniChat] WhatsApp message dry-run to ${externalChatId}: ${translatedText}`);
+      const waToken = process.env.WHATSAPP_ACCESS_TOKEN;
+      const waPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+      if (waToken && waPhoneId) {
+        const waUrl = `https://graph.facebook.com/v19.0/${waPhoneId}/messages`;
+        await axios.post(
+          waUrl,
+          {
+            messaging_product: 'whatsapp',
+            recipient_type: 'individual',
+            to: externalChatId,
+            type: 'text',
+            text: {
+              preview_url: false,
+              body: translatedText,
+            },
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${waToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        ).catch(err => {
+          console.error('[OmniChat] WhatsApp delivery failed:', err?.response?.data || err.message);
+        });
+      } else {
+        console.warn('[OmniChat] WhatsApp Access Token or Phone Number ID is missing in environment variables.');
+      }
     } else if (channel === 'facebook') {
       const pageAccessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
       if (pageAccessToken) {
