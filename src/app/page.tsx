@@ -1544,7 +1544,7 @@ export default function HomePage() {
                 
                 {/* 왓츠앱 */}
                 <a 
-                  href="https://wa.me/821048858575" 
+                  href="https://wa.me/821058648577" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="w-full h-14 rounded-full bg-[#25d366] hover:bg-[#1ebd58] text-white font-black text-base transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2.5"
