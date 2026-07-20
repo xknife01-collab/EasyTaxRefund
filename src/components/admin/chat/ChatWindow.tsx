@@ -58,7 +58,7 @@ export function ChatWindow({
   const langInfo = LANG_FLAG_MAP[selectedChat.detected_language || "ko"] || { flag: "🌐", label: selectedChat.detected_language };
 
   return (
-    <div className="flex-1 flex flex-col bg-[#0b1329]">
+    <div className="flex-1 flex flex-col bg-[#0b1329] min-h-0">
       {/* Top Customer Info Bar */}
       <div className="px-6 py-3 border-b border-slate-800 bg-[#090f1d] flex items-center justify-between">
         <div className="flex items-center gap-3">

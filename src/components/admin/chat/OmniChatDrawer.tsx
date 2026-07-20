@@ -65,9 +65,9 @@ export function OmniChatDrawer({ isOpen, onClose, initialChatId }: OmniChatDrawe
         </DialogHeader>
 
         {/* Master Details Split Container */}
-        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-12 overflow-hidden min-h-0">
           {/* Left Session Sidebar */}
-          <div className="md:col-span-4 flex flex-col overflow-hidden">
+          <div className="md:col-span-4 flex flex-col overflow-hidden min-h-0">
             <ChatSidebar
               chats={chats}
               selectedChat={selectedChat}
@@ -79,7 +79,7 @@ export function OmniChatDrawer({ isOpen, onClose, initialChatId }: OmniChatDrawe
           </div>
 
           {/* Right Active Room Area */}
-          <div className="md:col-span-8 flex flex-col overflow-hidden">
+          <div className="md:col-span-8 flex flex-col overflow-hidden min-h-0">
             <ChatWindow
               selectedChat={selectedChat}
               messages={messages}
