@@ -440,7 +440,7 @@ function FloatingConsultingPanelInner() {
 
             {/* WhatsApp */}
             <a
-              href="https://wa.me/821058648577"
+              href="https://wa.me/821048858575"
               target="_blank"
               rel="noopener noreferrer"
               className="flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#25D366]/95 text-white font-black rounded-2xl py-3.5 px-4 shadow-[0_4px_12px_rgba(37,211,102,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"
