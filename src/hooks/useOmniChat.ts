@@ -17,6 +17,7 @@ export function useOmniChat(isOpen: boolean, initialChatId?: string | null) {
   const [activeChannelFilter, setActiveChannelFilter] = useState<string>("all");
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const prevChatIdRef = useRef<string | null>(null);
 
   // 1. Fetch active support chat sessions
   const fetchChats = async () => {
@@ -87,17 +88,21 @@ export function useOmniChat(isOpen: boolean, initialChatId?: string | null) {
   useEffect(() => {
     if (isOpen && initialChatId && chats.length > 0) {
       const match = chats.find(c => c.id === initialChatId);
-      if (match) {
+      if (match && selectedChat?.id !== match.id) {
         setSelectedChat(match);
       }
     }
-  }, [isOpen, initialChatId, chats]);
+  }, [isOpen, initialChatId, chats, selectedChat?.id]);
 
   // Fetch messages when active chat changes
   useEffect(() => {
     if (selectedChat) {
-      fetchMessages(selectedChat.id);
+      if (prevChatIdRef.current !== selectedChat.id) {
+        prevChatIdRef.current = selectedChat.id;
+        fetchMessages(selectedChat.id);
+      }
     } else {
+      prevChatIdRef.current = null;
       setMessages([]);
     }
   }, [selectedChat]);
