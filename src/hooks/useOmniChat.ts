@@ -92,7 +92,7 @@ export function useOmniChat(isOpen: boolean, initialChatId?: string | null) {
         setSelectedChat(match);
       }
     }
-  }, [isOpen, initialChatId, chats, selectedChat?.id]);
+  }, [isOpen, initialChatId, chats]);
 
   // Fetch messages when active chat changes
   useEffect(() => {
