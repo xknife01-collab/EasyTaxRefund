@@ -10,7 +10,7 @@ export const simulator = {
   "step_0": "Kiểm tra điều kiện (Tháng/Lương)",
   "step_3": "Nhập thông tin xác thực điện thoại",
   "step_4": "Tiến hành xác thực đơn giản",
-  "sim_desc": "Đây không phải là một hiệu ứng chuyển cảnh giả lập. Chúng tôi tái hiện hoàn chỉnh toàn bộ quy trình từ bước 0 (Nhập thông tin làm việc) đến bước 9 (Ủy quyền đại lý thuế và chữ ký điện tử) bằng mã chạy thực tế của ứng dụng Easy Tax Refund.",
+  "sim_desc": "Đây không phải là một hiệu ứng chuyển cảnh giả lập. Chúng tôi tái hiện hoàn chỉnh toàn bộ quy trình từ bước 0 (Nhập thông tin làm việc) đến bước 9 (Ủy quyền đại lý thuế và chữ ký điện tử) bằng mã chạy thực tế của ứng dụng Korea Tax Refund Service.",
   "step_2": "Nhập thông tin thẻ người nước ngoài",
   "step_5": "Liên kết API Cục Thuế & Tính toán",
   "step_9": "Đồng ý ủy quyền & Ký tên cuối cùng",

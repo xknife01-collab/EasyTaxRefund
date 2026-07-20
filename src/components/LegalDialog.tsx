@@ -34,8 +34,8 @@ export function LegalDialog({ type, children }: LegalDialogProps) {
               </DialogTitle>
               <p className="text-xs text-slate-400 font-bold">
                 {isPrivacy 
-                  ? t('Easy Tax Refund는 고객님의 소중한 정보를 금융권 수준으로 보호합니다.') 
-                  : t('Easy Tax Refund 이용을 위한 표준 약관 및 정책 안내입니다.')}
+                  ? t('Korea Tax Refund Service는 고객님의 소중한 정보를 금융권 수준으로 보호합니다.') 
+                  : t('Korea Tax Refund Service 이용을 위한 표준 약관 및 정책 안내입니다.')}
               </p>
             </div>
           </div>
@@ -76,7 +76,7 @@ export function LegalDialog({ type, children }: LegalDialogProps) {
                   </h3>
                   <p className="font-medium text-sm text-slate-600">{t('회사는 원활한 세무 처리를 위해 다음과 같이 정보를 제공합니다.')}</p>
                   <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 text-sm font-bold space-y-2">
-                    <p className="text-slate-700">{t('제공받는 자: (주)이지택스 세무회계 및 협력 공인세무사')}</p>
+                    <p className="text-slate-700">{t('제공받는 자: (주)Korea Tax Refund Service 세무회계 및 협력 공인세무사')}</p>
                     <p className="text-slate-700">{t('제공 항목: 성명, 외국인등록번호, 소득 내역, 근무지 정보, 전자서명')}</p>
                     <p className="text-slate-700">{t('제공 목적: 국세청 경정청구 대행 및 세무 상담')}</p>
                   </div>
@@ -105,7 +105,7 @@ export function LegalDialog({ type, children }: LegalDialogProps) {
                     <Scale className="h-5 w-5 text-primary" /> {t('제 1 조 (목적)')}
                   </h3>
                   <p className="font-medium text-sm text-slate-600">
-                    {t('본 약관은 더윤컴퍼니(이하 "회사")가 운영하는 "Easy Tax Refund" 서비스를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.')}
+                    {t('본 약관은 더윤컴퍼니(이하 "회사")가 운영하는 "Korea Tax Refund Service" 서비스를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.')}
                   </p>
                 </section>
 

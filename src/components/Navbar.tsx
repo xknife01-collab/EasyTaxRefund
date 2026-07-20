@@ -62,12 +62,12 @@ export function Navbar() {
         <Link href="/" className="flex items-center gap-3 sm:gap-4 group">
           <img 
             src="/1625-1.png" 
-            alt="KOREA Easy Tax Refund Logo" 
+            alt="Korea Tax Refund Service Logo" 
             className="h-10 w-10 sm:h-12 sm:w-12 object-contain shrink-0 transition-transform duration-300 group-hover:scale-110 active:scale-95"
           />
           <span className="font-black text-[#0b192c] font-headline uppercase flex flex-col items-start leading-none">
-            <span className="text-[#b88c30] text-[11px] sm:text-[13px] font-black tracking-[0.05em] mb-0.5">Korea</span>
-            <span className="text-sm sm:text-base tracking-tighter whitespace-nowrap">Easy Tax Refund</span>
+            <span className="text-[#b88c30] text-[11px] sm:text-[13px] font-black tracking-[0.05em] mb-0.5">KTRS</span>
+            <span className="text-sm sm:text-base tracking-tighter whitespace-nowrap">Korea Tax Refund Service</span>
           </span>
         </Link>
 
@@ -136,7 +136,7 @@ export function Navbar() {
             </SheetTrigger>
             <SheetContent side="right" className="rounded-l-[2.5rem] p-10 overflow-y-auto">
               <SheetHeader className="text-left mb-6">
-                <SheetTitle className="text-2xl font-black font-headline">Easy Tax Refund</SheetTitle>
+                <SheetTitle className="text-2xl font-black font-headline">Korea Tax Refund Service</SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-6">
                 {navLinksPart1.map((link) => (

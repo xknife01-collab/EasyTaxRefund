@@ -10,7 +10,7 @@ export const simulator = {
   "step_0": "Eligibility Check (Months/Salary)",
   "step_3": "Mobile Identity Input",
   "step_4": "Simple Authentication Progress",
-  "sim_desc": "This is not just a mockup slideshow. We reproduce the entire business flow of the actual Easy Tax Refund app, from Step 0 (work info input) to Step 9 (tax agent delegation & electronic signature) with active front-end simulator logic.",
+  "sim_desc": "This is not just a mockup slideshow. We reproduce the entire business flow of the actual Korea Tax Refund Service app, from Step 0 (work info input) to Step 9 (tax agent delegation & electronic signature) with active front-end simulator logic.",
   "step_2": "ARC Information Input",
   "step_5": "NTS API Connection & Logic",
   "step_9": "Final Consent & Signature",

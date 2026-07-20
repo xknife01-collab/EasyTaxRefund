@@ -46,7 +46,7 @@ export default function YouthTaxPage() {
           <div className="relative z-20 text-center px-6 space-y-5">
             <div className="flex items-center justify-center gap-3">
               <div className="h-px w-12 bg-[#b88c30]" />
-              <span className="text-[#b88c30] text-sm font-black tracking-[0.3em] uppercase">EASY TAX REFUND</span>
+              <span className="text-[#b88c30] text-sm font-black tracking-[0.3em] uppercase">Korea Tax Refund Service</span>
               <div className="h-px w-12 bg-[#b88c30]" />
             </div>
             <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black text-white leading-tight tracking-tight drop-shadow-[0_4px_20px_rgba(0,0,0,1)]">
@@ -104,7 +104,7 @@ export default function YouthTaxPage() {
               {t("한국에서 성실히 일하고 계시는 외국인 근로자 여러분! 마땅히 돌려받아야 할 세금을 그대로 방치하고 계시지 않나요?")}{" "}
               {t("회사가 제도를 잘 몰라서, 혹은 신청이 번거로워서 챙겨주지 못한")}{" "}
               <span className="text-[#b88c30] font-black">{t("'중소기업 취업자 소득세 감면'")}</span>{" "}
-              {t("혜택을 Easy Tax Refund가 안전하고 완벽하게 찾아드립니다.")}
+              {t("혜택을 Korea Tax Refund Service가 안전하고 완벽하게 찾아드립니다.")}
             </p>
           </div>
         </section>
@@ -255,7 +255,7 @@ export default function YouthTaxPage() {
             <div className="space-y-4">
               <span className="text-xs font-black text-[#b88c30] uppercase tracking-widest">02 — Our Strengths</span>
               <h2 className="text-3xl sm:text-5xl font-black text-[#0f1e36] leading-tight break-keep">
-                {t("왜 Easy Tax Refund인가요?")}
+                {t("왜 Korea Tax Refund Service인가요?")}
               </h2>
               <div className="h-1 w-12 bg-[#b88c30] rounded-full" />
             </div>
@@ -398,7 +398,7 @@ export default function YouthTaxPage() {
                 {t("지금 바로")}<br />{t("무료로 확인하세요")}
               </h2>
               <p className="text-slate-400 font-bold text-sm sm:text-base leading-relaxed break-keep">
-                {t("Easy Tax Refund 고객지원 및 상담")}
+                {t("Korea Tax Refund Service 고객지원 및 상담")}
               </p>
               <Button asChild size="lg" className="bg-[#b88c30] hover:bg-[#b88c30]/90 text-[#0f1e36] font-black text-base px-10 py-7 rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-xl shadow-[#b88c30]/20">
                 <Link href="/estimate" className="flex items-center gap-2">
@@ -413,9 +413,9 @@ export default function YouthTaxPage() {
                 {t("연락처 안내")}
               </div>
               {[
-                { icon: <Phone className="h-5 w-5" />, label: t("전화번호"), value: "010-4885-8575", href: "tel:010-4885-8575" },
+                { icon: <Phone className="h-5 w-5" />, label: t("전화번호"), value: "010-5864-8577", href: "tel:010-5864-8577" },
                 { icon: <Mail className="h-5 w-5" />, label: t("이메일"), value: "zkfnth01@naver.com", href: "mailto:zkfnth01@naver.com" },
-                { icon: <ExternalLink className="h-5 w-5" />, label: t("홈페이지"), value: "easy-tax-refund.vercel.app/welcome", href: "/welcome" },
+                { icon: <ExternalLink className="h-5 w-5" />, label: t("홈페이지"), value: "ktrs-service.vercel.app/welcome", href: "/welcome" },
               ].map((item, i) => (
                 <a key={i} href={item.href} className="flex items-start gap-4 group">
                   <div className="h-10 w-10 bg-[#b88c30]/10 rounded-xl flex items-center justify-center text-[#b88c30] shrink-0 group-hover:bg-[#b88c30]/20 transition-all">

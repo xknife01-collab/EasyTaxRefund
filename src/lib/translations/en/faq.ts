@@ -67,7 +67,7 @@ export const faq = {
   "인증 알림이 오지 않나요?": "Not receiving a verification notification?",
   "네, 비자 종류보다는 '거주자(183일 이상 한국 거주)' 여부와 '중소기업 근무' 여부가 중요합니다. 요건만 충족한다면 대부분의 취업 비자 소지자가 혜택 대상입니다.": "Yes, rather than the visa type, what matters is whether you are a 'resident' (living in Korea for 183 days or more) and whether you worked at an SME. If the requirements are met, most work visa holders are eligible for benefits.",
   "3️⃣ 정확한 환급금 확인 및 후불 정산 등록": "3️⃣ Confirm Exact Refund & Register Deferred Settlement",
-  "이지택스, 믿을 수 있나요?": "Can I trust Easy Tax Refund?",
+  "Korea Tax Refund Service, 믿을 수 있나요?": "Can I trust Korea Tax Refund Service?",
   "제3자 제공 동의 약관 보기": "View third party provision agreement terms and conditions",
   "인증 요청하기": "Request verification",
   "CMS 출금동의 약관 보기": "View CMS withdrawal agreement terms and conditions",

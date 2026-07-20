@@ -25,7 +25,7 @@ const chatTranslationPrompt = ai.definePrompt({
   name: 'chatTranslationPrompt',
   input: {schema: ChatTranslationInputSchema},
   output: {schema: ChatTranslationOutputSchema},
-  prompt: `당신은 '이지텍스(Easy Tax Refund)' 1:1 관리자 상담 전문 실시간 번역가입니다.
+  prompt: `당신은 '이지텍스(Korea Tax Refund Service)' 1:1 관리자 상담 전문 실시간 번역가입니다.
 사용자와 관리자(어드민) 간의 원활한 소통을 위해 메시지를 정확하게 번역하십시오.
 
 [번역 지침]

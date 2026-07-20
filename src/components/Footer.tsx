@@ -46,12 +46,12 @@ export function Footer() {
             <Link href="/" className="flex items-center gap-3 group">
               <img 
                 src="/1625-1.png" 
-                alt="KOREA Easy Tax Refund Logo" 
+                alt="Korea Tax Refund Service Logo" 
                 className="h-10 w-10 object-contain shrink-0 transition-transform duration-300 group-hover:scale-105"
               />
               <span className="font-black text-white font-headline uppercase flex flex-col items-start leading-none">
-                <span className="text-[#b88c30] text-[11px] sm:text-[13px] font-black tracking-[0.05em] mb-0.5">Korea</span>
-                <span className="text-sm sm:text-base tracking-tighter whitespace-nowrap">Easy Tax Refund</span>
+                <span className="text-[#b88c30] text-[11px] sm:text-[13px] font-black tracking-[0.05em] mb-0.5">KTRS</span>
+                <span className="text-sm sm:text-base tracking-tighter whitespace-nowrap">Korea Tax Refund Service</span>
               </span>
             </Link>
             <p className="text-slate-400 text-sm font-medium max-w-sm leading-relaxed">
@@ -150,7 +150,7 @@ export function Footer() {
                 <span>{t('이메일: zkfnth01@naver.com')}</span>
               </div>
               <p className="mt-4 text-[10px] text-slate-500 font-medium leading-relaxed max-w-3xl">
-                {t('이지택스환급(Easy Tax Refund)은 세무대리 신고를 직접 수행하지 않으며, 본 플랫폼에서 작성된 신청 서류는 제휴된 대한민국 국가공인 전문 세무법인 및 협력 세무사를 통해 최종 검토 및 제출됩니다.')}
+                {t('Korea Tax Refund Service(Korea Tax Refund Service)은 세무대리 신고를 직접 수행하지 않으며, 본 플랫폼에서 작성된 신청 서류는 제휴된 대한민국 국가공인 전문 세무법인 및 협력 세무사를 통해 최종 검토 및 제출됩니다.')}
               </p>
             </div>
             
@@ -183,7 +183,7 @@ export function Footer() {
               </div>
 
               <p className="text-xs font-bold text-slate-500 text-center lg:text-right mt-2">
-                © 2026 Easy Tax Refund. THEYOON COMPANY. All rights reserved.
+                © 2026 Korea Tax Refund Service. THEYOON COMPANY. All rights reserved.
               </p>
             </div>
           </div>

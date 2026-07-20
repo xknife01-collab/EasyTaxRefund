@@ -26,7 +26,7 @@ export default function PrivacyPage() {
               <ShieldCheck className="h-8 w-8 text-primary" />
             </div>
             <h1 className="text-4xl lg:text-5xl font-black font-headline text-slate-900">{t('개인정보 처리방침')}</h1>
-            <p className="text-slate-500 font-bold">{t('Easy Tax Refund는 고객님의 소중한 정보를 금융권 수준으로 보호합니다.')}</p>
+            <p className="text-slate-500 font-bold">{t('Korea Tax Refund Service는 고객님의 소중한 정보를 금융권 수준으로 보호합니다.')}</p>
           </div>
 
           <Card className="premium-card rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
@@ -63,7 +63,7 @@ export default function PrivacyPage() {
                 </h3>
                 <p className="font-medium text-sm">{t('회사는 원활한 세무 처리를 위해 다음과 같이 정보를 제공합니다.')}</p>
                 <div className="bg-slate-50 p-6 rounded-2xl border border-slate-100 text-sm font-bold space-y-2">
-                  <p>{t('제공받는 자: (주)이지택스 세무회계 및 협력 공인세무사')}</p>
+                  <p>{t('제공받는 자: (주)Korea Tax Refund Service 세무회계 및 협력 공인세무사')}</p>
                   <p>{t('제공 항목: 성명, 외국인등록번호, 소득 내역, 근무지 정보, 전자서명')}</p>
                   <p>{t('제공 목적: 국세청 경정청구 대행 및 세무 상담')}</p>
                 </div>

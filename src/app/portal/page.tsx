@@ -356,7 +356,7 @@ export default function ClientPortal() {
         <html lang="ko">
           <head>
             <meta charset="utf-8">
-            <title>${t('소득세 환급 자동 분석 솔루션 이용 및 후불 정산 계약서')} - Easy Tax Refund</title>
+            <title>${t('소득세 환급 자동 분석 솔루션 이용 및 후불 정산 계약서')} - Korea Tax Refund Service</title>
             ${headStyles}
             <style>
               body { 
@@ -722,7 +722,7 @@ export default function ClientPortal() {
                 <div className="space-y-2">
                   <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제1조 (목적)')}</h3>
                   <p>
-                    {t("본 계약은 위임인(이하 '이용자')이 더윤컴퍼니(이하 '회사')가 제공하는 '이지택스환급(Easy Tax Refund)' 세무 분석 솔루션 프로그램을 이용하고, 이에 따른 플랫폼 이용료(수수료)를 환급 성공 후 후불 정산 및 CMS 자동이체 방식으로 지불하기 위한 조항 및 출금 동의 사항을 규정함을 목적으로 합니다.")}
+                    {t("본 계약은 위임인(이하 '이용자')이 더윤컴퍼니(이하 '회사')가 제공하는 'Korea Tax Refund Service(Korea Tax Refund Service)' 세무 분석 솔루션 프로그램을 이용하고, 이에 따른 플랫폼 이용료(수수료)를 환급 성공 후 후불 정산 및 CMS 자동이체 방식으로 지불하기 위한 조항 및 출금 동의 사항을 규정함을 목적으로 합니다.")}
                   </p>
                 </div>
 

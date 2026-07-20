@@ -19,7 +19,7 @@ export default function PricingPage() {
           <div className="relative z-10 text-center px-6 space-y-5">
             <div className="flex items-center justify-center gap-3">
               <div className="h-px w-10 bg-[#b88c30]" />
-              <span className="text-[#b88c30] text-xs font-black tracking-[0.3em] uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">EASY TAX REFUND</span>
+              <span className="text-[#b88c30] text-xs font-black tracking-[0.3em] uppercase drop-shadow-[0_2px_8px_rgba(0,0,0,0.9)]">Korea Tax Refund Service</span>
               <div className="h-px w-10 bg-[#b88c30]" />
             </div>
             <h1 className="text-4xl sm:text-6xl font-black text-white tracking-tight drop-shadow-[0_4px_20px_rgba(0,0,0,1)]">{t('가격 정책')}</h1>
@@ -199,7 +199,7 @@ export default function PricingPage() {
           <div className="max-w-5xl mx-auto space-y-16">
             <div className="space-y-4">
               <span className="text-xs font-black text-[#b88c30] uppercase tracking-widest">03 — Why Us</span>
-              <h2 className="text-3xl sm:text-5xl font-black text-[#0f1e36] leading-tight break-keep">{t("왜 Easy Tax Refund인가?")}</h2>
+              <h2 className="text-3xl sm:text-5xl font-black text-[#0f1e36] leading-tight break-keep">{t("왜 Korea Tax Refund Service인가?")}</h2>
               <div className="h-1 w-12 bg-[#b88c30] rounded-full" />
             </div>
             <div className="overflow-hidden rounded-3xl border border-slate-200 shadow-lg">
@@ -208,7 +208,7 @@ export default function PricingPage() {
                   <tr>
                     <th className="bg-slate-50 px-8 py-5 text-left text-sm font-black text-slate-400 uppercase tracking-widest w-1/3">{t("비교 항목")}</th>
                     <th className="bg-slate-100 px-8 py-5 text-center text-sm font-black text-slate-500 w-1/3">{t("타 서비스 (선결제)")}</th>
-                    <th className="bg-[#0f1e36] px-8 py-5 text-center text-sm font-black text-[#b88c30] w-1/3">{t("Easy Tax Refund (후불제)")}</th>
+                    <th className="bg-[#0f1e36] px-8 py-5 text-center text-sm font-black text-[#b88c30] w-1/3">{t("Korea Tax Refund Service (후불제)")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">

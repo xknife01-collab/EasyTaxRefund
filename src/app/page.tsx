@@ -47,7 +47,7 @@ import { logLanguageVisit } from "@/lib/tracking";
 import { useRouter } from "next/navigation";
 import { languages } from '@/lib/translations/config';
 import Image from 'next/image';
-import DaisoEventPopup from "@/components/DaisoEventPopup";
+import { AnimatedCounter } from "@/components/AnimatedCounter";
 
 const TaxRefundSimulator = dynamic(
   () => import("@/components/TaxRefundSimulator"),
@@ -170,12 +170,12 @@ export default function HomePage() {
           <div className="flex flex-col sm:flex-row items-center gap-4 group">
             <img 
               src="/1625-1.png" 
-              alt="KOREA Easy Tax Refund Logo" 
+              alt="Korea Tax Refund Service Logo" 
               className="h-16 w-16 sm:h-20 sm:w-20 object-contain shrink-0 transition-transform duration-300 group-hover:scale-110 active:scale-95"
             />
             <span className="text-2xl sm:text-3xl font-black tracking-tighter font-headline uppercase flex items-center gap-2 whitespace-nowrap">
-              <span className="text-[#b88c30]">Korea</span>
-              <span className="text-[#0b192c]">Easy Tax Refund</span>
+              <span className="text-[#b88c30]">KTRS</span>
+              <span className="text-[#0b192c]">Tax Refund Service</span>
             </span>
           </div>
           <div className="h-1.5 w-24 bg-slate-200 rounded-full overflow-hidden">
@@ -238,8 +238,8 @@ export default function HomePage() {
 
         {/* Navy Trust Banner */}
         <section className="bg-[#0b192c] text-white py-10 border-y-4 border-[#e2b659]">
-          <div className="container mx-auto px-6 max-w-5xl">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-10 divide-y md:divide-y-0 md:divide-x divide-slate-700/50">
+          <div className="container mx-auto px-6 max-w-6xl">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-10 divide-y md:divide-y-0 md:divide-x divide-slate-700/50">
               
               {/* Col 1: Certified Partners */}
               <div className="space-y-4 pb-6 md:pb-0">
@@ -282,6 +282,28 @@ export default function HomePage() {
                 </div>
               </div>
 
+              {/* Col 3: Refund Records */}
+              <div className="space-y-4 pt-6 md:pt-0 md:pl-10 text-left">
+                <div className="text-[#e2b659] text-xs font-black tracking-wider uppercase flex items-center gap-1.5">
+                  <span className="inline-block h-1.5 w-1.5 rounded-full bg-[#e2b659]" />
+                  {t('Refund Records')}
+                </div>
+                <div className="space-y-4">
+                  {/* 신청 건수 */}
+                  <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('누적 환급 처리 건수')}</div>
+                    <AnimatedCounter target={1247} suffix={t('건')} className="text-2xl font-black text-white" />
+                    <div className="text-[10px] text-slate-500 font-bold mt-0.5">{t('2026년 5월 기준 · 경정청구 완료')}</div>
+                  </div>
+                  {/* 환급 총액 */}
+                  <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-3">
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">{t('누적 환급 총액')}</div>
+                    <AnimatedCounter target={2443455552} prefix="₩" suffix={t('원')} className="text-xl font-black text-[#e2b659]" />
+                    <div className="text-[10px] text-slate-500 font-bold mt-0.5">{t('국세청 경정청구 입금 완료 기준')}</div>
+                  </div>
+                </div>
+              </div>
+
             </div>
           </div>
         </section>
@@ -321,7 +343,7 @@ export default function HomePage() {
                     <div className="text-slate-300 font-bold text-xs mt-0.5">{t("외국인 중소기업 청년 소득세 환급 전문")}</div>
                     <div className="flex items-center justify-center gap-2 mt-2">
                       <span className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                      <span className="text-emerald-400 text-xs font-black">{t("지금 상담 가능 · 010-325-9953")}</span>
+                      <span className="text-emerald-400 text-xs font-black">{t("지금 상담 가능 · 010-5864-8577")}</span>
                     </div>
                   </div>
                 </div>
@@ -724,7 +746,7 @@ export default function HomePage() {
                 <span className="text-[#b88c30] text-xs font-black uppercase tracking-[0.3em]">03 — Why Us</span>
               </div>
               <h2 className="text-3xl md:text-5xl font-black text-[#0f1e36] leading-tight tracking-tight break-keep mb-4">
-                {t('왜 Easy Tax Refund인가?')}
+                {t('왜 Korea Tax Refund Service인가?')}
               </h2>
               <div className="h-1 w-12 bg-[#b88c30] rounded-full" />
             </div>
@@ -734,7 +756,7 @@ export default function HomePage() {
                   <tr>
                     <th className="bg-slate-50 px-6 py-5 text-left text-xs md:text-sm font-black text-slate-400 uppercase tracking-widest w-1/3">{t('비교 항목')}</th>
                     <th className="bg-slate-100 px-6 py-5 text-center text-xs md:text-sm font-black text-slate-500 w-1/3">{t('타 서비스 (선결제)')}</th>
-                    <th className="bg-[#0f1e36] px-6 py-5 text-center text-xs md:text-sm font-black text-[#b88c30] w-1/3">{t('Easy Tax Refund (후불제)')}</th>
+                    <th className="bg-[#0f1e36] px-6 py-5 text-center text-xs md:text-sm font-black text-[#b88c30] w-1/3">{t('Korea Tax Refund Service (후불제)')}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-slate-100">
@@ -986,7 +1008,7 @@ export default function HomePage() {
                 {t('가장 까다로운 인증을')}<br />
                 <span className="text-[#e2b659]">{t('가장 확실하게 해결합니다')}</span>
               </h2>
-              <p className="text-slate-300 font-bold text-base max-w-xl mx-auto">{t('Easy Tax Refund만의 독자적인 기술력과 전문성을 경험하세요.')}</p>
+              <p className="text-slate-300 font-bold text-base max-w-xl mx-auto">{t('Korea Tax Refund Service만의 독자적인 기술력과 전문성을 경험하세요.')}</p>
             </div>
 
             {/* 3열 카드 */}
@@ -1129,7 +1151,7 @@ export default function HomePage() {
                     <span className="text-[#b88c30]">{t('당신의 한국 생활이 달라집니다')}</span>
                   </h2>
                   <p className="text-base text-slate-500 font-medium leading-relaxed max-w-lg break-keep">
-                    {t('매년 한 달 치 월급을 보너스로 받는다고 상상해 보세요. Easy Tax Refund가 찾아드리는 환급금은 단순한 숫자가 아닌 당신의 미래를 위한 소중한 자산입니다.')}
+                    {t('매년 한 달 치 월급을 보너스로 받는다고 상상해 보세요. Korea Tax Refund Service가 찾아드리는 환급금은 단순한 숫자가 아닌 당신의 미래를 위한 소중한 자산입니다.')}
                   </p>
                 </div>
 
@@ -1141,7 +1163,7 @@ export default function HomePage() {
                   </p>
                   <div className="mt-3 pl-4 flex items-center gap-2">
                     <div className="h-px w-6 bg-[#b88c30]" />
-                    <span className="text-xs font-black text-[#b88c30] uppercase tracking-widest">Easy Tax Refund</span>
+                    <span className="text-xs font-black text-[#b88c30] uppercase tracking-widest">Korea Tax Refund Service</span>
                   </div>
                 </div>
               </div>
@@ -1378,7 +1400,7 @@ export default function HomePage() {
                   className="rounded-full px-8 py-6 border border-[#e2b659]/30 hover:border-[#e2b659]/60 bg-[#0b192c] hover:bg-[#152a45] text-white font-black gap-3 shadow-xl group h-auto"
                 >
                   <Sparkles className="h-5 w-5 text-[#e2b659]" />
-                  {t('Easy Tax Refund AI 비서 호출하기')}
+                  {t('Korea Tax Refund Service AI 비서 호출하기')}
                 </Button>
               </div>
             )}
@@ -1522,7 +1544,7 @@ export default function HomePage() {
                 
                 {/* 왓츠앱 */}
                 <a 
-                  href="https://wa.me/82103259953" 
+                  href="https://wa.me/821058648577" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="w-full h-14 rounded-full bg-[#25d366] hover:bg-[#1ebd58] text-white font-black text-base transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2.5"
@@ -1547,7 +1569,6 @@ export default function HomePage() {
         </section>
       </main>
       <Footer />
-      <DaisoEventPopup />
 
       {/* Mobile Sticky CTA */}
       <div className="lg:hidden fixed bottom-6 left-6 right-6 z-50 animate-fade-in-up delay-300">

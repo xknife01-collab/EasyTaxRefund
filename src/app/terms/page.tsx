@@ -26,7 +26,7 @@ export default function TermsPage() {
               <FileText className="h-8 w-8 text-primary" />
             </div>
             <h1 className="text-4xl lg:text-5xl font-black font-headline text-slate-900">{t('서비스 이용 약관')}</h1>
-            <p className="text-slate-500 font-bold">{t('Easy Tax Refund 이용을 위한 표준 약관 및 정책 안내입니다.')}</p>
+            <p className="text-slate-500 font-bold">{t('Korea Tax Refund Service 이용을 위한 표준 약관 및 정책 안내입니다.')}</p>
           </div>
 
           <Card className="premium-card rounded-[2.5rem] border-none shadow-sm overflow-hidden bg-white">
@@ -37,7 +37,7 @@ export default function TermsPage() {
                   <Scale className="h-5 w-5 text-primary" /> {t('제 1 조 (목적)')}
                 </h3>
                 <p className="font-medium text-sm">
-                  {t('본 약관은 더윤컴퍼니(이하 "회사")가 운영하는 "Easy Tax Refund" 서비스를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.')}
+                  {t('본 약관은 더윤컴퍼니(이하 "회사")가 운영하는 "Korea Tax Refund Service" 서비스를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.')}
                 </p>
               </section>
 

@@ -15,7 +15,7 @@ export async function sendOtpSms(phone: string) {
       timestamp: Date.now()
     });
 
-    const msg = `[이지택스] 고객포털 로그인 인증번호는 [${otp}]입니다. 타인에게 알리지 마세요.`;
+    const msg = `[Korea Tax Refund Service] 고객포털 로그인 인증번호는 [${otp}]입니다. 타인에게 알리지 마세요.`;
     
     // 환경변수에서 알리고 계정 정보 가져오기 (.env 파일에 등록 필요)
     const apiKey = process.env.ALIGO_API_KEY;

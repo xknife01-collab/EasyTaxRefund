@@ -97,7 +97,7 @@ export default function FAQPage() {
           <div className="relative z-10 max-w-4xl mx-auto text-center space-y-6">
             <div className="flex items-center justify-center gap-3">
               <div className="h-px w-10 bg-[#b88c30]" />
-              <span className="text-[#b88c30] text-xs font-black tracking-[0.3em] uppercase">EASY TAX REFUND</span>
+              <span className="text-[#b88c30] text-xs font-black tracking-[0.3em] uppercase">Korea Tax Refund Service</span>
               <div className="h-px w-10 bg-[#b88c30]" />
             </div>
             <h1 className="text-4xl sm:text-6xl font-black text-white leading-tight tracking-tight">
@@ -180,7 +180,7 @@ export default function FAQPage() {
                   <div className="h-10 w-10 bg-[#b88c30]/10 rounded-xl flex items-center justify-center text-[#b88c30]">
                     <Sparkles className="h-5 w-5" />
                   </div>
-                  <span className="text-sm font-black text-white">{t("Easy Tax Refund AI 비서")}</span>
+                  <span className="text-sm font-black text-white">{t("Korea Tax Refund Service AI 비서")}</span>
                 </div>
                 <form onSubmit={handleAsk} className="flex flex-col sm:flex-row gap-3">
                   <input
@@ -333,7 +333,7 @@ export default function FAQPage() {
               
               {/* 왓츠앱 */}
               <a 
-                href="https://wa.me/82103259953" 
+                href="https://wa.me/821058648577" 
                 target="_blank" 
                 rel="noopener noreferrer"
                 className="w-full h-14 rounded-full bg-[#25d366] hover:bg-[#1ebd58] text-white font-black text-base transition-all hover:scale-[1.02] active:scale-95 shadow-lg flex items-center justify-center gap-2.5"

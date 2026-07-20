@@ -49,6 +49,8 @@ import { getKstDateString } from "@/lib/tracking";
 
 
 import { useToast } from "@/hooks/use-toast";
+import { OmniChatDrawer } from "@/components/admin/chat/OmniChatDrawer";
+import { LiveMessengerFeed } from "@/components/admin/LiveMessengerFeed";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, addDoc, serverTimestamp, deleteDoc, increment, writeBatch } from "firebase/firestore";
@@ -83,6 +85,8 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [activeView, setActiveView] = useState<'dashboard' | 'hometax'>('dashboard');
   const [isHardDelete, setIsHardDelete] = useState(false);
+  const [isTelegramDrawerOpen, setIsTelegramDrawerOpen] = useState(false);
+  const [activeLiveChatId, setActiveLiveChatId] = useState<string | null>(null);
 
   // Chat States
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -250,10 +254,6 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   }, [filteredApps, currentPage]);
 
   const totalPages = Math.ceil(filteredApps.length / itemsPerPage);
-
-  const vipApps = useMemo(() => {
-    return apps.filter(app => (app.preFilterEstimate || 0) >= 400000 && app.isDeleted !== true && app.deletedFromDashboard !== true).slice(0, 50);
-  }, [apps]);
 
   // Global Unread & Push Notification Logic
   const prevUnreadRef = useRef<number>(-1);
@@ -769,6 +769,11 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     }
   };
 
+  const handleOpenLiveChat = (chatId: string) => {
+    setActiveLiveChatId(chatId);
+    setIsTelegramDrawerOpen(true);
+  };
+
   const handleExportCsv = () => {
     if (!apps.length) {
       toast({ variant: "destructive", title: "추출할 자료가 없습니다." });
@@ -857,6 +862,14 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
             </Button>
 
             <Button
+              variant="ghost"
+              onClick={() => setIsTelegramDrawerOpen(true)}
+              className="w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 text-sky-600 bg-sky-50 hover:bg-sky-100 border border-sky-200/80 transition-all shadow-sm"
+            >
+              <MessageSquare className="h-4 w-4 text-sky-500 animate-pulse" /> 💬 통합 실시간 상담 센터
+            </Button>
+
+<Button
               variant="ghost"
               onClick={() => router.push('/admin/stats')}
               className="w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 text-slate-600 hover:bg-slate-50"
@@ -1216,151 +1229,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                 </CardContent>
               </Card>
 
-              {/* VIP Priority Monitoring Section */}
-              <div className="pt-10 border-t border-slate-100 mt-10">
-                <div className="flex items-center gap-4 mb-8">
-                  <div className="h-14 w-14 bg-amber-400 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-200 shrink-0">
-                     <Trophy className="h-8 w-8 text-amber-950" />
-                  </div>
-                  <div>
-                    <h2 className="text-2xl sm:text-3xl font-black text-slate-900 font-headline tracking-tight">🔥 VIP 실시간 우선 모니터링 (집중 관리)</h2>
-                    <p className="text-slate-500 font-bold text-sm sm:text-base">잠재 환급액 40만 원 이상의 고액 대상자 우선 순위 리스트입니다.</p>
-                  </div>
-                </div>
-
-                <Card className="premium-card rounded-[2.5rem] border-4 border-amber-400 shadow-2xl overflow-hidden bg-white">
-                  <CardContent className="p-0">
-                    <Table>
-                      <TableHeader className="bg-amber-400/10">
-                        <TableRow className="hover:bg-amber-400/5 transition-colors border-b border-amber-400/20">
-                          <TableHead className="w-12 pl-8 py-6">
-                            <input 
-                              type="checkbox"
-                              className="w-4 h-4 rounded border-amber-500 text-amber-600 focus:ring-amber-500 cursor-pointer"
-                              checked={vipApps.length > 0 && vipApps.every(app => selectedIds.includes(app.id))}
-                              onChange={(e) => {
-                                if (e.target.checked) {
-                                  const vipIds = vipApps.map(a => a.id);
-                                  setSelectedIds(prev => [...new Set([...prev, ...vipIds])]);
-                                } else {
-                                  const vipIds = vipApps.map(a => a.id);
-                                  setSelectedIds(prev => prev.filter(id => !vipIds.includes(id)));
-                                }
-                              }}
-                            />
-                          </TableHead>
-                          <TableHead className="font-black text-amber-950 pl-2 py-6">VIP 고객 정보</TableHead>
-                          <TableHead className="font-black text-amber-950">잠재 환급액</TableHead>
-                          <TableHead className="font-black text-amber-950">현재 단계</TableHead>
-                          <TableHead className="font-black text-amber-950">연락처</TableHead>
-                          <TableHead className="font-black text-amber-950 pr-8 text-right">실시간 우선 상담</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                         {vipApps.map((app) => {
-                           const statusBadge = getStatusBadge(app.status);
-                           const isSelected = selectedIds.includes(app.id);
-                           return (
-                             <TableRow key={app.id} className={cn("hover:bg-amber-400/5 transition-colors border-b border-amber-400/10", isSelected && "bg-amber-400/10")}>
-                               <TableCell className="pl-8 py-6 w-12">
-                                 <input 
-                                   type="checkbox"
-                                   className="w-4 h-4 rounded border-amber-500 text-amber-600 focus:ring-amber-500 cursor-pointer"
-                                   checked={isSelected}
-                                   onChange={(e) => {
-                                     if (e.target.checked) {
-                                       setSelectedIds(prev => [...prev, app.id]);
-                                     } else {
-                                       setSelectedIds(prev => prev.filter(id => id !== app.id));
-                                     }
-                                   }}
-                                 />
-                               </TableCell>
-                               <TableCell className="pl-2 py-6 cursor-pointer" onClick={() => openAppDetail(app)}>
-                                  <div className="flex items-center gap-3">
-                                    <div className="h-10 w-10 bg-amber-400 text-amber-950 rounded-xl flex items-center justify-center font-black shadow-sm shrink-0">VIP</div>
-                                    <div>
-                                       <div className="font-black text-slate-900 text-lg leading-none mb-1">{app.fullName || "이름 없음"}</div>
-                                       <div className="text-[11px] font-bold text-slate-400 uppercase tracking-widest">ID: {app.id.substring(0, 8)}</div>
-                                    </div>
-                                  </div>
-                                </TableCell>
-                                <TableCell>
-                                  {app.estimatedRefundAmount !== undefined ? (
-                                    <div className="text-2xl font-black text-emerald-600 tracking-tighter flex flex-col items-start leading-none gap-1">
-                                      <span>₩ {app.estimatedRefundAmount.toLocaleString()}</span>
-                                      <span className="text-[10px] text-emerald-500 font-extrabold bg-emerald-50 border border-emerald-100 rounded px-1.5 py-0.5">실제 환급액</span>
-                                    </div>
-                                  ) : (
-                                    <div className="text-2xl font-black text-amber-600 tracking-tighter flex flex-col items-start leading-none gap-1">
-                                      <span>₩ {(app.preFilterEstimate || 0).toLocaleString()}</span>
-                                      <span className="text-[10px] text-amber-500 font-extrabold bg-amber-50 border border-amber-100 rounded px-1.5 py-0.5">사전 진단액</span>
-                                    </div>
-                                  )}
-                                </TableCell>
-                                <TableCell>
-                                   <Badge className={`rounded-xl px-3 font-black ${statusBadge.class} border-none shadow-sm`}>{statusBadge.label}</Badge>
-                                </TableCell>
-                                <TableCell>
-                                   <div className="font-black text-slate-700 bg-slate-100 px-3 py-1.5 rounded-xl border border-slate-200 inline-block text-sm">
-                                     {app.phoneNo || app.phone || "No Phone"}
-                                   </div>
-                                </TableCell>
-                                <TableCell className="pr-8 text-right">
-                                  <div className="flex justify-end items-center gap-4">
-                                    <Button
-                                      variant="ghost"
-                                      size="lg"
-                                      className="rounded-2xl text-amber-600 hover:bg-amber-50 h-16 w-16"
-                                      onClick={() => {
-                                        setNoteAppId(app.id);
-                                        setIsNoteDrawerOpen(true);
-                                      }}
-                                    >
-                                      <BellRing className="h-7 w-7" />
-                                    </Button>
-                                    <div className="flex flex-col items-end gap-2">
-                                      <Button 
-                                        className="rounded-2xl h-16 px-8 bg-amber-400 text-amber-950 font-black shadow-lg shadow-amber-200 hover:bg-amber-500 scale-100 hover:scale-105 transition-all relative overflow-hidden group"
-                                        onClick={async () => {
-                                          setChatAppId(app.id);
-                                          setIsChatOpen(true);
-                                          if (app.unreadChatCountAdmin > 0) {
-                                            await updateDoc(doc(db, 'applications', app.id), { unreadChatCountAdmin: 0 });
-                                          }
-                                        }}
-                                      >
-                                         <MessageSquare className="h-6 w-6 mr-3 animate-bounce" />
-                                         VIP 우선 상담 시작하기
-                                         {app.unreadChatCountAdmin > 0 && (
-                                            <span className="absolute -top-3 -right-3 h-[42px] w-[42px] bg-red-600 text-white rounded-full border-4 border-white flex items-center justify-center text-sm font-black shadow-2xl animate-bounce z-10 transition-all">
-                                              {app.unreadChatCountAdmin > 99 ? '99+' : app.unreadChatCountAdmin}
-                                            </span>
-                                         )}
-                                      </Button>
-                                      {app.unreadChatCountAdmin > 0 && app.lastMessageAt && (
-                                        <div className="text-[12px] font-black text-red-600 bg-red-50/80 px-3 py-1.5 rounded-xl border border-red-200 flex items-center gap-1.5 animate-pulse max-w-[240px] shadow-sm">
-                                          <Clock className="w-3.5 h-3.5 shrink-0" />
-                                          <span className="shrink-0">{app.lastMessageAt?.toDate ? app.lastMessageAt.toDate().toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' }) : "방금 전"}</span>
-                                          <span className="text-slate-500 truncate block border-l border-red-200 pl-2 ml-0.5">"{app.lastMessageText || '새로 받은 메시지'}"</span>
-                                        </div>
-                                      )}
-                                    </div>
-                                  </div>
-                                </TableCell>
-                             </TableRow>
-                           );
-                         })}
-                      </TableBody>
-                    </Table>
-                    {apps.filter(app => (app.preFilterEstimate || 0) >= 400000).length === 0 && (
-                      <div className="py-32 text-center bg-slate-50/50">
-                        <p className="text-2xl font-black text-slate-300">현재 집중 모니터링 대상인 VIP가 없습니다.</p>
-                      </div>
-                    )}
-                  </CardContent>
-                </Card>
-              </div>
+              <LiveMessengerFeed onOpenChat={handleOpenLiveChat} />
             </>
           ) : (
             <>
@@ -1793,7 +1662,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                     <div className="space-y-2">
                       <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">3. 주요 정산 및 법적 조항 요약</p>
                       <p className="text-slate-500 text-[10px] leading-relaxed text-justify">
-                        본 계약은 이용자가 더윤컴퍼니의 이지택스 솔루션을 이용하여 환급을 신청하고, 실제 환급이 완료된 후 실지급액의 25%(성공보수)를 후불로 CMS(대행기관: 효성CMS 등) 자동이체 인출하는 계약입니다. 본 플랫폼은 솔루션 프로그램 제공업자(통신판매업)로서 실제 대리 신고 업무는 대한민국 국가공인 제휴 세무사/세무법인이 대행함을 상호 인지합니다.
+                        본 계약은 이용자가 더윤컴퍼니의 Korea Tax Refund Service 솔루션을 이용하여 환급을 신청하고, 실제 환급이 완료된 후 실지급액의 25%(성공보수)를 후불로 CMS(대행기관: 효성CMS 등) 자동이체 인출하는 계약입니다. 본 플랫폼은 솔루션 프로그램 제공업자(통신판매업)로서 실제 대리 신고 업무는 대한민국 국가공인 제휴 세무사/세무법인이 대행함을 상호 인지합니다.
                       </p>
                     </div>
  
@@ -2571,6 +2440,14 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
           </div>
         </div>
       )}
+          <OmniChatDrawer
+        isOpen={isTelegramDrawerOpen}
+        onClose={() => {
+          setIsTelegramDrawerOpen(false);
+          setActiveLiveChatId(null);
+        }}
+        initialChatId={activeLiveChatId}
+      />
     </>
   );
 }

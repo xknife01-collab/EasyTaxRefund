@@ -10,7 +10,7 @@ export const simulator = {
   "step_0": "Pemeriksaan Kelayakan (Bulan/Gaji)",
   "step_3": "Input Identitas Seluler",
   "step_4": "Proses Autentikasi Mudah",
-  "sim_desc": "Ini bukan sekadar slideshow mockup. Kami mereproduksi seluruh alur bisnis dari aplikasi Easy Tax Refund yang sebenarnya, mulai dari Langkah 0 (input info kerja) hingga Langkah 9 (delegasi agen pajak & tanda tangan elektronik).",
+  "sim_desc": "Ini bukan sekadar slideshow mockup. Kami mereproduksi seluruh alur bisnis dari aplikasi Korea Tax Refund Service yang sebenarnya, mulai dari Langkah 0 (input info kerja) hingga Langkah 9 (delegasi agen pajak & tanda tangan elektronik).",
   "step_2": "Input Informasi Kartu ARC",
   "step_5": "Koneksi API NTS & Perhitungan",
   "step_9": "Persetujuan Akhir & Tanda Tangan",

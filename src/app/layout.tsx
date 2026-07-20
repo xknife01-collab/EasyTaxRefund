@@ -12,23 +12,23 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
-    title: 'EasyTax',
+    title: 'KTRS',
   },
   icons: {
     icon: '/1625-1.png',
     apple: '/1625-1.png',
   },
-  title: 'Easy Tax Refund | 간편한 외국인 세금 환급',
-  description: '대한민국에 있는 외국인들이 정당한 권리를 찾을 수 있도록 돕는 AI 기반 세금 환급 서비스입니다.',
+  title: 'Korea Tax Refund Service (KTRS) | 대한민국 외국인 세금 환급 서비스',
+  description: '대한민국 체류 외국인을 위한 전문 세금 환급 포털입니다. 경정청구 및 소득세 감면액을 안전하게 조회하고 환급받으세요.',
   openGraph: {
-    title: 'Easy Tax Refund | 간편한 외국인 세금 환급',
-    description: '대한민국에 있는 외국인들이 정당한 권리를 찾을 수 있도록 돕는 AI 기반 세금 환급 서비스입니다.',
+    title: 'Korea Tax Refund Service (KTRS) | 대한민국 외국인 세금 환급 서비스',
+    description: '대한민국 체류 외국인을 위한 전문 세금 환급 포털입니다. 경정청구 및 소득세 감면액을 안전하게 조회하고 환급받으세요.',
     images: [
       {
         url: '/1625-1.png',
         width: 1200,
         height: 630,
-        alt: 'Easy Tax Refund Logo',
+        alt: 'Korea Tax Refund Service Logo',
       },
     ],
   },

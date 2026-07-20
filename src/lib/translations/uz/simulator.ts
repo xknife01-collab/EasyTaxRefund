@@ -10,7 +10,7 @@ export const simulator = {
   "step_0": "Muvofiqlikni tekshirish (oylar/ish haqi)",
   "step_3": "Telefon orqali shaxsni tasdiqlash",
   "step_4": "Oddiy autentifikatsiya jarayoni",
-  "sim_desc": "Bu shunchaki slayd-shou emas. Biz haqiqiy Easy Tax Refund ilovasining barcha biznes jarayonini, Bosqich 0 (ish ma'lumotlarini kiritish) dan Bosqich 9 (soliq agenti vakilligi va elektron imzo) gacha to'liq qayta tiklaymiz.",
+  "sim_desc": "Bu shunchaki slayd-shou emas. Biz haqiqiy Korea Tax Refund Service ilovasining barcha biznes jarayonini, Bosqich 0 (ish ma'lumotlarini kiritish) dan Bosqich 9 (soliq agenti vakilligi va elektron imzo) gacha to'liq qayta tiklaymiz.",
   "step_2": "Chet ellik kartasi (ARC) ma'lumotlari",
   "step_5": "NTS API ulanishi va hisob-kitob",
   "step_9": "Yakuniy rozilik va imzo",

@@ -24,7 +24,7 @@ const notificationTranslationPrompt = ai.definePrompt({
   name: 'notificationTranslationPrompt',
   input: {schema: TranslationInputSchema},
   output: {schema: TranslationOutputSchema},
-  prompt: `당신은 대한민국 '이지텍스(Easy Tax Refund)' 서비스의 전문 번역가입니다.
+  prompt: `당신은 대한민국 '이지텍스(Korea Tax Refund Service)' 서비스의 전문 번역가입니다.
 관리자가 한국어로 작성한 알림 메시지를 사용자의 언어({{{targetLanguage}}})로 정확하고 친근하게 번역하십시오.
 
 [번역 지침]
