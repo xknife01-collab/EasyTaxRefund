@@ -284,7 +284,7 @@ function FloatingConsultingPanelInner() {
   };
 
   return (
-    <div className="fixed bottom-4 sm:bottom-6 right-3 sm:right-6 z-[200] flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)]">
+    <div className="fixed bottom-24 lg:bottom-6 right-4 sm:right-6 z-[200] flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)]">
       {/* 1. collapsed state: capsule button */}
       {!isOpen && (
         <button
@@ -321,7 +321,7 @@ function FloatingConsultingPanelInner() {
 
       {/* 2. expanded state: pop-up dialog */}
       {isOpen && (
-        <div className="w-[calc(100vw-24px)] sm:w-[350px] max-h-[75vh] sm:max-h-[82vh] bg-[#0f1e36] rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(15,30,54,0.5)] border border-[#b88c30]/40 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 z-[200]">
+        <div className="w-[350px] max-w-[calc(100vw-32px)] max-h-[calc(100dvh-150px)] lg:max-h-[80vh] bg-[#0f1e36] rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(15,30,54,0.5)] border border-[#b88c30]/40 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 z-[200]">
           
           {/* Header */}
           <div className="px-5 sm:px-6 pt-3.5 pb-3 flex items-center justify-between shrink-0 sticky top-0 bg-[#0f1e36] z-20 border-b border-white/10 shadow-md">
@@ -349,37 +349,39 @@ function FloatingConsultingPanelInner() {
             </div>
           </div>
 
-          {/* Profile headshot section */}
-          <div className="flex flex-col items-center pt-1 pb-4 px-6 text-center">
-            {/* Double Ring Avatar */}
-            <div className="relative mb-3.5">
-              <div className="absolute -inset-1 rounded-full border-2 border-[#b88c30]/20" />
-              <div className="absolute -inset-2 rounded-full border border-[#b88c30]/10" />
-              <div className="h-20 w-20 rounded-full overflow-hidden border-2 border-[#b88c30] relative bg-slate-800 shadow-xl">
-                <img
-                  src="/images/manager.png"
-                  alt="Manager Profile"
-                  className="h-full w-full object-cover"
-                />
+          {/* Scrollable Content Body */}
+          <div className="flex-1 overflow-y-auto custom-scrollbar">
+            {/* Profile headshot section */}
+            <div className="flex flex-col items-center pt-3 pb-4 px-6 text-center">
+              {/* Double Ring Avatar */}
+              <div className="relative mb-3.5">
+                <div className="absolute -inset-1 rounded-full border-2 border-[#b88c30]/20" />
+                <div className="absolute -inset-2 rounded-full border border-[#b88c30]/10" />
+                <div className="h-20 w-20 rounded-full overflow-hidden border-2 border-[#b88c30] relative bg-slate-800 shadow-xl">
+                  <img
+                    src="/images/manager.png"
+                    alt="Manager Profile"
+                    className="h-full w-full object-cover"
+                  />
+                </div>
+                <span className="absolute bottom-1 right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-[#0f1e36] animate-pulse" />
               </div>
-              <span className="absolute bottom-1 right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-[#0f1e36] animate-pulse" />
+
+              {/* Official Manager badge */}
+              <span className="inline-flex items-center justify-center bg-[#b88c30]/10 border border-[#b88c30]/30 text-[#b88c30] text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider mb-2">
+                {translate("Official Manager")}
+              </span>
+
+              {/* Manager Name */}
+              <h3 className="text-white font-black text-xl tracking-tight">
+                {translate("김준현 공식 매니저")}
+              </h3>
+              
+              {/* Hotline number */}
+              <p className="text-slate-400 font-bold text-xs mt-1">
+                Official Center 010-5864-8577
+              </p>
             </div>
-
-            {/* Official Manager badge */}
-            <span className="inline-flex items-center justify-center bg-[#b88c30]/10 border border-[#b88c30]/30 text-[#b88c30] text-[10px] font-black px-3 py-0.5 rounded-full uppercase tracking-wider mb-2">
-              {translate("Official Manager")}
-            </span>
-
-            {/* Manager Name */}
-            <h3 className="text-white font-black text-xl tracking-tight">
-              {translate("김준현 공식 매니저")}
-            </h3>
-            
-            {/* Hotline number */}
-            <p className="text-slate-400 font-bold text-xs mt-1">
-              Official Center 010-5864-8577
-            </p>
-          </div>
 
           {/* FAQ or Core Info Display Box */}
           <div className="px-6 pb-4">
@@ -470,6 +472,7 @@ function FloatingConsultingPanelInner() {
             </button>
           </div>
 
+          </div>
         </div>
       )}
     </div>
