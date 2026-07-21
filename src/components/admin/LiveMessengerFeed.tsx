@@ -102,9 +102,34 @@ export function LiveMessengerFeed({ onOpenChat }: LiveMessengerFeedProps) {
   const { toast } = useToast();
   const [liveChats, setLiveChats] = useState<ChatWithLastMessage[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const getDeletedChatIds = (): string[] => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = localStorage.getItem("ktrs_deleted_chat_ids");
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  };
+
+  const addDeletedChatId = (chatId: string) => {
+    if (typeof window === "undefined") return;
+    try {
+      const current = getDeletedChatIds();
+      if (!current.includes(chatId)) {
+        const updated = [...current, chatId];
+        localStorage.setItem("ktrs_deleted_chat_ids", JSON.stringify(updated));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const handleDeleteChat = async (chatId: string, isDemo?: boolean) => {
     if (!confirm("이 상담 내역을 완전히 삭제하시겠습니까?")) return;
+
+    // Track locally so it stays hidden across refetches/polling
+    addDeletedChatId(chatId);
 
     if (isDemo) {
       setLiveChats(prev => prev.filter(c => c.id !== chatId));
@@ -116,6 +141,15 @@ export function LiveMessengerFeed({ onOpenChat }: LiveMessengerFeedProps) {
     }
 
     try {
+      // 1. Delete associated messages first
+      const { error: msgError } = await supabase
+        .from("support_messages")
+        .delete()
+        .eq("chat_id", chatId);
+
+      if (msgError) throw msgError;
+
+      // 2. Delete the chat session
       const { error } = await supabase
         .from("support_chats")
         .delete()
@@ -157,11 +191,13 @@ export function LiveMessengerFeed({ onOpenChat }: LiveMessengerFeedProps) {
 
       if (error) throw error;
 
+      let fetchedChats: ChatWithLastMessage[] = [];
+
       if (!data || data.length === 0) {
         // Fallback to DEMO data if database is empty
-        setLiveChats(DEMO_CHATS);
+        fetchedChats = DEMO_CHATS;
       } else {
-        const formatted: ChatWithLastMessage[] = data.map((chat: any) => {
+        fetchedChats = data.map((chat: any) => {
           const msgs = chat.support_messages || [];
           const sortedMsgs = [...msgs].sort(
             (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
@@ -183,12 +219,18 @@ export function LiveMessengerFeed({ onOpenChat }: LiveMessengerFeedProps) {
             lastMessageSender: sender,
           };
         });
-        setLiveChats(formatted);
       }
+
+      // Filter out deleted chats (including demo chats)
+      const deletedIds = getDeletedChatIds();
+      const filtered = fetchedChats.filter(c => !deletedIds.includes(c.id));
+      setLiveChats(filtered);
     } catch (err) {
       console.error("Failed to fetch live messenger feed:", err);
       // Fallback on error to keep the dashboard populated
-      setLiveChats(DEMO_CHATS);
+      const deletedIds = getDeletedChatIds();
+      const filtered = DEMO_CHATS.filter(c => !deletedIds.includes(c.id));
+      setLiveChats(filtered);
     } finally {
       setIsLoading(false);
     }
