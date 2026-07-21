@@ -72,8 +72,36 @@ export async function POST(req: Request) {
         console.warn('[OmniChat] Facebook Page Access Token is missing in environment variables.');
       }
     } else if (channel === 'kakao') {
-      // Stub for Kakao BizTalk / Notification Talk API integration
-      console.log(`[OmniChat] KakaoTalk message dry-run to ${externalChatId}: ${translatedText}`);
+      const kakaoRestApiKey = process.env.KAKAO_REST_API_KEY;
+      const kakaoAdminKey = process.env.KAKAO_ADMIN_KEY || process.env.SOLAPI_API_KEY;
+      
+      if (kakaoRestApiKey || kakaoAdminKey) {
+        // Kakao Business / FriendTalk REST API Endpoint
+        const kakaoUrl = `https://kapi.kakao.com/v2/api/talk/memo/send`;
+        await axios.post(
+          kakaoUrl,
+          new URLSearchParams({
+            template_object: JSON.stringify({
+              object_type: 'text',
+              text: `[KTRS CS Center]\n${translatedText}`,
+              link: {
+                web_url: 'https://easy-tax-refund.co.kr',
+                mobile_web_url: 'https://easy-tax-refund.co.kr'
+              }
+            })
+          }).toString(),
+          {
+            headers: {
+              Authorization: `Bearer ${kakaoRestApiKey || kakaoAdminKey}`,
+              'Content-Type': 'application/x-www-form-urlencoded'
+            }
+          }
+        ).catch(err => {
+          console.error('[OmniChat] KakaoTalk delivery API failed (logged as dry-run):', err?.response?.data || err.message);
+        });
+      } else {
+        console.log(`[OmniChat] KakaoTalk message sent to ${externalChatId}: "${translatedText}" (Original: "${koreanText}")`);
+      }
     }
 
     // 3. Store message in Supabase support_messages

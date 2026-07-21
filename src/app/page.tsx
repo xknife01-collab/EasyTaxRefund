@@ -1046,9 +1046,8 @@ export default function HomePage() {
               <Button size="lg" asChild className="w-full sm:w-auto text-xl sm:text-3xl px-8 sm:px-12 py-8 sm:py-12 h-auto bg-[#0b192c] hover:bg-[#152a45] text-white border-2 border-[#e2b659] shadow-xl rounded-2xl transition-all hover:scale-105 active:scale-95 whitespace-normal break-words">
                 <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-4 text-center leading-tight py-4 w-full text-white">
                   <span className="flex-1 min-w-[200px] flex flex-wrap items-center justify-center gap-1.5 font-black text-white">
-                    <span className="text-[#e2b659] font-black">{t('대한민국 국세청 공식 연동')}</span>
-                    {language !== 'ko' && <span className="text-white font-medium">•</span>}
-                    <span className="text-white font-black">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
+                    <span className="text-[#e2b659] font-black">{t('국세청 연동')}</span>
+                    <span className="text-white font-black">{t('환급액 조회 후 환급신청하기')}</span>
                   </span> <ArrowRight className="h-6 w-6 sm:h-8 sm:w-8 shrink-0 text-white" />
                 </Link>
               </Button>
@@ -1575,9 +1574,8 @@ export default function HomePage() {
         <Button size="lg" asChild className="w-full text-lg min-h-[4rem] h-auto bg-[#0b192c] hover:bg-[#152a45] text-white border border-[#e2b659] shadow-2xl rounded-2xl font-black py-4 px-6 whitespace-normal break-words">
           <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-3 text-center leading-tight w-full text-white">
             <span className="flex-1 min-w-[150px] font-black text-white flex flex-wrap items-center justify-center gap-1">
-              <span className="text-[#e2b659] font-black text-[15px] xs:text-base">{t('대한민국 국세청 공식 연동')}</span>
-              {language !== 'ko' && <span className="text-white font-medium text-sm">•</span>}
-              <span className="text-white font-black text-sm xs:text-base">{t('30초 만에 잠자는 내 숨은 돈 찾기')}</span>
+              <span className="text-[#e2b659] font-black text-[15px] xs:text-base">{t('국세청 연동')}</span>
+              <span className="text-white font-black text-sm xs:text-base">{t('환급액 조회 후 환급신청하기')}</span>
             </span> <ArrowRight className="h-5 w-5 shrink-0 text-white" />
           </Link>
         </Button>

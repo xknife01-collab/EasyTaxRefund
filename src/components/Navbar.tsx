@@ -123,7 +123,8 @@ export function Navbar() {
           )}
           <Button asChild className="hidden sm:inline-flex bg-[#0b192c] hover:bg-[#152a45] text-white font-black rounded-2xl px-8 h-auto min-h-[3rem] py-2 border-2 border-[#e2b659] shadow-lg shadow-[#0b192c]/20 transition-all hover:scale-105 active:scale-95 whitespace-normal break-words">
             <Link href="/estimate" className="flex-1 min-w-[max-content] flex items-center justify-center gap-1">
-              <span className="text-white font-black">{t('0.1초만에 예상 환급액 조회 후 환급신청하기')}</span>
+              <span className="text-[#e2b659] font-black mr-1">{t('국세청 연동')}</span>
+              <span className="text-white font-black">{t('환급액 조회 후 환급신청하기')}</span>
             </Link>
           </Button>
           
@@ -194,7 +195,8 @@ export function Navbar() {
                 )}
                 <Button asChild className="w-full bg-[#0b192c] hover:bg-[#152a45] border-2 border-[#e2b659] h-auto min-h-[4rem] rounded-2xl font-black text-lg mt-2 py-4 px-6 shadow-lg whitespace-normal break-words">
                   <Link href="/estimate" className="text-center leading-tight flex-1 flex flex-col items-center justify-center gap-0.5">
-                    <span className="text-white font-black text-base">{t('0.1초만에 예상 환급액 조회 후 환급신청하기')}</span>
+                    <span className="text-[#e2b659] font-black text-base mr-1">{t('국세청 연동')}</span>
+                    <span className="text-white font-black text-base">{t('환급액 조회 후 환급신청하기')}</span>
                   </Link>
                 </Button>
               </div>
