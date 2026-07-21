@@ -717,4 +717,11 @@ export const main = {
   "서버 통신 중 오류가 발생했습니다.": "Terjadi kesalahan saat berkomunikasi dengan server.",
   "국세청 연동": "Tautan ke Layanan Pajak Nasional",
   "환급액 조회 후 환급신청하기": "Periksa jumlah pengembalian dana dan ajukan pengembalian dana",
+
+  // Native language consultation support
+  "모국어로 편하게 대화하세요 (지원 언어: 베트남어, 중국어, 우즈벡어 등)": "Ngobrol dengan nyaman dalam bahasa ibu Anda (Bahasa: Vietnam, Mandarin, Uzbek, dll.)",
+  "모국어로 질문하시면 실시간 번역되어 답변해 드립니다.": "Jika Anda bertanya dalam bahasa ibu Anda, itu akan diterjemahkan dan dijawab secara real time.",
+
+  // Chat button intro change
+  "아래 채팅버튼을 누르고 편하신 모국어로 상담해주세요.": "Silakan klik tombol obrolan di bawah dan lakukan konsultasi dalam bahasa ibu Anda.",
 };

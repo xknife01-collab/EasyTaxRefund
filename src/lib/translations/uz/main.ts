@@ -717,4 +717,11 @@ export const main = {
   "서버 통신 중 오류가 발생했습니다.": "Server bilan aloqa qilishda xatolik yuz berdi.",
   "국세청 연동": "Milliy soliq xizmatiga havola",
   "환급액 조회 후 환급신청하기": "To'lov miqdorini tekshiring va pulni qaytarish uchun ariza bering",
+
+  // Native language consultation support
+  "모국어로 편하게 대화하세요 (지원 언어: 베트남어, 중국어, 우즈벡어 등)": "O'z ona tilingizda bemalol yozishingiz mumkin (Qo'llab-quvvatlanadigan tillar: O'zbek, Vyetnam, Xitoy va boshqalar)",
+  "모국어로 질문하시면 실시간 번역되어 답변해 드립니다.": "Agar ona tilingizda savol bersangiz, u tarjima qilinadi va real vaqtda javob beriladi.",
+
+  // Chat button intro change
+  "아래 채팅버튼을 누르고 편하신 모국어로 상담해주세요.": "Iltimos, quyidagi chat tugmasini bosing va o'zingizga qulay ona tilida maslahat oling.",
 };

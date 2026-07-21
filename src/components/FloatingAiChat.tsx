@@ -418,10 +418,10 @@ function FloatingConsultingPanelInner() {
             ) : (
               <div className="bg-[#081220] border border-white/5 rounded-3xl p-4.5 text-center space-y-2.5 shadow-inner">
                 <p className="text-[#e2b659] font-black text-sm tracking-tight break-keep leading-snug">
-                  {translate("외국인 중소 기업 청년 소득세 환급을 도와 드립니다.")}
+                  {t("외국인 중소 기업 청년 소득세 환급을 도와 드립니다.")}
                 </p>
                 <p className="text-slate-400 font-bold text-[11px] leading-relaxed break-keep">
-                  {translate("대한민국 중소기업에 근무하는 외국인 근로자의 숨은 환급금을 0.1초 만에 조회하고, 최대 90% 소득세 감면 혜택을 안전하게 환급받으실 수 있도록 끝까지 도와드립니다.")}
+                  {t("아래 채팅버튼을 누르고 편하신 모국어로 상담해주세요.")}
                 </p>
               </div>
             )}
@@ -439,6 +439,17 @@ function FloatingConsultingPanelInner() {
               <img src="/Kakao Talk.png" alt="KakaoTalk" className="h-5 w-5 object-contain shrink-0" />
               <span>{translate("카카오톡 실시간 상담")}</span>
             </a>
+
+            {/* Multi-language Support Banner */}
+            <div className="mt-1 p-2.5 bg-slate-800/40 border border-slate-700/50 rounded-xl text-center space-y-0.5">
+              <div className="flex items-center justify-center gap-1.5 text-[11px] font-black text-[#e2b659]">
+                <span className="animate-pulse">🌐</span>
+                {t("모국어로 편하게 대화하세요 (지원 언어: 베트남어, 중국어, 우즈벡어 등)")}
+              </div>
+              <p className="text-[9px] text-slate-400 font-bold">
+                {t("모국어로 질문하시면 실시간 번역되어 답변해 드립니다.")}
+              </p>
+            </div>
 
             {/* WhatsApp */}
             <a

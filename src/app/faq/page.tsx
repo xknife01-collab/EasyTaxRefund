@@ -318,6 +318,16 @@ export default function FAQPage() {
               <p className="text-slate-400 font-bold text-base break-keep">
                 {t("전담 세무사와 1:1 실시간 채팅으로 빠르고 정확하게 해결해 드립니다.")}
               </p>
+              {/* Multi-language Support Banner */}
+              <div className="bg-[#172a45] border border-[#b88c30]/30 rounded-2xl p-4 max-w-lg space-y-1">
+                <div className="flex items-center justify-start gap-1.5 text-sm font-extrabold text-[#b88c30]">
+                  <span className="animate-pulse">🌐</span>
+                  {t('모국어로 편하게 대화하세요 (지원 언어: 베트남어, 중국어, 우즈벡어 등)')}
+                </div>
+                <p className="text-xs text-slate-400 text-left">
+                  {t('모국어로 질문하시면 실시간 번역되어 답변해 드립니다.')}
+                </p>
+              </div>
             </div>
             <div className="flex flex-col gap-3">
               {/* 카카오톡 */}

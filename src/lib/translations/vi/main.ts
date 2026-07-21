@@ -717,4 +717,11 @@ export const main = {
   "서버 통신 중 오류가 발생했습니다.": "Đã xảy ra lỗi khi kết nối với máy chủ.",
   "국세청 연동": "Liên kết với Dịch vụ Thuế Quốc gia",
   "환급액 조회 후 환급신청하기": "Kiểm tra số tiền hoàn lại và yêu cầu hoàn lại tiền",
+
+  // Native language consultation support
+  "모국어로 편하게 대화하세요 (지원 언어: 베트남어, 중국어, 우즈벡어 등)": "Hãy nhắn tin bằng tiếng mẹ đẻ (Hỗ trợ: tiếng Việt, tiếng Trung, tiếng Uzbekistan, v.v.)",
+  "모국어로 질문하시면 실시간 번역되어 답변해 드립니다.": "Nếu bạn đặt câu hỏi bằng tiếng mẹ đẻ, câu hỏi đó sẽ được dịch và trả lời theo thời gian thực.",
+
+  // Chat button intro change
+  "아래 채팅버튼을 누르고 편하신 모국어로 상담해주세요.": "Vui lòng nhấn nút trò chuyện bên dưới và nhận tư vấn bằng tiếng mẹ đẻ của bạn.",
 };

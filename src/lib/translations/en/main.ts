@@ -717,4 +717,11 @@ export const main = {
   "${selectedChat.channel.toUpperCase()} 고객에게 번역 전송되었습니다.": "Translation of ${selectedChat.channel.toUpperCase()} has been sent to the customer.",
   "전송 오류": "transmission error",
   "서버 통신 중 오류가 발생했습니다.": "An error occurred while communicating with the server.",
+
+  // Native language consultation support
+  "모국어로 편하게 대화하세요 (지원 언어: 베트남어, 중국어, 우즈벡어 등)": "Chat comfortably in your native language (Languages: Vietnamese, Chinese, Uzbek, etc.)",
+  "모국어로 질문하시면 실시간 번역되어 답변해 드립니다.": "If you ask in your native language, it will be translated and answered in real time.",
+
+  // Chat button intro change
+  "아래 채팅버튼을 누르고 편하신 모국어로 상담해주세요.": "Please click the chat button below and consult in your preferred native language.",
 };

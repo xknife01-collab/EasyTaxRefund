@@ -1527,6 +1527,16 @@ export default function HomePage() {
                 <p className="text-sm text-slate-300 max-w-lg mx-auto leading-relaxed">
                   {t('전담 세무사와 1:1 카카오톡 / WhatsApp 채널을 통해 언제든 실시간 질문이 가능합니다.')}
                 </p>
+                {/* Multi-language Support Banner */}
+                <div className="bg-[#172a45] border border-[#e2b659]/30 rounded-2xl p-4 max-w-lg mx-auto space-y-1 mt-4">
+                  <div className="flex items-center justify-center gap-1.5 text-sm font-extrabold text-[#e2b659]">
+                    <span className="animate-pulse">🌐</span>
+                    {t('모국어로 편하게 대화하세요 (지원 언어: 베트남어, 중국어, 우즈벡어 등)')}
+                  </div>
+                  <p className="text-xs text-slate-400">
+                    {t('모국어로 질문하시면 실시간 번역되어 답변해 드립니다.')}
+                  </p>
+                </div>
               </div>
 
               <div className="relative z-10 pt-4 flex flex-col gap-3 max-w-md mx-auto">
