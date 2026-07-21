@@ -284,7 +284,7 @@ function FloatingConsultingPanelInner() {
   };
 
   return (
-    <div className="fixed bottom-24 lg:bottom-6 right-6 z-[200] flex flex-col items-end gap-3 print:hidden">
+    <div className="fixed bottom-4 sm:bottom-6 right-3 sm:right-6 z-[200] flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)]">
       {/* 1. collapsed state: capsule button */}
       {!isOpen && (
         <button
@@ -321,10 +321,10 @@ function FloatingConsultingPanelInner() {
 
       {/* 2. expanded state: pop-up dialog */}
       {isOpen && (
-        <div className="w-[350px] bg-[#0f1e36] rounded-[2.5rem] shadow-[0_20px_50px_rgba(15,30,54,0.5)] border border-[#b88c30]/40 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 z-[200]">
+        <div className="w-[calc(100vw-24px)] sm:w-[350px] max-h-[75vh] sm:max-h-[82vh] bg-[#0f1e36] rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(15,30,54,0.5)] border border-[#b88c30]/40 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 z-[200]">
           
           {/* Header */}
-          <div className="px-6 pt-5 pb-2 flex items-center justify-between shrink-0">
+          <div className="px-5 sm:px-6 pt-3.5 pb-3 flex items-center justify-between shrink-0 sticky top-0 bg-[#0f1e36] z-20 border-b border-white/10 shadow-md">
             <div className="flex items-center gap-1.5">
               <span className="h-1.5 w-1.5 rounded-full bg-green-500 animate-pulse" />
               <span className="text-[10px] text-green-500 font-black uppercase tracking-wider">
@@ -335,14 +335,14 @@ function FloatingConsultingPanelInner() {
               {/* Hide (숨기기) button */}
               <button
                 onClick={() => setIsOpen(false)}
-                className="px-3 py-1 rounded-full border border-white/10 hover:bg-white/10 text-white/80 hover:text-white text-[10px] font-black transition-colors"
+                className="px-3.5 py-1.5 rounded-full bg-[#b88c30]/25 hover:bg-[#b88c30]/40 text-[#e2b659] font-black text-[11px] transition-all border border-[#b88c30]/50 shadow-sm active:scale-95 cursor-pointer"
               >
                 {translate("숨기기")}
               </button>
               {/* Close (X) button */}
               <button
                 onClick={() => setIsOpen(false)}
-                className="h-7 w-7 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/60 hover:text-white transition-all"
+                className="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all border border-white/20 shadow-sm active:scale-95 cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
