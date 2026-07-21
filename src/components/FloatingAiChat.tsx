@@ -416,12 +416,9 @@ function FloatingConsultingPanelInner() {
                 </div>
               </div>
             ) : (
-              <div className="bg-[#081220] border border-white/5 rounded-3xl p-4.5 text-center space-y-2.5 shadow-inner">
-                <p className="text-[#e2b659] font-black text-sm tracking-tight break-keep leading-snug">
+              <div className="text-center py-1">
+                <p className="text-[#e2b659] font-black text-xs sm:text-sm tracking-tight break-keep leading-snug">
                   {t("외국인 중소 기업 청년 소득세 환급을 도와 드립니다.")}
-                </p>
-                <p className="text-slate-400 font-bold text-[11px] leading-relaxed break-keep">
-                  {t("아래 채팅버튼을 누르고 편하신 모국어로 상담해주세요. 최대 90% 소득세 감면 혜택을 안전하게 환급받으실 수 있도록 끝까지 도와드립니다.")}
                 </p>
               </div>
             )}
