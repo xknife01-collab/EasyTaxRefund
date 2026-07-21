@@ -421,7 +421,7 @@ function FloatingConsultingPanelInner() {
                   {t("외국인 중소 기업 청년 소득세 환급을 도와 드립니다.")}
                 </p>
                 <p className="text-slate-400 font-bold text-[11px] leading-relaxed break-keep">
-                  {t("아래 채팅버튼을 누르고 편하신 모국어로 상담해주세요.")}
+                  {t("아래 채팅버튼을 누르고 편하신 모국어로 상담해주세요. 최대 90% 소득세 감면 혜택을 안전하게 환급받으실 수 있도록 끝까지 도와드립니다.")}
                 </p>
               </div>
             )}

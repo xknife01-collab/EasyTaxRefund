@@ -724,4 +724,7 @@ export const main = {
 
   // Chat button intro change
   "아래 채팅버튼을 누르고 편하신 모국어로 상담해주세요.": "Vui lòng nhấn nút trò chuyện bên dưới và nhận tư vấn bằng tiếng mẹ đẻ của bạn.",
+
+  // Chat button intro combination
+  "아래 채팅버튼을 누르고 편하신 모국어로 상담해주세요. 최대 90% 소득세 감면 혜택을 안전하게 환급받으실 수 있도록 끝까지 도와드립니다.": "Vui lòng nhấn nút trò chuyện bên dưới và nhận tư vấn bằng tiếng mẹ đẻ của bạn. Chúng tôi sẽ hỗ trợ bạn đến cùng để bạn có thể nhận được mức giảm thuế thu nhập tới 90% một cách an toàn.",
 };

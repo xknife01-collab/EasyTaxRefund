@@ -724,4 +724,7 @@ export const main = {
 
   // Chat button intro change
   "아래 채팅버튼을 누르고 편하신 모국어로 상담해주세요.": "Iltimos, quyidagi chat tugmasini bosing va o'zingizga qulay ona tilida maslahat oling.",
+
+  // Chat button intro combination
+  "아래 채팅버튼을 누르고 편하신 모국어로 상담해주세요. 최대 90% 소득세 감면 혜택을 안전하게 환급받으실 수 있도록 끝까지 도와드립니다.": "Iltimos, quyidagi chat tugmasini bosing va o'zingizga qulay ona tilida maslahat oling. 90% gacha daromad solig'i imtiyozini xavfsiz olishingiz uchun oxirigacha yordam beramiz.",
 };
