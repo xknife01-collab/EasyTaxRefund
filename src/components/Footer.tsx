@@ -80,7 +80,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/pricing" className="hover:text-white transition-colors flex items-center gap-1">
-                  <span className="text-[#b88c30]">›</span> {t('가격 정책 (25%)')}
+                  <span className="text-[#b88c30]">›</span> {t('가격 정책 (22%)')}
                 </Link>
               </li>
               <li>

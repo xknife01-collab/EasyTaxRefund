@@ -423,7 +423,7 @@ export default function EstimatePage() {
   const [cmsModalOpen2, setCmsModalOpen2] = useState(false);
   const [cmsModalOpen3, setCmsModalOpen3] = useState(false);
   const [devPanelOpen, setDevPanelOpen] = useState(false);
-  const refundFee = result?.refundEstimate ? Math.floor(result.refundEstimate * 0.25) : 0;
+  const refundFee = result?.refundEstimate ? Math.floor(result.refundEstimate * 0.22) : 0;
 
   // --- New Hometax states ---
   const [authTab, setAuthTab] = useState<'signup' | 'login'>('signup');
@@ -1472,7 +1472,7 @@ export default function EstimatePage() {
     },
     {
       title: t("수수료는 왜 내야 하나요?"),
-      content: t("수수료 25%는 고객님의 세금을 꼼꼼하게 다시 계산해서 국세청에 대신 신고해 주는 '전문 세무사'의 정당한 수임료(인건비)입니다. 👨‍💼💼\n\n세금 환급은 단순히 버튼만 누른다고 돈이 나오는 것이 아니라, 과거 5년 치의 복잡한 세금 기록을 세무사가 직접 분석하고 국세청에 신고 서류를 제출해야 하는 까다로운 법적 절차입니다.\n\n💎 신청 시 결제 금액 0원! 100% 후불 결제 원칙\n저희 Korea Tax Refund Service는 '선결제 0원 / 후불제 수수료' 정책을 적용하고 있습니다. 신청 단계에서는 비용이 전혀 청구되지 않으며, 한국 국세청에서 고객님의 통장으로 환급금이 실제로 입금된 것이 확인된 후에만 수수료(25%) 결제가 진행됩니다.\n\n⚠️ 환급 실패 시 수수료 0원 (100% 안심 보장)\n세무사의 최종 검토 결과 환급이 불가능하거나 국세청에서 환급금이 나오지 않는 경우에는 수수료를 단 1원도 청구하지 않습니다. 고객님께는 어떠한 금전적 위험도 없으니 안심하고 신청하셔도 됩니다!")
+      content: t("수수료 22%는 고객님의 세금을 꼼꼼하게 다시 계산해서 국세청에 대신 신고해 주는 '전문 세무사'의 정당한 수임료(인건비)입니다. 👨‍💼💼\n\n세금 환급은 단순히 버튼만 누른다고 돈이 나오는 것이 아니라, 과거 5년 치의 복잡한 세금 기록을 세무사가 직접 분석하고 국세청에 신고 서류를 제출해야 하는 까다로운 법적 절차입니다.\n\n💎 신청 시 결제 금액 0원! 100% 후불 결제 원칙\n저희 Korea Tax Refund Service는 '선결제 0원 / 후불제 수수료' 정책을 적용하고 있습니다. 신청 단계에서는 비용이 전혀 청구되지 않으며, 한국 국세청에서 고객님의 통장으로 환급금이 실제로 입금된 것이 확인된 후에만 수수료(22%) 결제가 진행됩니다.\n\n⚠️ 환급 실패 시 수수료 0원 (100% 안심 보장)\n세무사의 최종 검토 결과 환급이 불가능하거나 국세청에서 환급금이 나오지 않는 경우에는 수수료를 단 1원도 청구하지 않습니다. 고객님께는 어떠한 금전적 위험도 없으니 안심하고 신청하셔도 됩니다!")
     },
     {
       title: t("언제 입금되나요?"),
@@ -2439,7 +2439,7 @@ export default function EstimatePage() {
           amount: b.amount,
           isEligible: true
         })),
-        serviceFee: Math.floor(persona.refund * 0.25)
+        serviceFee: Math.floor(persona.refund * 0.22)
       };
 
       console.log("[Frontend] Simulated identity verification analysis completed:", JSON.stringify(simulatedResult));
@@ -3150,7 +3150,7 @@ export default function EstimatePage() {
                           <span className="text-[10px] text-[#b88c30] font-black shrink-0">{t('(Step 6~8)')}</span>
                         </div>
                         <p className="text-[11px] font-semibold text-slate-400 leading-relaxed text-left">
-                          {t('최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 즉시 확인합니다. 환급금이 확인되면, 국세청에서 고객님 통장으로 환급금이 입금된 후에만 출금되는 후불제 정산(플랫폼 이용료 25%) 등록을 진행합니다. 환급 거절/실패 시 청구되는 금액은 0원입니다.')}
+                          {t('최근 5년 동안 한국에서 일하며 더 낸 세금이 얼마인지 즉시 확인합니다. 환급금이 확인되면, 국세청에서 고객님 통장으로 환급금이 입금된 후에만 출금되는 후불제 정산(플랫폼 이용료 22%) 등록을 진행합니다. 환급 거절/실패 시 청구되는 금액은 0원입니다.')}
                         </p>
                       </div>
                     </div>
@@ -4915,8 +4915,8 @@ export default function EstimatePage() {
                     </div>
                     <Separator className="bg-white/10" />
                     <div className="flex justify-between items-center">
-                      <span className="font-black text-slate-300 text-xl">{t('환급액 입금후 수수료(성과보수 25%)')}</span>
-                      <span className="text-3xl font-black text-[#b88c30]">₩ {(Math.floor((result?.refundEstimate || 0) * 0.25)).toLocaleString()}</span>
+                      <span className="font-black text-slate-300 text-xl">{t('환급액 입금후 수수료(성과보수 22%)')}</span>
+                      <span className="text-3xl font-black text-[#b88c30]">₩ {(Math.floor((result?.refundEstimate || 0) * 0.22)).toLocaleString()}</span>
                     </div>
                   </div>
 
@@ -4926,7 +4926,7 @@ export default function EstimatePage() {
                     <div className="ml-4">
                       <AlertTitle className="text-amber-400 font-black text-lg mb-2">{t('Legal Policy (후불 정산 및 CMS 자동 출금 동의)')}</AlertTitle>
                       <AlertDescription className="text-amber-500/80 font-bold text-base leading-relaxed">
-                        {t("지금 결제되는 금액은 0원입니다. 25% 이용료는 고객님 통장으로 국세청 환급금이 입금된 것이 확인된 이후에만 등록하신 이 계좌에서 출금(정산)됩니다. 환급금이 없거나 거절되는 경우 청구 금액은 0원이며 수수료는 발생하지 않습니다. 국세청 환급계좌 유효성 검증 및 CMS 출금 동의를 위해 본인 계좌 1원 송금 인증이 필요합니다.")}
+                        {t("지금 결제되는 금액은 0원입니다. 22% 이용료는 고객님 통장으로 국세청 환급금이 입금된 것이 확인된 이후에만 등록하신 이 계좌에서 출금(정산)됩니다. 환급금이 없거나 거절되는 경우 청구 금액은 0원이며 수수료는 발생하지 않습니다. 국세청 환급계좌 유효성 검증 및 CMS 출금 동의를 위해 본인 계좌 1원 송금 인증이 필요합니다.")}
                       </AlertDescription>
                     </div>
                   </Alert>
@@ -5299,7 +5299,7 @@ export default function EstimatePage() {
                   <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제3조 (플랫폼 서비스 이용료 및 후불 정산 조건)')}</h3>
                   <div className="space-y-2 pl-4 text-base text-slate-800">
                     <p>
-                      <strong>{t('서비스 이용료')}:</strong> {t('이용자는 본 솔루션을 통해 국세청으로부터 최종 지급받는 환급 금액의 25% (부가세 포함)를 플랫폼 서비스 이용료로 회사에 지급합니다.')}
+                      <strong>{t('서비스 이용료')}:</strong> {t('이용자는 본 솔루션을 통해 국세청으로부터 최종 지급받는 환급 금액의 22% (부가세 포함)를 플랫폼 서비스 이용료로 회사에 지급합니다.')}
                     </p>
                     <p className="font-bold text-slate-900 mt-2">{t('후불 정산 방식:')}</p>
                     <ul className="list-disc pl-5 space-y-1 text-slate-700">
@@ -5314,7 +5314,7 @@ export default function EstimatePage() {
                 <div className="space-y-2 pt-4">
                   <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제4조 (CMS 자동이체 출금 동의)')}</h3>
                   <p>
-                    {t('이용자는 국세청 환급금 입금 확인 후, 회사가 제휴 CMS 대행기관(효성CMS 등) 및 금융결제원을 통해 등록된 본인 계좌에서 제3조에 따른 이용료(환급액의 25%)를 자동으로 인출(출금)하는 것에 동의합니다.')}
+                    {t('이용자는 국세청 환급금 입금 확인 후, 회사가 제휴 CMS 대행기관(효성CMS 등) 및 금융결제원을 통해 등록된 본인 계좌에서 제3조에 따른 이용료(환급액의 22%)를 자동으로 인출(출금)하는 것에 동의합니다.')}
                   </p>
                   <div className="space-y-2 pt-2">
                     <h4 className="font-bold text-slate-900">{t('출금 동의 내역:')}</h4>
@@ -5335,7 +5335,7 @@ export default function EstimatePage() {
                       </div>
                       <div className="flex border-b border-slate-100 py-1">
                         <span className="w-40 font-black text-slate-500">{t('출금 신청 금액')}</span>
-                        <span className="font-bold text-slate-900">{t('국세청 실지급 환급액의 25% 상당액')}</span>
+                        <span className="font-bold text-slate-900">{t('국세청 실지급 환급액의 22% 상당액')}</span>
                       </div>
                     </div>
                   </div>
@@ -5568,12 +5568,12 @@ export default function EstimatePage() {
                 <p className="font-black text-slate-800 mb-2">1. {t("출금 신청 정보")}</p>
                 <div className="pl-4 space-y-1">
                   <p>• {t("이용기관")}: {t("더운컴퍼니")}</p>
-                  <p>• {t("출금 신청 금액")}: {t("국세청 실지급 환급액의 25% 상당액 (미환급 시 0원)")} {refundFee > 0 && `(₩${refundFee.toLocaleString()})`}</p>
-                  <p>• {t("1회 최대 출금 한도")}: {refundFee > 0 ? `₩${refundFee.toLocaleString()}` : t("국세청 실지급 환급액의 25% 상당액")} {t("한도 (실제 청구서 기준)")}</p>
+                  <p>• {t("출금 신청 금액")}: {t("국세청 실지급 환급액의 22% 상당액 (미환급 시 0원)")} {refundFee > 0 && `(₩${refundFee.toLocaleString()})`}</p>
+                  <p>• {t("1회 최대 출금 한도")}: {refundFee > 0 ? `₩${refundFee.toLocaleString()}` : t("국세청 실지급 환급액의 22% 상당액")} {t("한도 (실제 청구서 기준)")}</p>
                   <p>• {t("출금 계좌")}: {t("등록된 본인 지정 계좌")}</p>
                 </div>
                 <p className="mt-2 text-[11px] text-slate-400">
-                  {t("* 본 출금 한도는 법적 등록을 위한 최대 상한선일 뿐이며, 환급이 성공하기 전까지는 0원도 출금되지 않으며 오직 확정된 서비스 이용료(25%)만 단 1회 출금됩니다.")}
+                  {t("* 본 출금 한도는 법적 등록을 위한 최대 상한선일 뿐이며, 환급이 성공하기 전까지는 0원도 출금되지 않으며 오직 확정된 서비스 이용료(22%)만 단 1회 출금됩니다.")}
                 </p>
               </div>
               <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">

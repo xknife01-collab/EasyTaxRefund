@@ -782,7 +782,7 @@ export default function ClientPortal() {
                   <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제3조 (플랫폼 서비스 이용료 및 후불 정산 조건)')}</h3>
                   <div className="space-y-2 pl-4 text-base text-slate-800">
                     <p>
-                      <strong>{t('서비스 이용료')}:</strong> {t('이용자는 본 솔루션을 통해 국세청으로부터 최종 지급받는 환급 금액의 25% (부가세 포함)를 플랫폼 서비스 이용료로 회사에 지급합니다.')}
+                      <strong>{t('서비스 이용료')}:</strong> {t('이용자는 본 솔루션을 통해 국세청으로부터 최종 지급받는 환급 금액의 22% (부가세 포함)를 플랫폼 서비스 이용료로 회사에 지급합니다.')}
                     </p>
                     <p className="font-bold text-slate-900 mt-2">{t('후불 정산 방식:')}</p>
                     <ul className="list-disc pl-5 space-y-1 text-slate-700">
@@ -797,7 +797,7 @@ export default function ClientPortal() {
                 <div className="space-y-2 pt-4">
                   <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제4조 (CMS 자동이체 출금 동의)')}</h3>
                   <p>
-                    {t('이용자는 국세청 환급금 입금 확인 후, 회사가 제휴 CMS 대행기관(효성CMS 등) 및 금융결제원을 통해 등록된 본인 계좌에서 제3조에 따른 이용료(환급액의 25%)를 자동으로 인출(출금)하는 것에 동의합니다.')}
+                    {t('이용자는 국세청 환급금 입금 확인 후, 회사가 제휴 CMS 대행기관(효성CMS 등) 및 금융결제원을 통해 등록된 본인 계좌에서 제3조에 따른 이용료(환급액의 22%)를 자동으로 인출(출금)하는 것에 동의합니다.')}
                   </p>
                   <div className="space-y-2 pt-2">
                     <h4 className="font-bold text-slate-900">{t('출금 동의 내역:')}</h4>
@@ -818,7 +818,7 @@ export default function ClientPortal() {
                       </div>
                       <div className="flex border-b border-slate-100 py-1">
                         <span className="w-40 font-black text-slate-500">{t('출금 신청 금액')}</span>
-                        <span className="font-bold text-slate-900">{t('국세청 실지급 환급액의 25% 상당액')}</span>
+                        <span className="font-bold text-slate-900">{t('국세청 실지급 환급액의 22% 상당액')}</span>
                       </div>
                     </div>
                   </div>

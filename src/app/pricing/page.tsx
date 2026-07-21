@@ -179,8 +179,8 @@ export default function PricingPage() {
               {[
                 { label: t("3년간 원천징수 세액"), value: t("약 252만원"), sub: t("84만원 × 3년 공제"), color: "bg-white border border-slate-200" },
                 { label: t("90% 소득세 감면 적용"), value: t("약 227만원"), sub: t("정부 혜택 환급 대상"), color: "bg-white border border-slate-200" },
-                { label: t("서비스 수수료 25%"), value: t("약 57만원"), sub: t("환급 입금 후 후납"), color: "bg-[#0f1e36] text-white" },
-                { label: t("최종 순수령액"), value: t("약 170만원"), sub: t("내 통장으로 직접 입금"), color: "bg-[#b88c30]" },
+                { label: t("서비스 수수료 22%"), value: t("약 50만원"), sub: t("환급 입금 후 후납"), color: "bg-[#0f1e36] text-white" },
+                { label: t("최종 순수령액"), value: t("약 177만원"), sub: t("내 통장으로 직접 입금"), color: "bg-[#b88c30]" },
               ].map((item, i) => (
                 <div key={i} className={`${item.color} rounded-3xl p-7 space-y-3`}>
                   <div className={`text-xs font-black uppercase tracking-widest ${item.color.includes('#0f1e36') ? 'text-slate-500' : item.color.includes('#b88c30') ? 'text-[#0f1e36]/60' : 'text-slate-400'}`}>{String(i + 1).padStart(2, '0')}</div>
@@ -239,12 +239,12 @@ export default function PricingPage() {
           </div>
         </section>
 
-        {/* WHY 25% + COMPLIANCE */}
+        {/* WHY 22% + COMPLIANCE */}
         <section className="w-full py-24 px-6 bg-slate-50 border-t border-slate-100">
           <div className="max-w-5xl mx-auto space-y-16">
             <div className="space-y-4">
               <span className="text-xs font-black text-[#b88c30] uppercase tracking-widest">04 — Our Service</span>
-              <h2 className="text-3xl sm:text-5xl font-black text-[#0f1e36] leading-tight break-keep">{t("왜 25%의 수수료가 발생하나요?")}</h2>
+              <h2 className="text-3xl sm:text-5xl font-black text-[#0f1e36] leading-tight break-keep">{t("왜 22%의 수수료가 발생하나요?")}</h2>
               <div className="h-1 w-12 bg-[#b88c30] rounded-full" />
               <p className="text-slate-500 font-bold">{t("외국인 세금 환급은 한국인보다 과정이 훨씬 까다롭습니다.")}</p>
             </div>

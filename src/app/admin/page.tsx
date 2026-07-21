@@ -358,14 +358,14 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
     
     // Revenue calculations
     const totalEstimatedRefund = apps.reduce((acc, app) => acc + (app.estimatedRefundAmount || 0), 0);
-    const expectedRevenue = Math.floor(totalEstimatedRefund * 0.25); // 25% fee
+    const expectedRevenue = Math.floor(totalEstimatedRefund * 0.22); // 22% fee
     
     // Revenue based on manual payment confirmation
     const completedAppsList = apps.filter(a => a.status === 'RefundCompleted');
     const completedApps = completedAppsList.length;
     
     const paidAppsList = apps.filter(a => a.paymentStatus === 'paid');
-    const paidRevenue = paidAppsList.reduce((acc, app) => acc + Math.floor((app.estimatedRefundAmount || 0) * 0.25), 0);
+    const paidRevenue = paidAppsList.reduce((acc, app) => acc + Math.floor((app.estimatedRefundAmount || 0) * 0.22), 0);
     
     // Unpaid revenue is expected revenue minus already paid revenue
     const unpaidRevenue = expectedRevenue - paidRevenue;
@@ -413,7 +413,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       byLang[langLabel].total++;
       if (app.paymentStatus === 'paid') {
         byLang[langLabel].paid++;
-        byLang[langLabel].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.25);
+        byLang[langLabel].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.22);
       }
 
       // UTM 채널별 통계
@@ -422,7 +422,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       byUtm[source].total++;
       if (app.paymentStatus === 'paid') {
         byUtm[source].paid++;
-        byUtm[source].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.25);
+        byUtm[source].revenue += Math.floor((app.estimatedRefundAmount || 0) * 0.22);
       }
 
       let statusInferredStep = 1;
@@ -1009,7 +1009,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                         <TableHead className="font-bold">신청 일자</TableHead>
                         <TableHead className="font-bold">국적</TableHead>
                         <TableHead className="font-bold">예상 환급액</TableHead>
-                        <TableHead className="font-bold text-amber-600">수수료 (25%)</TableHead>
+                        <TableHead className="font-bold text-amber-600">수수료 (22%)</TableHead>
                         <TableHead className="font-bold">진행 단계</TableHead>
                         <TableHead className="font-bold">사전 진단액</TableHead>
                         <TableHead className="font-bold text-indigo-600">리포트</TableHead>
@@ -1075,9 +1075,9 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                               {app.estimatedRefundAmount !== undefined ? `₩ ${app.estimatedRefundAmount.toLocaleString()}` : "미조회"}
                             </TableCell>
 
-                            {/* 수수료 (25%) */}
+                            {/* 수수료 (22%) */}
                             <TableCell className="font-black text-amber-600">
-                              ₩ {Math.round((app.estimatedRefundAmount ?? 0) * 0.25).toLocaleString()}
+                              ₩ {Math.round((app.estimatedRefundAmount ?? 0) * 0.22).toLocaleString()}
                             </TableCell>
 
                             {/* 진행 단계 */}
@@ -1328,7 +1328,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                         <TableHead className="font-bold">외국인 등록번호</TableHead>
                         <TableHead className="font-bold">수령 계좌</TableHead>
                         <TableHead className="font-bold">예상 환급액</TableHead>
-                        <TableHead className="font-bold text-amber-600">수수료 (25%)</TableHead>
+                        <TableHead className="font-bold text-amber-600">수수료 (22%)</TableHead>
                         <TableHead className="font-bold pr-8 text-right">상세</TableHead>
                       </TableRow>
                     </TableHeader>
@@ -1448,9 +1448,9 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                               {app.estimatedRefundAmount !== undefined ? `₩ ${app.estimatedRefundAmount.toLocaleString()}` : "미조회"}
                             </TableCell>
 
-                            {/* 수수료 (25%) */}
+                            {/* 수수료 (22%) */}
                             <TableCell className="font-black text-amber-600">
-                              ₩ {Math.round((app.estimatedRefundAmount ?? 0) * 0.25).toLocaleString()}
+                              ₩ {Math.round((app.estimatedRefundAmount ?? 0) * 0.22).toLocaleString()}
                             </TableCell>
 
                             <TableCell className="pr-8 text-right">
@@ -1643,7 +1643,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                         <div>• 국적: <span className="font-bold text-slate-900">{selectedApp.userLanguage?.toUpperCase() || "KO"}</span></div>
                         <div>• 신청 날짜: <span className="font-bold text-slate-900">{selectedApp.createdAt?.toDate ? selectedApp.createdAt.toDate().toLocaleDateString('ko-KR') : "N/A"}</span></div>
                         <div>• 예상 환급액: <span className="font-bold text-slate-900">₩ {(selectedApp.estimatedRefundAmount ?? 0).toLocaleString()}</span></div>
-                        <div>• 수수료 금액 (25%): <span className="font-black text-amber-600">₩ {Math.round((selectedApp.estimatedRefundAmount ?? 0) * 0.25).toLocaleString()}</span></div>
+                        <div>• 수수료 금액 (22%): <span className="font-black text-amber-600">₩ {Math.round((selectedApp.estimatedRefundAmount ?? 0) * 0.22).toLocaleString()}</span></div>
                         <div className="col-span-2">• 환급 및 정산 계좌: <span className="font-bold text-slate-900">{selectedApp.bankName ? `${selectedApp.bankName} / ${selectedApp.bankAccount || selectedApp.accountNumber || ''}` : "미지정"}</span></div>
                         <div className="col-span-2">• 서명 상태: <span className={cn("font-bold", selectedApp.signatureDataUri ? "text-green-600" : "text-amber-600")}>{selectedApp.signatureDataUri ? "서명 완료" : "미서명"}</span></div>
                       </div>
@@ -1662,7 +1662,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                     <div className="space-y-2">
                       <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">3. 주요 정산 및 법적 조항 요약</p>
                       <p className="text-slate-500 text-[10px] leading-relaxed text-justify">
-                        본 계약은 이용자가 더윤컴퍼니의 Korea Tax Refund Service 솔루션을 이용하여 환급을 신청하고, 실제 환급이 완료된 후 실지급액의 25%(성공보수)를 후불로 CMS(대행기관: 효성CMS 등) 자동이체 인출하는 계약입니다. 본 플랫폼은 솔루션 프로그램 제공업자(통신판매업)로서 실제 대리 신고 업무는 대한민국 국가공인 제휴 세무사/세무법인이 대행함을 상호 인지합니다.
+                        본 계약은 이용자가 더윤컴퍼니의 Korea Tax Refund Service 솔루션을 이용하여 환급을 신청하고, 실제 환급이 완료된 후 실지급액의 22%(성공보수)를 후불로 CMS(대행기관: 효성CMS 등) 자동이체 인출하는 계약입니다. 본 플랫폼은 솔루션 프로그램 제공업자(통신판매업)로서 실제 대리 신고 업무는 대한민국 국가공인 제휴 세무사/세무법인이 대행함을 상호 인지합니다.
                       </p>
                     </div>
  

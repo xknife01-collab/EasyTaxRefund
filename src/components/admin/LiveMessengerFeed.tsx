@@ -64,7 +64,7 @@ const DEMO_CHATS: ChatWithLastMessage[] = [
     last_message_at: new Date(Date.now() - 2 * 60 * 1000).toISOString(), // 2 mins ago
     unread_count: 1,
     created_at: new Date().toISOString(),
-    lastMessageText: "환급 신청 절차와 대행 수수료 25% 공제 조건에 대해 상세히 알고 싶습니다.",
+    lastMessageText: "환급 신청 절차와 대행 수수료 22% 공제 조건에 대해 상세히 알고 싶습니다.",
     lastMessageSender: "customer",
     isDemo: true
   },

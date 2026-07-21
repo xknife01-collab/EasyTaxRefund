@@ -295,7 +295,7 @@ function formatResult(totalRefundSum: number, anyAlreadyReduced: boolean, detail
     message,
     details: details.sort((a, b) => parseInt(b.year) - parseInt(a.year)),
     deductionsConsidered: ["중소기업 취업자 소득세 감면 (90%)", "국세청 사업자 시계열 상태 검증 완료"],
-    serviceFee: Math.floor(totalRefundSum * 0.25)
+    serviceFee: Math.floor(totalRefundSum * 0.22)
   };
 }
 
