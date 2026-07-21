@@ -284,7 +284,7 @@ function FloatingConsultingPanelInner() {
   };
 
   return (
-    <div className="fixed bottom-24 lg:bottom-6 right-4 sm:right-6 z-[200] flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)]">
+    <div className="fixed bottom-[84px] lg:bottom-6 right-3 sm:right-6 z-[200] flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)]">
       {/* 1. collapsed state: capsule button */}
       {!isOpen && (
         <button
@@ -321,7 +321,7 @@ function FloatingConsultingPanelInner() {
 
       {/* 2. expanded state: pop-up dialog */}
       {isOpen && (
-        <div className="w-[350px] max-w-[calc(100vw-32px)] max-h-[calc(100dvh-150px)] lg:max-h-[80vh] bg-[#0f1e36] rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(15,30,54,0.5)] border border-[#b88c30]/40 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 z-[200]">
+        <div className="w-[340px] max-w-[calc(100vw-24px)] max-h-[calc(100dvh-100px)] lg:max-h-[85vh] bg-[#0f1e36] rounded-[1.75rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(15,30,54,0.5)] border border-[#b88c30]/40 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 z-[200]">
           
           {/* Header */}
           <div className="px-5 sm:px-6 pt-3.5 pb-3 flex items-center justify-between shrink-0 sticky top-0 bg-[#0f1e36] z-20 border-b border-white/10 shadow-md">
@@ -352,12 +352,12 @@ function FloatingConsultingPanelInner() {
           {/* Scrollable Content Body */}
           <div className="flex-1 overflow-y-auto custom-scrollbar">
             {/* Profile headshot section */}
-            <div className="flex flex-col items-center pt-3 pb-4 px-6 text-center">
+            <div className="flex flex-col items-center pt-2 sm:pt-3 pb-2 sm:pb-4 px-4 sm:px-6 text-center">
               {/* Double Ring Avatar */}
               <div className="relative mb-3.5">
                 <div className="absolute -inset-1 rounded-full border-2 border-[#b88c30]/20" />
                 <div className="absolute -inset-2 rounded-full border border-[#b88c30]/10" />
-                <div className="h-20 w-20 rounded-full overflow-hidden border-2 border-[#b88c30] relative bg-slate-800 shadow-xl">
+                <div className="h-14 w-14 sm:h-20 sm:w-20 rounded-full overflow-hidden border-2 border-[#b88c30] relative bg-slate-800 shadow-xl">
                   <img
                     src="/images/manager.png"
                     alt="Manager Profile"
@@ -428,13 +428,13 @@ function FloatingConsultingPanelInner() {
           </div>
 
           {/* Social Consulting Links */}
-          <div className="px-6 pb-6 flex flex-col gap-2.5">
+          <div className="px-4 sm:px-6 pb-4 sm:pb-6 flex flex-col gap-1.5 sm:gap-2.5">
             {/* KakaoTalk */}
             <a
               href="https://pf.kakao.com/_xxx"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2.5 bg-[#FEE500] hover:bg-[#FEE500]/95 text-[#0f1e36] font-black rounded-2xl py-3.5 px-4 shadow-[0_4px_12px_rgba(254,229,0,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"
+              className="flex items-center justify-center gap-2 sm:gap-2.5 bg-[#FEE500] hover:bg-[#FEE500]/95 text-[#0f1e36] font-black rounded-xl sm:rounded-2xl py-2.5 sm:py-3.5 px-3.5 sm:px-4 shadow-[0_4px_12px_rgba(254,229,0,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-xs sm:text-sm"
             >
               <img src="/Kakao Talk.png" alt="KakaoTalk" className="h-5 w-5 object-contain shrink-0" />
               <span>{translate("카카오톡 실시간 상담")}</span>
@@ -445,7 +445,7 @@ function FloatingConsultingPanelInner() {
               href="https://wa.me/821058648577"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2.5 bg-[#25D366] hover:bg-[#25D366]/95 text-white font-black rounded-2xl py-3.5 px-4 shadow-[0_4px_12px_rgba(37,211,102,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"
+              className="flex items-center justify-center gap-2 sm:gap-2.5 bg-[#25D366] hover:bg-[#25D366]/95 text-white font-black rounded-xl sm:rounded-2xl py-2.5 sm:py-3.5 px-3.5 sm:px-4 shadow-[0_4px_12px_rgba(37,211,102,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-xs sm:text-sm"
             >
               <img src="/WhatsApp.png" alt="WhatsApp" className="h-5 w-5 object-contain shrink-0" />
               <span>{translate("왓츠앱 실시간 상담")}</span>
@@ -456,7 +456,7 @@ function FloatingConsultingPanelInner() {
               href="https://t.me/ktrs_support_bot"
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2.5 bg-[#0088cc] hover:bg-[#0088cc]/95 text-white font-black rounded-2xl py-3.5 px-4 shadow-[0_4px_12px_rgba(0,136,204,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"
+              className="flex items-center justify-center gap-2 sm:gap-2.5 bg-[#0088cc] hover:bg-[#0088cc]/95 text-white font-black rounded-xl sm:rounded-2xl py-2.5 sm:py-3.5 px-3.5 sm:px-4 shadow-[0_4px_12px_rgba(0,136,204,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-xs sm:text-sm"
             >
               <img src="/Telegram.png" alt="Telegram" className="h-5 w-5 object-contain shrink-0" />
               <span>{translate("텔레그램 실시간 상담")}</span>
@@ -465,7 +465,7 @@ function FloatingConsultingPanelInner() {
             {/* App Install */}
             <button
               onClick={handleInstallApp}
-              className="flex items-center justify-center gap-2.5 bg-[#FF4E00] hover:bg-[#FF4E00]/95 text-white font-black rounded-2xl py-3.5 px-4 shadow-[0_4px_12px_rgba(255,78,0,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-sm"
+              className="flex items-center justify-center gap-2 sm:gap-2.5 bg-[#FF4E00] hover:bg-[#FF4E00]/95 text-white font-black rounded-xl sm:rounded-2xl py-2.5 sm:py-3.5 px-3.5 sm:px-4 shadow-[0_4px_12px_rgba(255,78,0,0.15)] hover:scale-[1.02] active:scale-[0.98] transition-all text-xs sm:text-sm"
             >
               <span className="text-base leading-none">📱</span>
               <span>{translate("내 휴대폰에 앱 설치하기")}</span>
