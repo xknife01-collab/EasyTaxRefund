@@ -354,7 +354,7 @@ export const main = {
   "대표자: 윤희수": "Người đại diện: Hee-su Yoon",
   "사업자 등록번호: 105-1278126": "Số đăng ký kinh doanh: 105-1278126",
   "연락처: 010-5864-8577": "Liên hệ: 010-5864-8577",
-  "이메일: zkfnth01@naver.com": "Email: zkfnth01@naver.com",
+  "이메일: zkfnth021@gmail.com": "Email: zkfnth021@gmail.com",
   "개인정보 보호": "Bảo vệ quyền riêng tư",
   "공인 세무 협력": "Hợp tác thuế được chứng nhận",
   "고객 센터": "trung tâm khách hàng",

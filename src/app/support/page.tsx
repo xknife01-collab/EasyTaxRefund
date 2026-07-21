@@ -60,11 +60,11 @@ export default function SupportPage() {
               </div>
             </a>
             <div className="h-8 w-px bg-[#0f1e36]/20 hidden sm:block" />
-            <a href="mailto:zkfnth01@naver.com" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <a href="mailto:zkfnth021@gmail.com" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <Mail className="h-5 w-5 shrink-0" />
               <div>
                 <div className="text-[10px] font-black uppercase tracking-widest opacity-70">{t("이메일")}</div>
-                <div className="text-base font-black">zkfnth01@naver.com</div>
+                <div className="text-base font-black">zkfnth021@gmail.com</div>
               </div>
             </a>
             <div className="h-8 w-px bg-[#0f1e36]/20 hidden sm:block" />
@@ -118,8 +118,8 @@ export default function SupportPage() {
                       </div>
                       <h3 className="text-base font-black text-[#0f1e36]">{t("이메일 문의")}</h3>
                     </div>
-                    <a href="mailto:zkfnth01@naver.com" className="text-lg font-black text-[#0f1e36] hover:text-[#b88c30] transition-colors block break-all">
-                      zkfnth01@naver.com
+                    <a href="mailto:zkfnth021@gmail.com" className="text-lg font-black text-[#0f1e36] hover:text-[#b88c30] transition-colors block break-all">
+                      zkfnth021@gmail.com
                     </a>
                     <p className="text-slate-400 text-xs font-bold">{t("24시간 접수 · 영업일 기준 1일 내 답변")}</p>
                   </div>

@@ -354,7 +354,7 @@ export const main = {
   "대표자: 윤희수": "Vakil: Xe-su Yun",
   "사업자 등록번호: 105-1278126": "Biznesni ro'yxatdan o'tkazish raqami: 105-1278126",
   "연락처: 010-5864-8577": "Aloqa: 010-5864-8577",
-  "이메일: zkfnth01@naver.com": "Elektron pochta: zkfnth01@naver.com",
+  "이메일: zkfnth021@gmail.com": "Elektron pochta: zkfnth021@gmail.com",
   "개인정보 보호": "Maxfiylikni himoya qilish",
   "공인 세무 협력": "Tasdiqlangan soliq kooperatsiyasi",
   "고객 센터": "mijozlar markazi",

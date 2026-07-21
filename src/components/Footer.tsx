@@ -147,7 +147,7 @@ export function Footer() {
                 <span className="hidden sm:inline text-slate-600">|</span>
                 <span>{t('연락처: 010-5864-8577')}</span>
                 <span className="hidden sm:inline text-slate-600">|</span>
-                <span>{t('이메일: zkfnth01@naver.com')}</span>
+                <span>{t('이메일: zkfnth021@gmail.com')}</span>
               </div>
               <p className="mt-4 text-[10px] text-slate-500 font-medium leading-relaxed max-w-3xl">
                 {t('Korea Tax Refund Service(Korea Tax Refund Service)은 세무대리 신고를 직접 수행하지 않으며, 본 플랫폼에서 작성된 신청 서류는 제휴된 대한민국 국가공인 전문 세무법인 및 협력 세무사를 통해 최종 검토 및 제출됩니다.')}
