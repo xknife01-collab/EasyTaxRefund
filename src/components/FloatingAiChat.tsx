@@ -284,7 +284,7 @@ function FloatingConsultingPanelInner() {
   };
 
   return (
-    <div className="fixed bottom-[84px] lg:bottom-6 right-3 sm:right-6 z-[200] flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)]">
+    <div className="fixed bottom-[98px] lg:bottom-6 right-3 sm:right-6 z-[200] flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)]">
       {/* 1. collapsed state: capsule button */}
       {!isOpen && (
         <button
