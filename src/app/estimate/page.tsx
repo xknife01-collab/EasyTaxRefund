@@ -4639,7 +4639,7 @@ export default function EstimatePage() {
                         asChild
                         className="w-full h-16 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-base font-black rounded-2xl shadow-xl shadow-[#b88c30]/20 transition-all hover:scale-[1.02] flex items-center justify-center gap-3"
                       >
-                        <a href="https://pf.kakao.com/_xxxx" target="_blank">
+                        <a href="https://wa.me/821058648577" target="_blank" rel="noopener noreferrer">
                           <MessageCircle className="h-6 w-6" /> {t('전문 상담원에게 도움받기')}
                         </a>
                       </Button>

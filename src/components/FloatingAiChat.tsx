@@ -477,7 +477,7 @@ function FloatingConsultingPanelInner() {
 
           {/* Social Consulting Links */}
           <div className="px-4 sm:px-6 pb-4 sm:pb-6 flex flex-col gap-1.5 sm:gap-2.5">
-            {/* KakaoTalk */}
+            {/* KakaoTalk (Hidden during screening)
             <a
               href="https://pf.kakao.com/_xxx"
               target="_blank"
@@ -487,6 +487,7 @@ function FloatingConsultingPanelInner() {
               <img src="/Kakao Talk.png" alt="KakaoTalk" className="h-5 w-5 object-contain shrink-0" />
               <span>{translate("카카오톡 실시간 상담")}</span>
             </a>
+            */}
 
             {/* Multi-language Support Banner */}
             <div className="mt-1 p-2.5 bg-slate-800/40 border border-slate-700/50 rounded-xl text-center space-y-0.5">

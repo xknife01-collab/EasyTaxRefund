@@ -1540,7 +1540,7 @@ export default function HomePage() {
               </div>
 
               <div className="relative z-10 pt-4 flex flex-col gap-3 max-w-md mx-auto">
-                {/* 카카오톡 */}
+                {/* 카카오톡 (Hidden during screening)
                 <a 
                   href="https://pf.kakao.com/_xxx" 
                   target="_blank" 
@@ -1550,6 +1550,7 @@ export default function HomePage() {
                   <img src="/Kakao Talk.png" alt="KakaoTalk" className="h-9 w-9 object-contain shrink-0" />
                   {t('카카오톡 실시간 상담')}
                 </a>
+                */}
                 
                 {/* 왓츠앱 */}
                 <a 
