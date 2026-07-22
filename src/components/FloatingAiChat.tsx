@@ -273,7 +273,7 @@ function FloatingConsultingPanelInner() {
   // Show proactive welcome bubble 3 seconds after loading
   useEffect(() => {
     const timer = setTimeout(() => {
-      setShowProactiveBubble(true);
+      setShowProactiveBubble(false);
     }, 3000);
     return () => clearTimeout(timer);
   }, []);
