@@ -222,10 +222,23 @@ export default function AdminStatsPage() {
     const countryRevenue = countryFilteredApps.filter(a => a.paymentStatus === 'paid').reduce((acc, a) => acc + Math.floor((a.estimatedRefundAmount || 0) * 0.22), 0);
 
     // Channel Stats (UTM)
-    const channelStats: Record<string, { applicants: number, paid: number, revenue: number }> = {};
+    const channelStats: Record<string, { visits: number, applicants: number, paid: number, revenue: number }> = {};
+    
+    // 1. Aggregate visits by channel from daily_stats
+    dateFilteredDaily.forEach(s => {
+      if (s.sourceVisits) {
+        Object.entries(s.sourceVisits).forEach(([src, count]) => {
+          const cleanSrc = src === 'undefined' ? 'direct' : src;
+          if (!channelStats[cleanSrc]) channelStats[cleanSrc] = { visits: 0, applicants: 0, paid: 0, revenue: 0 };
+          channelStats[cleanSrc].visits += (count as number);
+        });
+      }
+    });
+
+    // 2. Aggregate application stats
     countryFilteredApps.forEach(app => {
       const src = app.utmSource || 'direct';
-      if (!channelStats[src]) channelStats[src] = { applicants: 0, paid: 0, revenue: 0 };
+      if (!channelStats[src]) channelStats[src] = { visits: 0, applicants: 0, paid: 0, revenue: 0 };
       channelStats[src].applicants++;
       if (app.paymentStatus === 'paid') {
         channelStats[src].paid++;
@@ -233,7 +246,7 @@ export default function AdminStatsPage() {
       }
     });
 
-    const sortedChannels = Object.entries(channelStats).sort((a, b) => b[1].applicants - a[1].applicants);
+    const sortedChannels = Object.entries(channelStats).sort((a, b) => b[1].visits - a[1].visits);
 
     // Detailed 10-Step Funnel
     const funnel: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
@@ -539,6 +552,7 @@ export default function AdminStatsPage() {
                             <TableHeader>
                                 <TableRow>
                                     <TableHead className="pl-8">매체(UTM Source)</TableHead>
+                                    <TableHead className="text-center">방문자(명)</TableHead>
                                     <TableHead className="text-center">신청(건)</TableHead>
                                     <TableHead className="text-center">전환율(%)</TableHead>
                                     <TableHead className="text-right pr-8">기여 수익</TableHead>
@@ -548,7 +562,8 @@ export default function AdminStatsPage() {
                                 {filteredData.byUtm.map(([name, stat]) => (
                                     <TableRow key={name}>
                                         <TableCell className="pl-8 font-bold">{name}</TableCell>
-                                        <TableCell className="text-center font-black">{stat.applicants}</TableCell>
+                                        <TableCell className="text-center font-bold text-slate-600">{(stat.visits || 0).toLocaleString()}명</TableCell>
+                                        <TableCell className="text-center font-black">{stat.applicants}건</TableCell>
                                         <TableCell className="text-center font-bold text-emerald-600">
                                             {((stat.paid / (stat.applicants || 1)) * 100).toFixed(1)}%
                                         </TableCell>
