@@ -717,6 +717,7 @@ export const main = {
   "서버 통신 중 오류가 발생했습니다.": "Server bilan aloqa qilishda xatolik yuz berdi.",
   "국세청 연동": "Milliy soliq xizmatiga havola",
   "환급액 조회 후 환급신청하기": "To'lov miqdorini tekshiring va pulni qaytarish uchun ariza bering",
+  "국세청 안전 연동으로 내 숨은 환급금 무료 조회하기": "NTS bilan xavfsiz bog'lanib, yashirin soliq qaytarishimni bepul tekshirish",
 
   // Native language consultation support
   "모국어로 편하게 대화하세요 (지원 언어: 베트남어, 중국어, 우즈벡어 등)": "O'z ona tilingizda bemalol yozishingiz mumkin (Qo'llab-quvvatlanadigan tillar: O'zbek, Vyetnam, Xitoy va boshqalar)",

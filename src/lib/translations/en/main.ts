@@ -360,6 +360,7 @@ export const main = {
   "고객 센터": "customer center",
   "국세청 연동": "NTS Linked",
   "환급액 조회 후 환급신청하기": "Check Refund & Apply",
+  "국세청 안전 연동으로 내 숨은 환급금 무료 조회하기": "Safely link NTS to find my hidden refund for free",
   "소득세 감면율": "Income Tax Reduction Rate",
   "연간 최대 혜택": "Maximum annual benefit",
   "최대 적용 기간": "Maximum application period",

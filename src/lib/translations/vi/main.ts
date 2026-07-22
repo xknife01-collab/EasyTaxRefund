@@ -717,6 +717,7 @@ export const main = {
   "서버 통신 중 오류가 발생했습니다.": "Đã xảy ra lỗi khi kết nối với máy chủ.",
   "국세청 연동": "Liên kết với Dịch vụ Thuế Quốc gia",
   "환급액 조회 후 환급신청하기": "Kiểm tra số tiền hoàn lại và yêu cầu hoàn lại tiền",
+  "국세청 안전 연동으로 내 숨은 환급금 무료 조회하기": "Liên kết an toàn với NTS để tìm tiền hoàn thuế ẩn của tôi miễn phí",
 
   // Native language consultation support
   "모국어로 편하게 대화하세요 (지원 언어: 베트남어, 중국어, 우즈벡어 등)": "Hãy nhắn tin bằng tiếng mẹ đẻ (Hỗ trợ: tiếng Việt, tiếng Trung, tiếng Uzbekistan, v.v.)",
