@@ -91,6 +91,13 @@ export default function HomePage() {
     return () => clearTimeout(welcomeFallback);
   }, []);
 
+  // Redirect first-time visitors (without lang in URL and welcome_seen in localStorage) to the flag/language select page
+  useEffect(() => {
+    if (hasSeenWelcome === false) {
+      router.push('/welcome');
+    }
+  }, [hasSeenWelcome, router]);
+
   const handleLanguageSelect = (langCode: any) => {
     localStorage.setItem('welcome_seen', 'true');
     setLanguage(langCode as any);
