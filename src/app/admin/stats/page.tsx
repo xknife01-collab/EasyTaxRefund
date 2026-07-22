@@ -71,6 +71,22 @@ const LANGUAGE_TO_COUNTRY: Record<string, string> = {
   'ur': '파키스탄'
 };
 
+const normalizeChannel = (src: string): string => {
+  const s = String(src).toLowerCase().trim();
+  if (s === 'fb' || s === 'facebook') return 'Facebook';
+  if (s === 'ig' || s === 'instagram') return 'Instagram';
+  if (s === 'direct' || s === 'undefined' || !s || s === 'null') return 'Direct';
+  if (s === 'referral') return 'Referral';
+  return src;
+};
+
+const CHANNEL_LABELS: Record<string, string> = {
+  'Facebook': '페이스북 (Facebook)',
+  'Instagram': '인스타그램 (Instagram)',
+  'Direct': '직접 유입 (Direct / 개발)',
+  'Referral': '추천 유입 (Referral)'
+};
+
 const TARGET_COUNTRY_LIST = Object.values(LANGUAGE_TO_COUNTRY);
 
 type TimeRange = 'today' | 'week' | 'month' | 'total';
@@ -226,9 +242,20 @@ export default function AdminStatsPage() {
     
     // 1. Aggregate visits by channel from daily_stats
     dateFilteredDaily.forEach(s => {
-      if (s.sourceVisits) {
+      // 파이어스토어에서 sourceVisits가 평탄화된 키("sourceVisits.ig" 등)로 저장되어 있는 경우 처리
+      Object.entries(s).forEach(([key, count]) => {
+        if (key.startsWith('sourceVisits.')) {
+          const rawSrc = key.split('.')[1]; // 'ig', 'fb' 등 추출
+          const cleanSrc = normalizeChannel(rawSrc);
+          if (!channelStats[cleanSrc]) channelStats[cleanSrc] = { visits: 0, applicants: 0, paid: 0, revenue: 0 };
+          channelStats[cleanSrc].visits += (count as number);
+        }
+      });
+      
+      // 혹시라도 중첩 객체 구조로 저장되어 있는 경우를 위한 폴백
+      if (s.sourceVisits && typeof s.sourceVisits === 'object') {
         Object.entries(s.sourceVisits).forEach(([src, count]) => {
-          const cleanSrc = src === 'undefined' ? 'direct' : src;
+          const cleanSrc = normalizeChannel(src);
           if (!channelStats[cleanSrc]) channelStats[cleanSrc] = { visits: 0, applicants: 0, paid: 0, revenue: 0 };
           channelStats[cleanSrc].visits += (count as number);
         });
@@ -237,7 +264,7 @@ export default function AdminStatsPage() {
 
     // 2. Aggregate application stats
     countryFilteredApps.forEach(app => {
-      const src = app.utmSource || 'direct';
+      const src = normalizeChannel(app.utmSource);
       if (!channelStats[src]) channelStats[src] = { visits: 0, applicants: 0, paid: 0, revenue: 0 };
       channelStats[src].applicants++;
       if (app.paymentStatus === 'paid') {
@@ -561,7 +588,7 @@ export default function AdminStatsPage() {
                             <TableBody>
                                 {filteredData.byUtm.map(([name, stat]) => (
                                     <TableRow key={name}>
-                                        <TableCell className="pl-8 font-bold">{name}</TableCell>
+                                        <TableCell className="pl-8 font-bold">{CHANNEL_LABELS[name] || name}</TableCell>
                                         <TableCell className="text-center font-bold text-slate-600">{(stat.visits || 0).toLocaleString()}명</TableCell>
                                         <TableCell className="text-center font-black">{stat.applicants}건</TableCell>
                                         <TableCell className="text-center font-bold text-emerald-600">
