@@ -224,6 +224,7 @@ function FloatingConsultingPanelInner() {
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInAppBrowser, setIsInAppBrowser] = useState(false);
   const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(null);
+  const [showProactiveBubble, setShowProactiveBubble] = useState(false);
 
   const isEstimatePage = pathname?.startsWith("/estimate");
 
@@ -232,6 +233,20 @@ function FloatingConsultingPanelInner() {
     const lang = language || "ko";
     const dict = TRANSLATIONS[lang] || TRANSLATIONS["en"] || TRANSLATIONS["ko"];
     return dict[key] || key;
+  };
+
+  const getProactiveText = () => {
+    switch (language) {
+      case "vi": return "Bạn gặp khó khăn khi kiểm tra hoàn thuế hoặc xác minh? 💬 Hãy hỏi tôi!";
+      case "zh": return "查询退税或身份认证遇到困难？💬 随时问我！";
+      case "id": return "Kesulitan memeriksa pengembalian pajak atau verifikasi? 💬 Tanyakan di sini!";
+      case "uz": return "Soliqni tekshirish yoki tasdiqlashda muammo bormi? 💬 So'rang!";
+      case "th": return "มีปัญหาในการตรวจสอบเงินคืนหรือยืนยันตัวตนใช่ไหม? 💬 สอบถามได้เลย!";
+      case "km": return "មានបញ្ហាក្នុងការពិនិត្យប្រាក់ពន្ធ ឬបញ្ជាក់អត្តសញ្ញាណមែនទេ? 💬 សួរខ្ញុំបាន!";
+      case "my": return "အခွန်ပြန်အမ်းငွေစစ်ဆေးရန် သို့မဟုတ် အတည်ပြုရန် အခက်အခဲရှိပါသလား။ 💬 မေးမြန်းနိုင်ပါသည်။";
+      case "en": return "Having trouble with refund query or verification? 💬 Ask me!";
+      default: return "환급금 조회나 본인인증이 어려우신가요? 💬 모국어로 편하게 질문해 보세요!";
+    }
   };
 
   // PWA & In-App Browser Detect
@@ -253,6 +268,14 @@ function FloatingConsultingPanelInner() {
         window.removeEventListener("beforeinstallprompt", handleBeforeInstallPrompt);
       };
     }
+  }, []);
+
+  // Show proactive welcome bubble 3 seconds after loading
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowProactiveBubble(true);
+    }, 3000);
+    return () => clearTimeout(timer);
   }, []);
 
   const handleInstallApp = () => {
@@ -285,38 +308,66 @@ function FloatingConsultingPanelInner() {
 
   return (
     <div className="fixed bottom-[98px] lg:bottom-6 right-3 sm:right-6 z-[200] flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)]">
-      {/* 1. collapsed state: capsule button */}
+      {/* 1. collapsed state: capsule button with proactive bubble */}
       {!isOpen && (
-        <button
-          onClick={() => setIsOpen(true)}
-          className="flex items-center gap-3 bg-[#0f1e36] hover:bg-[#152a45] text-white rounded-full p-2.5 pl-3.5 pr-6 border border-[#b88c30]/50 shadow-[0_10px_30px_rgba(15,30,54,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 group z-[200] max-w-[280px]"
-        >
-          {/* Avatar Area */}
-          <div className="relative shrink-0">
-            {/* Double Ring Border Effect */}
-            <div className="absolute -inset-0.5 rounded-full border border-[#b88c30]/60 animate-pulse" />
-            <div className="absolute -inset-1 rounded-full border border-[#b88c30]/20" />
-            <div className="h-10 w-10 rounded-full overflow-hidden border border-[#b88c30] relative bg-slate-800">
-              <img
-                src="/images/manager.png"
-                alt="Manager Profile"
-                className="h-full w-full object-cover"
-              />
+        <div className="flex flex-col items-end gap-2 group max-w-[280px]">
+          {showProactiveBubble && (
+            <div
+              onClick={() => {
+                setIsOpen(true);
+                setShowProactiveBubble(false);
+              }}
+              className="bg-[#b88c30] text-[#0f1e36] text-[11px] font-black px-4 py-2.5 rounded-2xl rounded-br-none shadow-[0_8px_25px_rgba(184,140,48,0.35)] border border-[#e2b659] animate-bounce relative cursor-pointer pr-8 select-none transition-transform hover:scale-105 active:scale-95 duration-200"
+            >
+              <span>{getProactiveText()}</span>
+              {/* Close Button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowProactiveBubble(false);
+                }}
+                className="absolute right-2 top-2 h-4 w-4 rounded-full hover:bg-black/10 flex items-center justify-center text-[#0f1e36]/70 hover:text-[#0f1e36] transition-colors"
+              >
+                <X className="h-2.5 w-2.5" />
+              </button>
+              {/* Tail */}
+              <div className="absolute right-4 -bottom-1.5 w-3 h-3 bg-[#b88c30] border-r border-b border-[#e2b659] rotate-45" />
             </div>
-            {/* Active Status Dot */}
-            <span className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
-          </div>
+          )}
+          <button
+            onClick={() => {
+              setIsOpen(true);
+              setShowProactiveBubble(false);
+            }}
+            className="flex items-center gap-3 bg-[#0f1e36] hover:bg-[#152a45] text-white rounded-full p-2.5 pl-3.5 pr-6 border border-[#b88c30]/50 shadow-[0_10px_30px_rgba(15,30,54,0.3)] hover:scale-105 active:scale-95 transition-all duration-300 group-hover:scale-105 z-[200] max-w-[280px]"
+          >
+            {/* Avatar Area */}
+            <div className="relative shrink-0">
+              {/* Double Ring Border Effect */}
+              <div className="absolute -inset-0.5 rounded-full border border-[#b88c30]/60 animate-pulse" />
+              <div className="absolute -inset-1 rounded-full border border-[#b88c30]/20" />
+              <div className="h-10 w-10 rounded-full overflow-hidden border border-[#b88c30] relative bg-slate-800">
+                <img
+                  src="/images/manager.png"
+                  alt="Manager Profile"
+                  className="h-full w-full object-cover"
+                />
+              </div>
+              {/* Active Status Dot */}
+              <span className="absolute bottom-0 right-0 h-3 w-3 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
+            </div>
 
-          {/* Text Area */}
-          <div className="flex flex-col items-start leading-tight">
-            <span className="text-[#b88c30] text-[9px] font-black uppercase tracking-[0.15em] font-headline">
-              {translate("Official Manager")}
-            </span>
-            <span className="text-white font-black text-[13px] tracking-tight whitespace-nowrap mt-0.5">
-              {translate("김준현 공식 매니저 상담")}
-            </span>
-          </div>
-        </button>
+            {/* Text Area */}
+            <div className="flex flex-col items-start leading-tight">
+              <span className="text-[#b88c30] text-[9px] font-black uppercase tracking-[0.15em] font-headline">
+                {translate("Official Manager")}
+              </span>
+              <span className="text-white font-black text-[13px] tracking-tight whitespace-nowrap mt-0.5">
+                {translate("김준현 공식 매니저 상담")}
+              </span>
+            </div>
+          </button>
+        </div>
       )}
 
       {/* 2. expanded state: pop-up dialog */}
