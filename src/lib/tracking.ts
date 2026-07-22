@@ -32,14 +32,14 @@ function detectSourceFromReferrer(referrer: string): string {
   if (!referrer) return 'direct';
   const r = referrer.toLowerCase();
 
-  if (r.includes('google.') || r.includes('googleadservices') || r.includes('googleads')) return 'google';
-  if (r.includes('facebook.com') || r.includes('fb.com') || r.includes('l.facebook.com') || r.includes('m.facebook.com')) return 'facebook';
-  if (r.includes('instagram.com') || r.includes('l.instagram.com')) return 'instagram';
-  if (r.includes('naver.com') || r.includes('naver.net')) return 'naver';
-  if (r.includes('kakao.com') || r.includes('kakaocdn.net') || r.includes('kakaocorp.com')) return 'kakao';
+  if (r.includes('facebook.com') || r.includes('fb.com') || r.includes('l.facebook.com') || r.includes('m.facebook.com') || r.includes('com.facebook.katana') || r.includes('com.facebook.orca')) return 'facebook';
+  if (r.includes('instagram.com') || r.includes('l.instagram.com') || r.includes('com.instagram.android')) return 'instagram';
+  if (r.includes('google.') || r.includes('googleadservices') || r.includes('googleads') || r.includes('com.google.android.googlequicksearchbox') || r.includes('com.google.android.youtube')) return 'google';
+  if (r.includes('naver.com') || r.includes('naver.net') || r.includes('com.nhn.android.naversearch')) return 'naver';
+  if (r.includes('kakao.com') || r.includes('kakaocdn.net') || r.includes('kakaocorp.com') || r.includes('com.kakao.talk')) return 'kakao';
   if (r.includes('youtube.com') || r.includes('youtu.be')) return 'youtube';
   if (r.includes('twitter.com') || r.includes('t.co') || r.includes('x.com')) return 'twitter';
-  if (r.includes('tiktok.com')) return 'tiktok';
+  if (r.includes('tiktok.com') || r.includes('com.zhiliaoapp.musically')) return 'tiktok';
   if (r.includes('linkedin.com')) return 'linkedin';
   if (r.includes('bing.com')) return 'bing';
   if (r.includes('yahoo.com') || r.includes('search.yahoo')) return 'yahoo';
@@ -48,25 +48,39 @@ function detectSourceFromReferrer(referrer: string): string {
 }
 
 /**
- * UTM 파라미터를 파싱하고 유입 채널을 localStorage에 저장합니다.
- * UTM이 없어도 referrer 기반 자동 감지로 항상 저장합니다.
- * UTM 파라미터가 있으면 기존 데이터를 덮어씁니다 (광고 클릭 우선).
+ * UTM 파라미터 및 광고 클릭 식별자(fbclid, gclid 등)를 파싱하고 유입 채널을 localStorage에 저장합니다.
+ * 정보가 없어도 referrer 기반 자동 감지로 항상 저장합니다.
+ * 광고 유입 정보가 발견되면 기존 데이터를 덮어씁니다 (광고 클릭 우선).
  */
 export function captureTrackingData(): void {
   if (typeof window === 'undefined') return;
 
   const urlParams = new URLSearchParams(window.location.search);
   const referrer = document.referrer;
-  const hasUtm = ['utm_source', 'utm_medium', 'utm_campaign'].some(p => urlParams.has(p));
+  
+  // 1. UTM 파라미터 추출
+  let utmSource = urlParams.get('utm_source') || undefined;
+  const utmMedium = urlParams.get('utm_medium') || undefined;
+  const utmCampaign = urlParams.get('utm_campaign') || undefined;
 
-  // UTM source가 있으면 그것을 우선 사용, 없으면 referrer로 감지
-  const utmSource = urlParams.get('utm_source') || undefined;
+  // 2. 자동 광고 클릭 식별자(Click ID)가 있는 경우, UTM 파라미터가 없어도 매체 자동 판별
+  if (!utmSource) {
+    if (urlParams.has('fbclid')) {
+      utmSource = 'facebook';
+    } else if (urlParams.has('gclid') || urlParams.has('gbraid') || urlParams.has('wbraid')) {
+      utmSource = 'google';
+    } else if (urlParams.has('ttclid')) {
+      utmSource = 'tiktok';
+    }
+  }
+
+  const hasUtmOrClickId = ['utm_source', 'utm_medium', 'utm_campaign', 'fbclid', 'gclid', 'gbraid', 'wbraid', 'ttclid'].some(p => urlParams.has(p));
   const detectedSource = utmSource || detectSourceFromReferrer(referrer);
 
   const trackingData: TrackingData = {
     utmSource,
-    utmMedium: urlParams.get('utm_medium') || undefined,
-    utmCampaign: urlParams.get('utm_campaign') || undefined,
+    utmMedium: utmMedium || (urlParams.has('fbclid') || urlParams.has('gclid') || urlParams.has('gbraid') || urlParams.has('wbraid') ? 'cpc' : undefined),
+    utmCampaign: utmCampaign || undefined,
     utmTerm: urlParams.get('utm_term') || undefined,
     utmContent: urlParams.get('utm_content') || undefined,
     landingPage: window.location.pathname,
@@ -75,10 +89,10 @@ export function captureTrackingData(): void {
     timestamp: Date.now(),
   };
 
-  // UTM 파라미터가 있거나, 저장된 데이터가 없을 때만 덮어씀
-  // (UTM 없는 재방문 시 기존 광고 attribution 보존)
+  // UTM 파라미터나 광고 클릭 식별자가 있거나, 저장된 데이터가 없을 때만 덮어씀
+  // (광고를 통한 재방문 시 기존 광고 attribution 보존)
   const existing = localStorage.getItem(TRACKING_COOKIE_NAME);
-  if (hasUtm || !existing) {
+  if (hasUtmOrClickId || !existing) {
     localStorage.setItem(TRACKING_COOKIE_NAME, JSON.stringify(trackingData));
   }
 }
