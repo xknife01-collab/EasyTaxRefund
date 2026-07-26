@@ -611,11 +611,45 @@ function FloatingConsultingPanelInner() {
                 </p>
               </div>
 
-              {/* Core Info Display */}
-              <div className="px-5 pb-3 text-center">
-                <p className="text-[#e2b659] font-black text-xs sm:text-sm tracking-tight break-keep leading-snug">
-                  {translate("외국인 중소 기업 청년 소득세 환급을 도와 드립니다.")}
-                </p>
+              {/* FAQ or Core Info Display Box */}
+              <div className="px-5 pb-3">
+                {isEstimatePage ? (
+                  <div className="bg-[#081220] border border-[#b88c30]/20 rounded-3xl p-4 shadow-inner text-left">
+                    <div className="text-[11px] font-black text-[#b88c30] uppercase tracking-wider mb-2.5 px-1 flex items-center justify-between">
+                      <span>{t('자주 묻는 질문 (FAQ)')}</span>
+                      <span className="text-[9px] text-slate-500 font-medium lowercase">click to expand</span>
+                    </div>
+                    <div className="max-h-[170px] overflow-y-auto pr-1 space-y-2.5 custom-scrollbar">
+                      {FAQ_ITEMS.map((faq, i) => (
+                        <div key={i} className="border-b border-white/5 last:border-0 pb-2 last:pb-0">
+                          <button
+                            onClick={() => setExpandedFaqIndex(expandedFaqIndex === i ? null : i)}
+                            className="w-full flex justify-between items-start text-left py-0.5 hover:text-[#e2b659] transition-colors group"
+                          >
+                            <span className="text-xs font-black text-slate-200 leading-snug break-keep pr-2 group-hover:text-[#e2b659]">
+                              {t(faq.title)}
+                            </span>
+                            <ChevronRight className={cn(
+                              "h-3.5 w-3.5 shrink-0 text-slate-500 transition-transform duration-200 mt-0.5",
+                              expandedFaqIndex === i ? "rotate-90 text-[#b88c30]" : "group-hover:text-[#e2b659]"
+                            )} />
+                          </button>
+                          {expandedFaqIndex === i && (
+                            <div className="mt-2 text-[11px] font-bold text-slate-400 bg-white/5 rounded-2xl p-3 leading-relaxed whitespace-pre-wrap break-keep animate-in fade-in slide-in-from-top-1 duration-200">
+                              {t(faq.content)}
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <div className="text-center">
+                    <p className="text-[#e2b659] font-black text-xs sm:text-sm tracking-tight break-keep leading-snug">
+                      {translate("외국인 중소 기업 청년 소득세 환급을 도와 드립니다.")}
+                    </p>
+                  </div>
+                )}
               </div>
 
               {/* Action Links Container */}
