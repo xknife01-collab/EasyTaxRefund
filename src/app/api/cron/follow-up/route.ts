@@ -44,8 +44,23 @@ export async function GET(req: Request) {
       try {
         const lang = chat.detected_language || 'en';
 
+        // Fetch recent messages to understand if they have estimated
+        const { data: messages } = await supabaseAdmin
+          .from('support_messages')
+          .select('sender_type, original_text')
+          .eq('chat_id', chat.id)
+          .order('created_at', { ascending: true })
+          .limit(20);
+
+        const chatHistoryStr = messages
+          ? messages.map(m => `[${m.sender_type === 'user' ? '사용자' : 'AI매니저'}]: ${m.original_text}`).join('\n')
+          : '대화 기록 없음';
+
         // Generate warm follow-up message via Gemini Manager Persona
-        const aiResult = await askFollowUpAi({ language: lang });
+        const aiResult = await askFollowUpAi({ 
+          language: lang,
+          chatHistory: chatHistoryStr
+        });
 
         let deliverySuccess = false;
 
