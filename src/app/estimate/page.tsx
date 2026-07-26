@@ -297,8 +297,8 @@ export default function EstimatePage() {
       const isInApp = /FBAN|FBAV|Instagram|KAKAOTALK|Line|Twitter/i.test(ua);
 
       if (isInApp && !isSim) {
-        setIsInAppBrowser(true);
-        // 자동 전환은 페이스북에 의해 차단되므로, 오버레이를 통해 사용자 클릭 유도
+        // 0단계 조회를 포함하여 모든 단계가 인앱 브라우저에서 막힘 없이 진행되도록 강제 진입 차단막 비활성화
+        setIsInAppBrowser(false);
       }
 
       window.addEventListener('beforeinstallprompt', (e) => {

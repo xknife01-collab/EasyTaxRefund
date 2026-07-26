@@ -18,6 +18,7 @@ export async function POST(req: NextRequest) {
       message: message.trim(),
       language: language || "ko",
       history: history || [],
+      channel: "web",
     });
 
     return NextResponse.json({

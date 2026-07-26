@@ -57,6 +57,10 @@ export async function POST(req: Request) {
           detected_language: sourceLang,
           last_message_at: new Date().toISOString(),
           unread_count: isAiActive ? 0 : (existingChat.unread_count || 0) + 1,
+          metadata: {
+            ...(existingChat.metadata || {}),
+            follow_up_count: 0
+          }
         })
         .eq('id', existingChat.id)
         .select('id, metadata')
@@ -129,6 +133,7 @@ export async function POST(req: Request) {
           message: rawText,
           language: sourceLang,
           history,
+          channel: 'telegram',
         });
 
         const botToken = process.env.TELEGRAM_BOT_TOKEN;
