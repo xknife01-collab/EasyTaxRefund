@@ -278,14 +278,32 @@ export default function HomePage() {
                 <div className="text-[#e2b659] text-xs font-black tracking-wider uppercase">{t('Real Visas Supported')}</div>
                 <div className="text-xl lg:text-2xl font-black text-white">{t('E-7, E-9, D-10, etc.')}</div>
                 <div className="flex flex-wrap gap-2 pt-2">
-                  {languages.map((lang) => (
-                    <div key={lang.code} className="flex flex-col items-center gap-1 group cursor-default">
-                      <span className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/10 border border-white/20 text-lg shadow-sm group-hover:bg-white/25 group-hover:scale-110 transition-all">
-                        {lang.flag}
-                      </span>
-                      <span className="text-[9px] font-bold text-slate-500 group-hover:text-slate-300 transition-colors leading-none">{lang.countryCode.toUpperCase()}</span>
-                    </div>
-                  ))}
+                  {languages.map((lang) => {
+                    const isActive = lang.code === language;
+                    return (
+                      <button
+                        key={lang.code}
+                        onClick={() => setLanguage(lang.code)}
+                        className="flex flex-col items-center gap-1 group cursor-pointer focus:outline-none"
+                        title={lang.name}
+                      >
+                        <span className={`inline-flex h-9 w-9 items-center justify-center rounded-full border text-lg shadow-sm transition-all ${
+                          isActive
+                            ? 'bg-[#e2b659]/20 border-[#e2b659] scale-110 ring-2 ring-[#e2b659]/30'
+                            : 'bg-white/10 border-white/20 group-hover:bg-white/25 group-hover:scale-110'
+                        }`}>
+                          {lang.flag}
+                        </span>
+                        <span className={`text-[9px] font-bold transition-colors leading-none ${
+                          isActive
+                            ? 'text-[#e2b659] font-black'
+                            : 'text-slate-500 group-hover:text-slate-300'
+                        }`}>
+                          {lang.countryCode.toUpperCase()}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
