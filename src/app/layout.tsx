@@ -6,6 +6,8 @@ import { LanguageProvider } from '@/components/LanguageContext';
 // import { SocialProof } from '@/components/SocialProof';
 import { PWASetup } from '@/components/PWASetup';
 import { FloatingAiChat } from '@/components/FloatingAiChat';
+import Clarity from '@/components/Clarity';
+import GoogleTagManager from '@/components/GoogleTagManager';
 
 export const metadata: Metadata = {
   manifest: '/manifest.json',
@@ -54,6 +56,8 @@ export default function RootLayout({
           {/* <SocialProof /> */}
           <PWASetup />
           <FloatingAiChat />
+          <Clarity />
+          <GoogleTagManager />
         </LanguageProvider>
       </body>
     </html>
