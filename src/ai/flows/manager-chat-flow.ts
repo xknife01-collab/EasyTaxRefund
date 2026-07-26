@@ -1,5 +1,3 @@
-'use server';
-
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { AI_MANAGER_SYSTEM_PROMPT } from '@/lib/ai-manager-persona';
