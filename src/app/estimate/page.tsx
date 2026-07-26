@@ -3027,7 +3027,7 @@ export default function EstimatePage() {
                       <Button
                         id="step0-submit-btn"
                         onClick={() => { setStep(0.5); saveProgress(0.5); }}
-                        className="w-full h-auto min-h-[5rem] py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center gap-4 transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                        className="w-full min-h-[5rem] h-auto py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center flex-wrap gap-4 text-center leading-tight whitespace-normal break-words transition-all hover:scale-[1.02] active:scale-[0.98] group"
                       >
                         <span className="flex-1 text-left">{t('이어서 정밀 진단 시작하기')}</span>
                         <ArrowRight className="h-7 w-7 transition-transform group-hover:translate-x-2 shrink-0" />
@@ -3178,7 +3178,7 @@ export default function EstimatePage() {
                       <Button
                         id="step05-submit-btn"
                         onClick={() => { setStep(1); saveProgress(1); }}
-                        className="w-full h-[5rem] bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                        className="w-full min-h-[5rem] h-auto py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center flex-wrap gap-3 text-center leading-tight whitespace-normal break-words transition-all hover:scale-[1.02] active:scale-[0.98] group"
                       >
                         <span className="flex-1 text-left">{t('확인했습니다. 시작하기')}</span>
                         <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-2 shrink-0" />
@@ -3296,7 +3296,7 @@ export default function EstimatePage() {
                       <Button
                         id="step1-submit-btn"
                         onClick={() => { setStep(2); saveProgress(2); }}
-                        className="w-full h-[5rem] bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                        className="w-full min-h-[5rem] h-auto py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center flex-wrap gap-3 text-center leading-tight whitespace-normal break-words transition-all hover:scale-[1.02] active:scale-[0.98] group"
                       >
                         <BadgeCheck className="h-6 w-6 shrink-0 group-hover:scale-110 transition-transform" />
                         <span className="flex-1 text-left">{t('시작하기')}</span>
@@ -3491,7 +3491,7 @@ export default function EstimatePage() {
                       </div>
 
                       <Button id="step2-submit-btn" type="submit"
-                        className="w-full h-[5rem] bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center gap-3 transition-all hover:scale-[1.02] active:scale-[0.98] group"
+                        className="w-full min-h-[5rem] h-auto py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center flex-wrap gap-3 text-center leading-tight whitespace-normal break-words transition-all hover:scale-[1.02] active:scale-[0.98] group"
                         disabled={loading}>
                         {loading ? <Loader2 className="animate-spin h-6 w-6" /> : (
                           <><span className="flex-1 text-left">{t('다음 단계로 이동')}</span><ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-2 shrink-0" /></>
@@ -3775,7 +3775,7 @@ export default function EstimatePage() {
                       <Button
                         id="step3-submit-btn"
                         type="submit"
-                        className="w-full h-16 sm:h-20 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0f1e36] text-lg sm:text-xl font-black rounded-2xl shadow-xl shadow-[#b88c30]/10 flex items-center justify-center gap-3 transition-all hover:scale-[1.01] active:scale-[0.99] group"
+                        className="w-full min-h-[4rem] sm:min-h-[5rem] h-auto py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0f1e36] text-lg sm:text-xl font-black rounded-2xl shadow-xl shadow-[#b88c30]/10 flex items-center justify-center flex-wrap gap-3 text-center leading-tight whitespace-normal break-words transition-all hover:scale-[1.01] active:scale-[0.99] group"
                         disabled={loading}
                       >
                         {loading ? <Loader2 className="animate-spin h-6 w-6" /> : (
@@ -4244,7 +4244,7 @@ export default function EstimatePage() {
                           </div>
                         </div>
 
-                        <Button id="step4-submit-btn" onClick={handleInitiateAuth} className="w-full h-[5rem] bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-2xl font-black rounded-2xl shadow-xl shadow-[#b88c30]/20 hover:scale-[1.01] active:scale-[0.99] transition-all" disabled={loading}>
+                        <Button id="step4-submit-btn" onClick={handleInitiateAuth} className="w-full min-h-[5rem] h-auto py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-2xl font-black rounded-2xl shadow-xl shadow-[#b88c30]/20 hover:scale-[1.01] active:scale-[0.99] transition-all whitespace-normal break-words flex items-center justify-center text-center leading-tight" disabled={loading}>
                           {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 요청하기')}
                         </Button>
 
@@ -4403,7 +4403,7 @@ export default function EstimatePage() {
                       </div>
                     )}
 
-                    <Button id="step5-submit-btn" onClick={handleFinalVerifyAndAnalyze} className="w-full h-20 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-2xl font-black rounded-3xl shadow-xl shadow-[#b88c30]/20" disabled={loading}>
+                    <Button id="step5-submit-btn" onClick={handleFinalVerifyAndAnalyze} className="w-full min-h-[5rem] h-auto py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-2xl font-black rounded-3xl shadow-xl shadow-[#b88c30]/20 whitespace-normal break-words flex items-center justify-center text-center leading-tight" disabled={loading}>
                       {loading ? <Loader2 className="animate-spin h-8 w-8" /> : t('인증 완료 및 데이터 분석')}
                     </Button>
                   </CardContent>
@@ -4749,7 +4749,7 @@ export default function EstimatePage() {
                           updateDoc(doc(db, 'applications', draftAppId), { status: 'ZeroRefund', lastStep: 7 });
                         }
                         router.push('/');
-                      }} className="w-full h-20 bg-white/10 hover:bg-white/15 text-white text-xl lg:text-2xl font-black rounded-[2rem] shadow-sm flex items-center justify-center gap-4 transition-all hover:scale-[1.02]">
+                      }} className="w-full min-h-[5rem] h-auto py-4 px-6 bg-white/10 hover:bg-white/15 text-white text-xl lg:text-2xl font-black rounded-[2rem] shadow-sm flex items-center justify-center flex-wrap gap-4 text-center leading-tight whitespace-normal break-words transition-all hover:scale-[1.02]">
                         <ArrowLeft className="h-6 w-6 text-slate-400" /> {t('홈으로 돌아가기')}
                       </Button>
                     </div>
@@ -4766,7 +4766,7 @@ export default function EstimatePage() {
                         }
                       }}
                       disabled={isIdGenerating}
-                      className="w-full h-20 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl lg:text-2xl font-black rounded-[2rem] shadow-2xl flex items-center justify-center gap-4 transition-transform active:scale-95 disabled:opacity-50"
+                      className="w-full min-h-[5rem] h-auto py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl lg:text-2xl font-black rounded-[2rem] shadow-2xl flex items-center justify-center flex-wrap gap-4 text-center leading-tight whitespace-normal break-words transition-transform active:scale-95 disabled:opacity-50"
                     >
                       {isIdGenerating ? (
                         <>
@@ -5148,7 +5148,7 @@ export default function EstimatePage() {
                       <p>{t('Korea Tax Refund Service(Korea Tax Refund Service)은 세무대리 신고를 직접 수행하지 않으며, 본 플랫폼에서 작성된 신청 서류는 제휴 세무사를 통해 최종 검토 및 제출됩니다.')}</p>
                     </div>
 
-                    <Button id="step10-submit-btn" type="submit" className="w-full h-20 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl lg:text-2xl font-black rounded-[2rem] shadow-2xl shadow-[#b88c30]/20 transition-all hover:scale-[1.02]" disabled={loading}>
+                    <Button id="step10-submit-btn" type="submit" className="w-full min-h-[5rem] h-auto py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl lg:text-2xl font-black rounded-[2rem] shadow-2xl shadow-[#b88c30]/20 whitespace-normal break-words flex items-center justify-center text-center leading-tight transition-all hover:scale-[1.02]" disabled={loading}>
                       {loading ? <Loader2 className="animate-spin h-8 w-8 text-[#0b192c]" /> : t('서명 적용 및 환급 신청하기')}
                     </Button>
                   </form>
@@ -5192,7 +5192,7 @@ export default function EstimatePage() {
                       </div>
                     </div>
                   </div>
-                  <Button onClick={() => setStep(0)} className="w-full h-16 bg-slate-900 text-white font-black rounded-2xl">
+                  <Button onClick={() => setStep(0)} className="w-full min-h-[4rem] h-auto py-4 px-6 bg-slate-900 text-white font-black rounded-2xl whitespace-normal break-words flex items-center justify-center text-center leading-tight">
                     {t('시뮬레이션 다시 하기')}
                   </Button>
                 </CardContent>
