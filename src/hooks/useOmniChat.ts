@@ -225,6 +225,46 @@ export function useOmniChat(isOpen: boolean, initialChatId?: string | null) {
     }
   };
 
+  const toggleAiActive = async (chatId: string, currentStatus: boolean) => {
+    try {
+      const nextStatus = !currentStatus;
+      const { error } = await supabase
+        .from("support_chats")
+        .update({
+          metadata: {
+            ...selectedChat?.metadata,
+            is_ai_active: nextStatus
+          }
+        })
+        .eq("id", chatId);
+
+      if (error) throw error;
+
+      setSelectedChat(prev => prev && prev.id === chatId ? {
+        ...prev,
+        metadata: {
+          ...prev.metadata,
+          is_ai_active: nextStatus
+        }
+      } : prev);
+
+      toast({
+        title: nextStatus ? "🟢 AI 매니저 자동 대화 켜짐" : "🔴 관리자 직접 개입 (AI 꺼짐)",
+        description: nextStatus
+          ? "이제 AI 매니저가 유저 질문에 1차 자동 답변을 보냅니다."
+          : "AI 자동 답변이 정지되었으며, 이제 관리자가 직접 한국어로 대응합니다.",
+      });
+      fetchChats();
+    } catch (err: any) {
+      console.error("Failed to toggle AI status:", err);
+      toast({
+        variant: "destructive",
+        title: "오류 발생",
+        description: err.message || "AI 모드 변경 중 오류가 발생했습니다.",
+      });
+    }
+  };
+
   // Filtered chats based on left channel filter tab
   const filteredChats = chats.filter((chat) => {
     if (activeChannelFilter === "all") return true;
@@ -245,6 +285,7 @@ export function useOmniChat(isOpen: boolean, initialChatId?: string | null) {
     activeChannelFilter,
     setActiveChannelFilter,
     sendAdminReply,
+    toggleAiActive,
     messagesEndRef,
     refreshChats: fetchChats
   };

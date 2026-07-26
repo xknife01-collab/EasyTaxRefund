@@ -33,6 +33,7 @@ interface ChatWindowProps {
   onSend: () => void;
   isSending: boolean;
   isLoadingMessages: boolean;
+  toggleAiActive: (chatId: string, currentStatus: boolean) => Promise<void>;
   messagesEndRef: React.RefObject<HTMLDivElement | null>;
 }
 
@@ -44,6 +45,7 @@ export function ChatWindow({
   onSend,
   isSending,
   isLoadingMessages,
+  toggleAiActive,
   messagesEndRef
 }: ChatWindowProps) {
   if (!selectedChat) {
@@ -79,6 +81,25 @@ export function ChatWindow({
               {selectedChat.channel.toUpperCase()} ID: {selectedChat.external_chat_id}
             </p>
           </div>
+        </div>
+
+        {/* AI Auto-Respond & Intervene Toggle Button */}
+        <div>
+          {selectedChat.metadata?.is_ai_active === false ? (
+            <Button
+              onClick={() => toggleAiActive(selectedChat.id, false)}
+              className="bg-red-500/20 hover:bg-red-500/30 text-red-400 border border-red-500/30 font-black rounded-xl text-xs py-1.5 h-auto cursor-pointer"
+            >
+              🔴 관리자 직접 개입 (AI 자동응답 정지됨)
+            </Button>
+          ) : (
+            <Button
+              onClick={() => toggleAiActive(selectedChat.id, true)}
+              className="bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 border border-emerald-500/20 font-black rounded-xl text-xs py-1.5 h-auto cursor-pointer"
+            >
+              🟢 AI 매니저 대화 작동 중 (클릭 시 개입)
+            </Button>
+          )}
         </div>
       </div>
 

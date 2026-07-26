@@ -29,6 +29,7 @@ export function OmniChatDrawer({ isOpen, onClose, initialChatId }: OmniChatDrawe
     activeChannelFilter,
     setActiveChannelFilter,
     sendAdminReply,
+    toggleAiActive,
     messagesEndRef,
     refreshChats
   } = useOmniChat(isOpen, initialChatId);
@@ -88,6 +89,7 @@ export function OmniChatDrawer({ isOpen, onClose, initialChatId }: OmniChatDrawe
               onSend={() => sendAdminReply()}
               isSending={isSending}
               isLoadingMessages={isLoadingMessages}
+              toggleAiActive={toggleAiActive}
               messagesEndRef={messagesEndRef}
             />
 
