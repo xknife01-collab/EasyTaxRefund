@@ -90,6 +90,42 @@ const BUTTON_TEXTS: Record<string, string> = {
   ur: "📄 نوجوانوں کے انکم ٹیکس میں 90% کمی کی گائیڈ دیکھیں"
 };
 
+const BANNER_TRUST_TEXTS: Record<string, string> = {
+  ko: "🔒 100% 후불 정산 (선결제 없음) | 개인정보 즉시 파기",
+  en: "🔒 100% Post-paid (No upfront fee) | Data deleted immediately",
+  vi: "🔒 Thanh toán sau 100% (Không phí trước) | Xóa dữ liệu ngay lập tức",
+  ne: "🔒 १००% भुक्तानी पछि (कुनै अग्रिम शुल्क छैन) | डाटा तुरुन्तै मेटाइयो",
+  uz: "🔒 100% Keyin to'lash (Oldindan to'lovsiz) | Ma'lumotlar darhol o'chiriladi",
+  zh: "🔒 100% 后付结算（无预付款） | 个人信息立即销毁",
+  km: "🔒 ទូទាត់ក្រោយ ១០០% (គ្មានថ្លៃមុន) | លុបទិន្នន័យភ្លាមៗ",
+  th: "🔒 จ่ายหลังบริการ 100% (ไม่มีค่าใช้จ่ายล่วงหน้า) | ลบข้อมูลทันที",
+  my: "🔒 ၁၀၀% အပြီးသတ်မှပေးချေရန် (ကြိုတင်ခမရှိ) | အချက်အလက်များကို ချက်ချင်းဖျက်ပစ်သည်",
+  si: "🔒 100% පසුගෙවුම් (පෙර ගෙවුම් නැත) | දත්ත වහාම මකා දැමේ",
+  kk: "🔒 100% кейін төлеу (алдын ала төлемсіз) | Деректер дереу жойылады",
+  bn: "🔒 ১০০% পোস্ট-পেইড (কোন অগ্রিম fee নেই) | ডেটা অবিলম্বে মুছে ফেলা হবে",
+  id: "🔒 100% Bayar di akhir (Tanpa biaya di awal) | Data langsung dihapus",
+  mn: "🔒 100% Дараа төлбөрт (Урьдчилгаа төлбөргүй) | Хувийн мэдээллийг шууд устгана",
+  ur: "🔒 100% بعد میں ادائیگی (کوئی پیشگی فیس نہیں) | ڈیٹا فوری طور پر حذف کر دیا گیا"
+};
+
+const HERO_TRUST_TEXTS: Record<string, string> = {
+  ko: "* 본 서비스는 국가 공인 세무사가 검토하며, 조회된 정보는 확인 즉시 영구 파기됩니다.",
+  en: "* Reviewed by certified tax accountants. Checked data is permanently deleted immediately.",
+  vi: "* Được kiểm tra bởi kế toán thuế có chứng chỉ. Dữ liệu kiểm tra sẽ bị xóa vĩnh viễn ngay lập tức.",
+  ne: "* प्रमाणित कर लेखा परीक्षकद्वारा समीक्षा गरिएको। जाँच गरिएको डाटा तुरुन्तै स्थायी रूपमा मेटाइन्छ।",
+  uz: "* Sertifikatlangan soliq maslahatchilari tomonidan tekshiriladi. Ma'lumotlar darhol butunlay o'chiriladi.",
+  zh: "* 由国家公认税务师审核，查询信息确认后立即永久销毁。",
+  km: "* បញ្ជាក់ដោយគណនេយ្យករពន្ធដែលមានការรับដឹង។ ទិន្នន័យដែលបានពិនិត្យនឹងត្រូវលុបជាអចិន្ត្រៃយ៍ភ្លាមៗ។",
+  th: "* ตรวจสอบโดยผู้สอบบัญชีภาษีอากรที่ได้รับอนุญาต ข้อมูลที่ตรวจสอบจะถูกลบอย่างถาวรทันที",
+  my: "* လက်မှတ်ရ အခွန်စာရင်းကိုင်များမှ စစ်ဆေးသည်။ စစ်ဆေးပြီးသောအချက်အလက်များကို ချက်ချင်းအမြဲတမ်းဖျက်ပစ်သည်။",
+  si: "* සහතික ලත් බදු ගණකාධිකාරීවරුන් විසින් සමාලෝචනය කරනු ලැබේ. පරීක්ෂා කරන ලද දත්ත වහාම ස්ථිරවම මකා දැමේ.",
+  kk: "* Сертификатталған салық кеңесшілері тексереді. Тексерілген деректер дереу біржола жойылады.",
+  bn: "* প্রত্যয়িত কর হিসাবরক্ষক দ্বারা পর্যালোচনা করা হয়। পরীক্ষিত ডেটা অবিলম্বে স্থায়ীভাবে মুছে ফেলা হয়।",
+  id: "* Ditinjau oleh akuntan pajak bersertifikat. Data yang diperiksa langsung dihapus secara permanen.",
+  mn: "* Мэргэшсэн татварын нягтлан бодогчид хянана. Шалгасан мэдээллийг шууд бүрмөсөн устгана.",
+  ur: "* تصدیق شدہ ٹیکس اکاؤنٹنٹ کے ذریعہ جائزہ لیا گیا۔ چیک کیا گیا ڈیٹا فوری طور پر مستقل طور پر حذف کر دیا جاتا ہے۔"
+};
+
 export default function HomePage() {
   const router = useRouter();
   const { t, isReady, setLanguage, language } = useTranslation();
@@ -284,7 +320,7 @@ export default function HomePage() {
                       onClick={() => {
                         document.getElementById('tax-reduction-guide')?.scrollIntoView({ behavior: 'smooth' });
                       }}
-                      className="w-full sm:w-auto h-16 px-8 bg-gradient-to-r from-[#b88c30] to-[#e2b659] hover:from-[#a07a28] hover:to-[#d4a848] text-white text-base md:text-lg font-black rounded-2xl shadow-xl shadow-[#b88c30]/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                      className="w-full sm:w-auto h-16 px-8 bg-[#0b192c] hover:bg-[#152a45] text-white border-2 border-[#e2b659] text-base md:text-lg font-black rounded-2xl shadow-xl shadow-[#0b192c]/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                     >
                       {BUTTON_TEXTS[language] || BUTTON_TEXTS['en']}
                     </Button>
@@ -1691,6 +1727,10 @@ export default function HomePage() {
             </span> <ArrowRight className="h-5 w-5 shrink-0 text-white" />
           </Link>
         </Button>
+        {/* 초소형 안심 띠지 (버튼 위치에 영향 주지 않도록 하단 절대 좌표 배치) */}
+        <div className="absolute top-[108%] left-1/2 -translate-x-1/2 text-[9.5px] font-black text-slate-500 bg-white/95 backdrop-blur-md px-3 py-1 rounded-full border border-slate-200/80 shadow-md leading-none flex items-center gap-1 whitespace-nowrap z-50">
+          {BANNER_TRUST_TEXTS[language] || BANNER_TRUST_TEXTS['en']}
+        </div>
       </div>
     </div>
   );
