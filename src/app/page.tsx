@@ -639,8 +639,8 @@ export default function HomePage() {
                         </div>
                       ))}
                       
-                      <Button asChild className="w-full premium-btn-shimmer bg-gradient-to-r from-[#b88c30] via-[#e2b659] to-[#b88c30] hover:from-[#e2b659] hover:to-[#b88c30] text-[#0f1e36] font-black rounded-2xl py-6 text-base mt-4 shadow-xl shadow-[#b88c30]/20 transition-all duration-300 hover:scale-[1.02] active:scale-95 group cursor-pointer">
-                        <Link href="/estimate" className="flex items-center justify-center gap-2">
+                      <Button asChild className="w-full min-h-[4rem] h-auto py-4 px-6 premium-btn-shimmer bg-gradient-to-r from-[#b88c30] via-[#e2b659] to-[#b88c30] hover:from-[#e2b659] hover:to-[#b88c30] text-[#0f1e36] font-black rounded-2xl text-base mt-4 shadow-xl shadow-[#b88c30]/20 transition-all duration-300 hover:scale-[1.02] active:scale-95 group cursor-pointer whitespace-normal break-words">
+                        <Link href="/estimate" className="flex items-center justify-center flex-wrap gap-2 text-center leading-tight w-full">
                           <span>{t("예상 환급액 무료 조회")}</span>
                           <ArrowRight className="h-5 w-5 transition-transform duration-300 group-hover:translate-x-1.5 shrink-0 text-[#0f1e36]" />
                         </Link>
@@ -685,10 +685,10 @@ export default function HomePage() {
 
 
 
-                  {/* 제도안내 자세히 알아보기 CTA */}
+                  {/* 제도안내 자세히 알아보기 CTA (긴 번역어 대응용 반응형 세팅) */}
                   <div className="flex justify-center pt-4">
-                    <Button size="lg" asChild className="premium-btn-shimmer w-full sm:w-auto text-lg font-black px-12 py-7 h-auto bg-gradient-to-r from-[#b88c30] via-[#e2b659] to-[#b88c30] hover:from-[#e2b659] hover:to-[#b88c30] text-[#0f1e36] rounded-2xl shadow-xl shadow-[#b88c30]/20 transition-all duration-300 hover:scale-[1.02] active:scale-95 group cursor-pointer">
-                      <Link href="/youth-tax" className="flex items-center justify-center gap-3">
+                    <Button size="lg" asChild className="premium-btn-shimmer w-full sm:w-auto text-lg font-black min-h-[4rem] h-auto py-4 px-6 bg-gradient-to-r from-[#b88c30] via-[#e2b659] to-[#b88c30] hover:from-[#e2b659] hover:to-[#b88c30] text-[#0f1e36] rounded-2xl shadow-xl shadow-[#b88c30]/20 transition-all duration-300 hover:scale-[1.02] active:scale-95 group cursor-pointer whitespace-normal break-words">
+                      <Link href="/youth-tax" className="flex items-center justify-center flex-wrap gap-2 text-center leading-tight w-full">
                         <span>{t('청년 소득세 90% 감면 제도안내 자세히 알아보기')}</span>
                         <ArrowRight className="h-6 w-6 transition-transform duration-300 group-hover:translate-x-1.5 shrink-0" />
                       </Link>
@@ -1523,10 +1523,12 @@ export default function HomePage() {
               <div className="flex justify-center mb-16 animate-in fade-in slide-in-from-top-4 duration-500">
                 <Button 
                   onClick={() => setIsAiVisible(true)}
-                  className="rounded-full px-8 py-6 border border-[#e2b659]/30 hover:border-[#e2b659]/60 bg-[#0b192c] hover:bg-[#152a45] text-white font-black gap-3 shadow-xl group h-auto"
+                  className="rounded-[1.5rem] min-h-[3.5rem] h-auto py-3 px-6 border border-[#e2b659]/30 hover:border-[#e2b659]/60 bg-[#0b192c] hover:bg-[#152a45] text-white font-black shadow-xl group transition-all duration-300 hover:scale-[1.02] active:scale-95 whitespace-normal break-words"
                 >
-                  <Sparkles className="h-5 w-5 text-[#e2b659]" />
-                  {t('Korea Tax Refund Service AI 비서 호출하기')}
+                  <span className="flex items-center justify-center flex-wrap gap-2 text-center leading-tight">
+                    <Sparkles className="h-5 w-5 text-[#e2b659] shrink-0" />
+                    <span>{t('Korea Tax Refund Service AI 비서 호출하기')}</span>
+                  </span>
                 </Button>
               </div>
             )}
