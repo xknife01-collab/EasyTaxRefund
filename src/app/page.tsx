@@ -54,6 +54,42 @@ const TaxRefundSimulator = dynamic(
   { ssr: false }
 );
 
+const BADGE_TEXTS: Record<string, string> = {
+  ko: "📢 외국인 근로자도 100% 지원금 대상입니다!",
+  en: "📢 100% Eligible for Foreign Workers in Korea!",
+  vi: "📢 100% Đối tượng hỗ trợ cho lao động nước ngoài!",
+  ne: "📢 कोरियामा रहेका विदेशी कामدارहरू पनि १००% योग्य छन्!",
+  uz: "📢 Koreyadagi chet ellik ishchilar ham 100% muvofiq keladi!",
+  zh: "📢 在韩外国劳动者也100%符合支持条件！",
+  km: "📢 ពលករទេសន្តរប្រវេសន៍នៅកូរ៉េក៏ទទួលបានអត្ថប្រយោជន៍ ១០០% ដែរ!",
+  th: "📢 แรงงานต่างชาติในเกาหลีก็มีสิทธิ์ได้รับ 100%!",
+  my: "📢 ကိုရီးယားရှိ နိုင်ငံခြားသားအလုပ်သမားများလည်း ၁၀၀% အကျုံးဝင်ပါသည်။",
+  si: "📢 කොරියාවේ සිටින විදේශික සේවකයින්ටද 100% ක් හිමිකම් ඇත!",
+  kk: "📢 Кореядағы шетелдік жұмысшылар да 100% қолдауға ие!",
+  bn: "📢 কোরিয়ায় কর্মরত বিদেশী কর্মীরাও ১০০% যোগ্য!",
+  id: "📢 Pekerja asing di Korea juga 100% memenuhi syarat!",
+  mn: "📢 Солонгост байгаа гадаад ажилчид ч 100% хамрагдах боломжтой!",
+  ur: "📢 کوریا میں غیر ملکی کارکن بھی 100% اہل ہیں!"
+};
+
+const BUTTON_TEXTS: Record<string, string> = {
+  ko: "📄 청년 소득세 90% 감면 제도 안내 보기",
+  en: "📄 View Youth Income Tax 90% Reduction Guide",
+  vi: "📄 Xem hướng dẫn giảm 90% thuế thu nhập trẻ",
+  ne: "📄 युवा आयकर ९०% छुट सम्बन्धी जानकारी हेर्नुहोस्",
+  uz: "📄 Yoshlar daromad solig'ini 90% ga kamaytirish bo'yicha qo'llanma",
+  zh: "📄 查看青年所得税减免90%制度指南",
+  km: "📄 មើលការណែនាំអំពីការកាត់បន្ថយពន្ធលើប្រាក់ចំណូលយុវជន ៩០%",
+  th: "📄 ดูคู่มือการลดภาษีเงินได้เยาวชน 90%",
+  my: "📄 လူငယ်ဝင်ငွေခွန် ၉၀% လျှော့చရေး လမ်းညွှန်ချက်ကို ကြည့်ရှုရန်",
+  si: "📄 තරුණ ආදායම් ბදු 90% අඩු කිරීමේ මාර්ගෝපදේශය බලන්න",
+  kk: "📄 Жастардың табыс салығын 90%-ға төмендету бойынша нұсқаулықты қарау",
+  bn: "📄 যুব আয়কর ৯০% হ্রাস সংক্রান্ত নির্দেশিকা দেখুন",
+  id: "📄 Lihat Panduan Pengurangan Pajak Penghasilan Pemuda 90%",
+  mn: "📄 Залуучуудын орлогын албан татварыг 90% хөнгөлөх заавар харах",
+  ur: "📄 نوجوانوں کے انکم ٹیکس میں 90% کمی کی گائیڈ دیکھیں"
+};
+
 export default function HomePage() {
   const router = useRouter();
   const { t, isReady, setLanguage, language } = useTranslation();
@@ -217,21 +253,41 @@ export default function HomePage() {
               <div className="lg:col-span-7 text-left space-y-6 md:space-y-8">
                 
                 {/* Main Heading */}
-                <div className="space-y-3">
-                  <h2 className="text-[#0b192c] text-xl md:text-2xl lg:text-[2.2rem] font-black tracking-tight font-headline uppercase leading-none">
-                    {t('FOREIGNER INCOME TAX REFUND')}
-                  </h2>
-                  <h3 className="text-[#b88c30] text-lg md:text-xl lg:text-2xl font-black font-headline uppercase leading-none">
-                    {t('- GOVERNMENT SUPPORTED PROGRAM')}
-                  </h3>
-                  <h1 className="text-3xl md:text-5xl lg:text-[3.2rem] font-black text-slate-900 tracking-tight leading-[1.15] break-keep pt-2">
-                    {t('외국인 중소기업 소득세 환급 - 정부 공식 제도 안내')}
-                  </h1>
+                <div className="space-y-4">
+                  {/* "외국인 근로자도 100% 지원금 대상입니다!" 미니 캡슐 배지 (관공서 안내 스타일) */}
+                  <div className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-[#0b192c]/10 border border-slate-200 text-slate-800 text-xs sm:text-sm font-black w-fit shadow-[0_2px_8px_rgba(15,25,44,0.03)]">
+                    <BadgeCheck className="w-4.5 h-4.5 text-[#b88c30] shrink-0" />
+                    <span className="tracking-tight">{BADGE_TEXTS[language] || BADGE_TEXTS['en']}</span>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h2 className="text-[#0b192c] text-xl md:text-2xl lg:text-[2.2rem] font-black tracking-tight font-headline uppercase leading-none">
+                      {t('FOREIGNER INCOME TAX REFUND')}
+                    </h2>
+                    <h3 className="text-[#b88c30] text-lg md:text-xl lg:text-2xl font-black font-headline uppercase leading-none">
+                      {t('- GOVERNMENT SUPPORTED PROGRAM')}
+                    </h3>
+                    <h1 className="text-3xl md:text-5xl lg:text-[3.2rem] font-black text-slate-900 tracking-tight leading-[1.15] break-keep pt-2">
+                      {t('외국인 중소기업 소득세 환급 - 정부 공식 제도 안내')}
+                    </h1>
+                  </div>
 
                   {/* Subtitle text only */}
                   <div className="space-y-1 pt-2">
                     <p className="text-base md:text-lg font-black text-slate-700">{t('Verify your eligibility in 1 minute.')}</p>
                     <p className="text-sm md:text-base font-bold text-slate-500">{t('Our service is securely linked with the National Tax Service (Hometax).')}</p>
+                  </div>
+
+                  {/* 청년 소득세 90% 감면 제도 안내 대형 버튼 */}
+                  <div className="pt-4">
+                    <Button
+                      onClick={() => {
+                        document.getElementById('tax-reduction-guide')?.scrollIntoView({ behavior: 'smooth' });
+                      }}
+                      className="w-full sm:w-auto h-16 px-8 bg-gradient-to-r from-[#b88c30] to-[#e2b659] hover:from-[#a07a28] hover:to-[#d4a848] text-white text-base md:text-lg font-black rounded-2xl shadow-xl shadow-[#b88c30]/20 flex items-center justify-center gap-2 transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
+                    >
+                      {BUTTON_TEXTS[language] || BUTTON_TEXTS['en']}
+                    </Button>
                   </div>
                 </div>
 
@@ -334,7 +390,7 @@ export default function HomePage() {
         </section>
 
         {/* ===== 청년 외국인 세무 지원 섹션 — 에디토리얼 프리미엄 ===== */}
-        <section className="bg-white overflow-hidden">
+        <section id="tax-reduction-guide" className="bg-white overflow-hidden">
           <div className="h-1 w-full bg-gradient-to-r from-[#b88c30] via-[#e2b659] to-[#b88c30]" />
 
           <div className="container mx-auto max-w-7xl px-6 py-16 lg:py-24">
