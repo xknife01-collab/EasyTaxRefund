@@ -123,7 +123,18 @@ export function Navbar() {
           )}
           <Button asChild className="hidden sm:inline-flex bg-[#0b192c] hover:bg-[#152a45] text-white font-black rounded-2xl px-8 h-auto min-h-[3rem] py-2 border-2 border-[#e2b659] shadow-lg shadow-[#0b192c]/20 transition-all hover:scale-105 active:scale-95 whitespace-normal break-words">
             <Link href="/estimate" className="flex-1 min-w-[max-content] flex items-center justify-center gap-1">
-              <span className="text-white font-black">{t('국세청 안전 연동으로 내 숨은 환급금 무료 조회하기')}</span>
+              <span className="font-black">
+                {language === 'ko' ? (
+                  <>
+                    <span className="text-[#e2b659] mr-1.5">국세청 안전 연동으로</span>
+                    <span className="text-white">내 숨은 환급금 무료 조회하기</span>
+                  </>
+                ) : (
+                  <span className="text-white">
+                    {t('국세청 안전 연동으로 내 숨은 환급금 무료 조회하기')}
+                  </span>
+                )}
+              </span>
             </Link>
           </Button>
           
@@ -194,7 +205,18 @@ export function Navbar() {
                 )}
                 <Button asChild className="w-full bg-[#0b192c] hover:bg-[#152a45] border-2 border-[#e2b659] h-auto min-h-[4rem] rounded-2xl font-black text-lg mt-2 py-4 px-6 shadow-lg whitespace-normal break-words">
                   <Link href="/estimate" className="text-center leading-tight flex-1 flex flex-col items-center justify-center gap-0.5">
-                    <span className="text-white font-black text-base">{t('국세청 안전 연동으로 내 숨은 환급금 무료 조회하기')}</span>
+                    <span className="font-black text-base leading-tight">
+                      {language === 'ko' ? (
+                        <>
+                          <span className="text-[#e2b659] mr-1.5">국세청 안전 연동으로</span>
+                          <span className="text-white">내 숨은 환급금 무료 조회하기</span>
+                        </>
+                      ) : (
+                        <span className="text-white">
+                          {t('국세청 안전 연동으로 내 숨은 환급금 무료 조회하기')}
+                        </span>
+                      )}
+                    </span>
                   </Link>
                 </Button>
               </div>
