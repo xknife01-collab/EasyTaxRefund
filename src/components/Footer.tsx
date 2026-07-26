@@ -47,7 +47,7 @@ export function Footer() {
               <img 
                 src="/1625-1.png" 
                 alt="Korea Tax Refund Service Logo" 
-                className="h-12 w-12 object-contain shrink-0 transition-transform duration-300 group-hover:scale-105"
+                className="h-14 w-14 object-contain shrink-0 transition-transform duration-300 group-hover:scale-105"
               />
               <span className="font-black text-white font-headline uppercase flex flex-col items-start leading-none">
                 <span className="text-[#b88c30] text-[11px] sm:text-[13px] font-black tracking-[0.05em] mb-0.5">KTRS</span>
