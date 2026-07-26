@@ -319,7 +319,7 @@ export default function EstimatePage() {
         window.location.href = `intent://${targetUrl.replace(/^https?:\/\//i, '')}#Intent;scheme=https;package=com.android.chrome;end`;
       } else {
         navigator.clipboard.writeText(targetUrl);
-        toast({ title: t("in_app_browser_copy_done"), description: t("in_app_browser_copy_desc") });
+        toast({ title: t("in_app_browser_copy_done"), description: "우측 상단 [...] 버튼을 누르고 'Safari에서 열기'를 선택하시면 앱 설치가 진행됩니다." });
       }
     } else if (deferredPrompt) {
       deferredPrompt.prompt();
