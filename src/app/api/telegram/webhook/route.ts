@@ -136,16 +136,62 @@ export async function POST(req: Request) {
           channel: 'telegram',
         });
 
+        // 4a. Update chat session metadata with the matched script ID
+        if (aiResult.matchedScriptId) {
+          const currentMetadata = chatSession.metadata || {};
+          await supabaseAdmin
+            .from('support_chats')
+            .update({
+              metadata: {
+                ...currentMetadata,
+                last_script_id: aiResult.matchedScriptId
+              }
+            })
+            .eq('id', chatSession.id);
+        }
+
         const botToken = process.env.TELEGRAM_BOT_TOKEN;
         if (botToken) {
+          // Parse answer into sentences/chunks using '|' or double line breaks '\n\n'
+          let chunks = aiResult.answer
+            .split(/[|]|\n{2,}/)
+            .map(c => c.trim())
+            .filter(c => c.length > 0);
+
+          // Forcefully cap to maximum 2 chunks to avoid spamming the client, merging the rest
+          if (chunks.length > 2) {
+            const first = chunks[0];
+            const rest = chunks.slice(1).join(" ");
+            chunks = [first, rest];
+          }
+
+          const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
           const telegramUrl = `https://api.telegram.org/bot${botToken}/sendMessage`;
-          await axios.post(telegramUrl, {
-            chat_id: telegramChatId,
-            text: aiResult.answer,
-            parse_mode: 'HTML',
-          }).catch(err => {
-            console.error('[Telegram AI Response] delivery failed:', err?.response?.data || err.message);
-          });
+          const actionUrl = `https://api.telegram.org/bot${botToken}/sendChatAction`;
+
+          for (const chunk of chunks) {
+            // Send 'typing' chat action
+            await axios.post(actionUrl, {
+              chat_id: telegramChatId,
+              action: 'typing',
+            }).catch(() => {});
+
+            // Calculate human-like typing delay (capped for safety)
+            const typingTime = Math.min(chunk.length * 30 + 500, 2500);
+            await delay(typingTime);
+
+            // Send actual message chunk
+            await axios.post(telegramUrl, {
+              chat_id: telegramChatId,
+              text: chunk,
+              parse_mode: 'HTML',
+            }).catch(err => {
+              console.error('[Telegram AI Response] delivery failed:', err?.response?.data || err.message);
+            });
+
+            // Small rest between messages
+            await delay(800);
+          }
         }
 
         await supabaseAdmin.from('support_messages').insert({

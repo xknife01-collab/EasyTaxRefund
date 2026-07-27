@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { askManagerAi } from "@/ai/flows/manager-chat-flow";
+import { supabaseAdmin } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { message, language, history } = body;
+    const { message, language, history, chatId } = body;
 
     if (!message || typeof message !== "string" || !message.trim()) {
       return NextResponse.json(
@@ -21,10 +22,56 @@ export async function POST(req: NextRequest) {
       channel: "web",
     });
 
+    // If chatId is provided, record the chat session and last script ID for self-learning
+    if (chatId) {
+      try {
+        const { data: existingChat, error: fetchErr } = await supabaseAdmin
+          .from("support_chats")
+          .select("id, metadata")
+          .eq("channel", "web")
+          .eq("external_chat_id", chatId)
+          .maybeSingle();
+
+        if (!fetchErr) {
+          const currentMetadata = existingChat?.metadata || {};
+          const updatedMetadata = {
+            ...currentMetadata,
+            last_script_id: result.matchedScriptId || currentMetadata.last_script_id,
+            is_ai_active: true
+          };
+
+          if (existingChat) {
+            await supabaseAdmin
+              .from("support_chats")
+              .update({
+                last_message_at: new Date().toISOString(),
+                metadata: updatedMetadata,
+                detected_language: language || "ko"
+              })
+              .eq("id", existingChat.id);
+          } else {
+            await supabaseAdmin
+              .from("support_chats")
+              .insert({
+                channel: "web",
+                external_chat_id: chatId,
+                user_name: "Web Client",
+                detected_language: language || "ko",
+                last_message_at: new Date().toISOString(),
+                metadata: updatedMetadata
+              });
+          }
+        }
+      } catch (dbErr) {
+        console.error("Failed to update web chat session details in DB:", dbErr);
+      }
+    }
+
     return NextResponse.json({
       success: true,
       answer: result.answer,
       koreanSummary: result.koreanSummary,
+      matchedScriptId: result.matchedScriptId,
     });
   } catch (error: any) {
     console.error("AI Manager Chat API Error:", error);

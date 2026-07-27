@@ -249,6 +249,28 @@ export default function EstimatePage() {
     const timer = setInterval(checkMaintenance, 60000); // 1분마다 재확인
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    let action = '';
+    
+    if (step === 1) {
+      action = 'slider_interacted';
+    } else if (step === 3) {
+      action = 'verification_input';
+    } else if (step === 5) {
+      action = 'auth_started';
+    } else if (step === 7) {
+      action = 'auth_success';
+    }
+    
+    if (action) {
+      const event = new CustomEvent("ktrs_conversion_feedback", {
+        detail: { action }
+      });
+      window.dispatchEvent(event);
+    }
+  }, [step]);
   const [isVipChatOpen, setIsVipChatOpen] = useState(false);
   const [isChatInputVisible, setIsChatInputVisible] = useState(false);
   const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(null);
@@ -2779,6 +2801,14 @@ export default function EstimatePage() {
       sessionStorage.setItem('myApplicationId', finalDocId!);
       sessionStorage.setItem('myClientId', clientId);
       sessionStorage.setItem('myFullName', formData.officialName);
+
+      // KTRS Conversion: signed (10 points)
+      if (typeof window !== 'undefined') {
+        const event = new CustomEvent("ktrs_conversion_feedback", {
+          detail: { action: "signed" }
+        });
+        window.dispatchEvent(event);
+      }
 
       toast({ title: t("신청 완료"), description: t("전문 세무사가 검토를 시작합니다.") });
       router.push("/portal");

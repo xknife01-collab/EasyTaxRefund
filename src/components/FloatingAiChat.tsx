@@ -326,6 +326,99 @@ function FloatingConsultingPanelInner() {
   const [isSending, setIsSending] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement>(null);
 
+  const [chatId, setChatId] = useState<string>("");
+  const [isTyping, setIsTyping] = useState(false);
+  const inactivityTimerRef = useRef<any>(null);
+  const messageCountRef = useRef<number>(0);
+
+  // Simple UUID generator
+  const generateUUID = () => {
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+      const r = Math.random() * 16 | 0, v = c === 'x' ? r : (r & 0x3 | 0x8);
+      return v.toString(16);
+    });
+  };
+
+  // 1. Initialize chatId and check URL tracking parameters
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const searchParams = new URLSearchParams(window.location.search);
+      const refChatId = searchParams.get("ref_chat_id");
+      
+      let id = refChatId;
+      if (id) {
+        localStorage.setItem("ktrs_chat_session_id", id);
+      } else {
+        id = localStorage.getItem("ktrs_chat_session_id") || "";
+        if (!id) {
+          id = generateUUID();
+          localStorage.setItem("ktrs_chat_session_id", id);
+        }
+      }
+      setChatId(id);
+    }
+  }, []);
+
+  // 2. Conversion score sender helper
+  const sendScoreFeedback = async (action: string) => {
+    const activeChatId = chatId || localStorage.getItem("ktrs_chat_session_id");
+    if (!activeChatId) return;
+    try {
+      await fetch("/api/chat/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chatId: activeChatId,
+          action
+        })
+      });
+    } catch (err) {
+      console.error("Failed to send conversion feedback:", err);
+    }
+  };
+
+  // 3. Inactivity timer control
+  const resetInactivityTimer = () => {
+    if (inactivityTimerRef.current) {
+      clearTimeout(inactivityTimerRef.current);
+    }
+    inactivityTimerRef.current = setTimeout(() => {
+      sendScoreFeedback("inactivity_10min");
+    }, 10 * 60 * 1000); // 10 minutes
+  };
+
+  // 4. Listen to global custom events dispatched from pages (e.g. estimate page transitions)
+  useEffect(() => {
+    const handleFeedbackEvent = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const action = customEvent.detail?.action;
+      if (action) {
+        sendScoreFeedback(action);
+      }
+    };
+    window.addEventListener("ktrs_conversion_feedback", handleFeedbackEvent);
+    return () => {
+      window.removeEventListener("ktrs_conversion_feedback", handleFeedbackEvent);
+      if (inactivityTimerRef.current) {
+        clearTimeout(inactivityTimerRef.current);
+      }
+    };
+  }, [chatId]);
+
+  const handleChatClose = () => {
+    setIsOpen(false);
+    if (messageCountRef.current < 3) {
+      sendScoreFeedback("instant_close");
+    } else {
+      const isAuthStep = pathname?.includes("/estimate") && document.querySelector('input[type="tel"]') !== null;
+      if (isAuthStep) {
+        sendScoreFeedback("verification_input");
+      } else {
+        sendScoreFeedback("chat_negotiation");
+      }
+    }
+  };
+
   const isEstimatePage = pathname?.startsWith("/estimate");
 
   // Helper function to translate keys using local dictionary with English fallback
@@ -381,7 +474,7 @@ function FloatingConsultingPanelInner() {
     if (chatScrollRef.current) {
       chatScrollRef.current.scrollTop = chatScrollRef.current.scrollHeight;
     }
-  }, [messages, isSending]);
+  }, [messages, isSending, isTyping]);
 
   // PWA & In-App Browser Detect
   useEffect(() => {
@@ -429,7 +522,11 @@ function FloatingConsultingPanelInner() {
 
   const handleSendMessage = async (textToSend?: string) => {
     const text = textToSend || inputMessage;
-    if (!text || !text.trim() || isSending) return;
+    if (!text || !text.trim() || isSending || isTyping) return;
+
+    // Track active message exchanges
+    messageCountRef.current += 1;
+    resetInactivityTimer();
 
     const userMsg: ChatMessage = {
       id: `user-${Date.now()}`,
@@ -453,21 +550,58 @@ function FloatingConsultingPanelInner() {
             role: m.sender === "user" ? "user" : "model",
             text: m.text,
           })),
+          chatId: chatId || localStorage.getItem("ktrs_chat_session_id")
         }),
       });
 
       const data = await res.json();
+      setIsSending(false); // Hide main loading spinner
+      
+      const answer = data.answer || "죄송합니다. 잠시 후 다시 시도해 주세요.";
+      
+      // Split sentence chunks using '|' or double line breaks '\n\n'
+      let chunks = answer
+        .split(/[|]|\n{2,}/)
+        .map((c: string) => c.trim())
+        .filter((c: string) => c.length > 0);
 
-      const managerMsg: ChatMessage = {
-        id: `manager-${Date.now()}`,
-        sender: "manager",
-        text: data.answer || "죄송합니다. 잠시 후 다시 시도해 주세요.",
-        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      };
+      // Forcefully cap to maximum 2 chunks to avoid message spam, merging the rest
+      if (chunks.length > 2) {
+        const first = chunks[0];
+        const rest = chunks.slice(1).join(" ");
+        chunks = [first, rest];
+      }
 
-      setMessages((prev) => [...prev, managerMsg]);
+      const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+      for (const chunk of chunks) {
+        setIsTyping(true); // Show dot bouncing typing indicator
+        
+        // Calculate typing delay (capped for safety)
+        const typingTime = Math.min(chunk.length * 30 + 500, 2000);
+        await delay(typingTime);
+        
+        setIsTyping(false); // Hide typing indicator
+        
+        const managerMsg: ChatMessage = {
+          id: `manager-${Date.now()}-${Math.random()}`,
+          sender: "manager",
+          text: chunk,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        };
+        
+        setMessages((prev) => [...prev, managerMsg]);
+        messageCountRef.current += 1;
+        resetInactivityTimer();
+        
+        // Small gap between split sentences
+        await delay(800);
+      }
+
     } catch (err) {
       console.error("Failed to send message to AI Manager:", err);
+      setIsSending(false);
+      setIsTyping(false);
       const errorMsg: ChatMessage = {
         id: `manager-err-${Date.now()}`,
         sender: "manager",
@@ -475,8 +609,6 @@ function FloatingConsultingPanelInner() {
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
       setMessages((prev) => [...prev, errorMsg]);
-    } finally {
-      setIsSending(false);
     }
   };
 
@@ -564,15 +696,15 @@ function FloatingConsultingPanelInner() {
                 )}
               </div>
             </div>
-            <div className="flex items-center gap-2">
+             <div className="flex items-center gap-2">
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={handleChatClose}
                 className="px-3.5 py-1.5 rounded-full bg-[#b88c30]/25 hover:bg-[#b88c30]/40 text-[#e2b659] font-black text-[11px] transition-all border border-[#b88c30]/50 shadow-sm active:scale-95 cursor-pointer"
               >
                 {translate("숨기기")}
               </button>
               <button
-                onClick={() => setIsOpen(false)}
+                onClick={handleChatClose}
                 className="h-8 w-8 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-all border border-white/20 shadow-sm active:scale-95 cursor-pointer"
               >
                 <X className="h-4 w-4" />
@@ -748,14 +880,17 @@ function FloatingConsultingPanelInner() {
                   </div>
                 ))}
 
-                {isSending && (
+                {(isSending || isTyping) && (
                   <div className="flex gap-2 max-w-[88%] mr-auto">
                     <div className="h-7 w-7 rounded-full overflow-hidden border border-[#b88c30] shrink-0 mt-0.5 bg-slate-800">
                       <img src="/images/manager.png" alt="Manager" className="h-full w-full object-cover" />
                     </div>
-                    <div className="p-3 rounded-2xl bg-[#152a45] text-slate-300 border border-white/10 rounded-tl-none text-xs flex items-center gap-2">
-                      <Loader2 className="h-3.5 w-3.5 animate-spin text-[#e2b659]" />
-                      <span>김준현 매니저가 답변을 작성 중입니다...</span>
+                    <div className="p-3.5 px-4.5 rounded-2xl bg-[#152a45] border border-white/10 rounded-tl-none flex items-center justify-center w-15 h-9.5 shadow-sm">
+                      <span className="flex gap-1 items-center justify-center">
+                        <span className="w-1.5 h-1.5 bg-[#e2b659] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                        <span className="w-1.5 h-1.5 bg-[#e2b659] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                        <span className="w-1.5 h-1.5 bg-[#e2b659] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                      </span>
                     </div>
                   </div>
                 )}

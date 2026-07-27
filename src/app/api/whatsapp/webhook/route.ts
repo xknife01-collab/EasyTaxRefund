@@ -170,31 +170,70 @@ export async function POST(req: Request) {
           channel: 'whatsapp',
         });
 
+        // 4a. Update chat session metadata with the matched script ID
+        if (aiResult.matchedScriptId) {
+          const currentMetadata = chatSession.metadata || {};
+          await supabaseAdmin
+            .from('support_chats')
+            .update({
+              metadata: {
+                ...currentMetadata,
+                last_script_id: aiResult.matchedScriptId
+              }
+            })
+            .eq('id', chatSession.id);
+        }
+
         const waToken = process.env.WHATSAPP_ACCESS_TOKEN;
         const waPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
         if (waToken && waPhoneId) {
           const waUrl = `https://graph.facebook.com/v19.0/${waPhoneId}/messages`;
-          await axios.post(
-            waUrl,
-            {
-              messaging_product: 'whatsapp',
-              recipient_type: 'individual',
-              to: whatsappChatId,
-              type: 'text',
-              text: {
-                preview_url: false,
-                body: aiResult.answer,
+          
+          // Parse answer into sentences/chunks using '|' or double line breaks '\n\n'
+          let chunks = aiResult.answer
+            .split(/[|]|\n{2,}/)
+            .map(c => c.trim())
+            .filter(c => c.length > 0);
+
+          // Forcefully cap to maximum 2 chunks to avoid spamming the client, merging the rest
+          if (chunks.length > 2) {
+            const first = chunks[0];
+            const rest = chunks.slice(1).join(" ");
+            chunks = [first, rest];
+          }
+
+          const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+          for (const chunk of chunks) {
+            // Calculate human-like typing delay (capped for safety)
+            const typingTime = Math.min(chunk.length * 30 + 500, 2500);
+            await delay(typingTime);
+
+            await axios.post(
+              waUrl,
+              {
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: whatsappChatId,
+                type: 'text',
+                text: {
+                  preview_url: false,
+                  body: chunk,
+                },
               },
-            },
-            {
-              headers: {
-                Authorization: `Bearer ${waToken}`,
-                'Content-Type': 'application/json',
-              },
-            }
-          ).catch(err => {
-            console.error('[WhatsApp AI Response] delivery failed:', err?.response?.data || err.message);
-          });
+              {
+                headers: {
+                  Authorization: `Bearer ${waToken}`,
+                  'Content-Type': 'application/json',
+                },
+              }
+            ).catch(err => {
+              console.error('[WhatsApp AI Response] delivery failed:', err?.response?.data || err.message);
+            });
+
+            // Small rest between messages
+            await delay(800);
+          }
         }
 
         await supabaseAdmin.from('support_messages').insert({

@@ -1,6 +1,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { AI_MANAGER_SYSTEM_PROMPT } from '@/lib/ai-manager-persona';
+import { retrieveMatchedScripts } from '@/lib/ai-learning-db';
 
 const ChatMessageSchema = z.object({
   role: z.enum(['user', 'model']),
@@ -12,16 +13,24 @@ export const ManagerChatInputSchema = z.object({
   language: z.string().optional().describe("사용자의 현재 설정 언어 (예: 'vi', 'zh', 'uz', 'en' 등)"),
   history: z.array(ChatMessageSchema).optional().describe("이전 대화 내역"),
   channel: z.enum(['web', 'telegram', 'whatsapp']).optional().describe("현재 대화가 진행 중인 채널 구분 ('web', 'telegram', 'whatsapp')"),
+  matchedScriptsContext: z.string().optional().describe("RAG로 검색된 성공 점수가 포함된 영업 멘트 목록"),
+  historyContext: z.string().optional().describe("텍스트 포맷으로 가공된 최근 대화 내역"),
 });
 
 export type ManagerChatInput = z.infer<typeof ManagerChatInputSchema>;
 
 export const ManagerChatOutputSchema = z.object({
+  thinkingProcess: z.string().describe("가장 성공적인 환급 전환을 유도하기 위한 세무 영업 전문가로서의 심사숙고 분석 및 전략적 영업 판단 과정 (고객 심리 상태 분석, RAG 영업 멘트 매칭 판단 등)"),
   answer: z.string().describe("외국인 사용자의 질문에 대한 김준현 매니저의 모국어 친절 답변"),
   koreanSummary: z.string().describe("관리자 페이지(한국인 매니저)를 위한 질문과 답변의 한 줄 한국어 요약"),
 });
 
 export type ManagerChatOutput = z.infer<typeof ManagerChatOutputSchema>;
+
+// Output extending type that includes matchedScriptId for internal routing
+export interface ExtendedManagerChatOutput extends ManagerChatOutput {
+  matchedScriptId?: number;
+}
 
 const managerChatPrompt = ai.definePrompt({
   name: 'managerChatPrompt',
@@ -32,10 +41,16 @@ const managerChatPrompt = ai.definePrompt({
 [현재 사용자의 설정 언어]: {{{language}}}
 [현재 대화 채널]: {{{channel}}}
 
+[이전 대화 기록 (Context History)]:
+{{{historyContext}}}
+
 [대화 상황]:
 사용자가 다음과 같이 질문했습니다.
 
 사용자 질문: {{{message}}}
+
+[성공 점수가 포함된 영업 노하우 스크립트]:
+{{{matchedScriptsContext}}}
 
 [채널별 대화 안내 수칙]:
 - 만약 [현재 대화 채널]이 'telegram' 또는 'whatsapp'인 경우:
@@ -44,11 +59,12 @@ const managerChatPrompt = ai.definePrompt({
   이미 사용자가 당사 웹사이트에 들어온 상태이므로, 외부 링크를 소개하지 말고 "지금 보고 계신 화면에서 바로 0단계 조회를 시작해 주세요" 혹은 "화면의 버튼을 눌러 조회를 진행해 주세요"라고 이미 사이트에 접속해 있음을 전제하고 안내하십시오.
 
 사용자가 질문한 언어나 설정 언어({{{language}}})로 친절하고 정확하며 안심을 주는 답변(answer)을 작성하십시오.
+답변(answer)을 작성하기 전에, 먼저 세무 영업의 신으로서 [성공 점수가 포함된 영업 노하우 스크립트]를 분석하고, 어떻게 대화를 전개해야 고객의 이탈을 막고 환급 성공(서명 완료)으로 이끌 수 있을지 심사숙고하는 과정을 thinkingProcess 필드에 기록하십시오.
 동시에, 한국인 관리자가 대화 내용을 한눈에 파악할 수 있도록 [한국어 요약(koreanSummary)]도 함께 작성하십시오. (예: "질문: 환급금 언제 입금되나요? / 답변: 45~60일 소요 안내")
 `,
 });
 
-export async function askManagerAi(input: ManagerChatInput): Promise<ManagerChatOutput> {
+export async function askManagerAi(input: ManagerChatInput): Promise<ExtendedManagerChatOutput> {
   return managerChatFlow(input);
 }
 
@@ -59,11 +75,50 @@ const managerChatFlow = ai.defineFlow(
     outputSchema: ManagerChatOutputSchema,
   },
   async input => {
-    const { output } = await managerChatPrompt(input);
+    // 1. Retrieve RAG matched scripts from Supabase Vector DB
+    const lang = input.language || 'ko';
+    const scripts = await retrieveMatchedScripts(input.message, lang, undefined, 0.4, 3);
+    
+    let matchedScriptsContext = '';
+    let highestWeightScriptId: number | undefined = undefined;
+
+    if (scripts && scripts.length > 0) {
+      // Find script with highest success_weight to return its ID
+      const bestScript = scripts.reduce((prev, current) => 
+        (prev.success_weight > current.success_weight) ? prev : current
+      );
+      highestWeightScriptId = bestScript.id;
+
+      // Format scripts context for Gemini
+      matchedScriptsContext = scripts.map((s, idx) => 
+        `영업노트 ${idx + 1} (성공점수: ${s.success_weight}점, 신뢰도: ${Math.round(s.similarity * 100)}%): "${s.script_text}"`
+      ).join('\n');
+    } else {
+      matchedScriptsContext = '매칭된 영업 노하우가 없습니다. 김준현 매니저의 기존 지식 베이스를 바탕으로 친절하고 확신에 찬 자신감으로 직접 답변을 구성하십시오.';
+    }
+
+    // 2. Limit history to max 5 turns and format to historyContext
+    const recentHistory = input.history ? input.history.slice(-5) : [];
+    const historyContext = recentHistory.length > 0
+      ? recentHistory.map(h => `${h.role === 'user' ? '고객' : '김준현 매니저'}: ${h.text}`).join('\n')
+      : '이전 대화 기록 없음 (최초 대화 시작)';
+
+    // 3. Call Genkit prompt
+    const { output } = await managerChatPrompt({
+      ...input,
+      matchedScriptsContext,
+      historyContext,
+    });
+
     if (!output) {
       throw new Error('AI 매니저 답변을 생성하지 못했습니다.');
     }
-    return output;
+
+    // Return extended output containing matchedScriptId
+    return {
+      ...output,
+      matchedScriptId: highestWeightScriptId,
+    };
   }
 );
 
