@@ -304,6 +304,7 @@ interface ChatMessage {
   sender: "user" | "manager";
   text: string;
   timestamp: string;
+  imageUrl?: string;
 }
 
 export function FloatingAiChat() {
@@ -458,11 +459,38 @@ function FloatingConsultingPanelInner() {
         }
       };
 
+      const getCardMessage = () => {
+        switch (language) {
+          case "vi": return "Đây là danh thiếp chính thức của tôi. Hãy lưu lại để liên hệ nhé! 🛡️";
+          case "zh": return "这是我的官方名片。请保存以备参考！🛡️";
+          case "id": return "Ini kartu nama resmi saya. Silakan simpan untuk referensi Anda! 🛡️";
+          case "uz": return "Bu mening rasmiy tashrif qog'ozim. Malumot uchun saqlab qo'ying! 🛡️";
+          case "th": return "นี่คือนามบัตรอย่างเป็นทางการของผม โปรดบันทึกไว้เพื่ออ้างอิงครับ! 🛡️";
+          case "km": return "នេះគឺជាកាតអាជីវកម្មផ្លូវការរបស់ខ្ញុំ។ សូមរក្សាទុកវាសម្រាប់ជាឯកសារយោង! 🛡️";
+          case "my": return "ဒါကတော့ ကျွန်ုပ်ရဲ့ တရားဝင် မိတ်ဆက်ကတ်ပြား ဖြစ်ပါတယ်။ ကိုးကားရန် သိမ်းဆည်းထားပါ! 🛡️";
+          case "ne": return "यो मेरो आधिकारिक व्यापार कार्ड हो। कृपया सन्दर्भको लागि बचत गर्नुहोस्! 🛡️";
+          case "mn": return "Энэ бол миний албан ёсны нэрийн хуудас юм. Хадгалж авна уу! 🛡️";
+          case "bn": return "এটি আমার অফিসিয়াল বিজনেস কার্ড। অনুগ্রহ করে রেফারেন্সের জন্য সংরক্ষণ করুন! 🛡️";
+          case "kk": return "Бұл менің ресми визиткам. Сілтеме үшін сақтап қойыңыз! 🛡️";
+          case "si": return "මෙය මගේ නිල ව්‍යාපාරික කාඩ්පතයි. කරුණාකර එය සුරැකීමට තබන්න! 🛡️";
+          case "ur": return "یہ میرا آفیشل بزنس کارڈ ہے۔ براہ کرم حوالہ کے لیے محفوظ کر لیں! 🛡️";
+          case "en": return "Here is my official business card. Please save it for reference! 🛡️";
+          default: return "제 모바일 명함입니다. 신뢰할 수 있는 공식 매니저이니 언제든 안심하고 문의해 주세요! 🛡️";
+        }
+      };
+
       setMessages([
         {
           id: "welcome-1",
           sender: "manager",
           text: getWelcomeMessage(),
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        },
+        {
+          id: "welcome-card",
+          sender: "manager",
+          imageUrl: "/kim_junhyun_card.png",
+          text: getCardMessage(),
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         }
       ]);
@@ -868,6 +896,11 @@ function FloatingConsultingPanelInner() {
                             : "bg-[#152a45] text-slate-100 border border-white/10 rounded-tl-none"
                         )}
                       >
+                        {msg.imageUrl && (
+                          <div className="mb-2.5 rounded-xl overflow-hidden border border-white/10 bg-[#081220] flex items-center justify-center max-h-[180px]">
+                            <img src={msg.imageUrl} alt="Message Media" className="w-full h-auto object-contain" />
+                          </div>
+                        )}
                         {msg.text}
                       </div>
                       <span className={cn(
