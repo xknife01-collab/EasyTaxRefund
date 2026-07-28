@@ -40,7 +40,10 @@ export async function POST(req: NextRequest) {
             is_ai_active: true
           };
 
+          let chatSessionId = "";
+
           if (existingChat) {
+            chatSessionId = existingChat.id;
             await supabaseAdmin
               .from("support_chats")
               .update({
@@ -50,7 +53,7 @@ export async function POST(req: NextRequest) {
               })
               .eq("id", existingChat.id);
           } else {
-            await supabaseAdmin
+            const { data: newChat, error: insertErr } = await supabaseAdmin
               .from("support_chats")
               .insert({
                 channel: "web",
@@ -59,7 +62,42 @@ export async function POST(req: NextRequest) {
                 detected_language: language || "ko",
                 last_message_at: new Date().toISOString(),
                 metadata: updatedMetadata
-              });
+              })
+              .select("id")
+              .single();
+
+            if (insertErr) throw insertErr;
+            if (newChat) chatSessionId = newChat.id;
+          }
+
+          if (chatSessionId) {
+            // 1. Insert customer message
+            const { error: custMsgErr } = await supabaseAdmin.from("support_messages").insert({
+              chat_id: chatSessionId,
+              sender_type: "customer",
+              original_text: message.trim(),
+              translated_text: message.trim(),
+              source_lang: language || "ko",
+              target_lang: "ko",
+              is_read: true
+            });
+            if (custMsgErr) {
+              console.error("Failed to insert customer support message:", custMsgErr);
+            }
+
+            // 2. Insert AI manager response
+            const { error: aiMsgErr } = await supabaseAdmin.from("support_messages").insert({
+              chat_id: chatSessionId,
+              sender_type: "admin",
+              original_text: result.koreanSummary || result.answer,
+              translated_text: result.answer,
+              source_lang: "ko",
+              target_lang: language || "ko",
+              is_read: true
+            });
+            if (aiMsgErr) {
+              console.error("Failed to insert AI support message:", aiMsgErr);
+            }
           }
         }
       } catch (dbErr) {

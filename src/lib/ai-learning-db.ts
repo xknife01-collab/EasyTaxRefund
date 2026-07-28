@@ -73,11 +73,37 @@ export async function logConversionFeedback(
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // 1. Find the support chat session to check its metadata for the last script ID
-    const { data: chat, error: chatErr } = await supabaseAdmin
+    // We try querying by external_chat_id first since the client widget sends that
+    let chat = null;
+    let chatErr = null;
+
+    const { data: chatByExt, error: extErr } = await supabaseAdmin
       .from('support_chats')
       .select('id, metadata')
-      .eq('id', chatId)
+      .eq('external_chat_id', chatId)
       .maybeSingle();
+
+    if (!extErr && chatByExt) {
+      chat = chatByExt;
+    } else {
+      // Fallback to checking by primary key id if it's a valid UUID
+      const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+      if (uuidRegex.test(chatId)) {
+        const { data: chatById, error: idErr } = await supabaseAdmin
+          .from('support_chats')
+          .select('id, metadata')
+          .eq('id', chatId)
+          .maybeSingle();
+
+        if (!idErr && chatById) {
+          chat = chatById;
+        } else {
+          chatErr = idErr || extErr;
+        }
+      } else {
+        chatErr = extErr;
+      }
+    }
 
     if (chatErr) {
       return { success: false, error: `Failed to fetch chat: ${chatErr.message}` };
@@ -93,7 +119,7 @@ export async function logConversionFeedback(
       const { error: logErr } = await supabaseAdmin
         .from('script_conversion_logs')
         .insert({
-          chat_id: chatId,
+          chat_id: chat.id,
           script_id: null,
           action_type: actionType,
           score: score,
@@ -110,7 +136,7 @@ export async function logConversionFeedback(
     const { error: logErr } = await supabaseAdmin
       .from('script_conversion_logs')
       .insert({
-        chat_id: chatId,
+        chat_id: chat.id,
         script_id: scriptId,
         action_type: actionType,
         score: score,

@@ -7,6 +7,7 @@ import { useTranslation } from "@/components/LanguageContext";
 const translate = (s: string) => s;
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 
 // FAQ Items definition
 const FAQ_ITEMS = [
@@ -329,6 +330,8 @@ function FloatingConsultingPanelInner() {
 
   const [chatId, setChatId] = useState<string>("");
   const [isTyping, setIsTyping] = useState(false);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(false);
+  const [hasCheckedHistory, setHasCheckedHistory] = useState(false);
   const inactivityTimerRef = useRef<any>(null);
   const messageCountRef = useRef<number>(0);
 
@@ -438,7 +441,7 @@ function FloatingConsultingPanelInner() {
 
   // Initial welcome message in live chat
   useEffect(() => {
-    if (viewMode === "live_chat" && messages.length === 0) {
+    if (viewMode === "live_chat" && messages.length === 0 && !isLoadingHistory && hasCheckedHistory) {
       const getWelcomeMessage = () => {
         switch (language) {
           case "vi": return "Xin chào! Tôi là Kim Jun-hyun, Quản lý chính thức. 👋 Tôi có thể giúp gì cho bạn về hoàn thuế thu nhập?";
@@ -496,6 +499,69 @@ function FloatingConsultingPanelInner() {
       ]);
     }
   }, [viewMode, language]);
+
+  // Load previous messages from Supabase
+  useEffect(() => {
+    if (viewMode !== "live_chat" || !chatId) {
+      if (viewMode !== "live_chat") {
+        setHasCheckedHistory(false);
+      }
+      return;
+    }
+
+    let isMounted = true;
+
+    const fetchHistory = async () => {
+      setIsLoadingHistory(true);
+      try {
+        const { data: chatSession } = await supabase
+          .from("support_chats")
+          .select("id")
+          .eq("channel", "web")
+          .eq("external_chat_id", chatId)
+          .maybeSingle();
+
+        if (chatSession) {
+          const { data: dbMessages } = await supabase
+            .from("support_messages")
+            .select("*")
+            .eq("chat_id", chatSession.id)
+            .order("created_at", { ascending: true });
+
+          if (isMounted && dbMessages && dbMessages.length > 0) {
+            const mapped = dbMessages.map((msg) => {
+              const isUser = msg.sender_type === "customer";
+              const isKo = (language || "ko") === "ko";
+              const text = isUser 
+                ? msg.original_text 
+                : (isKo ? msg.original_text : (msg.translated_text || msg.original_text));
+
+              return {
+                id: String(msg.id),
+                sender: isUser ? ("user" as const) : ("manager" as const),
+                text: text,
+                timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+              };
+            });
+            setMessages(mapped);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to load chat history:", err);
+      } finally {
+        if (isMounted) {
+          setIsLoadingHistory(false);
+          setHasCheckedHistory(true);
+        }
+      }
+    };
+
+    fetchHistory();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [viewMode, chatId, language]);
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
@@ -874,58 +940,67 @@ function FloatingConsultingPanelInner() {
               
               {/* Chat Message Stream */}
               <div ref={chatScrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
-                {messages.map((msg) => (
-                  <div
-                    key={msg.id}
-                    className={cn(
-                      "flex gap-2 max-w-[88%]",
-                      msg.sender === "user" ? "ml-auto flex-row-reverse" : "mr-auto"
-                    )}
-                  >
-                    {msg.sender === "manager" && (
-                      <div className="h-7 w-7 rounded-full overflow-hidden border border-[#b88c30] shrink-0 mt-0.5 bg-slate-800">
-                        <img src="/images/manager.png" alt="Manager" className="h-full w-full object-cover" />
-                      </div>
-                    )}
-                    <div className="flex flex-col">
+                {isLoadingHistory ? (
+                  <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
+                    <Loader2 className="h-6 w-6 animate-spin text-[#e2b659]" />
+                    <span className="text-[10px] font-bold">대화 기록 불러오는 중...</span>
+                  </div>
+                ) : (
+                  <>
+                    {messages.map((msg) => (
                       <div
+                        key={msg.id}
                         className={cn(
-                          "p-3 rounded-2xl text-xs leading-relaxed font-bold shadow-sm whitespace-pre-wrap break-keep",
-                          msg.sender === "user"
-                            ? "bg-gradient-to-r from-[#b88c30] to-[#e2b659] text-[#0f1e36] rounded-tr-none"
-                            : "bg-[#152a45] text-slate-100 border border-white/10 rounded-tl-none"
+                          "flex gap-2 max-w-[88%]",
+                          msg.sender === "user" ? "ml-auto flex-row-reverse" : "mr-auto"
                         )}
                       >
-                        {msg.imageUrl && (
-                          <div className="mb-2.5 rounded-xl overflow-hidden border border-white/10 bg-[#081220] flex items-center justify-center max-h-[180px]">
-                            <img src={msg.imageUrl} alt="Message Media" className="w-full h-auto object-contain" />
+                        {msg.sender === "manager" && (
+                          <div className="h-7 w-7 rounded-full overflow-hidden border border-[#b88c30] shrink-0 mt-0.5 bg-slate-800">
+                            <img src="/images/manager.png" alt="Manager" className="h-full w-full object-cover" />
                           </div>
                         )}
-                        {msg.text}
+                        <div className="flex flex-col">
+                          <div
+                            className={cn(
+                              "p-3 rounded-2xl text-xs leading-relaxed font-bold shadow-sm whitespace-pre-wrap break-keep",
+                              msg.sender === "user"
+                                ? "bg-gradient-to-r from-[#b88c30] to-[#e2b659] text-[#0f1e36] rounded-tr-none"
+                                : "bg-[#152a45] text-slate-100 border border-white/10 rounded-tl-none"
+                            )}
+                          >
+                            {msg.imageUrl && (
+                              <div className="mb-2.5 rounded-xl overflow-hidden border border-white/10 bg-[#081220] flex items-center justify-center max-h-[180px]">
+                                <img src={msg.imageUrl} alt="Message Media" className="w-full h-auto object-contain" />
+                              </div>
+                            )}
+                            {msg.text}
+                          </div>
+                          <span className={cn(
+                            "text-[9px] text-slate-500 font-bold mt-1 px-1",
+                            msg.sender === "user" ? "text-right" : "text-left"
+                          )}>
+                            {msg.timestamp}
+                          </span>
+                        </div>
                       </div>
-                      <span className={cn(
-                        "text-[9px] text-slate-500 font-bold mt-1 px-1",
-                        msg.sender === "user" ? "text-right" : "text-left"
-                      )}>
-                        {msg.timestamp}
-                      </span>
-                    </div>
-                  </div>
-                ))}
+                    ))}
 
-                {(isSending || isTyping) && (
-                  <div className="flex gap-2 max-w-[88%] mr-auto">
-                    <div className="h-7 w-7 rounded-full overflow-hidden border border-[#b88c30] shrink-0 mt-0.5 bg-slate-800">
-                      <img src="/images/manager.png" alt="Manager" className="h-full w-full object-cover" />
-                    </div>
-                    <div className="p-3.5 px-4.5 rounded-2xl bg-[#152a45] border border-white/10 rounded-tl-none flex items-center justify-center w-15 h-9.5 shadow-sm">
-                      <span className="flex gap-1 items-center justify-center">
-                        <span className="w-1.5 h-1.5 bg-[#e2b659] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                        <span className="w-1.5 h-1.5 bg-[#e2b659] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                        <span className="w-1.5 h-1.5 bg-[#e2b659] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                      </span>
-                    </div>
-                  </div>
+                    {(isSending || isTyping) && (
+                      <div className="flex gap-2 max-w-[88%] mr-auto">
+                        <div className="h-7 w-7 rounded-full overflow-hidden border border-[#b88c30] shrink-0 mt-0.5 bg-slate-800">
+                          <img src="/images/manager.png" alt="Manager" className="h-full w-full object-cover" />
+                        </div>
+                        <div className="p-3.5 px-4.5 rounded-2xl bg-[#152a45] border border-white/10 rounded-tl-none flex items-center justify-center w-15 h-9.5 shadow-sm">
+                          <span className="flex gap-1 items-center justify-center">
+                            <span className="w-1.5 h-1.5 bg-[#e2b659] rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                            <span className="w-1.5 h-1.5 bg-[#e2b659] rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                            <span className="w-1.5 h-1.5 bg-[#e2b659] rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
