@@ -317,12 +317,12 @@ export default function HomePage() {
                   {/* 청년 소득세 90% 감면 제도 안내 대형 버튼 (긴 번역어 대응용 반응형 세팅) */}
                   <div className="pt-4">
                     <Button
-                      onClick={() => {
-                        document.getElementById('tax-reduction-guide')?.scrollIntoView({ behavior: 'smooth' });
-                      }}
+                      asChild
                       className="w-full sm:w-auto min-h-[4rem] h-auto py-4 px-8 bg-[#0b192c] hover:bg-[#152a45] text-white border-2 border-[#e2b659] text-base md:text-lg font-black rounded-2xl shadow-xl shadow-[#0b192c]/20 flex items-center justify-center flex-wrap gap-2 text-center leading-tight whitespace-normal break-words transition-all hover:scale-[1.02] active:scale-[0.98] cursor-pointer"
                     >
-                      {BUTTON_TEXTS[language] || BUTTON_TEXTS['en']}
+                      <Link href="/youth-tax" className="flex items-center justify-center w-full h-full">
+                        {BUTTON_TEXTS[language] || BUTTON_TEXTS['en']}
+                      </Link>
                     </Button>
                   </div>
                 </div>
