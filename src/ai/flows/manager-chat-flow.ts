@@ -15,6 +15,16 @@ export const ManagerChatInputSchema = z.object({
   channel: z.enum(['web', 'telegram', 'whatsapp']).optional().describe("현재 대화가 진행 중인 채널 구분 ('web', 'telegram', 'whatsapp')"),
   matchedScriptsContext: z.string().optional().describe("RAG로 검색된 성공 점수가 포함된 영업 멘트 목록"),
   historyContext: z.string().optional().describe("텍스트 포맷으로 가공된 최근 대화 내역"),
+  cumulativePos: z.number().optional().describe("이전 대화의 누적 긍정 점수"),
+  cumulativeNeg: z.number().optional().describe("이전 대화의 누적 부정 점수"),
+  sentimentAlertContext: z.string().optional().describe("부정 점수 초과 시 경고 프롬프트 컨텍스트"),
+  previousSummary: z.string().optional().describe("이전 대화 핵심 요약 (DB 로드)"),
+  previousFacts: z.string().optional().describe("이전에 기록된 사용자 프로필/정보 팩트 목록 (DB 로드)"),
+  previousStep: z.string().optional().describe("이전 대화 진행 단계 (DB 로드)"),
+  previousPersonality: z.string().optional().describe("이전 대화에서 판독된 고객의 성격/소통 스타일 타입 ('driver' | 'skeptical' | 'analytical' | 'expressive' 등)"),
+  clientOs: z.string().optional().describe("고객 단말기 OS ('ios' | 'android' 등)"),
+  clientIsInApp: z.boolean().optional().describe("고객이 인앱 브라우저에서 접속 중인지 여부"),
+  currentPathname: z.string().optional().describe("고객이 현재 머물고 있는 웹페이지 경로 (예: '/' 또는 '/estimate')"),
 });
 
 export type ManagerChatInput = z.infer<typeof ManagerChatInputSchema>;
@@ -23,6 +33,18 @@ export const ManagerChatOutputSchema = z.object({
   thinkingProcess: z.string().describe("가장 성공적인 환급 전환을 유도하기 위한 세무 영업 전문가로서의 심사숙고 분석 및 전략적 영업 판단 과정 (고객 심리 상태 분석, RAG 영업 멘트 매칭 판단 등)"),
   answer: z.string().describe("외국인 사용자의 질문에 대한 김준현 매니저의 모국어 친절 답변"),
   koreanSummary: z.string().describe("관리자 페이지(한국인 매니저)를 위한 질문과 답변의 한 줄 한국어 요약"),
+  posScore: z.number().int().min(0).max(10).describe("이번 사용자 메시지에서 나타난 긍정/동조/신뢰 지수 (0~10점 범위)"),
+  negScore: z.number().int().min(0).max(10).describe("이번 사용자 메시지에서 나타난 부정/의심/불신/거부 지수 (0~10점 범위)"),
+  conversationSummary: z.string().optional().describe("현재 대화 내용을 반영하여 업데이트된 전체 대화 핵심 요약 (1~2문장의 한국어 평서문)"),
+  currentStep: z.string().optional().describe("이번 유저 질문 이후 감지된 현재 진행 단계 (예: 'Step 0: Estimate', 'Step 3: Telecom', 'Step 10: Signed' 등)"),
+  extractedFacts: z.record(z.string()).optional().describe("이번 대화에서 새롭게 파악된 사용자 인적 정보 팩트 (예: { name: '...', nationality: '...' }). 새로운 정보가 없으면 빈 객체 {} 반환"),
+  detectedPersonality: z.enum(['driver', 'skeptical', 'analytical', 'expressive']).optional().describe("새롭게 감지되거나 유지된 고객의 성격 성향 성격군 분류"),
+  richCardPayload: z.object({
+    cardType: z.enum(['none', 'estimate_preview', 'security_badge', 'telecom_helper', 'completion_checklist']),
+    title: z.string().optional().describe("카드 제목"),
+    description: z.string().optional().describe("카드 세부 설명 또는 안내 문구"),
+    metrics: z.record(z.string()).optional().describe("카드에 시각적으로 표시할 수치 키-값 쌍"),
+  }).optional().describe("고객에게 화면상으로 시각적 카드를 띄워주기 위한 구조화된 UI 카드 데이터"),
 });
 
 export type ManagerChatOutput = z.infer<typeof ManagerChatOutputSchema>;
@@ -30,6 +52,16 @@ export type ManagerChatOutput = z.infer<typeof ManagerChatOutputSchema>;
 // Output extending type that includes matchedScriptId for internal routing
 export interface ExtendedManagerChatOutput extends ManagerChatOutput {
   matchedScriptId?: number;
+  conversationSummary?: string;
+  currentStep?: string;
+  extractedFacts?: Record<string, string>;
+  detectedPersonality?: 'driver' | 'skeptical' | 'analytical' | 'expressive';
+  richCardPayload?: {
+    cardType: 'none' | 'estimate_preview' | 'security_badge' | 'telecom_helper' | 'completion_checklist';
+    title?: string;
+    description?: string;
+    metrics?: Record<string, string>;
+  };
 }
 
 const managerChatPrompt = ai.definePrompt({
@@ -38,8 +70,22 @@ const managerChatPrompt = ai.definePrompt({
   output: { schema: ManagerChatOutputSchema },
   prompt: `${AI_MANAGER_SYSTEM_PROMPT}
 
+{{{sentimentAlertContext}}}
+
+[이전에 기록된 사용자 정보 (User Facts Memory)]:
+{{{previousFacts}}}
+
+[이전 대화 흐름 요약 (Summary Memory)]:
+{{{previousSummary}}}
+
+[이전 대화 진행 단계 (Current Step State)]:
+{{{previousStep}}}
+
 [현재 사용자의 설정 언어]: {{{language}}}
 [현재 대화 채널]: {{{channel}}}
+[고객 접속 단말기 OS]: {{{clientOs}}}
+[고객 인앱 브라우저 접속 여부]: {{{clientIsInApp}}}
+[고객 현재 웹페이지 경로]: {{{currentPathname}}}
 
 [이전 대화 기록 (Context History)]:
 {{{historyContext}}}
@@ -56,11 +102,46 @@ const managerChatPrompt = ai.definePrompt({
 - 만약 [현재 대화 채널]이 'telegram' 또는 'whatsapp'인 경우:
   사용자가 환급금 조회나 환급받는 법을 질문하면, 공식 서비스 사이트인 "https://ktrs-service.vercel.app/?lang={{{language}}}" 주소 링크(사용자 설정 언어인 {{{language}}}가 쿼리 파라미터로 붙은 링크)를 제공하며 모바일 브라우저로 접속해 무료 조회를 진행하라고 친절하게 유도하십시오. (예: 베트남어 사용자에게는 https://ktrs-service.vercel.app/?lang=vi, 네팔어 사용자에게는 https://ktrs-service.vercel.app/?lang=ne 와 같이 자동으로 해당 언어 코드가 링크 주소 뒤에 붙게 답변을 작성)
 - 만약 [현재 대화 채널]이 'web'인 경우:
-  이미 사용자가 당사 웹사이트에 들어온 상태이므로, 외부 링크를 소개하지 말고 "지금 보고 계신 화면에서 바로 0단계 조회를 시작해 주세요" 혹은 "화면의 버튼을 눌러 조회를 진행해 주세요"라고 이미 사이트에 접속해 있음을 전제하고 안내하십시오.
+  이미 사용자가 당사 웹사이트에 들어온 상태이므로 다음 세부 규칙에 따라 안내하십시오:
+  1. 만약 [고객 현재 웹페이지 경로]가 '/' (메인 홈화면)인 경우:
+     사용자가 환급을 어떻게 조회하는지, 어디서 신청하는지 묻거나 시작을 원하는 경우, 반드시 **[국세청 안전 연동으로 내 숨은 환급금 무료 조회하기]** 큰 골드 버튼을 누르라고 안내하십시오. (이때 절대로 아직 도달하지도 않은 Step 4의 '[인증서 설치 및 가입을 완료했습니다]' 버튼을 누르라고 안내하지 마십시오!)
+  2. 만약 [고객 현재 웹페이지 경로]가 '/estimate' 이거나 '/estimate' 하위 경로이고 아직 대화 흐름상 최초 예상 조회를 물어본 경우:
+     화면 맨 밑에 있는 골드색 **[이어서 정밀 진단 시작하기]** 버튼을 클릭하라고 정확히 유도하십시오.
+  3. 만약 고객이 Step 4(인증 확인 및 방식 선택)에 있고 하나은행, PASS, 카카오톡 가이드 탭을 보고 있다면:
+     각 탭을 확인하고 가입을 마친 뒤 **[인증서 설치 및 가입을 완료했습니다]** 버튼을 클릭하거나, 인증서가 준비된 경우 수단을 선택하고 **[인증 요청하기]** 버튼을 누르라고 상황에 맞춰 정확하게 안내하십시오.
+
+[🚨 최우선 감정 대응 필독 규칙]:
+- 만약 본 프롬프트 상단에 **[🚨 긴급 경고: 현재 대화방에서 고객의 불신...]** 지침이 주입되어 있다면, 위의 모든 [채널별 대화 안내 수칙], [우리 서비스의 정말 중요한 핵심 버튼 및 행동 지침], [최종 목적지 리드] 등 일체의 링크/조회/버튼 클릭/신청 제안 행동 지침은 **완전히 정지 및 무시(Override)** 됩니다.
+- 긴급 경고 상태일 때는 사용자의 불안을 해소하고 공감/사과하는 안심 유도 설명 외에는 어떠한 다음 행동 제안(버튼 클릭 권유 포함)도 응답(answer)에 넣지 마십시오.
 
 사용자가 질문한 언어나 설정 언어({{{language}}})로 친절하고 정확하며 안심을 주는 답변(answer)을 작성하십시오.
 답변(answer)을 작성하기 전에, 먼저 세무 영업의 신으로서 [성공 점수가 포함된 영업 노하우 스크립트]를 분석하고, 어떻게 대화를 전개해야 고객의 이탈을 막고 환급 성공(서명 완료)으로 이끌 수 있을지 심사숙고하는 과정을 thinkingProcess 필드에 기록하십시오.
 동시에, 한국인 관리자가 대화 내용을 한눈에 파악할 수 있도록 [한국어 요약(koreanSummary)]도 함께 작성하십시오. (예: "질문: 환급금 언제 입금되나요? / 답변: 45~60일 소요 안내")
+또한, 사용자 질문의 문맥을 파악하여 긍정/동조 지수(posScore)와 부정/의심 지수(negScore)를 각각 0~10점 범위에서 객관적으로 판독하여 기재하십시오.
+
+[이전 판독 고객 성향]:
+{{{previousPersonality}}}
+
+[고객 성향 맞춤형 화법 통제 규칙]:
+현재 고객에게 적용된 성향 성향({{{previousPersonality}}})에 맞춰 답변 어조를 통제하십시오:
+- **driver (속전속결형)**: 서론과 무조건적인 공감을 최소화하고, 결론, 예상 환급액 수치, 즉시 행동을 취해야 하는 버튼 위주로 군더더기 없이 간결하게 작성하십시오.
+- **skeptical (신중/의심형)**: 환급금 조회 안전성, 당사 보안 연동의 신뢰성, 수수료 후불제 원칙 등을 강조하여 불신과 불안을 완화하는 데 초점을 맞추십시오.
+- **analytical (이성/꼼꼼형)**: 각 절차와 단계에 대해 구체적이고 명확한 이유를 제시하고, RAG 성공 영업 노트에 기술된 세무 정보를 논리적이고 차분하게 풀어 설명하십시오.
+- **expressive (사교/친근형)**: 리액션을 매우 풍부하게 해 주고 친근한 이모지(🥺, 😅, 👍)와 상냥한 말투(물결표, 땀방울 등)를 적극적으로 사용하여 호의적 관계를 구축하십시오.
+
+[동적 리치 카드(Rich Card) 발급 규칙]:
+답변 과정에서 화면상에 시각적 카드를 띄워줄 필요가 있는 경우, output의 'richCardPayload' 필드를 작성하십시오:
+- 만약 고객이 본인인증 전 환급금 규모를 대략 계산하거나 확인하고 싶어하는 경우 -> cardType: 'estimate_preview', metrics: { 'estimated_refund': '₩450,000' }
+- 만약 고객이 보안에 대해 불안해 하거나 개인정보 유출을 걱정하는 경우 -> cardType: 'security_badge', metrics: { 'security_level': '시중은행 동일 규격 암호화', 'compliance': '국세청 보안 가이드 준수' }
+- 만약 고객이 본인인증 문자 수신이나 통신사 연동에서 막히거나 인증 실패에 대해 겪는 경우 (이때 [고객 인앱 브라우저 접속 여부]가 true 이면 반드시 발급 요망) -> cardType: 'telecom_helper', metrics: { 'carrier': '통신사 자동 감지', 'tip': '스팸 문자 보관함 확인 및 수신 해제 요망' } (단, [고객 인앱 브라우저 접속 여부]가 true 이고 [고객 접속 단말기 OS]가 'ios'이면 metrics.tip에 "아이폰 인앱브라우저 제한: 화면 우측 상단 '나침반' 아이콘을 누르고 '다른 브라우저로 열기'를 선택하여 본인인증을 다시 시도하십시오."를 적고, 'android'이면 "안드로이드 인앱브라우저 제한: 화면 우측 상단 '점 세개'를 누르고 '기본 브라우저로 열기' 또는 '크롬으로 열기'를 선택하십시오."를 기재하십시오.)
+- 만약 고객이 서명 등 신청의 마지막 관문에 와 있어 단계 확인이 필요한 경우 -> cardType: 'completion_checklist', metrics: { 'step_0': '조회 완료 (성공)', 'step_3': '인증 완료 (성공)', 'step_10': '최종 서명 대기' }
+- 카드를 띄울 필요가 없다면 cardType: 'none' 과 함께 빈 metrics 객체 {}를 리턴하십시오.
+
+[요약 및 상태 자가 추출 지침]:
+1. [현재 대화 단계 (currentStep)]: 고객의 현재 대화 내용과 흐름을 토대로 진행 단계를 판독하십시오 (예: Step 0: Estimate, Step 3: Telecom, Step 10: Signed 등).
+2. [전체 대화 핵심 요약 (conversationSummary)]: 이전 대화 요약({{{previousSummary}}})을 바탕으로, 이번에 새로 나눈 대화 내용까지 종합 반영하여 최신 핵심 요약본을 1~2문장의 한국어로 업데이트해 작성하십시오.
+3. [새로 추출한 사용자 정보 팩트 (extractedFacts)]: 유저와의 대화 도중 새롭게 언급되거나 감지된 유저의 신상 정보(이름, 국적, 직업, 소득 규모, 연락처 등)를 감지하여 JSON key-value 형식(예: { "name": "라마", "nationality": "네팔", "monthly_income": "3,000,000" })으로 추출하십시오. 이전 기록({{{previousFacts}}})과 동일하거나 새로 발견된 정보가 없다면 빈 객체 {}를 리턴하십시오.
+4. [고객 성향 판독 (detectedPersonality)]: 사용자의 대화 패턴과 말투(단답형, 의심/경계, 질문 상세도, 감정 이모지 활용 여부 등)를 종합 분석하여 'driver', 'skeptical', 'analytical', 'expressive' 중 가장 알맞은 성격유형 하나를 판독하여 리턴하십시오. (이전 성향 {{{previousPersonality}}}과 대조하여 갱신하거나 유지)
 `,
 });
 
@@ -75,9 +156,21 @@ const managerChatFlow = ai.defineFlow(
     outputSchema: ManagerChatOutputSchema,
   },
   async input => {
-    // 1. Retrieve RAG matched scripts from Supabase Vector DB
+    // 0. Clean input message using denoisePrompt
+    let cleanedText = input.message;
+    try {
+      const denoiseRes = await denoisePrompt({ text: input.message, lang: input.language || 'ko' });
+      if (denoiseRes && denoiseRes.output && denoiseRes.output.cleanedText) {
+        cleanedText = denoiseRes.output.cleanedText;
+        console.log(`[Denoise Preprocessor] Raw: "${input.message}" -> Cleaned: "${cleanedText}"`);
+      }
+    } catch (err) {
+      console.warn('[Denoise Preprocessor] Failed to clean sentence:', err);
+    }
+
+    // 1. Retrieve RAG matched scripts from Supabase Vector DB using cleaned text
     const lang = input.language || 'ko';
-    const scripts = await retrieveMatchedScripts(input.message, lang, undefined, 0.4, 3);
+    const scripts = await retrieveMatchedScripts(cleanedText, lang, undefined, 0.4, 3);
     
     let matchedScriptsContext = '';
     let highestWeightScriptId: number | undefined = undefined;
@@ -103,11 +196,33 @@ const managerChatFlow = ai.defineFlow(
       ? recentHistory.map(h => `${h.role === 'user' ? '고객' : '김준현 매니저'}: ${h.text}`).join('\n')
       : '이전 대화 기록 없음 (최초 대화 시작)';
 
-    // 3. Call Genkit prompt
+    // 3. Dynamic prompting (눈치 메커니즘)
+    const cumPos = input.cumulativePos ?? 0;
+    const cumNeg = input.cumulativeNeg ?? 0;
+    let sentimentAlertContext = '';
+    if (cumNeg >= 5 || cumNeg > cumPos) {
+      sentimentAlertContext = `[🚨 긴급 경고: 현재 대화방에서 고객의 불신, 거부감, 혹은 경계심이 매우 높은 상태(누적 부정 지수 임계값 초과)입니다.
+1. 어떠한 링크 제공, 가입 요구, 버튼 클릭 제안, 환급금 조회/신청 권유도 답변에 절대 포함하지 마십시오.
+2. 오직 고객의 불편함이나 불신에 대해 정중히 사과하고, 의구심을 갖는 점에 대해 자세히 설명해 주며, 심리적으로 안정감을 주는 공감형 안심 답변만 정중하게 작성하십시오. 
+3. 고객의 부정적 감정을 해소하고 마음을 부드럽게 열어주는 데만 100% 집중해 주십시오.]`;
+    }
+
+    const previousSummary = input.previousSummary || "이전 요약 기록 없음";
+    const previousStep = input.previousStep || "Step 0: Estimate (신청 준비 단계)";
+    const previousFacts = input.previousFacts || "기록된 사용자 팩트 없음";
+    const previousPersonality = input.previousPersonality || "expressive (기본값: 친근감 선호형)";
+
+    // 4. Call Genkit prompt
     const { output } = await managerChatPrompt({
       ...input,
+      message: cleanedText,
       matchedScriptsContext,
       historyContext,
+      sentimentAlertContext,
+      previousSummary,
+      previousStep,
+      previousFacts,
+      previousPersonality,
     });
 
     if (!output) {
@@ -128,6 +243,9 @@ const managerChatFlow = ai.defineFlow(
 const FollowUpInputSchema = z.object({
   language: z.string().describe("사용자의 감지된 언어 (예: 'vi', 'zh', 'ne', 'en' 등)"),
   chatHistory: z.string().optional().describe("사용자와의 최근 대화 기록"),
+  previousSummary: z.string().optional().describe("이전 대화 요약"),
+  previousStep: z.string().optional().describe("이전 대화 진행 단계"),
+  previousFacts: z.string().optional().describe("이전에 기록된 사용자 프로필/정보 팩트 목록"),
 });
 
 const FollowUpOutputSchema = z.object({
@@ -141,13 +259,22 @@ const followUpPrompt = ai.definePrompt({
   output: { schema: FollowUpOutputSchema },
   prompt: `${AI_MANAGER_SYSTEM_PROMPT}
 
+[고객의 기존 인적 팩트 (User Facts)]:
+{{{previousFacts}}}
+
+[이전 대화 전체 요약 (Summary)]:
+{{{previousSummary}}}
+
+[이탈 당시 진행 단계 (Step)]:
+{{{previousStep}}}
+
 [현재 사용자의 설정 언어]: {{{language}}}
 
 [사용자와의 최근 대화 기록]:
 {{{chatHistory}}}
 
 [대화 상황 분석 및 작성 지침]:
-주어진 [사용자와의 최근 대화 기록]을 보고 사용자의 상태를 2가지 케이스 중 하나로 판별하여 맞춤형 리마인드 메시지를 작성하십시오:
+주어진 [사용자와의 최근 대화 기록], [이전 대화 전체 요약], [이탈 당시 진행 단계], [고객의 기존 인적 팩트]를 종합적으로 입체 분석하고 사용자의 성격 및 이탈 심리를 파악하여 맞춤형 리마인드 메시지를 작성하십시오:
 
 - **케이스 A (조회 조차 하지 않은 사용자)**: 대화 기록 상 본인인증 번호 입력이나 환급금 계산 단계에 들어가지 않고, 일반 질문만 했거나 인사만 나눈 상태입니다.
   * **메시지 방향**: 환급금 조회 이력을 언급하지 마십시오. 대신, 아직 1분 무료 환급 조회를 해보지 않았음을 상냥하게 일깨워주고, 모국어로 간편하게 조회해 볼 수 있는 링크("https://ktrs-service.vercel.app/?lang={{{language}}}")를 제공하며 가볍게 조회를 시작해보도록 유도하십시오.
@@ -164,7 +291,13 @@ const followUpPrompt = ai.definePrompt({
 `,
 });
 
-export async function askFollowUpAi(input: { language: string; chatHistory?: string }) {
+export async function askFollowUpAi(input: { 
+  language: string; 
+  chatHistory?: string;
+  previousSummary?: string;
+  previousStep?: string;
+  previousFacts?: string;
+}) {
   const { output } = await followUpPrompt(input);
   if (!output) {
     throw new Error('AI 매니저 안부 인사 생성에 실패했습니다.');
@@ -172,3 +305,17 @@ export async function askFollowUpAi(input: { language: string; chatHistory?: str
   return output;
 }
 
+
+
+const denoisePrompt = ai.definePrompt({
+  name: 'denoisePrompt',
+  input: { schema: z.object({ text: z.string(), lang: z.string() }) },
+  output: { schema: z.object({ cleanedText: z.string().describe("정제되고 오탈자가 교정된 표준어 문장") }) },
+  prompt: `당신은 맞춤법 검사기 및 문장 정제기입니다.
+아래 문장은 한국어 또는 다국어로 번역되는 과정에서 오탈자가 발생했거나 구어체/사투리 노이즈가 섞여 있을 수 있습니다.
+내용의 본래 의미는 절대 훼손하지 말고, 오탈자 교정 및 비문 수정을 거쳐 문맥이 깔끔한 표준형 문장으로 정제하여 한 줄로 출력하십시오.
+
+입력 문장: {{{text}}}
+설정 언어: {{{lang}}}
+`,
+});

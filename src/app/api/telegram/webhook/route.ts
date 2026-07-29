@@ -37,7 +37,7 @@ export async function POST(req: Request) {
     let chatSession = null;
     const { data: existingChat, error: fetchErr } = await supabaseAdmin
       .from('support_chats')
-      .select('id, unread_count, metadata')
+      .select('id, unread_count, metadata, cumulative_pos, cumulative_neg')
       .eq('channel', 'telegram')
       .eq('external_chat_id', String(telegramChatId))
       .maybeSingle();
@@ -48,6 +48,8 @@ export async function POST(req: Request) {
     }
 
     const isAiActive = !existingChat || existingChat.metadata?.is_ai_active !== false;
+    const cumulativePos = existingChat?.cumulative_pos ?? 0;
+    const cumulativeNeg = existingChat?.cumulative_neg ?? 0;
 
     if (existingChat) {
       const { data: updatedChat, error: updateErr } = await supabaseAdmin
@@ -63,7 +65,7 @@ export async function POST(req: Request) {
           }
         })
         .eq('id', existingChat.id)
-        .select('id, metadata')
+        .select('id, metadata, cumulative_pos, cumulative_neg')
         .single();
 
       if (updateErr) {
@@ -81,8 +83,10 @@ export async function POST(req: Request) {
           detected_language: sourceLang,
           last_message_at: new Date().toISOString(),
           unread_count: isAiActive ? 0 : 1,
+          cumulative_pos: 0,
+          cumulative_neg: 0,
         })
-        .select('id, metadata')
+        .select('id, metadata, cumulative_pos, cumulative_neg')
         .single();
 
       if (insertErr) {
@@ -96,16 +100,20 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: 'Failed to resolve chat session' }, { status: 500 });
     }
 
-    // 3. Insert customer message into support_messages table
-    const { error: msgErr } = await supabaseAdmin.from('support_messages').insert({
-      chat_id: chatSession.id,
-      sender_type: 'customer',
-      original_text: rawText,
-      translated_text: translatedText,
-      source_lang: sourceLang,
-      target_lang: 'ko',
-      is_read: isAiActive,
-    });
+    // 3. Insert customer message into support_messages table and select its ID
+    const { data: insertedMsg, error: msgErr } = await supabaseAdmin
+      .from('support_messages')
+      .insert({
+        chat_id: chatSession.id,
+        sender_type: 'customer',
+        original_text: rawText,
+        translated_text: translatedText,
+        source_lang: sourceLang,
+        target_lang: 'ko',
+        is_read: isAiActive,
+      })
+      .select('id')
+      .single();
 
     if (msgErr) {
       console.error('Failed to insert support message:', msgErr);
@@ -129,25 +137,73 @@ export async function POST(req: Request) {
             text: m.sender_type === 'customer' ? m.original_text : (m.translated_text || m.original_text)
           }));
 
+        const previousSummary = chatSession.metadata?.summary || "이전 요약 기록 없음";
+        const previousStep = chatSession.metadata?.current_step || "Step 0: Estimate (신청 준비 단계)";
+        const previousFactsObj = chatSession.metadata?.user_facts || {};
+        const previousFacts = Object.entries(previousFactsObj)
+          .map(([k, v]) => `- ${k}: ${v}`)
+          .join('\n') || "기록된 사용자 팩트 없음";
+        const previousPersonality = chatSession.metadata?.personality_type || "expressive (기본값: 친근감 선호형)";
+
         const aiResult = await askManagerAi({
           message: rawText,
           language: sourceLang,
           history,
           channel: 'telegram',
+          cumulativePos,
+          cumulativeNeg,
+          previousSummary,
+          previousFacts,
+          previousStep,
+          previousPersonality,
         });
 
-        // 4a. Update chat session metadata with the matched script ID
-        if (aiResult.matchedScriptId) {
-          const currentMetadata = chatSession.metadata || {};
+        const newPosScore = aiResult.posScore ?? 0;
+        const newNegScore = aiResult.negScore ?? 0;
+        const updatedCumulativePos = cumulativePos + newPosScore;
+        const updatedCumulativeNeg = cumulativeNeg + newNegScore;
+
+        // 4a. Update chat session metadata and cumulative sentiment scores
+        const currentMetadata = chatSession.metadata || {};
+        const newFacts = aiResult.extractedFacts || {};
+        const updatedFacts = {
+          ...(currentMetadata.user_facts || {}),
+          ...newFacts
+        };
+        const isTakeoverTriggered = updatedCumulativeNeg >= 6;
+        const updatedMetadata = {
+          ...currentMetadata,
+          last_script_id: aiResult.matchedScriptId || currentMetadata.last_script_id,
+          is_ai_active: isTakeoverTriggered ? false : true,
+          summary: aiResult.conversationSummary || currentMetadata.summary,
+          current_step: aiResult.currentStep || currentMetadata.current_step,
+          personality_type: aiResult.detectedPersonality || currentMetadata.personality_type,
+          user_facts: updatedFacts,
+          takeover_alert: isTakeoverTriggered ? true : (currentMetadata.takeover_alert || false),
+        };
+
+        if (isTakeoverTriggered) {
+          console.warn(`[🚨 TAKEOVER ALERT Telegram] Chat ${chatSession.id} reached ${updatedCumulativeNeg}. Deactivating AI.`);
+        }
+
+        await supabaseAdmin
+          .from('support_chats')
+          .update({
+            metadata: updatedMetadata,
+            cumulative_pos: updatedCumulativePos,
+            cumulative_neg: updatedCumulativeNeg
+          })
+          .eq('id', chatSession.id);
+
+        // 4b. Update the customer message with the evaluated sentiment scores
+        if (insertedMsg?.id) {
           await supabaseAdmin
-            .from('support_chats')
+            .from('support_messages')
             .update({
-              metadata: {
-                ...currentMetadata,
-                last_script_id: aiResult.matchedScriptId
-              }
+              pos_score: newPosScore,
+              neg_score: newNegScore
             })
-            .eq('id', chatSession.id);
+            .eq('id', insertedMsg.id);
         }
 
         const botToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -176,8 +232,10 @@ export async function POST(req: Request) {
               action: 'typing',
             }).catch(() => {});
 
-            // Calculate human-like typing delay (capped for safety)
-            const typingTime = Math.min(chunk.length * 30 + 500, 2500);
+            // Calculate human-like irregular typing delay
+            const baseSpeed = 20 + Math.random() * 15; // 20ms to 35ms per character
+            const basePause = 300 + Math.random() * 400; // 300ms to 700ms base thinking/resting pause
+            const typingTime = Math.min(chunk.length * baseSpeed + basePause, 3000);
             await delay(typingTime);
 
             // Send actual message chunk
@@ -189,16 +247,20 @@ export async function POST(req: Request) {
               console.error('[Telegram AI Response] delivery failed:', err?.response?.data || err.message);
             });
 
-            // Small rest between messages
-            await delay(800);
+            // Realistic human-like typing pause gap between split messages
+            await delay(1200 + Math.random() * 600);
           }
         }
+
+        const richCardStr = aiResult.richCardPayload && aiResult.richCardPayload.cardType !== 'none'
+          ? `\n[RICH_CARD_JSON: ${JSON.stringify(aiResult.richCardPayload)}]`
+          : '';
 
         await supabaseAdmin.from('support_messages').insert({
           chat_id: chatSession.id,
           sender_type: 'admin',
-          original_text: aiResult.koreanSummary || aiResult.answer,
-          translated_text: aiResult.answer,
+          original_text: (aiResult.koreanSummary || aiResult.answer) + richCardStr,
+          translated_text: aiResult.answer + richCardStr,
           source_lang: 'ko',
           target_lang: sourceLang,
           is_read: true,

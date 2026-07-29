@@ -56,10 +56,20 @@ export async function GET(req: Request) {
           ? messages.map(m => `[${m.sender_type === 'user' ? '사용자' : 'AI매니저'}]: ${m.original_text}`).join('\n')
           : '대화 기록 없음';
 
+        const previousSummary = chat.metadata?.summary || "이전 요약 기록 없음";
+        const previousStep = chat.metadata?.current_step || "Step 0: Estimate (신청 준비 단계)";
+        const previousFactsObj = chat.metadata?.user_facts || {};
+        const previousFacts = Object.entries(previousFactsObj)
+          .map(([k, v]) => `- ${k}: ${v}`)
+          .join('\n') || "기록된 사용자 팩트 없음";
+
         // Generate warm follow-up message via Gemini Manager Persona
         const aiResult = await askFollowUpAi({ 
           language: lang,
-          chatHistory: chatHistoryStr
+          chatHistory: chatHistoryStr,
+          previousSummary,
+          previousStep,
+          previousFacts,
         });
 
         let deliverySuccess = false;

@@ -42,11 +42,14 @@ export async function retrieveMatchedScripts(
   try {
     const queryEmbedding = await getEmbedding(messageText);
     
+    // Fetch slightly more candidates from RPC to allow reranking
+    const fetchLimit = Math.max(limit * 3, 10);
+
     // Call Supabase RPC
     const { data, error } = await supabaseAdmin.rpc('match_refund_scripts', {
       query_embedding: queryEmbedding,
       match_threshold: threshold,
-      match_count: limit,
+      match_count: fetchLimit,
       p_step: step || null,
       p_lang: lang,
     });
@@ -56,7 +59,17 @@ export async function retrieveMatchedScripts(
       return [];
     }
 
-    return (data || []) as MatchedScript[];
+    const rawList = (data || []) as MatchedScript[];
+    if (rawList.length === 0) return [];
+
+    // Re-rank candidates by weighting similarity (60%) and success_weight (40%)
+    const rerankedList = [...rawList].sort((a, b) => {
+      const scoreA = (a.similarity * 0.6) + (Math.min(a.success_weight || 0, 100) / 100 * 0.4);
+      const scoreB = (b.similarity * 0.6) + (Math.min(b.success_weight || 0, 100) / 100 * 0.4);
+      return scoreB - scoreA;
+    });
+
+    return rerankedList.slice(0, limit);
   } catch (err) {
     console.error('[Retrieve Scripts Error]:', err);
     return [];
@@ -168,6 +181,47 @@ export async function logConversionFeedback(
           .from('refund_scripts')
           .update({ success_weight: (script.success_weight || 0) + score })
           .eq('id', scriptId);
+      }
+    }
+
+    // 4. If the conversion action is 'signed', trigger Self-Learning RAG Loop
+    if (actionType === 'signed') {
+      try {
+        const { data: messages, error: msgErr } = await supabaseAdmin
+          .from('support_messages')
+          .select('sender_type, original_text, translated_text, source_lang')
+          .eq('chat_id', chat.id)
+          .order('created_at', { ascending: true });
+
+        if (!msgErr && messages && messages.length > 0) {
+          for (let i = 0; i < messages.length - 1; i++) {
+            const currentMsg = messages[i];
+            const nextMsg = messages[i + 1];
+
+            // Match Customer -> Admin (Manager response) pair
+            if (currentMsg.sender_type === 'customer' && nextMsg.sender_type === 'admin') {
+              const queryText = currentMsg.original_text || '';
+              const responseText = nextMsg.original_text || nextMsg.translated_text || '';
+
+              if (queryText.trim().length > 5 && responseText.trim().length > 10) {
+                const embedding = await getEmbedding(queryText.trim()).catch(() => null);
+                if (embedding) {
+                  await supabaseAdmin.from('refund_scripts').insert({
+                    refund_step: 'success_case',
+                    target_psychology: 'real_conversion_case',
+                    script_text: responseText.trim(),
+                    detected_language: currentMsg.source_lang || 'ko',
+                    success_weight: 15, // High initial weight for proven conversion script
+                    embedding: embedding
+                  });
+                  console.log(`[Self-Learning RAG] Successfully learned new successful response in: ${currentMsg.source_lang || 'ko'}`);
+                }
+              }
+            }
+          }
+        }
+      } catch (learningErr) {
+        console.error('[Self-Learning RAG Error]:', learningErr);
       }
     }
 

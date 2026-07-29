@@ -306,6 +306,147 @@ interface ChatMessage {
   text: string;
   timestamp: string;
   imageUrl?: string;
+  richCard?: {
+    cardType: 'none' | 'estimate_preview' | 'security_badge' | 'telecom_helper' | 'completion_checklist';
+    title?: string;
+    description?: string;
+    metrics?: Record<string, string>;
+  };
+}
+
+function parseRichCardFromText(rawText: string): { text: string; richCard?: ChatMessage['richCard'] } {
+  if (!rawText) return { text: "", richCard: undefined };
+  
+  const match = rawText.match(/\[RICH_CARD_JSON:\s*(\{.*?\})\]/);
+  if (match) {
+    try {
+      const richCard = JSON.parse(match[1]);
+      const cleanText = rawText.replace(match[0], "").trim();
+      return { text: cleanText, richCard };
+    } catch (e) {
+      console.warn("Failed to parse rich card JSON:", e);
+    }
+  }
+  return { text: rawText, richCard: undefined };
+}
+
+function RichCardRenderer({ card }: { card: NonNullable<ChatMessage['richCard']> }) {
+  const { cardType, title, description, metrics } = card;
+
+  switch (cardType) {
+    case 'estimate_preview':
+      return (
+        <div className="mt-2.5 p-4.5 rounded-2xl bg-gradient-to-br from-[#1d385a] to-[#0a1d33] border border-[#e2b659]/30 shadow-lg text-slate-100 flex flex-col gap-3.5 max-w-full font-bold">
+          <div className="flex items-center gap-2 text-[#e2b659] text-xs">
+            <svg className="w-4.5 h-4.5 shrink-0 text-[#e2b659]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+            </svg>
+            <span>{title || "실시간 환급금 모의 정밀 분석"}</span>
+          </div>
+          <div className="flex flex-col gap-1">
+            <span className="text-[10px] text-slate-400 font-medium">{description || "현재 정보 기준 잠정 예상 환급금"}</span>
+            <span className="text-xl font-extrabold text-[#e2b659]">
+              {metrics?.estimated_refund || "₩450,000"}
+            </span>
+          </div>
+          <div className="h-px bg-white/10 w-full" />
+          <div className="flex items-center justify-between text-[9px] text-slate-400">
+            <span>보안 분석 엔진 v2.5</span>
+            <span className="text-[#e2b659]">분석 신뢰도 99%</span>
+          </div>
+        </div>
+      );
+    case 'security_badge':
+      return (
+        <div className="mt-2.5 p-4.5 rounded-2xl bg-gradient-to-br from-[#0e213a] to-[#050f1b] border border-emerald-500/20 shadow-md text-slate-100 flex flex-col gap-2.5 max-w-full font-bold">
+          <div className="flex items-center gap-2 text-emerald-400 text-xs">
+            <svg className="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>{title || "개인정보 보호 및 보안 인증"}</span>
+          </div>
+          <p className="text-[10px] text-slate-300 font-medium leading-relaxed">
+            {description || "고객님의 모든 정보는 시중 은행과 동일한 수준의 최고급 256-bit SSL 암호화 처리 후 국세청 연동 즉시 자동 파기됩니다."}
+          </p>
+          <div className="flex flex-wrap gap-1.5 mt-1 text-[9px]">
+            <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">SSL 256bit</span>
+            <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">국세청 가이드 준수</span>
+          </div>
+        </div>
+      );
+    case 'telecom_helper':
+      return (
+        <div className="mt-2.5 p-4.5 rounded-2xl bg-gradient-to-br from-[#1d385a] to-[#0a1d33] border border-blue-400/20 shadow-md text-slate-100 flex flex-col gap-3 max-w-full font-bold">
+          <div className="flex items-center gap-2 text-blue-400 text-xs">
+            <svg className="w-4.5 h-4.5 shrink-0 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            <span>{title || "통신사 본인인증 도우미"}</span>
+          </div>
+          <div className="flex flex-col gap-1.5 text-[10px] text-slate-300 font-medium">
+            <p className="text-slate-400">{description || "본인인증 문자가 오지 않는 경우 조치 방법:"}</p>
+            <div className="flex flex-col gap-1">
+              <div className="flex gap-1.5 items-start">
+                <span className="text-[#e2b659] shrink-0">1.</span>
+                <span>휴대폰 스팸 메시지 보관함 또는 통신사 인증 차단 서비스 설정을 확인해 주세요.</span>
+              </div>
+              <div className="flex gap-1.5 items-start">
+                <span className="text-[#e2b659] shrink-0">2.</span>
+                <span>알뜰폰 고객님의 경우 대행사 통신사 구분을 정확히 입력하셨는지 확인 바랍니다.</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      );
+    case 'completion_checklist':
+      return (
+        <div className="mt-2.5 p-4.5 rounded-2xl bg-[#0d1e35] border border-white/10 shadow-md text-slate-100 flex flex-col gap-3 max-w-full font-bold">
+          <div className="flex items-center gap-2 text-[#e2b659] text-xs">
+            <svg className="w-4.5 h-4.5 shrink-0 text-[#e2b659]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+            </svg>
+            <span>{title || "환급금 신청 진행 체크리스트"}</span>
+          </div>
+          <div className="flex flex-col gap-2.5 text-[10px]">
+            <div className="flex items-center justify-between">
+              <span className="text-slate-400">1단계: 세무 환급금 모의 조회</span>
+              <span className="text-emerald-400 flex items-center gap-1">
+                <svg className="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
+                조회 성공
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-slate-400">2단계: 국세청 안전 본인인증</span>
+              <span className="text-emerald-400 flex items-center gap-1">
+                <svg className="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
+                인증 성공
+              </span>
+            </div>
+            <div className="flex items-center justify-between">
+              <span className="text-slate-200">3단계: 최종 환급 승인 서명</span>
+              <span className="text-[#e2b659] animate-pulse">최종 서명 대기</span>
+            </div>
+          </div>
+        </div>
+      );
+    default:
+      return null;
+  }
+}
+
+function detectDeviceAndBrowser(): { os: 'ios' | 'android' | 'other'; isInApp: boolean } {
+  if (typeof window === 'undefined') return { os: 'other', isInApp: false };
+  const ua = window.navigator.userAgent.toLowerCase();
+  
+  let os: 'ios' | 'android' | 'other' = 'other';
+  if (/iphone|ipad|ipod/.test(ua)) {
+    os = 'ios';
+  } else if (/android/.test(ua)) {
+    os = 'android';
+  }
+  
+  const isInApp = /kakaotalk|instagram|fb_iab|fbav|line|messenger|zalo|whatsapp|snapchat/.test(ua);
+  return { os, isInApp };
 }
 
 export function FloatingAiChat() {
@@ -532,14 +673,17 @@ function FloatingConsultingPanelInner() {
             const mapped = dbMessages.map((msg) => {
               const isUser = msg.sender_type === "customer";
               const isKo = (language || "ko") === "ko";
-              const text = isUser 
+              const rawText = isUser 
                 ? msg.original_text 
                 : (isKo ? msg.original_text : (msg.translated_text || msg.original_text));
+
+              const { text, richCard } = parseRichCardFromText(rawText);
 
               return {
                 id: String(msg.id),
                 sender: isUser ? ("user" as const) : ("manager" as const),
                 text: text,
+                richCard: richCard,
                 timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
               };
             });
@@ -634,6 +778,7 @@ function FloatingConsultingPanelInner() {
     setIsSending(true);
 
     try {
+      const device = detectDeviceAndBrowser();
       const res = await fetch("/api/chat/manager", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -644,13 +789,17 @@ function FloatingConsultingPanelInner() {
             role: m.sender === "user" ? "user" : "model",
             text: m.text,
           })),
-          chatId: chatId || localStorage.getItem("ktrs_chat_session_id")
+          chatId: chatId || localStorage.getItem("ktrs_chat_session_id"),
+          clientOs: device.os,
+          clientIsInApp: device.isInApp,
+          currentPathname: pathname
         }),
       });
 
       const data = await res.json();
       setIsSending(false); // Hide main loading spinner
       
+      console.log(`[AI Response] Sentiment scores: Pos=${data.posScore}, Neg=${data.negScore}`);
       const answer = data.answer || "죄송합니다. 잠시 후 다시 시도해 주세요.";
       
       // Split sentence chunks using '|' or double line breaks '\n\n'
@@ -668,28 +817,36 @@ function FloatingConsultingPanelInner() {
 
       const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
+      let chunkIdx = 0;
       for (const chunk of chunks) {
         setIsTyping(true); // Show dot bouncing typing indicator
         
-        // Calculate typing delay (capped for safety)
-        const typingTime = Math.min(chunk.length * 30 + 500, 2000);
+        // Calculate human-like irregular typing delay
+        const baseSpeed = 20 + Math.random() * 15; // 20ms to 35ms per character
+        const basePause = 300 + Math.random() * 400; // 300ms to 700ms base thinking/resting pause
+        const typingTime = Math.min(chunk.length * baseSpeed + basePause, 3000);
         await delay(typingTime);
         
         setIsTyping(false); // Hide typing indicator
         
+        const isLastChunk = chunkIdx === chunks.length - 1;
         const managerMsg: ChatMessage = {
           id: `manager-${Date.now()}-${Math.random()}`,
           sender: "manager",
           text: chunk,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          richCard: (isLastChunk && data.richCardPayload && data.richCardPayload.cardType !== 'none')
+            ? data.richCardPayload
+            : undefined
         };
         
         setMessages((prev) => [...prev, managerMsg]);
         messageCountRef.current += 1;
         resetInactivityTimer();
         
-        // Small gap between split sentences
-        await delay(800);
+        chunkIdx++;
+        // Realistic human-like typing pause gap between split messages
+        await delay(1200 + Math.random() * 600);
       }
 
     } catch (err) {
@@ -976,6 +1133,7 @@ function FloatingConsultingPanelInner() {
                             )}
                             {msg.text}
                           </div>
+                          {msg.richCard && <RichCardRenderer card={msg.richCard} />}
                           <span className={cn(
                             "text-[9px] text-slate-500 font-bold mt-1 px-1",
                             msg.sender === "user" ? "text-right" : "text-left"
