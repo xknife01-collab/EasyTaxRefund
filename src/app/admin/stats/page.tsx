@@ -35,7 +35,9 @@ import {
   Zap,
   Download,
   LayoutDashboard,
-  ShieldCheck
+  ShieldCheck,
+  Bot,
+  BrainCircuit
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -102,6 +104,8 @@ export default function AdminStatsPage() {
   const [isMounted, setIsMounted] = useState(false);
   const { toast } = useToast();
   const [adminVerified, setAdminVerified] = useState(false);
+  const [aiStats, setAiStats] = useState<any>(null);
+  const [loadingAi, setLoadingAi] = useState(true);
 
   const handleExportCsv = () => {
     if (!apps.length) {
@@ -188,6 +192,21 @@ export default function AdminStatsPage() {
       unsubApps();
       unsubStats();
     };
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/admin/stats/ai')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setAiStats(data.stats);
+        }
+        setLoadingAi(false);
+      })
+      .catch(err => {
+        console.error('Failed to load AI stats:', err);
+        setLoadingAi(false);
+      });
   }, []);
 
   const availableCountries = useMemo(() => {
@@ -648,6 +667,147 @@ export default function AdminStatsPage() {
                                 </div>
                             );
                         })}
+                    </div>
+                  </Card>
+              </div>
+
+              {/* AI Chat Intel Dashboard Section */}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                 {/* Left: AI Stats & RAG scripts */}
+                 <Card className="lg:col-span-2 premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-8 space-y-6">
+                    <div className="flex items-center justify-between pb-2">
+                       <div className="flex items-center gap-3">
+                          <div className="h-10 w-10 bg-sky-50 rounded-xl flex items-center justify-center text-sky-600">
+                             <Bot className="h-5 w-5" />
+                          </div>
+                          <div>
+                             <h3 className="text-lg font-black text-slate-900">AI 상담 성과 및 성공 스크립트</h3>
+                             <p className="text-xs font-bold text-slate-400">Genkit AI 매니저 실시간 상담 전환 실적</p>
+                          </div>
+                       </div>
+                       {loadingAi && <RefreshCw className="h-4 w-4 animate-spin text-slate-400" />}
+                    </div>
+
+                    {aiStats ? (
+                       <div className="space-y-6">
+                          {/* Sub-Metrics Grid */}
+                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                             <div className="p-4 bg-slate-50 rounded-2xl border border-slate-100">
+                                <p className="text-[10px] font-black text-slate-400 uppercase">총 AI 상담 수</p>
+                                <p className="text-xl font-black text-slate-900">{aiStats.totalChats.toLocaleString()}건</p>
+                             </div>
+                             <div className="p-4 bg-emerald-50/50 rounded-2xl border border-emerald-100">
+                                <p className="text-[10px] font-black text-emerald-600 uppercase">AI 자가해결</p>
+                                <p className="text-xl font-black text-emerald-700">{aiStats.aiActiveCount.toLocaleString()}건</p>
+                             </div>
+                             <div className="p-4 bg-rose-50/50 rounded-2xl border border-rose-100">
+                                <p className="text-[10px] font-black text-rose-600 uppercase">관리자 개입(Takeover)</p>
+                                <p className="text-xl font-black text-rose-700">{aiStats.takeoverCount.toLocaleString()}건</p>
+                             </div>
+                             <div className="p-4 bg-indigo-50/50 rounded-2xl border border-indigo-100">
+                                <p className="text-[10px] font-black text-indigo-600 uppercase">상담 최종 전환율</p>
+                                <p className="text-xl font-black text-indigo-700">
+                                   {aiStats.totalChats > 0 
+                                      ? `${((aiStats.signedCount / aiStats.totalChats) * 100).toFixed(1)}%` 
+                                      : '0%'}
+                                </p>
+                             </div>
+                          </div>
+
+                          <Separator className="bg-slate-100" />
+
+                          {/* Channel breakdown */}
+                          <div className="space-y-3">
+                             <h4 className="text-xs font-black text-slate-500 uppercase tracking-wider">채널별 연동 대화수</h4>
+                             <div className="flex flex-wrap gap-3">
+                                {Object.entries(aiStats.chatsByChannel).map(([ch, count]: any) => (
+                                   <Badge key={ch} className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold px-3 py-1.5 rounded-xl border-none">
+                                      <span className="capitalize mr-1.5 font-black text-slate-400">{ch}:</span>
+                                      {count}건
+                                   </Badge>
+                                ))}
+                             </div>
+                          </div>
+
+                          <Separator className="bg-slate-100" />
+
+                          {/* Top scripts */}
+                          <div className="space-y-4">
+                             <h4 className="text-xs font-black text-slate-500 uppercase tracking-wider">💡 최다 전환 기여 영업 RAG 스크립트 (Top 5)</h4>
+                             <div className="space-y-3">
+                                {aiStats.topScripts && aiStats.topScripts.length > 0 ? (
+                                   aiStats.topScripts.map((script: any) => (
+                                      <div key={script.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
+                                         <div className="flex items-center justify-between">
+                                            <Badge className="bg-indigo-100 text-indigo-600 border-none font-black text-[9px] rounded-lg">
+                                               {script.refund_step.toUpperCase()} / {script.detected_language.toUpperCase()}
+                                            </Badge>
+                                            <span className="text-[10px] font-black text-slate-500">
+                                               성공 가중치: <span className="text-indigo-600 font-mono">{script.success_weight}점</span>
+                                            </span>
+                                         </div>
+                                         <p className="text-xs font-bold text-slate-600 line-clamp-2 leading-relaxed">
+                                            "{script.script_text}"
+                                         </p>
+                                      </div>
+                                   ))
+                                ) : (
+                                   <p className="text-xs font-bold text-slate-400 py-2">학습된 영업 RAG 스크립트가 아직 존재하지 않습니다.</p>
+                                )}
+                             </div>
+                          </div>
+                       </div>
+                    ) : (
+                       <p className="text-xs font-bold text-slate-400 py-8 text-center">AI 통계 정보를 불러오지 못했습니다.</p>
+                    )}
+                 </Card>
+
+                 {/* Right: AI Customer Personality Distribution */}
+                 <Card className="lg:col-span-1 premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-10 space-y-8">
+                    <div className="flex items-center gap-3">
+                       <div className="h-10 w-10 bg-amber-50 rounded-xl flex items-center justify-center text-amber-600">
+                          <BrainCircuit className="h-5 w-5" />
+                       </div>
+                       <div>
+                          <h3 className="text-lg font-black text-slate-900">고객 성향 판독 분포</h3>
+                          <p className="text-xs font-bold text-slate-400">대화 분석 기반 성격 성향 성격군</p>
+                       </div>
+                    </div>
+
+                    <div className="space-y-8">
+                       {aiStats ? (
+                          [
+                             { key: 'driver', label: 'Driver (속전속결형)', color: 'bg-rose-500', desc: '결론 위주의 짧고 명확한 수치를 선호' },
+                             { key: 'skeptical', label: 'Skeptical (신중/의심형)', color: 'bg-amber-500', desc: '보안성, 후불제 원칙 검증에 집중' },
+                             { key: 'analytical', label: 'Analytical (이성/꼼꼼형)', color: 'bg-indigo-500', desc: '구체적인 세법 규정 및 논리적 근거 요구' },
+                             { key: 'expressive', label: 'Expressive (사교/친근형)', color: 'bg-emerald-500', desc: '이모지 및 상냥하고 친근한 어투 선호' },
+                             { key: 'unknown', label: '판독 전 / 기타', color: 'bg-slate-400', desc: '기본 친근 대화 모드로 매칭됨' }
+                          ].map(item => {
+                             const count = aiStats.personalityDistribution[item.key] || 0;
+                             const total = Object.values(aiStats.personalityDistribution).reduce((a: any, b: any) => a + b, 0) as number || 1;
+                             const pct = (count / total) * 100;
+
+                             return (
+                                <div key={item.key} className="space-y-2">
+                                   <div className="flex justify-between items-baseline">
+                                      <div>
+                                         <span className="text-xs font-black text-slate-700 block">{item.label}</span>
+                                         <span className="text-[10px] font-bold text-slate-400">{item.desc}</span>
+                                      </div>
+                                      <span className="text-xs font-black text-slate-900">{count}명 ({pct.toFixed(0)}%)</span>
+                                   </div>
+                                   <div className="h-2.5 bg-slate-50 rounded-full overflow-hidden">
+                                      <div 
+                                         className={cn("h-full transition-all duration-700 rounded-full", item.color)} 
+                                         style={{ width: `${pct}%` }} 
+                                      />
+                                   </div>
+                                </div>
+                             );
+                          })
+                       ) : (
+                          <p className="text-xs font-bold text-slate-400 py-8 text-center">성향 통계를 불러오지 못했습니다.</p>
+                       )}
                     </div>
                  </Card>
               </div>

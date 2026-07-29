@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { askManagerAi } from "@/ai/flows/manager-chat-flow";
 import { supabaseAdmin } from "@/lib/supabase";
+import { sendTakeoverAlert } from "@/lib/slack";
 
 export async function POST(req: NextRequest) {
   try {
@@ -188,6 +189,18 @@ export async function POST(req: NextRequest) {
           if (aiMsgErr) {
             console.error("Failed to insert AI support message:", aiMsgErr);
           }
+        }
+
+        if (isTakeoverTriggered && !currentMetadata.takeover_alert && chatSessionId) {
+          await sendTakeoverAlert({
+            chatId: chatSessionId,
+            channel: "web",
+            userName: "Web Client",
+            detectedLanguage: language || "ko",
+            cumulativeNeg: updatedCumulativeNeg,
+            summary: result.conversationSummary || currentMetadata.summary || "요약 없음",
+            lastMessage: message.trim(),
+          }).catch((err) => console.error("[Slack Alert API Error]:", err));
         }
       } catch (dbErr) {
         console.error("Failed to update web chat session details in DB:", dbErr);

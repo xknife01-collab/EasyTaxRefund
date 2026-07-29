@@ -206,15 +206,37 @@ export async function logConversionFeedback(
               if (queryText.trim().length > 5 && responseText.trim().length > 10) {
                 const embedding = await getEmbedding(queryText.trim()).catch(() => null);
                 if (embedding) {
-                  await supabaseAdmin.from('refund_scripts').insert({
-                    refund_step: 'success_case',
-                    target_psychology: 'real_conversion_case',
-                    script_text: responseText.trim(),
-                    detected_language: currentMsg.source_lang || 'ko',
-                    success_weight: 15, // High initial weight for proven conversion script
-                    embedding: embedding
-                  });
-                  console.log(`[Self-Learning RAG] Successfully learned new successful response in: ${currentMsg.source_lang || 'ko'}`);
+                  const existingMatches = await retrieveMatchedScripts(queryText.trim(), currentMsg.source_lang || 'ko', undefined, 0.85, 1);
+                  if (existingMatches && existingMatches.length > 0) {
+                    const matchedScript = existingMatches[0];
+                    console.log(`[Self-Learning RAG] Found highly similar script (ID: ${matchedScript.id}, Similarity: ${matchedScript.similarity}). Incrementing success weight instead of inserting duplicate.`);
+                    await supabaseAdmin.rpc('increment_script_weight', {
+                      script_id_input: matchedScript.id,
+                      increment_amount: 15
+                    }).catch(async () => {
+                      const { data: script } = await supabaseAdmin
+                        .from('refund_scripts')
+                        .select('success_weight')
+                        .eq('id', matchedScript.id)
+                        .single();
+                      if (script) {
+                        await supabaseAdmin
+                          .from('refund_scripts')
+                          .update({ success_weight: (script.success_weight || 0) + 15 })
+                          .eq('id', matchedScript.id);
+                      }
+                    });
+                  } else {
+                    await supabaseAdmin.from('refund_scripts').insert({
+                      refund_step: 'success_case',
+                      target_psychology: 'real_conversion_case',
+                      script_text: responseText.trim(),
+                      detected_language: currentMsg.source_lang || 'ko',
+                      success_weight: 15,
+                      embedding: embedding
+                    });
+                    console.log(`[Self-Learning RAG] Successfully learned new successful response in: ${currentMsg.source_lang || 'ko'}`);
+                  }
                 }
               }
             }

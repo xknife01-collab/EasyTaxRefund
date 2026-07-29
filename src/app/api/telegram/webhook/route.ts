@@ -3,6 +3,7 @@ import { supabaseAdmin } from '@/lib/supabase';
 import { translateIncomingTelegramMessage } from '@/ai/flows/telegram-translation-flow';
 import { askManagerAi } from '@/ai/flows/manager-chat-flow';
 import axios from 'axios';
+import { sendTakeoverAlert } from '@/lib/slack';
 
 export async function POST(req: Request) {
   try {
@@ -184,6 +185,17 @@ export async function POST(req: Request) {
 
         if (isTakeoverTriggered) {
           console.warn(`[🚨 TAKEOVER ALERT Telegram] Chat ${chatSession.id} reached ${updatedCumulativeNeg}. Deactivating AI.`);
+          if (!currentMetadata.takeover_alert) {
+            await sendTakeoverAlert({
+              chatId: chatSession.id,
+              channel: 'telegram',
+              userName: userName,
+              detectedLanguage: sourceLang,
+              cumulativeNeg: updatedCumulativeNeg,
+              summary: aiResult.conversationSummary || currentMetadata.summary || '요약 없음',
+              lastMessage: rawText,
+            }).catch(err => console.error('[Slack Alert Telegram Error]:', err));
+          }
         }
 
         await supabaseAdmin
