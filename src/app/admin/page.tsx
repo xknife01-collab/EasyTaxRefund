@@ -40,7 +40,7 @@ import {
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { translateNotification } from "@/ai/flows/notification-translation-flow";
-import { MessageSquare, Send, Trash2, Copy, Key, PenTool, EyeOff, ZoomIn, ZoomOut, Eye, FileImage } from "lucide-react";
+import { MessageSquare, Send, Trash2, Copy, Key, PenTool, EyeOff, ZoomIn, ZoomOut, Eye, FileImage, Cpu } from "lucide-react";
 import { translateChatMessage } from "@/ai/flows/chat-translation-flow";
 import { getDecryptedHometaxCredentialsMap } from "@/ai/flows/automated-refund-estimate";
 import { useTranslation } from "@/components/LanguageContext";
@@ -51,6 +51,7 @@ import { getKstDateString } from "@/lib/tracking";
 import { useToast } from "@/hooks/use-toast";
 import { OmniChatDrawer } from "@/components/admin/chat/OmniChatDrawer";
 import { LiveMessengerFeed } from "@/components/admin/LiveMessengerFeed";
+import RefundChatTab from "@/components/admin/chat/RefundChatTab";
 import { useRouter } from "next/navigation";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, addDoc, serverTimestamp, deleteDoc, increment, writeBatch } from "firebase/firestore";
@@ -83,7 +84,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const [isDetailOpen, setIsDetailOpen] = useState(false);
   const [selectedApp, setSelectedApp] = useState<any>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [activeView, setActiveView] = useState<'dashboard' | 'hometax'>('dashboard');
+  const [activeView, setActiveView] = useState<'dashboard' | 'hometax' | 'aichat'>('dashboard');
   const [isHardDelete, setIsHardDelete] = useState(false);
   const [isTelegramDrawerOpen, setIsTelegramDrawerOpen] = useState(false);
   const [activeLiveChatId, setActiveLiveChatId] = useState<string | null>(null);
@@ -771,7 +772,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
 
   const handleOpenLiveChat = (chatId: string) => {
     setActiveLiveChatId(chatId);
-    setIsTelegramDrawerOpen(true);
+    setActiveView('aichat'); // Switch directly to Centralized AI Chat 관제 탭!
   };
 
   const handleExportCsv = () => {
@@ -863,13 +864,18 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
 
             <Button
               variant="ghost"
-              onClick={() => setIsTelegramDrawerOpen(true)}
-              className="w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 text-sky-600 bg-sky-50 hover:bg-sky-100 border border-sky-200/80 transition-all shadow-sm"
+              onClick={() => setActiveView('aichat')}
+              className={cn(
+                "w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 transition-all shadow-sm",
+                activeView === 'aichat'
+                  ? "bg-violet-600/10 text-violet-600 hover:bg-violet-600/15 border border-violet-200/50"
+                  : "text-sky-600 bg-sky-50 hover:bg-sky-100 border border-sky-200/80"
+              )}
             >
               <MessageSquare className="h-4 w-4 text-sky-500 animate-pulse" /> 💬 통합 실시간 상담 센터
             </Button>
 
-<Button
+            <Button
               variant="ghost"
               onClick={() => router.push('/admin/stats')}
               className="w-full justify-start h-12 rounded-xl font-bold gap-3 px-4 text-slate-600 hover:bg-slate-50"
@@ -1231,7 +1237,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
 
               <LiveMessengerFeed onOpenChat={handleOpenLiveChat} />
             </>
-          ) : (
+          ) : activeView === 'hometax' ? (
             <>
               <div className="flex flex-col md:flex-row justify-between items-center gap-6 bg-white p-8 rounded-[2.5rem] shadow-sm border border-slate-100">
                 <div>
@@ -1498,7 +1504,9 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                 </CardContent>
               </Card>
             </>
-          )}
+          ) : activeView === 'aichat' ? (
+            <RefundChatTab defaultRoomId={activeLiveChatId} />
+          ) : null}
         </div>
       </div>
 

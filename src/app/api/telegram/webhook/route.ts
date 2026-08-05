@@ -271,7 +271,7 @@ export async function POST(req: Request) {
         await supabaseAdmin.from('support_messages').insert({
           chat_id: chatSession.id,
           sender_type: 'admin',
-          original_text: (aiResult.koreanSummary || aiResult.answer) + richCardStr,
+          original_text: aiResult.answer + richCardStr,
           translated_text: aiResult.answer + richCardStr,
           source_lang: 'ko',
           target_lang: sourceLang,

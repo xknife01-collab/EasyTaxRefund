@@ -210,10 +210,10 @@ export async function logConversionFeedback(
                   if (existingMatches && existingMatches.length > 0) {
                     const matchedScript = existingMatches[0];
                     console.log(`[Self-Learning RAG] Found highly similar script (ID: ${matchedScript.id}, Similarity: ${matchedScript.similarity}). Incrementing success weight instead of inserting duplicate.`);
-                    await supabaseAdmin.rpc('increment_script_weight', {
+                    await Promise.resolve(supabaseAdmin.rpc('increment_script_weight', {
                       script_id_input: matchedScript.id,
                       increment_amount: 15
-                    }).catch(async () => {
+                    })).catch(async () => {
                       const { data: script } = await supabaseAdmin
                         .from('refund_scripts')
                         .select('success_weight')

@@ -236,6 +236,50 @@ export default function EstimatePage() {
 
   const [step, setStep] = useState(0);
 
+  // 🛠️ 개발 모드용 강제 단계 점핑 파라미터 연동
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const forceStep = urlParams.get('step');
+      if (forceStep) {
+        const targetStep = parseFloat(forceStep);
+        if (!isNaN(targetStep) && targetStep !== step) {
+          setStep(targetStep);
+        }
+      }
+    }
+  }, [step]);
+
+  // 🚨 실시간 정체(Stuck) 감지 타이머 (30초 동안 단계 변화가 없으면 알림창 강제 개입 유도)
+  const stuckTimerRef = useRef<NodeJS.Timeout | null>(null);
+  useEffect(() => {
+    // 1. 단계 변경 전역 이벤트 발송
+    window.dispatchEvent(new CustomEvent("ktrs-step-change", { detail: { step } }));
+
+    if (step >= 11) {
+      if (stuckTimerRef.current) {
+        clearTimeout(stuckTimerRef.current);
+        stuckTimerRef.current = null;
+      }
+      return;
+    }
+
+    if (stuckTimerRef.current) {
+      clearTimeout(stuckTimerRef.current);
+    }
+
+    stuckTimerRef.current = setTimeout(() => {
+      console.log(`[Stuck Detector] User stuck at step ${step} for 30s. Triggering helper intervention...`);
+      window.dispatchEvent(new CustomEvent("ktrs-user-stuck", { detail: { step } }));
+    }, 30000);
+
+    return () => {
+      if (stuckTimerRef.current) {
+        clearTimeout(stuckTimerRef.current);
+      }
+    };
+  }, [step]);
+
   // 국세청 홀택스 점검 시간 체크 (KST 00:00 ~ 06:00)
   const [isNtsMaintenance, setIsNtsMaintenance] = useState(false);
   useEffect(() => {

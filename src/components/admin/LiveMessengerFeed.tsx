@@ -203,14 +203,18 @@ export function LiveMessengerFeed({ onOpenChat }: LiveMessengerFeedProps) {
             (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
           );
           const lastMsg = sortedMsgs[sortedMsgs.length - 1];
-
-          let preview = "대화 내역 없음";
+          let preview = chat.metadata?.last_message_text || "";
           let sender = "";
-          if (lastMsg) {
+
+          if (preview) {
+            sender = lastMsg ? lastMsg.sender_type : "customer";
+          } else if (lastMsg) {
             preview = lastMsg.sender_type === "customer" 
               ? (lastMsg.translated_text || lastMsg.original_text) 
               : lastMsg.original_text;
             sender = lastMsg.sender_type;
+          } else {
+            preview = "대화 내역 없음";
           }
 
           return {

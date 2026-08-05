@@ -307,9 +307,10 @@ interface ChatMessage {
   timestamp: string;
   imageUrl?: string;
   richCard?: {
-    cardType: 'none' | 'estimate_preview' | 'security_badge' | 'telecom_helper' | 'completion_checklist';
+    cardType: 'none' | 'estimate_preview' | 'security_badge' | 'telecom_helper' | 'completion_checklist' | 'guide';
     title?: string;
     description?: string;
+    imageUrl?: string;
     metrics?: Record<string, string>;
   };
 }
@@ -330,7 +331,7 @@ function parseRichCardFromText(rawText: string): { text: string; richCard?: Chat
   return { text: rawText, richCard: undefined };
 }
 
-function RichCardRenderer({ card }: { card: NonNullable<ChatMessage['richCard']> }) {
+function RichCardRenderer({ card, language, currentStep }: { card: NonNullable<ChatMessage['richCard']>; language?: string; currentStep?: number }) {
   const { cardType, title, description, metrics } = card;
 
   switch (cardType) {
@@ -429,6 +430,35 @@ function RichCardRenderer({ card }: { card: NonNullable<ChatMessage['richCard']>
           </div>
         </div>
       );
+    case 'guide': {
+      const simStep = currentStep ?? 0;
+      const simLang = language || 'ko';
+      const simUrl = `/estimate?simulation=true&step=${simStep}&lang=${simLang}`;
+      return (
+        <div className="mt-2.5 bg-slate-900/80 border border-[#b88c30]/30 rounded-2xl animate-in fade-in duration-300 overflow-hidden max-w-[280px] font-bold">
+          <div className="px-3 pt-2.5 pb-1 flex items-center gap-1.5">
+            <span className="text-[9px] text-[#e2b659] font-black uppercase tracking-wider">🎬 Step {simStep} 라이브 가이드</span>
+          </div>
+          {/* Simulation iframe - live multilingual walkthrough */}
+          <div className="relative w-full overflow-hidden rounded-lg" style={{ height: '320px' }}>
+            <iframe
+              src={simUrl}
+              title={`Step ${simStep} 시뮬레이션 가이드`}
+              className="w-full h-full border-0 pointer-events-none"
+              style={{ transform: 'scale(0.55)', transformOrigin: 'top left', width: '182%', height: '182%' }}
+              scrolling="no"
+              tabIndex={-1}
+            />
+            {/* Transparent overlay so user can't accidentally interact with iframe */}
+            <div className="absolute inset-0" />
+          </div>
+          <div className="px-3 py-2.5 space-y-1 border-t border-white/5">
+            <h4 className="text-[11px] font-black text-white">{title}</h4>
+            <p className="text-[10px] text-slate-300 leading-relaxed font-bold">{description}</p>
+          </div>
+        </div>
+      );
+    }
     default:
       return null;
   }
@@ -468,6 +498,9 @@ function FloatingConsultingPanelInner() {
   const [inputMessage, setInputMessage] = useState("");
   const [isSending, setIsSending] = useState(false);
   const chatScrollRef = useRef<HTMLDivElement>(null);
+
+  // 🚨 실시간 단계값 동기화 및 Stuck 감지 자동 사운드 개입 연동
+  const [currentStep, setCurrentStep] = useState(0);
 
   const [chatId, setChatId] = useState<string>("");
   const [isTyping, setIsTyping] = useState(false);
@@ -687,7 +720,39 @@ function FloatingConsultingPanelInner() {
                 timestamp: new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
               };
             });
-            setMessages(mapped);
+
+            const hasWelcomeAlready = mapped.some(
+              (m) =>
+                m.id === "welcome-1" ||
+                m.id === "welcome-card" ||
+                m.text.includes("공식 매니저") ||
+                m.text.includes("모바일 명함")
+            );
+
+            if (hasWelcomeAlready) {
+              setMessages(mapped);
+            } else {
+              const dummyTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              const welcomeText = translate("안녕하세요! 김준현 공식 매니저입니다. 👋 환급금 조회, 본인 인증, 수수료 등 궁금하신 점을 편하게 모국어로 물어보세요!");
+              const cardText = translate("제 모바일 명함입니다. 신뢰할 수 있는 공식 매니저이니 언제든 안심하고 문의해 주세요! 🛡️");
+
+              const welcomeMsgs: ChatMessage[] = [
+                {
+                  id: "welcome-1",
+                  sender: "manager",
+                  text: welcomeText,
+                  timestamp: dummyTimestamp,
+                },
+                {
+                  id: "welcome-card",
+                  sender: "manager",
+                  imageUrl: "/kim_junhyun_card.png",
+                  text: cardText,
+                  timestamp: dummyTimestamp,
+                }
+              ];
+              setMessages([...welcomeMsgs, ...mapped]);
+            }
           }
         }
       } catch (err) {
@@ -758,32 +823,54 @@ function FloatingConsultingPanelInner() {
     }
   };
 
-  const handleSendMessage = async (textToSend?: string) => {
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleSendMessage = async (textToSend?: string, forcedStep?: number) => {
     const text = textToSend || inputMessage;
     if (!text || !text.trim() || isSending || isTyping) return;
+
+    const isSystemStuckRequest = text.includes("[STUCK_HELPER_SYSTEM_REQUEST]");
 
     // Track active message exchanges
     messageCountRef.current += 1;
     resetInactivityTimer();
 
-    const userMsg: ChatMessage = {
-      id: `user-${Date.now()}`,
-      sender: "user",
-      text: text.trim(),
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-    };
-
-    setMessages((prev) => [...prev, userMsg]);
+    if (!isSystemStuckRequest) {
+      const userMsg: ChatMessage = {
+        id: `user-${Date.now()}`,
+        sender: "user",
+        text: text.trim(),
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      };
+      setMessages((prev) => [...prev, userMsg]);
+    }
+    
     setInputMessage("");
     setIsSending(true);
 
     try {
+      // Clear typing text indicator on send
+      const activeChatId = chatId || localStorage.getItem("ktrs_chat_session_id");
+      if (activeChatId) {
+        Promise.resolve(
+          supabase.from("support_chats").select("metadata").eq("id", activeChatId).maybeSingle().then(({ data: chatData }) => {
+            const updatedMetadata = {
+              ...(chatData?.metadata || {}),
+              typing_text: ""
+            };
+            return supabase.from("support_chats").update({ metadata: updatedMetadata }).eq("id", activeChatId).then(() => {});
+          })
+        ).catch(() => {});
+      }
+
       const device = detectDeviceAndBrowser();
       const res = await fetch("/api/chat/manager", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          message: text.trim(),
+          message: text.trim().includes("[STUCK_HELPER_SYSTEM_REQUEST]")
+            ? `[SYSTEM_NOTIFICATION] 고객이 Step ${typeof forcedStep === 'number' ? forcedStep : currentStep} 단계 화면에서 30초 동안 움직임이 없어 정체된 상태입니다. 이에 대해 고객을 다정히 안심시키고, 해당 단계의 가이드 이미지 캡처 사진을 참조하여 진행해 보라고 고객 설정 언어로 상냥하게 구출 안내 메시지를 작성해 주세요.`
+            : text.trim(),
           language: language || "ko",
           history: messages.map((m) => ({
             role: m.sender === "user" ? "user" : "model",
@@ -792,15 +879,23 @@ function FloatingConsultingPanelInner() {
           chatId: chatId || localStorage.getItem("ktrs_chat_session_id"),
           clientOs: device.os,
           clientIsInApp: device.isInApp,
-          currentPathname: pathname
+          currentPathname: pathname,
+          currentStep: typeof forcedStep === 'number' ? forcedStep : currentStep
         }),
       });
 
       const data = await res.json();
       setIsSending(false); // Hide main loading spinner
       
+      // If AI response is disabled (Manual Takeover), do not print any automatic answers.
+      if (data.isAiActive === false || data.answer === "") {
+        console.log("[AI Disabled] Manual intervention is active. Silent mode.");
+        setIsTyping(false);
+        return;
+      }
+
       console.log(`[AI Response] Sentiment scores: Pos=${data.posScore}, Neg=${data.negScore}`);
-      const answer = data.answer || "죄송합니다. 잠시 후 다시 시도해 주세요.";
+      const answer = data.answer;
       
       // Split sentence chunks using '|' or double line breaks '\n\n'
       let chunks = answer
@@ -819,15 +914,16 @@ function FloatingConsultingPanelInner() {
 
       let chunkIdx = 0;
       for (const chunk of chunks) {
-        setIsTyping(true); // Show dot bouncing typing indicator
+        setIsTyping(true); // Turn on typing indicator
         
-        // Calculate human-like irregular typing delay
-        const baseSpeed = 20 + Math.random() * 15; // 20ms to 35ms per character
-        const basePause = 300 + Math.random() * 400; // 300ms to 700ms base thinking/resting pause
+        // Calculate typing delay based on characters
+        const baseSpeed = 20 + Math.random() * 15;
+        const basePause = 300 + Math.random() * 400;
         const typingTime = Math.min(chunk.length * baseSpeed + basePause, 3000);
         await delay(typingTime);
         
-        setIsTyping(false); // Hide typing indicator
+        setIsTyping(false); // Turn off typing indicator temporarily for message slide-in
+        await delay(100);
         
         const isLastChunk = chunkIdx === chunks.length - 1;
         const managerMsg: ChatMessage = {
@@ -845,9 +941,14 @@ function FloatingConsultingPanelInner() {
         resetInactivityTimer();
         
         chunkIdx++;
-        // Realistic human-like typing pause gap between split messages
-        await delay(1200 + Math.random() * 600);
+        
+        // Keep typing indicator active during the gap between chunks
+        if (!isLastChunk) {
+          setIsTyping(true);
+          await delay(1200 + Math.random() * 600);
+        }
       }
+      setIsTyping(false);
 
     } catch (err) {
       console.error("Failed to send message to AI Manager:", err);
@@ -862,6 +963,49 @@ function FloatingConsultingPanelInner() {
       setMessages((prev) => [...prev, errorMsg]);
     }
   };
+
+  // 🚨 실시간 단계값 동기화 및 Stuck 감지 자동 사운드 개입 연동
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const handleStepChange = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      if (customEvent.detail && typeof customEvent.detail.step === 'number') {
+        console.log(`[FloatingAiChat] Syncing currentStep state to: ${customEvent.detail.step}`);
+        setCurrentStep(customEvent.detail.step);
+      }
+    };
+
+    const handleUserStuck = (e: Event) => {
+      const customEvent = e as CustomEvent;
+      const stuckStep = customEvent.detail?.step ?? 0;
+      console.log(`[FloatingAiChat] Stuck detected at step: ${stuckStep}. Triggering helper...`);
+
+      // 🔊 경쾌한 수신 카톡 알림 사운드 재생
+      try {
+        const audio = new Audio('/sounds/message_received.mp3');
+        audio.volume = 0.5;
+        audio.play().catch(() => {});
+      } catch (err) {
+        console.warn('Failed to play helper notification sound:', err);
+      }
+
+      // 채팅창 자동 활성화 오픈
+      setIsOpen(true);
+      setViewMode("live_chat");
+
+      // AI 구출 멘트 선제 호출
+      handleSendMessage(`[STUCK_HELPER_SYSTEM_REQUEST]`, stuckStep);
+    };
+
+    window.addEventListener("ktrs-step-change", handleStepChange);
+    window.addEventListener("ktrs-user-stuck", handleUserStuck);
+
+    return () => {
+      window.removeEventListener("ktrs-step-change", handleStepChange);
+      window.removeEventListener("ktrs-user-stuck", handleUserStuck);
+    };
+  }, [chatId, messages, currentStep]);
 
   const getQuickQuestions = () => {
     switch (language) {
@@ -1133,7 +1277,7 @@ function FloatingConsultingPanelInner() {
                             )}
                             {msg.text}
                           </div>
-                          {msg.richCard && <RichCardRenderer card={msg.richCard} />}
+                          {msg.richCard && <RichCardRenderer card={msg.richCard} language={language} currentStep={currentStep} />}
                           <span className={cn(
                             "text-[9px] text-slate-500 font-bold mt-1 px-1",
                             msg.sender === "user" ? "text-right" : "text-left"
@@ -1180,7 +1324,35 @@ function FloatingConsultingPanelInner() {
                 <input
                   type="text"
                   value={inputMessage}
-                  onChange={(e) => setInputMessage(e.target.value)}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setInputMessage(val);
+                    
+                    if (typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+                    typingTimeoutRef.current = setTimeout(async () => {
+                      const activeChatId = chatId || localStorage.getItem("ktrs_chat_session_id");
+                      if (!activeChatId) return;
+                      try {
+                        const { data: chatData } = await supabase
+                          .from("support_chats")
+                          .select("metadata")
+                          .eq("id", activeChatId)
+                          .maybeSingle();
+
+                        const updatedMetadata = {
+                          ...(chatData?.metadata || {}),
+                          typing_text: val.trim()
+                        };
+
+                        await supabase
+                          .from("support_chats")
+                          .update({ metadata: updatedMetadata })
+                          .eq("id", activeChatId);
+                      } catch (err) {
+                        // ignore
+                      }
+                    }, 150);
+                  }}
                   onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
                   placeholder={
                     language === "vi" ? "Nhập câu hỏi của bạn..." :

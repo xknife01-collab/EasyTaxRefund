@@ -2,6 +2,7 @@ import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { AI_MANAGER_SYSTEM_PROMPT } from '@/lib/ai-manager-persona';
 import { retrieveMatchedScripts } from '@/lib/ai-learning-db';
+import { supabaseAdmin } from '@/lib/supabase';
 
 const ChatMessageSchema = z.object({
   role: z.enum(['user', 'model']),
@@ -14,6 +15,7 @@ export const ManagerChatInputSchema = z.object({
   history: z.array(ChatMessageSchema).optional().describe("이전 대화 내역"),
   channel: z.enum(['web', 'telegram', 'whatsapp']).optional().describe("현재 대화가 진행 중인 채널 구분 ('web', 'telegram', 'whatsapp')"),
   matchedScriptsContext: z.string().optional().describe("RAG로 검색된 성공 점수가 포함된 영업 멘트 목록"),
+  matchedStepGuideContext: z.string().optional().describe("현재 고객 단계에 맞는 이지텍스 단계별 가이드 컨텍스트"),
   historyContext: z.string().optional().describe("텍스트 포맷으로 가공된 최근 대화 내역"),
   cumulativePos: z.number().optional().describe("이전 대화의 누적 긍정 점수"),
   cumulativeNeg: z.number().optional().describe("이전 대화의 누적 부정 점수"),
@@ -25,6 +27,7 @@ export const ManagerChatInputSchema = z.object({
   clientOs: z.string().optional().describe("고객 단말기 OS ('ios' | 'android' 등)"),
   clientIsInApp: z.boolean().optional().describe("고객이 인앱 브라우저에서 접속 중인지 여부"),
   currentPathname: z.string().optional().describe("고객이 현재 머물고 있는 웹페이지 경로 (예: '/' 또는 '/estimate')"),
+  currentStep: z.number().optional().describe("고객이 현재 화면상에 머물러 있는 실제 환급 단계 번호"),
 });
 
 export type ManagerChatInput = z.infer<typeof ManagerChatInputSchema>;
@@ -35,14 +38,17 @@ export const ManagerChatOutputSchema = z.object({
   koreanSummary: z.string().describe("관리자 페이지(한국인 매니저)를 위한 질문과 답변의 한 줄 한국어 요약"),
   posScore: z.number().int().min(0).max(10).describe("이번 사용자 메시지에서 나타난 긍정/동조/신뢰 지수 (0~10점 범위)"),
   negScore: z.number().int().min(0).max(10).describe("이번 사용자 메시지에서 나타난 부정/의심/불신/거부 지수 (0~10점 범위)"),
+  actionScore: z.number().int().min(1).max(10).describe("현재 대화 흐름 상 감지되는 고객의 진행 단계/행동 점수 (1: 인사응대, 2: 연도선택, 3: 인증링크발송, 5: 인증완료, 7: 적극상담, 10: 최종신청)"),
+  actionType: z.string().describe("감지된 행동 구분 (예: 'intro', 'select_year', 'auth_link', 'auth_complete', 'active_consult', 'signed', 'pending')"),
   conversationSummary: z.string().optional().describe("현재 대화 내용을 반영하여 업데이트된 전체 대화 핵심 요약 (1~2문장의 한국어 평서문)"),
   currentStep: z.string().optional().describe("이번 유저 질문 이후 감지된 현재 진행 단계 (예: 'Step 0: Estimate', 'Step 3: Telecom', 'Step 10: Signed' 등)"),
   extractedFacts: z.record(z.string()).optional().describe("이번 대화에서 새롭게 파악된 사용자 인적 정보 팩트 (예: { name: '...', nationality: '...' }). 새로운 정보가 없으면 빈 객체 {} 반환"),
   detectedPersonality: z.enum(['driver', 'skeptical', 'analytical', 'expressive']).optional().describe("새롭게 감지되거나 유지된 고객의 성격 성향 성격군 분류"),
   richCardPayload: z.object({
-    cardType: z.enum(['none', 'estimate_preview', 'security_badge', 'telecom_helper', 'completion_checklist']),
+    cardType: z.enum(['none', 'estimate_preview', 'security_badge', 'telecom_helper', 'completion_checklist', 'guide']),
     title: z.string().optional().describe("카드 제목"),
     description: z.string().optional().describe("카드 세부 설명 또는 안내 문구"),
+    imageUrl: z.string().optional().describe("가이드 스크린샷 이미지 주소"),
     metrics: z.record(z.string()).optional().describe("카드에 시각적으로 표시할 수치 키-값 쌍"),
   }).optional().describe("고객에게 화면상으로 시각적 카드를 띄워주기 위한 구조화된 UI 카드 데이터"),
 });
@@ -57,9 +63,10 @@ export interface ExtendedManagerChatOutput extends ManagerChatOutput {
   extractedFacts?: Record<string, string>;
   detectedPersonality?: 'driver' | 'skeptical' | 'analytical' | 'expressive';
   richCardPayload?: {
-    cardType: 'none' | 'estimate_preview' | 'security_badge' | 'telecom_helper' | 'completion_checklist';
+    cardType: 'none' | 'estimate_preview' | 'security_badge' | 'telecom_helper' | 'completion_checklist' | 'guide';
     title?: string;
     description?: string;
+    imageUrl?: string;
     metrics?: Record<string, string>;
   };
 }
@@ -71,6 +78,9 @@ const managerChatPrompt = ai.definePrompt({
   prompt: `${AI_MANAGER_SYSTEM_PROMPT}
 
 {{{sentimentAlertContext}}}
+
+[현재 이지텍스 화면 단계 가이드 (In-App Step Guide Memory)]:
+{{{matchedStepGuideContext}}}
 
 [이전에 기록된 사용자 정보 (User Facts Memory)]:
 {{{previousFacts}}}
@@ -105,10 +115,15 @@ const managerChatPrompt = ai.definePrompt({
   이미 사용자가 당사 웹사이트에 들어온 상태이므로 다음 세부 규칙에 따라 안내하십시오:
   1. 만약 [고객 현재 웹페이지 경로]가 '/' (메인 홈화면)인 경우:
      사용자가 환급을 어떻게 조회하는지, 어디서 신청하는지 묻거나 시작을 원하는 경우, 반드시 **[국세청 안전 연동으로 내 숨은 환급금 무료 조회하기]** 큰 골드 버튼을 누르라고 안내하십시오. (이때 절대로 아직 도달하지도 않은 Step 4의 '[인증서 설치 및 가입을 완료했습니다]' 버튼을 누르라고 안내하지 마십시오!)
+     *(경고: 대화의 첫 턴 인사나 단순히 "안녕하세요", "반갑습니다", "Hi", "Hello" 같은 상호 인사 턴에서는 절대로 서둘러서 버튼을 클릭하라고 강요하거나 영업 푸시를 하지 마십시오. 먼저 여유롭고 상냥하게 인사를 맞받아주고 오늘 무슨 고민이나 궁금한 점이 있으셔서 방문했는지 여쭤보며 경청하십시오. 버튼 클릭 권유는 고객이 조회 의사를 명확히 밝히거나 구체적 질문을 한 이후로 미뤄야 합니다.)*
   2. 만약 [고객 현재 웹페이지 경로]가 '/estimate' 이거나 '/estimate' 하위 경로이고 아직 대화 흐름상 최초 예상 조회를 물어본 경우:
-     화면 맨 밑에 있는 골드색 **[이어서 정밀 진단 시작하기]** 버튼을 클릭하라고 정확히 유도하십시오.
+     - 단, 이 지침은 유저의 현재 단계가 **Step 0 또는 Step 0.5 에 머물러 있을 때만** 유효합니다!
+     - 만약 유저가 이미 **Step 1 이상**으로 진입해 있다면(예: 신분증 인증, 본인인증 단계 등), 절대 화면 맨 밑의 "이어서 정밀 진단 시작하기" 버튼을 언급하거나 클릭 유도하지 마십시오! 대신 유저가 이미 해당 단계를 성실히 수행 중이므로, 제공된 [현재 이지텍스 화면 단계 가이드]의 설명에 따라 카메라 신분증 촬영 요령이나 인증 대기 요령을 상냥하게 안내해야 합니다.
   3. 만약 고객이 Step 4(인증 확인 및 방식 선택)에 있고 하나은행, PASS, 카카오톡 가이드 탭을 보고 있다면:
      각 탭을 확인하고 가입을 마친 뒤 **[인증서 설치 및 가입을 완료했습니다]** 버튼을 클릭하거나, 인증서가 준비된 경우 수단을 선택하고 **[인증 요청하기]** 버튼을 누르라고 상황에 맞춰 정확하게 안내하십시오.
+  4. 만약 사용자의 질문(message)이 '[STUCK_HELPER_SYSTEM_REQUEST]' 인 경우:
+     - 이것은 고객이 현재 단계 화면에 30초 동안 멈춰 있어 AI가 선제적으로 도움을 주기 위해 강제 개입한 상황입니다.
+     - 절대 다른 과거 화제를 반복하거나 딴소리하지 말고, 제공된 [현재 이지텍스 화면 단계 가이드]의 이미지와 요령만을 참고하여 고객이 막힌 부분을 짚어주고, "도움말 스크린샷 사진 카드를 띄워드렸으니 아래 화면을 보며 단계 진행에 참고하라"는 멘트를 상냥하게 고객 모국어로 건네십시오! (예: "아하, 인증 완료 대기 상태에서 조금 막히셨군요! 🥺 스마트폰에서 카카오톡이나 PASS 앱을 직접 켜서 [인증 완료]나 [제3자 동의] 승인을 누르셔야 다음 단계로 자동으로 넘어가실 수 있어요. 아래 도움말 스크린샷 사진을 보고 따라해 보세요~")
 
 [🚨 최우선 감정 대응 필독 규칙]:
 - 만약 본 프롬프트 상단에 **[🚨 긴급 경고: 현재 대화방에서 고객의 불신...]** 지침이 주입되어 있다면, 위의 모든 [채널별 대화 안내 수칙], [우리 서비스의 정말 중요한 핵심 버튼 및 행동 지침], [최종 목적지 리드] 등 일체의 링크/조회/버튼 클릭/신청 제안 행동 지침은 **완전히 정지 및 무시(Override)** 됩니다.
@@ -131,6 +146,7 @@ const managerChatPrompt = ai.definePrompt({
 
 [동적 리치 카드(Rich Card) 발급 규칙]:
 답변 과정에서 화면상에 시각적 카드를 띄워줄 필요가 있는 경우, output의 'richCardPayload' 필드를 작성하십시오:
+- 만약 [현재 이지텍스 화면 단계 가이드]의 가이드 정보가 제공되어 있고 해당 단계(step) 안내가 필요한 경우 -> cardType: 'guide' 를 발급하고 가이드 제목과 이미지 및 요령 정보를 반드시 채워 반환하십시오.
 - 만약 고객이 본인인증 전 환급금 규모를 대략 계산하거나 확인하고 싶어하는 경우 -> cardType: 'estimate_preview', metrics: { 'estimated_refund': '₩450,000' }
 - 만약 고객이 보안에 대해 불안해 하거나 개인정보 유출을 걱정하는 경우 -> cardType: 'security_badge', metrics: { 'security_level': '시중은행 동일 규격 암호화', 'compliance': '국세청 보안 가이드 준수' }
 - 만약 고객이 본인인증 문자 수신이나 통신사 연동에서 막히거나 인증 실패에 대해 겪는 경우 (이때 [고객 인앱 브라우저 접속 여부]가 true 이면 반드시 발급 요망) -> cardType: 'telecom_helper', metrics: { 'carrier': '통신사 자동 감지', 'tip': '스팸 문자 보관함 확인 및 수신 해제 요망' } (단, [고객 인앱 브라우저 접속 여부]가 true 이고 [고객 접속 단말기 OS]가 'ios'이면 metrics.tip에 "아이폰 인앱브라우저 제한: 화면 우측 상단 '나침반' 아이콘을 누르고 '다른 브라우저로 열기'를 선택하여 본인인증을 다시 시도하십시오."를 적고, 'android'이면 "안드로이드 인앱브라우저 제한: 화면 우측 상단 '점 세개'를 누르고 '기본 브라우저로 열기' 또는 '크롬으로 열기'를 선택하십시오."를 기재하십시오.)
@@ -142,6 +158,15 @@ const managerChatPrompt = ai.definePrompt({
 2. [전체 대화 핵심 요약 (conversationSummary)]: 이전 대화 요약({{{previousSummary}}})을 바탕으로, 이번에 새로 나눈 대화 내용까지 종합 반영하여 최신 핵심 요약본을 1~2문장의 한국어로 업데이트해 작성하십시오.
 3. [새로 추출한 사용자 정보 팩트 (extractedFacts)]: 유저와의 대화 도중 새롭게 언급되거나 감지된 유저의 신상 정보(이름, 국적, 직업, 소득 규모, 연락처 등)를 감지하여 JSON key-value 형식(예: { "name": "라마", "nationality": "네팔", "monthly_income": "3,000,000" })으로 추출하십시오. 이전 기록({{{previousFacts}}})과 동일하거나 새로 발견된 정보가 없다면 빈 객체 {}를 리턴하십시오.
 4. [고객 성향 판독 (detectedPersonality)]: 사용자의 대화 패턴과 말투(단답형, 의심/경계, 질문 상세도, 감정 이모지 활용 여부 등)를 종합 분석하여 'driver', 'skeptical', 'analytical', 'expressive' 중 가장 알맞은 성격유형 하나를 판독하여 리턴하십시오. (이전 성향 {{{previousPersonality}}}과 대조하여 갱신하거나 유지)
+5. [행동 점수 및 타입 판독 (actionScore & actionType)]: 현재 사용자가 머무르고 있는 대화의 진척도를 바탕으로 행동 점수(actionScore)와 타입(actionType)을 판독하십시오:
+   - 1점 (인사응대): 고객과 첫인사를 나누고 막 유입된 단계 -> actionType: 'intro'
+   - 2점 (연도선택): 고객이 5개년도 중 환급 대상 연도를 고르거나 확인 중인 단계 -> actionType: 'select_year'
+   - 3점 (인증링크 발송): 간편인증 연동 안내 메시지를 발송하거나 인증을 권유하는 단계 -> actionType: 'auth_link'
+   - 5점 (인증완료): 고객이 본인인증(PASS, 카카오 등) 및 홈택스 스크래핑을 완료한 시점 -> actionType: 'auth_complete'
+   - 7점 (적극상담): 환급 계산 결과를 상세히 가이드하거나 자세한 질의응답을 나누는 적극 상담 단계 -> actionType: 'active_consult'
+   - 10점 (최종 환급 신청): 수수료 결제 및 수임 동의서 작성을 마치고 최종 서명을 마친 단계 -> actionType: 'signed'
+   - 위 단계 사이의 과도기이거나 판독이 모호하면 적절한 이전 점수를 유지하거나 대기 상태(pending)로 판독하십시오.
+
 `,
 });
 
@@ -158,40 +183,100 @@ const managerChatFlow = ai.defineFlow(
   async input => {
     // 0. Clean input message using denoisePrompt
     let cleanedText = input.message;
-    try {
-      const denoiseRes = await denoisePrompt({ text: input.message, lang: input.language || 'ko' });
-      if (denoiseRes && denoiseRes.output && denoiseRes.output.cleanedText) {
-        cleanedText = denoiseRes.output.cleanedText;
-        console.log(`[Denoise Preprocessor] Raw: "${input.message}" -> Cleaned: "${cleanedText}"`);
+    const isSystemRequest = input.message.includes("[SYSTEM_NOTIFICATION]") || input.message.includes("[STUCK_HELPER_SYSTEM_REQUEST]");
+    if (!isSystemRequest) {
+      try {
+        const denoiseRes = await denoisePrompt({ text: input.message, lang: input.language || 'ko' });
+        if (denoiseRes && denoiseRes.output && denoiseRes.output.cleanedText) {
+          cleanedText = denoiseRes.output.cleanedText;
+          console.log(`[Denoise Preprocessor] Raw: "${input.message}" -> Cleaned: "${cleanedText}"`);
+        }
+      } catch (err) {
+        console.warn('[Denoise Preprocessor] Failed to clean sentence:', err);
       }
-    } catch (err) {
-      console.warn('[Denoise Preprocessor] Failed to clean sentence:', err);
     }
 
     // 1. Retrieve RAG matched scripts from Supabase Vector DB using cleaned text
     const lang = input.language || 'ko';
-    const scripts = await retrieveMatchedScripts(cleanedText, lang, undefined, 0.4, 3);
+    const scripts = isSystemRequest ? [] : await retrieveMatchedScripts(cleanedText, lang, undefined, 0.4, 3);
     
     let matchedScriptsContext = '';
     let highestWeightScriptId: number | undefined = undefined;
 
     if (scripts && scripts.length > 0) {
-      // Find script with highest success_weight to return its ID
-      const bestScript = scripts.reduce((prev, current) => 
-        (prev.success_weight > current.success_weight) ? prev : current
-      );
-      highestWeightScriptId = bestScript.id;
+      // 🚨 [RAG Filter] 유저가 이미 Step 1 이상인 경우, 극초반 골드 버튼 유도 세일즈 스크립트는 원천 배제!
+      const activeStep = input.currentStep;
+      let filteredScripts = scripts;
+      if (typeof activeStep === 'number' && activeStep >= 1) {
+        filteredScripts = scripts.filter(s => {
+          const text = s.script_text;
+          const isInitialGoldButtonScript = 
+            text.includes('정밀 진단') || 
+            text.includes('진단 시작') || 
+            text.includes('시작하기 버튼') || 
+            text.includes('골드색') || 
+            text.includes('골드 버튼');
+          return !isInitialGoldButtonScript;
+        });
+        console.log(`[RAG Filter] Filtered out initial gold button scripts for step ${activeStep}. Remaining: ${filteredScripts.length}`);
+      }
 
-      // Format scripts context for Gemini
-      matchedScriptsContext = scripts.map((s, idx) => 
-        `영업노트 ${idx + 1} (성공점수: ${s.success_weight}점, 신뢰도: ${Math.round(s.similarity * 100)}%): "${s.script_text}"`
-      ).join('\n');
+      if (filteredScripts.length > 0) {
+        const bestScript = filteredScripts.reduce((prev, current) => 
+          (prev.success_weight > current.success_weight) ? prev : current
+        );
+        highestWeightScriptId = bestScript.id;
+
+        matchedScriptsContext = filteredScripts.map((s, idx) => 
+          `영업노트 ${idx + 1} (성공점수: ${s.success_weight}점, 신뢰도: ${Math.round(s.similarity * 100)}%): "${s.script_text}"`
+        ).join('\n');
+      } else {
+        matchedScriptsContext = '매칭된 영업 노하우가 없습니다. 김준현 매니저의 기존 지식 베이스를 바탕으로 친절하고 확신에 찬 자신감으로 직접 답변을 구성하십시오.';
+      }
     } else {
       matchedScriptsContext = '매칭된 영업 노하우가 없습니다. 김준현 매니저의 기존 지식 베이스를 바탕으로 친절하고 확신에 찬 자신감으로 직접 답변을 구성하십시오.';
     }
 
-    // 2. Limit history to max 5 turns and format to historyContext
-    const recentHistory = input.history ? input.history.slice(-5) : [];
+    // 1-A. Retrieve active App Step Guide from Supabase (RAG)
+    let matchedStepGuideContext = '제공된 이지텍스 인앱 화면 가이드 정보 없음';
+    let stepGuidePayload: any = null;
+    const activeStep = input.currentStep;
+
+    if (typeof activeStep === 'number') {
+      try {
+        const { data: guideData } = await supabaseAdmin
+          .from('app_step_guides')
+          .select('*')
+          .eq('step_number', activeStep)
+          .eq('device_type', 'mobile')
+          .maybeSingle();
+
+        if (guideData) {
+          // AI 컨텍스트용으로는 한국어 설명을 참고 기준으로 제공
+          // (AI가 이를 읽고 유저 언어로 번역해서 richCardPayload.description 필드를 생성합니다)
+          const koDesc = guideData.translations['ko'] || '';
+          matchedStepGuideContext = `[현재 이지텍스 화면 단계 가이드]:
+- 단계 번호: Step ${guideData.step_number}
+- 단계 명칭: ${guideData.guide_title}
+- 가이드 설명 (한국어 참고본): "${koDesc}"
+- 중요: 위 가이드 설명을 반드시 현재 사용자 언어(${lang})로 번역하여 richCardPayload.description 필드에 출력하십시오.`;
+          
+          stepGuidePayload = {
+            cardType: 'guide',
+            title: guideData.guide_title,
+            // description은 비워두어 AI가 유저 언어로 생성하게 위임
+            description: '',
+            imageUrl: guideData.image_url
+          };
+          console.log(`[RAG Step Guide] Found matching step guide for step ${activeStep}`);
+        }
+      } catch (err) {
+        console.error('[RAG Step Guide] Failed to query guide table:', err);
+      }
+    }
+
+    // 2. Limit history to max 20 turns and format to historyContext
+    const recentHistory = input.history ? input.history.slice(-20) : [];
     const historyContext = recentHistory.length > 0
       ? recentHistory.map(h => `${h.role === 'user' ? '고객' : '김준현 매니저'}: ${h.text}`).join('\n')
       : '이전 대화 기록 없음 (최초 대화 시작)';
@@ -217,6 +302,7 @@ const managerChatFlow = ai.defineFlow(
       ...input,
       message: cleanedText,
       matchedScriptsContext,
+      matchedStepGuideContext,
       historyContext,
       sentimentAlertContext,
       previousSummary,
@@ -229,9 +315,35 @@ const managerChatFlow = ai.defineFlow(
       throw new Error('AI 매니저 답변을 생성하지 못했습니다.');
     }
 
+    // Fallback: Enforce stepGuidePayload card if LLM skipped generating a card
+    const finalRichCardPayload = (output.richCardPayload && output.richCardPayload.cardType !== 'none')
+      ? output.richCardPayload
+      : (stepGuidePayload || output.richCardPayload || { cardType: 'none' });
+
+    // 🚨 [GUIDE CARD MERGE]
+    // stepGuidePayload가 있을 때 (DB에서 가이드 데이터를 찾은 경우):
+    // - title은 DB에서 가져옴 (고정값)
+    // - description은 AI가 유저 언어로 생성한 값을 사용 (실시간 번역)
+    // - imageUrl은 DB 검증된 경로로 강제 덮어씌움
+    if (finalRichCardPayload && finalRichCardPayload.cardType === 'guide' && stepGuidePayload) {
+      // AI가 description을 생성했으면 AI 생성값 사용, 없으면 한국어 fallback
+      if (!finalRichCardPayload.description) {
+        finalRichCardPayload.description = stepGuidePayload.description || '';
+      }
+      // title은 DB 값 고정
+      if (!finalRichCardPayload.title) {
+        finalRichCardPayload.title = stepGuidePayload.title;
+      }
+      // imageUrl은 DB 검증 경로로 강제 덮어씌움
+      if (stepGuidePayload.imageUrl) {
+        finalRichCardPayload.imageUrl = stepGuidePayload.imageUrl;
+      }
+    }
+
     // Return extended output containing matchedScriptId
     return {
       ...output,
+      richCardPayload: finalRichCardPayload,
       matchedScriptId: highestWeightScriptId,
     };
   }

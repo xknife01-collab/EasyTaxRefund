@@ -130,7 +130,7 @@ export async function GET(req: Request) {
           await supabaseAdmin.from('support_messages').insert({
             chat_id: chat.id,
             sender_type: 'admin',
-            original_text: aiResult.koreanSummary || aiResult.answer,
+            original_text: aiResult.answer,
             translated_text: aiResult.answer,
             source_lang: 'ko',
             target_lang: lang,

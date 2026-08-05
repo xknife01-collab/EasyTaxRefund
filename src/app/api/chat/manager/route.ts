@@ -6,7 +6,7 @@ import { sendTakeoverAlert } from "@/lib/slack";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { message, language, history, chatId, clientOs, clientIsInApp, currentPathname } = body;
+    const { message, language, history, chatId, clientOs, clientIsInApp, currentPathname, currentStep } = body;
 
     if (!message || typeof message !== "string" || !message.trim()) {
       return NextResponse.json(
@@ -14,6 +14,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
+
+    // Determine if this is a background system notification (never rendered in chat)
+    const isSystemRequest = message.includes("[SYSTEM_NOTIFICATION]") || message.includes("[STUCK_HELPER]");
 
     // Intercept "ai 점수" debug command
     if (message.trim() === "ai 점수") {
@@ -72,6 +75,121 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    // 1. Check Global System AI Switch status (Global AI Master)
+    const { data: globalSettings } = await supabaseAdmin
+      .from("support_chats")
+      .select("metadata")
+      .eq("external_chat_id", "GLOBAL_SYSTEM_SETTINGS")
+      .maybeSingle();
+
+    const isGlobalAiActive = globalSettings ? (globalSettings.metadata?.is_ai_active !== false) : true;
+
+    // 2. Check if Room AI Switch is explicitly false
+    const isRoomAiActive = existingChat ? (existingChat.metadata?.is_ai_active !== false) : true;
+
+    // AI is inactive if either the Global Master Switch or the Room Switch is off!
+    const isAiActive = isGlobalAiActive && isRoomAiActive;
+
+    if (!isAiActive) {
+      console.log(`[🤖 AI INACTIVE] Chat ${chatId} is offline (Global=${isGlobalAiActive}, Room=${isRoomAiActive}). Skipping auto-reply.`);
+      
+      let chatSessionId = "";
+      const currentMetadata = existingChat?.metadata || {};
+      const updatedMetadata = {
+        ...currentMetadata,
+        last_message_text: message.trim()
+      };
+
+      if (existingChat) {
+        chatSessionId = existingChat.id;
+        await supabaseAdmin
+          .from("support_chats")
+          .update({
+            last_message_at: new Date().toISOString(),
+            metadata: updatedMetadata
+          })
+          .eq("id", existingChat.id);
+      } else {
+        const { data: newChat } = await supabaseAdmin
+          .from("support_chats")
+          .insert({
+            channel: "web",
+            external_chat_id: chatId,
+            user_name: "Web Client",
+            detected_language: language || "ko",
+            last_message_at: new Date().toISOString(),
+            metadata: updatedMetadata
+          })
+          .select("id")
+          .single();
+        if (newChat) chatSessionId = newChat.id;
+      }
+
+      if (chatSessionId) {
+        // Write to support_messages (Bypass if system request)
+        if (!isSystemRequest) {
+          await supabaseAdmin.from("support_messages").insert({
+            chat_id: chatSessionId,
+            sender_type: "customer",
+            original_text: message.trim(),
+            translated_text: message.trim(),
+            source_lang: language || "ko",
+            target_lang: "ko",
+            is_read: false
+          });
+        }
+
+        const dummyUserUuid = '11111111-1111-1111-1111-111111111111';
+        
+        // Ensure chat_room exists
+        const { data: existingRoom } = await supabaseAdmin
+          .from("chat_rooms")
+          .select("id")
+          .eq("id", chatSessionId)
+          .maybeSingle();
+
+        if (!existingRoom) {
+          await supabaseAdmin.from("chat_rooms").insert({
+            id: chatSessionId,
+            name: `실시간 환급 상담 - ${chatId.substring(0, 8)}`,
+          });
+        }
+
+        // Bind member roles
+        const { data: existingMembers } = await supabaseAdmin
+          .from("chat_room_members")
+          .select("user_id")
+          .eq("room_id", chatSessionId);
+
+        const existingUserIds = (existingMembers || []).map(m => m.user_id);
+        const membersToInsert = [];
+        if (!existingUserIds.includes(dummyUserUuid)) {
+          membersToInsert.push({ room_id: chatSessionId, user_id: dummyUserUuid, role: 'guest' });
+        }
+        if (!existingUserIds.includes('00000000-0000-0000-0000-000000000000')) {
+          membersToInsert.push({ room_id: chatSessionId, user_id: '00000000-0000-0000-0000-000000000000', role: 'bot' });
+        }
+        if (membersToInsert.length > 0) {
+          await supabaseAdmin.from("chat_room_members").insert(membersToInsert);
+        }
+
+        if (!isSystemRequest) {
+          await supabaseAdmin.from("chat_messages").insert({
+            room_id: chatSessionId,
+            sender_id: dummyUserUuid,
+            message: message.trim(),
+            is_read: false
+          });
+        }
+      }
+
+      return NextResponse.json({
+        success: true,
+        answer: "",
+        isAiActive: false
+      });
+    }
+
     // 2. Call Genkit AI Manager Flow with cumulative scores and memory parameters passed in
     const result = await askManagerAi({
       message: message.trim(),
@@ -87,6 +205,7 @@ export async function POST(req: NextRequest) {
       clientOs,
       clientIsInApp,
       currentPathname,
+      currentStep: typeof currentStep === 'number' ? currentStep : undefined
     });
 
     const newPosScore = result.posScore ?? 0;
@@ -115,6 +234,9 @@ export async function POST(req: NextRequest) {
           takeover_alert: isTakeoverTriggered ? true : (currentMetadata.takeover_alert || false),
           client_os: clientOs || currentMetadata.client_os,
           client_is_in_app: clientIsInApp !== undefined ? clientIsInApp : currentMetadata.client_is_in_app,
+          last_action_score: result.actionScore,
+          last_action_type: result.actionType,
+          last_message_text: message.trim(),
         };
 
         if (isTakeoverTriggered) {
@@ -156,20 +278,22 @@ export async function POST(req: NextRequest) {
         }
 
         if (chatSessionId) {
-          // 3a. Insert customer message with sentiment scores
-          const { error: custMsgErr } = await supabaseAdmin.from("support_messages").insert({
-            chat_id: chatSessionId,
-            sender_type: "customer",
-            original_text: message.trim(),
-            translated_text: message.trim(),
-            source_lang: language || "ko",
-            target_lang: "ko",
-            is_read: true,
-            pos_score: newPosScore,
-            neg_score: newNegScore,
-          });
-          if (custMsgErr) {
-            console.error("Failed to insert customer support message:", custMsgErr);
+          // 3a. Insert customer message with sentiment scores (Bypass if system request)
+          if (!isSystemRequest) {
+            const { error: custMsgErr } = await supabaseAdmin.from("support_messages").insert({
+              chat_id: chatSessionId,
+              sender_type: "customer",
+              original_text: message.trim(),
+              translated_text: message.trim(),
+              source_lang: language || "ko",
+              target_lang: "ko",
+              is_read: true,
+              pos_score: newPosScore,
+              neg_score: newNegScore,
+            });
+            if (custMsgErr) {
+              console.error("Failed to insert customer support message:", custMsgErr);
+            }
           }
 
           // 3b. Insert AI manager response
@@ -180,7 +304,7 @@ export async function POST(req: NextRequest) {
           const { error: aiMsgErr } = await supabaseAdmin.from("support_messages").insert({
             chat_id: chatSessionId,
             sender_type: "admin",
-            original_text: (result.koreanSummary || result.answer) + richCardStr,
+            original_text: result.answer + richCardStr,
             translated_text: result.answer + richCardStr,
             source_lang: "ko",
             target_lang: language || "ko",
@@ -188,6 +312,125 @@ export async function POST(req: NextRequest) {
           });
           if (aiMsgErr) {
             console.error("Failed to insert AI support message:", aiMsgErr);
+          }
+
+          // 3c. Double write to new tables for admin chat dashboard control
+          try {
+            // Check if room exists in chat_rooms, insert if missing
+            const { data: existingRoom } = await supabaseAdmin
+              .from("chat_rooms")
+              .select("id")
+              .eq("id", chatSessionId)
+              .maybeSingle();
+
+            if (!existingRoom) {
+              await supabaseAdmin.from("chat_rooms").insert({
+                id: chatSessionId,
+                name: `실시간 환급 상담 - ${chatId.substring(0, 8)}`,
+              });
+            }
+
+            // Bind customer and bot role in chat_room_members safely (avoiding duplicate primary key errors)
+            const dummyUserUuid = '11111111-1111-1111-1111-111111111111';
+            const { data: existingMembers } = await supabaseAdmin
+              .from("chat_room_members")
+              .select("user_id")
+              .eq("room_id", chatSessionId);
+
+            const existingUserIds = (existingMembers || []).map(m => m.user_id);
+            const membersToInsert = [];
+
+            if (!existingUserIds.includes(dummyUserUuid)) {
+              membersToInsert.push({ room_id: chatSessionId, user_id: dummyUserUuid, role: 'guest' });
+            }
+            if (!existingUserIds.includes('00000000-0000-0000-0000-000000000000')) {
+              membersToInsert.push({ room_id: chatSessionId, user_id: '00000000-0000-0000-0000-000000000000', role: 'bot' });
+            }
+
+            if (membersToInsert.length > 0) {
+              await supabaseAdmin.from("chat_room_members").insert(membersToInsert);
+            }
+
+            // Insert messages to chat_messages
+            const messagesToInsert = [];
+            if (!isSystemRequest) {
+              messagesToInsert.push({
+                room_id: chatSessionId,
+                sender_id: dummyUserUuid,
+                message: message.trim(),
+                is_read: true
+              });
+            }
+            messagesToInsert.push({
+              room_id: chatSessionId,
+              sender_id: '00000000-0000-0000-0000-000000000000',
+              message: result.answer + richCardStr,
+              is_read: false
+            });
+
+            await supabaseAdmin.from("chat_messages").insert(messagesToInsert);
+
+            // Save conversation score details for metrics & logs
+            await supabaseAdmin.from("ai_conversation_scores").insert({
+              lead_id: 0,
+              chat_room_id: chatSessionId,
+              planner_id: '00000000-0000-0000-0000-000000000000',
+              message_text: message.trim(),
+              ai_response: result.answer,
+              action_type: result.actionType || 'pending',
+              action_score: result.actionScore || 0,
+              pos_score: newPosScore,
+              neg_score: newNegScore
+            });
+
+            // 3d. Self-learning: Boost success weight if actionScore reaches 5 (auth completed)
+            if (result.actionScore && result.actionScore >= 5) {
+              const matchedScriptId = result.matchedScriptId;
+              if (matchedScriptId) {
+                const { data: scriptData } = await supabaseAdmin
+                  .from('refund_scripts')
+                  .select('id, success_weight')
+                  .eq('id', matchedScriptId)
+                  .single();
+
+                if (scriptData) {
+                  await supabaseAdmin
+                    .from('refund_scripts')
+                    .update({ success_weight: (scriptData.success_weight || 0) + 25 })
+                    .eq('id', matchedScriptId);
+                  console.log(`[Self-Learning RAG] Auto-boosted success weight for script ID: ${matchedScriptId} (+25) due to actionScore >= 5.`);
+                }
+              } else {
+                // RAG reinforcement: if AI dynamically generated a high-converting sentence, auto-register it
+                const currentStep = result.actionType || 'step5_auth';
+                const { data: dupScript } = await supabaseAdmin
+                  .from('refund_scripts')
+                  .select('id, success_weight')
+                  .eq('script_text', result.answer)
+                  .maybeSingle();
+
+                if (dupScript) {
+                  await supabaseAdmin
+                    .from('refund_scripts')
+                    .update({ success_weight: (dupScript.success_weight || 0) + 25 })
+                    .eq('id', dupScript.id);
+                  console.log(`[Self-Learning RAG] Dynamically generated script text already exists. Incremented weight by +25.`);
+                } else {
+                  await supabaseAdmin.from('refund_scripts').insert({
+                    refund_step: currentStep,
+                    target_psychology: 'trust_safety',
+                    script_text: result.answer,
+                    detected_language: 'ko',
+                    success_weight: 25,
+                    success_count: 1,
+                    script_type: 'ai_auto'
+                  });
+                  console.log(`[Self-Learning RAG] Newly registered dynamically generated high scoring script into RAG database.`);
+                }
+              }
+            }
+          } catch (syncErr) {
+            console.error("Failed to sync new chat_rooms DDL tables:", syncErr);
           }
         }
 
@@ -214,6 +457,9 @@ export async function POST(req: NextRequest) {
       matchedScriptId: result.matchedScriptId,
       posScore: newPosScore,
       negScore: newNegScore,
+      actionScore: result.actionScore,
+      actionType: result.actionType,
+      richCardPayload: result.richCardPayload
     });
   } catch (error: any) {
     console.error("AI Manager Chat API Error:", error);
