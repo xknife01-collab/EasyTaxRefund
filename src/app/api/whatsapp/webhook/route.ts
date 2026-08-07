@@ -195,8 +195,10 @@ export async function POST(req: Request) {
 
         const newPosScore = aiResult.posScore ?? 0;
         const newNegScore = aiResult.negScore ?? 0;
-        const updatedCumulativePos = cumulativePos + newPosScore;
-        const updatedCumulativeNeg = cumulativeNeg + newNegScore;
+        const updatedCumulativePos = Math.max(0, cumulativePos + newPosScore - Math.round(newNegScore * 1.5));
+        const updatedCumulativeNeg = Math.max(0, cumulativeNeg + newNegScore - newPosScore);
+
+        const isExplicitHumanRequest = /(상담원|사람|직원|실제\s*매니저|사람과|사람하고|상담사|인간)\s*(연결|바꿔|대화|상담)/i.test(rawText.trim());
 
         // 4a. Update chat session metadata and cumulative sentiment scores
         const currentMetadata = chatSession.metadata || {};
@@ -205,20 +207,22 @@ export async function POST(req: Request) {
           ...(currentMetadata.user_facts || {}),
           ...newFacts
         };
-        const isTakeoverTriggered = updatedCumulativeNeg >= 6;
+        const updatedIsAiActive = isExplicitHumanRequest ? false : (currentMetadata.is_ai_active ?? true);
+        const isHighNegAlert = updatedCumulativeNeg >= 25;
+
         const updatedMetadata = {
           ...currentMetadata,
           last_script_id: aiResult.matchedScriptId || currentMetadata.last_script_id,
-          is_ai_active: isTakeoverTriggered ? false : true,
+          is_ai_active: updatedIsAiActive,
           summary: aiResult.conversationSummary || currentMetadata.summary,
           current_step: aiResult.currentStep || currentMetadata.current_step,
           personality_type: aiResult.detectedPersonality || currentMetadata.personality_type,
           user_facts: updatedFacts,
-          takeover_alert: isTakeoverTriggered ? true : (currentMetadata.takeover_alert || false),
+          takeover_alert: isHighNegAlert || (currentMetadata.takeover_alert || false),
         };
 
-        if (isTakeoverTriggered) {
-          console.warn(`[🚨 TAKEOVER ALERT WhatsApp] Chat ${chatSession.id} reached ${updatedCumulativeNeg}. Deactivating AI.`);
+        if (isHighNegAlert) {
+          console.warn(`[🚨 HIGH NEGATIVE ALERT WhatsApp] Chat ${chatSession.id} reached ${updatedCumulativeNeg}. High negative sentiment detected.`);
           if (!currentMetadata.takeover_alert) {
             await sendTakeoverAlert({
               chatId: chatSession.id,

@@ -16,7 +16,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Determine if this is a background system notification (never rendered in chat)
-    const isSystemRequest = message.includes("[SYSTEM_NOTIFICATION]") || message.includes("[STUCK_HELPER]");
+    const isSystemRequest = message.includes("[SYSTEM_NOTIFICATION]") || message.includes("[STUCK_HELPER]") || message.includes("[STUCK_HELPER_SYSTEM_REQUEST]");
 
     // Intercept "ai 점수" debug command
     if (message.trim() === "ai 점수") {
@@ -208,10 +208,18 @@ export async function POST(req: NextRequest) {
       currentStep: typeof currentStep === 'number' ? currentStep : undefined
     });
 
-    const newPosScore = result.posScore ?? 0;
-    const newNegScore = result.negScore ?? 0;
-    const updatedCumulativePos = cumulativePos + newPosScore;
-    const updatedCumulativeNeg = cumulativeNeg + newNegScore;
+    // 시스템 요청(STUCK/SYSTEM_NOTIFICATION)은 고객 감정이 아니므로 점수 누적 제외
+    const newPosScore = isSystemRequest ? 0 : (result.posScore ?? 0);
+    const newNegScore = isSystemRequest ? 0 : (result.negScore ?? 0);
+
+    // 💡 양방향 누적 점수 시스템:
+    // 1) 누적 긍정/신뢰 점수: 긍정 반응 시 상승(+), 부정 반응 시 차감(-)되어 실시간 오르내림 반영 (최소 0점)
+    // 2) 누적 부정 점수: 부정 반응 시 상승(+), 긍정 반응 시 감쇄(-)
+    const updatedCumulativePos = Math.max(0, cumulativePos + newPosScore - Math.round(newNegScore * 1.5));
+    const updatedCumulativeNeg = Math.max(0, cumulativeNeg + newNegScore - newPosScore);
+
+    // 고객이 직접 명시적으로 사람/상담원 연결을 요구했는지 감지
+    const isExplicitHumanRequest = /(상담원|사람|직원|실제\s*매니저|사람과|사람하고|상담사|인간)\s*(연결|바꿔|대화|상담)/i.test(message.trim());
 
     // 3. Update database if chatId is provided
     if (chatId) {
@@ -222,16 +230,21 @@ export async function POST(req: NextRequest) {
           ...(currentMetadata.user_facts || {}),
           ...newFacts
         };
-        const isTakeoverTriggered = updatedCumulativeNeg >= 6;
+        
+        // AI는 부정 점수가 높아져도 절대 스스로 대답을 멈추지 않음 (is_ai_active는 항상 true 유지).
+        // 오직 고객이 직접 "상담원 연결해 주세요"라고 요구했을 때만 false 전환.
+        const updatedIsAiActive = isExplicitHumanRequest ? false : (currentMetadata.is_ai_active ?? true);
+        const isHighNegAlert = updatedCumulativeNeg >= 25;
+
         const updatedMetadata = {
           ...currentMetadata,
           last_script_id: result.matchedScriptId || currentMetadata.last_script_id,
-          is_ai_active: isTakeoverTriggered ? false : true,
+          is_ai_active: updatedIsAiActive,
           summary: result.conversationSummary || currentMetadata.summary,
           current_step: result.currentStep || currentMetadata.current_step,
           personality_type: result.detectedPersonality || currentMetadata.personality_type,
           user_facts: updatedFacts,
-          takeover_alert: isTakeoverTriggered ? true : (currentMetadata.takeover_alert || false),
+          takeover_alert: isHighNegAlert || (currentMetadata.takeover_alert || false),
           client_os: clientOs || currentMetadata.client_os,
           client_is_in_app: clientIsInApp !== undefined ? clientIsInApp : currentMetadata.client_is_in_app,
           last_action_score: result.actionScore,
@@ -239,8 +252,8 @@ export async function POST(req: NextRequest) {
           last_message_text: message.trim(),
         };
 
-        if (isTakeoverTriggered) {
-          console.warn(`[🚨 TAKEOVER ALERT] Chat ${chatId} negative score reached ${updatedCumulativeNeg}. Automatic takeover triggered, AI de-activated.`);
+        if (isExplicitHumanRequest) {
+          console.warn(`[🙋‍♂️ EXPLICIT HUMAN REQUEST] Chat ${chatId} user explicitly requested human agent. AI paused.`);
         }
 
         let chatSessionId = "";
@@ -434,7 +447,7 @@ export async function POST(req: NextRequest) {
           }
         }
 
-        if (isTakeoverTriggered && !currentMetadata.takeover_alert && chatSessionId) {
+        if (isHighNegAlert && !currentMetadata.takeover_alert && chatSessionId) {
           await sendTakeoverAlert({
             chatId: chatSessionId,
             channel: "web",

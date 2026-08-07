@@ -1,7 +1,8 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { AI_MANAGER_SYSTEM_PROMPT } from '@/lib/ai-manager-persona';
-import { retrieveMatchedScripts } from '@/lib/ai-learning-db';
+import { retrieveMatchedScripts, retrieveLearnedKnowledge, ingestSelfLearnedKnowledge } from '@/lib/ai-learning-db';
+import { searchGoogleKnowledgeTool, scanAppCodeGuideTool } from '@/ai/tools/knowledge-ingestion-tools';
 import { supabaseAdmin } from '@/lib/supabase';
 
 const ChatMessageSchema = z.object({
@@ -28,6 +29,8 @@ export const ManagerChatInputSchema = z.object({
   clientIsInApp: z.boolean().optional().describe("고객이 인앱 브라우저에서 접속 중인지 여부"),
   currentPathname: z.string().optional().describe("고객이 현재 머물고 있는 웹페이지 경로 (예: '/' 또는 '/estimate')"),
   currentStep: z.number().optional().describe("고객이 현재 화면상에 머물러 있는 실제 환급 단계 번호"),
+  currentKstTimeContext: z.string().optional().describe("현재 한국 표준시 접속 시간 및 요일 정보"),
+  matchedLearnedKnowledgeContext: z.string().optional().describe("Supabase ai_knowledge_base에 이전에 자율 적재된 캐시 지식"),
 });
 
 export type ManagerChatInput = z.infer<typeof ManagerChatInputSchema>;
@@ -75,9 +78,13 @@ const managerChatPrompt = ai.definePrompt({
   name: 'managerChatPrompt',
   input: { schema: ManagerChatInputSchema },
   output: { schema: ManagerChatOutputSchema },
+  tools: [searchGoogleKnowledgeTool, scanAppCodeGuideTool],
   prompt: `${AI_MANAGER_SYSTEM_PROMPT}
 
 {{{sentimentAlertContext}}}
+
+[Supabase에 이전에 자율 수집/적재된 캐시 지식 (Learned Knowledge Cache)]:
+{{{matchedLearnedKnowledgeContext}}}
 
 [현재 이지텍스 화면 단계 가이드 (In-App Step Guide Memory)]:
 {{{matchedStepGuideContext}}}
@@ -96,6 +103,7 @@ const managerChatPrompt = ai.definePrompt({
 [고객 접속 단말기 OS]: {{{clientOs}}}
 [고객 인앱 브라우저 접속 여부]: {{{clientIsInApp}}}
 [고객 현재 웹페이지 경로]: {{{currentPathname}}}
+[현재 한국 접속 시간 및 요일]: {{{currentKstTimeContext}}}
 
 [이전 대화 기록 (Context History)]:
 {{{historyContext}}}
@@ -115,7 +123,7 @@ const managerChatPrompt = ai.definePrompt({
   이미 사용자가 당사 웹사이트에 들어온 상태이므로 다음 세부 규칙에 따라 안내하십시오:
   1. 만약 [고객 현재 웹페이지 경로]가 '/' (메인 홈화면)인 경우:
      사용자가 환급을 어떻게 조회하는지, 어디서 신청하는지 묻거나 시작을 원하는 경우, 반드시 **[국세청 안전 연동으로 내 숨은 환급금 무료 조회하기]** 큰 골드 버튼을 누르라고 안내하십시오. (이때 절대로 아직 도달하지도 않은 Step 4의 '[인증서 설치 및 가입을 완료했습니다]' 버튼을 누르라고 안내하지 마십시오!)
-     *(경고: 대화의 첫 턴 인사나 단순히 "안녕하세요", "반갑습니다", "Hi", "Hello" 같은 상호 인사 턴에서는 절대로 서둘러서 버튼을 클릭하라고 강요하거나 영업 푸시를 하지 마십시오. 먼저 여유롭고 상냥하게 인사를 맞받아주고 오늘 무슨 고민이나 궁금한 점이 있으셔서 방문했는지 여쭤보며 경청하십시오. 버튼 클릭 권유는 고객이 조회 의사를 명확히 밝히거나 구체적 질문을 한 이후로 미뤄야 합니다.)*
+     *(🚨 최우선 철칙: 고객이 "어디를 눌러야 돼요?", "어떻게 진행하나요?"라고 직접 질문하거나 특정 단계에서 막혀서 도움이 주입된 게 아니라면, 절대로 다짜고짜 먼저 버튼을 클릭하라고 지시하거나 버튼명을 들먹이지 마십시오. 먼저 고객의 말과 고민을 경청하고 차분하게 대화하십시오.)*
   2. 만약 [고객 현재 웹페이지 경로]가 '/estimate' 이거나 '/estimate' 하위 경로이고 아직 대화 흐름상 최초 예상 조회를 물어본 경우:
      - 단, 이 지침은 유저의 현재 단계가 **Step 0 또는 Step 0.5 에 머물러 있을 때만** 유효합니다!
      - 만약 유저가 이미 **Step 1 이상**으로 진입해 있다면(예: 신분증 인증, 본인인증 단계 등), 절대 화면 맨 밑의 "이어서 정밀 진단 시작하기" 버튼을 언급하거나 클릭 유도하지 마십시오! 대신 유저가 이미 해당 단계를 성실히 수행 중이므로, 제공된 [현재 이지텍스 화면 단계 가이드]의 설명에 따라 카메라 신분증 촬영 요령이나 인증 대기 요령을 상냥하게 안내해야 합니다.
@@ -129,8 +137,8 @@ const managerChatPrompt = ai.definePrompt({
 - 만약 본 프롬프트 상단에 **[🚨 긴급 경고: 현재 대화방에서 고객의 불신...]** 지침이 주입되어 있다면, 위의 모든 [채널별 대화 안내 수칙], [우리 서비스의 정말 중요한 핵심 버튼 및 행동 지침], [최종 목적지 리드] 등 일체의 링크/조회/버튼 클릭/신청 제안 행동 지침은 **완전히 정지 및 무시(Override)** 됩니다.
 - 긴급 경고 상태일 때는 사용자의 불안을 해소하고 공감/사과하는 안심 유도 설명 외에는 어떠한 다음 행동 제안(버튼 클릭 권유 포함)도 응답(answer)에 넣지 마십시오.
 
-사용자가 질문한 언어나 설정 언어({{{language}}})로 친절하고 정확하며 안심을 주는 답변(answer)을 작성하십시오.
-답변(answer)을 작성하기 전에, 먼저 세무 영업의 신으로서 [성공 점수가 포함된 영업 노하우 스크립트]를 분석하고, 어떻게 대화를 전개해야 고객의 이탈을 막고 환급 성공(서명 완료)으로 이끌 수 있을지 심사숙고하는 과정을 thinkingProcess 필드에 기록하십시오.
+사용자가 질문한 언어나 설정 언어({{{language}}})로 친절하고 정확하며 안심을 주는 3~4문장 내외의 풍부하고 세밀한 답변(answer)을 작성하십시오.
+답변(answer)을 작성하기 전에, 먼저 세무 영업의 신으로서 [Thinking Process 강화]: "이 고객이 방금 던진 질문 뒤에 숨겨진 진짜 의도와 걱정(Context)은 무엇인가?"를 이전 대화 내역 및 파악된 사용자 정보와 엮어서 심도 있게 분석하는 과정을 thinkingProcess 필드에 기록하십시오.
 동시에, 한국인 관리자가 대화 내용을 한눈에 파악할 수 있도록 [한국어 요약(koreanSummary)]도 함께 작성하십시오. (예: "질문: 환급금 언제 입금되나요? / 답변: 45~60일 소요 안내")
 또한, 사용자 질문의 문맥을 파악하여 긍정/동조 지수(posScore)와 부정/의심 지수(negScore)를 각각 0~10점 범위에서 객관적으로 판독하여 기재하십시오.
 
@@ -146,9 +154,11 @@ const managerChatPrompt = ai.definePrompt({
 
 [동적 리치 카드(Rich Card) 발급 규칙]:
 답변 과정에서 화면상에 시각적 카드를 띄워줄 필요가 있는 경우, output의 'richCardPayload' 필드를 작성하십시오:
-- 만약 [현재 이지텍스 화면 단계 가이드]의 가이드 정보가 제공되어 있고 해당 단계(step) 안내가 필요한 경우 -> cardType: 'guide' 를 발급하고 가이드 제목과 이미지 및 요령 정보를 반드시 채워 반환하십시오.
+- 만약 고객이 첫 인사를 건네거나, 일반 대화를 나누거나, 단계 진행 중 막히지 않았다면 -> 반드시 cardType: 'none' 과 함께 빈 metrics 객체 {}를 리턴하십시오! (절대 가이드 카드를 함부로 남발하지 마십시오.)
+- 오직 고객이 특정 단계에서 실제로 막혀서 선제 도움이 주입되었거나([STUCK_HELPER_SYSTEM_REQUEST]), 고객이 "어디 눌러야 해요?", "어떻게 진행해요?"처럼 가이드를 직접 요청한 경우에만 -> cardType: 'guide' 를 발급하십시오.
 - 만약 고객이 본인인증 전 환급금 규모를 대략 계산하거나 확인하고 싶어하는 경우 -> cardType: 'estimate_preview', metrics: { 'estimated_refund': '₩450,000' }
-- 만약 고객이 보안에 대해 불안해 하거나 개인정보 유출을 걱정하는 경우 -> cardType: 'security_badge', metrics: { 'security_level': '시중은행 동일 규격 암호화', 'compliance': '국세청 보안 가이드 준수' }
+- 만약 고객이 보안에 대해 가볍게 궁금해하거나 (예: "안전한가요?", "정보 어디 쓰나요?") 개인정보 처리 방식을 물어보는 경우에만 -> cardType: 'security_badge', metrics: { 'security_level': '시중은행 동일 규격 암호화', 'compliance': '국세청 보안 가이드 준수' }
+- 🚨 **security_badge 절대 금지 상황**: 고객이 "피싱", "사기", "의심스럽다", "믿을 수 없다", "진짜냐", "사기꾼 아니냐" 등 강한 불신과 의심을 직접적으로 표명할 때는 **절대로 security_badge 카드를 띄우지 마십시오.** 이 상황에서 자동화된 뱃지 카드를 보여주는 것은 마치 대본을 읽는 봇처럼 보여 오히려 불신을 폭발시킵니다. 대신 cardType: 'none'으로 설정하고, 진심 어린 공감과 사람의 말투로만 안심을 드리십시오. 예: "아이고, 그렇게 느끼실 수 있죠. 저도 그 입장이면 의심할 것 같아요. 제가 솔직하게 설명드릴게요..."처럼 먼저 감정에 공감하고 자연스럽게 팩트를 전달하십시오.
 - 만약 고객이 본인인증 문자 수신이나 통신사 연동에서 막히거나 인증 실패에 대해 겪는 경우 (이때 [고객 인앱 브라우저 접속 여부]가 true 이면 반드시 발급 요망) -> cardType: 'telecom_helper', metrics: { 'carrier': '통신사 자동 감지', 'tip': '스팸 문자 보관함 확인 및 수신 해제 요망' } (단, [고객 인앱 브라우저 접속 여부]가 true 이고 [고객 접속 단말기 OS]가 'ios'이면 metrics.tip에 "아이폰 인앱브라우저 제한: 화면 우측 상단 '나침반' 아이콘을 누르고 '다른 브라우저로 열기'를 선택하여 본인인증을 다시 시도하십시오."를 적고, 'android'이면 "안드로이드 인앱브라우저 제한: 화면 우측 상단 '점 세개'를 누르고 '기본 브라우저로 열기' 또는 '크롬으로 열기'를 선택하십시오."를 기재하십시오.)
 - 만약 고객이 서명 등 신청의 마지막 관문에 와 있어 단계 확인이 필요한 경우 -> cardType: 'completion_checklist', metrics: { 'step_0': '조회 완료 (성공)', 'step_3': '인증 완료 (성공)', 'step_10': '최종 서명 대기' }
 - 카드를 띄울 필요가 없다면 cardType: 'none' 과 함께 빈 metrics 객체 {}를 리턴하십시오.
@@ -158,14 +168,17 @@ const managerChatPrompt = ai.definePrompt({
 2. [전체 대화 핵심 요약 (conversationSummary)]: 이전 대화 요약({{{previousSummary}}})을 바탕으로, 이번에 새로 나눈 대화 내용까지 종합 반영하여 최신 핵심 요약본을 1~2문장의 한국어로 업데이트해 작성하십시오.
 3. [새로 추출한 사용자 정보 팩트 (extractedFacts)]: 유저와의 대화 도중 새롭게 언급되거나 감지된 유저의 신상 정보(이름, 국적, 직업, 소득 규모, 연락처 등)를 감지하여 JSON key-value 형식(예: { "name": "라마", "nationality": "네팔", "monthly_income": "3,000,000" })으로 추출하십시오. 이전 기록({{{previousFacts}}})과 동일하거나 새로 발견된 정보가 없다면 빈 객체 {}를 리턴하십시오.
 4. [고객 성향 판독 (detectedPersonality)]: 사용자의 대화 패턴과 말투(단답형, 의심/경계, 질문 상세도, 감정 이모지 활용 여부 등)를 종합 분석하여 'driver', 'skeptical', 'analytical', 'expressive' 중 가장 알맞은 성격유형 하나를 판독하여 리턴하십시오. (이전 성향 {{{previousPersonality}}}과 대조하여 갱신하거나 유지)
-5. [행동 점수 및 타입 판독 (actionScore & actionType)]: 현재 사용자가 머무르고 있는 대화의 진척도를 바탕으로 행동 점수(actionScore)와 타입(actionType)을 판독하십시오:
-   - 1점 (인사응대): 고객과 첫인사를 나누고 막 유입된 단계 -> actionType: 'intro'
-   - 2점 (연도선택): 고객이 5개년도 중 환급 대상 연도를 고르거나 확인 중인 단계 -> actionType: 'select_year'
-   - 3점 (인증링크 발송): 간편인증 연동 안내 메시지를 발송하거나 인증을 권유하는 단계 -> actionType: 'auth_link'
-   - 5점 (인증완료): 고객이 본인인증(PASS, 카카오 등) 및 홈택스 스크래핑을 완료한 시점 -> actionType: 'auth_complete'
-   - 7점 (적극상담): 환급 계산 결과를 상세히 가이드하거나 자세한 질의응답을 나누는 적극 상담 단계 -> actionType: 'active_consult'
-   - 10점 (최종 환급 신청): 수수료 결제 및 수임 동의서 작성을 마치고 최종 서명을 마친 단계 -> actionType: 'signed'
-   - 위 단계 사이의 과도기이거나 판독이 모호하면 적절한 이전 점수를 유지하거나 대기 상태(pending)로 판독하십시오.
+5. [행동 점수 및 타입 판독 (actionScore & actionType)]: 
+   현재 사용자가 머무르고 있는 실제 화면 단계({{{currentStep}}})와 대화 내용을 바탕으로 행동 점수(actionScore)를 과장 없이 엄격하게 판독하십시오:
+   - 1점 (인사/유입): 고객과 인사만 나누었거나 탐색 중인 상태 (Step 0 이하) -> actionType: 'intro'
+   - 2점 (예상조회/질의응답): 예상 환급액을 조작해보거나 가벼운 제도 문의 단계 (Step 0.5) -> actionType: 'select_year'
+   - 3점 (신분증/정보입력): 신분증 확인 및 본인 정보를 입력 중인 단계 (Step 1 ~ 3) -> actionType: 'auth_link'
+   - 4점 (인증서 선택/요청): 카카오/PASS/하나 인증서를 선택하고 요청한 단계 (Step 4) -> actionType: 'auth_request'
+   - 5점 (인증 완료 및 스크래핑): 🚨 **오직 고객이 폰에서 간편인증 승인을 마치고 실제 홈택스 스크래핑이 완료되었을 때만 5점 부여!** (단순 대화 중에는 절대 5점 이상 금지) -> actionType: 'auth_complete'
+   - 7점 (정밀 결과 상담): 스크래핑된 정밀 환급액 결과를 보며 세무 상담을 진행하는 단계 (Step 6 ~ 7) -> actionType: 'active_consult'
+   - 8점 (계좌등록): 환급받을 계좌를 적고 1원 인증 중인 단계 (Step 8 ~ 9) -> actionType: 'account_reg'
+   - 10점 (최종 서명 완료): 서명 패드에 사인을 마치고 모든 접수가 완료된 단계 (Step 10 ~ 11) -> actionType: 'signed'
+   - 🚨 **엄격한 상한선 규칙**: 현재 사용자의 실제 화면 단계({{{currentStep}}})가 Step 0이면 actionScore는 최대 2점을 넘을 수 없으며, Step 3이면 최대 3점을 넘을 수 없습니다. 함부로 5점 이상으로 뛰지 않게 현실적으로 판독하십시오.
 
 `,
 });
@@ -204,21 +217,34 @@ const managerChatFlow = ai.defineFlow(
     let highestWeightScriptId: number | undefined = undefined;
 
     if (scripts && scripts.length > 0) {
-      // 🚨 [RAG Filter] 유저가 이미 Step 1 이상인 경우, 극초반 골드 버튼 유도 세일즈 스크립트는 원천 배제!
+      // 🚨 [RAG Filter] 유저가 단순 인사이거나 Step 1 이상인 경우, 극초반 골드 버튼 유도 세일즈 스크립트는 원천 배제!
       const activeStep = input.currentStep;
+      const isSimpleGreeting = /^(안녕|반가|하이|hello|hi|hey|xin ch\u00e0o|halo|ch\u00e0o)/i.test(cleanedText.trim());
       let filteredScripts = scripts;
-      if (typeof activeStep === 'number' && activeStep >= 1) {
+      if ((typeof activeStep === 'number' && activeStep >= 1) || isSimpleGreeting || (typeof activeStep === 'number' && activeStep <= 0)) {
+        // 고객이 직접 수수료/보안/피싱 관련 질문을 던졌는지 확인
+        const mentionsSecurityOrFee = /(수수료|보안|피싱|사기|신분증|안전|믿어|후불|돈|입금|계좌)/i.test(cleanedText);
+
         filteredScripts = scripts.filter(s => {
           const text = s.script_text;
-          const isInitialGoldButtonScript = 
-            text.includes('정밀 진단') || 
-            text.includes('진단 시작') || 
-            text.includes('시작하기 버튼') || 
-            text.includes('골드색') || 
-            text.includes('골드 버튼');
-          return !isInitialGoldButtonScript;
+          
+          // 1. 극초반 버튼 유도 & 서명 유도 스크립트 배제
+          const isInitialPushyScript = 
+            (isSimpleGreeting || (typeof activeStep === 'number' && activeStep <= 0))
+              ? (text.includes('정밀 진단') || text.includes('진단 시작') || text.includes('시작하기 버튼') || text.includes('골드색') || text.includes('골드 버튼') || text.includes('버튼을 누르') || text.includes('서명') || text.includes('사인'))
+              : (text.includes('정밀 진단') || text.includes('진단 시작') || text.includes('시작하기 버튼') || text.includes('골드색') || text.includes('골드 버튼') || text.includes('버튼을 누르'));
+          
+          if (isInitialPushyScript) return false;
+
+          // 2. 🚨 [주제 관련성 strict 검증]: 유저가 수수료/보안을 직접 묻지 않았다면 수수료 후불제/안전 세일즈 스크립트 배제
+          if (!mentionsSecurityOrFee) {
+            const isUnrequestedSecurityScript = text.includes('수수료') || text.includes('후불') || text.includes('안전') || text.includes('1원도') || text.includes('통장에 꽂히');
+            if (isUnrequestedSecurityScript) return false;
+          }
+
+          return true;
         });
-        console.log(`[RAG Filter] Filtered out initial gold button scripts for step ${activeStep}. Remaining: ${filteredScripts.length}`);
+        console.log(`[RAG Filter] Filtered out mismatched pushy/security sales scripts. Remaining: ${filteredScripts.length}`);
       }
 
       if (filteredScripts.length > 0) {
@@ -235,6 +261,19 @@ const managerChatFlow = ai.defineFlow(
       }
     } else {
       matchedScriptsContext = '매칭된 영업 노하우가 없습니다. 김준현 매니저의 기존 지식 베이스를 바탕으로 친절하고 확신에 찬 자신감으로 직접 답변을 구성하십시오.';
+    }
+
+    // 1-0. Retrieve cached self-learned knowledge from Supabase ai_knowledge_base
+    let matchedLearnedKnowledgeContext = '자율 학습된 캐시 지식 없음 (최초 질의/신규 질의)';
+    try {
+      const learnedKnowledge = isSystemRequest ? [] : await retrieveLearnedKnowledge(cleanedText, 0.85, 1);
+      if (learnedKnowledge && learnedKnowledge.length > 0) {
+        const item = learnedKnowledge[0];
+        matchedLearnedKnowledgeContext = `[이전에 AI가 자율적으로 학습하여 Supabase 캐시에 저장해둔 정답 (유사도: ${Math.round(item.similarity * 100)}%)]: "${item.answer}"`;
+        console.log(`[Self-Learning Cache] Found hit in Supabase ai_knowledge_base! (ID: ${item.id})`);
+      }
+    } catch (err) {
+      console.warn('[Self-Learning Cache Query Warning]:', err);
     }
 
     // 1-A. Retrieve active App Step Guide from Supabase (RAG)
@@ -275,6 +314,83 @@ const managerChatFlow = ai.defineFlow(
       }
     }
 
+    // 1-B. 슬라이드 단위 인증 가이드 조회 (auth_slide_guides)
+    // 고객 메시지에서 인증 수단 + 슬라이드 번호/키워드를 감지해 정밀 에러 케이스 주입
+    try {
+      const msg = cleanedText.toLowerCase();
+
+      // 인증 수단 감지
+      let detectedAuthMethod: 'hana' | 'pass' | 'kakao' | null = null;
+      if (/하나(원큐|은행|뱅크)?/.test(msg) || /hana/.test(msg)) {
+        detectedAuthMethod = 'hana';
+      } else if (/카카오(톡|페이|지갑)?/.test(msg) || /kakao/.test(msg)) {
+        detectedAuthMethod = 'kakao';
+      } else if (/패스|pass|통신사\s*인증/.test(msg)) {
+        detectedAuthMethod = 'pass';
+      }
+
+      if (detectedAuthMethod) {
+        // 슬라이드 번호 직접 언급 감지 (예: "20번", "슬라이드 21")
+        const slideNumMatch = msg.match(/(\d{1,2})\s*번|슬라이드\s*(\d{1,2})/);
+        const mentionedSlide = slideNumMatch
+          ? parseInt(slideNumMatch[1] || slideNumMatch[2], 10)
+          : null;
+
+        // 키워드 기반 챕터 감지
+        let detectedChapter: string | null = null;
+        if (/계좌.*(없|안 뜸|목록|선택)|비밀번호.*(잠|틀|오류)|atm/.test(msg)) {
+          detectedChapter = '인증서 발급';
+        } else if (/푸시.*(안|못)|알림.*(안|못)|인증.*(안|못|실패)|승인/.test(msg)) {
+          detectedChapter = '인증 승인';
+        } else if (/회원가입|이름|등록번호|통신사|sms|문자.*(안|못)/.test(msg)) {
+          detectedChapter = '회원가입';
+        } else if (/1원|계좌\s*인증|입금자/.test(msg)) {
+          detectedChapter = detectedAuthMethod === 'pass' ? '계좌 인증' : '인증서 발급';
+        } else if (/알림톡|인증하기|노란|채널/.test(msg)) {
+          detectedChapter = '인증 승인';
+        }
+
+        let slideRows: any[] = [];
+
+        if (mentionedSlide) {
+          // 슬라이드 번호 직접 조회
+          const { data } = await supabaseAdmin
+            .from('auth_slide_guides')
+            .select('slide_number, chapter, slide_title, action_ko, error_cases, tips')
+            .eq('auth_method', detectedAuthMethod)
+            .eq('slide_number', mentionedSlide)
+            .maybeSingle();
+          if (data) slideRows = [data];
+        } else if (detectedChapter) {
+          // 챕터 단위 조회 (최대 5개)
+          const { data } = await supabaseAdmin
+            .from('auth_slide_guides')
+            .select('slide_number, chapter, slide_title, action_ko, error_cases, tips')
+            .eq('auth_method', detectedAuthMethod)
+            .eq('chapter', detectedChapter)
+            .order('slide_number', { ascending: true })
+            .limit(5);
+          if (data) slideRows = data;
+        }
+
+        if (slideRows.length > 0) {
+          const authLabel = detectedAuthMethod === 'hana' ? '하나원큐' : detectedAuthMethod === 'kakao' ? '카카오톡' : 'PASS';
+          const slideContext = slideRows.map(r => {
+            const errors = (r.error_cases as any[]).map((e: any) =>
+              `    ⚠️ [${e.symptom}] 원인: ${e.cause} / 해결: ${e.solution}${e.alt ? ` / 대안: ${e.alt}` : ''}`
+            ).join('\n');
+            return `  슬라이드 ${r.slide_number} (${r.chapter} - ${r.slide_title})\n  → 행동: ${r.action_ko}${r.tips ? `\n  💡 팁: ${r.tips}` : ''}${errors ? `\n${errors}` : ''}`;
+          }).join('\n\n');
+
+          const slideContextBlock = `\n\n[🔐 ${authLabel} 슬라이드 단위 정밀 가이드 (auth_slide_guides DB 조회 결과)]:\n${slideContext}\n위 슬라이드 정보를 기반으로 고객의 증상에 맞는 원인과 해결책을 고객 모국어로 즉시 안내하십시오.`;
+          matchedStepGuideContext = matchedStepGuideContext + slideContextBlock;
+          console.log(`[Auth Slide Guide] Injected ${slideRows.length} slide(s) for method=${detectedAuthMethod}`);
+        }
+      }
+    } catch (err) {
+      console.warn('[Auth Slide Guide] Query failed:', err);
+    }
+
     // 2. Limit history to max 20 turns and format to historyContext
     const recentHistory = input.history ? input.history.slice(-20) : [];
     const historyContext = recentHistory.length > 0
@@ -285,11 +401,11 @@ const managerChatFlow = ai.defineFlow(
     const cumPos = input.cumulativePos ?? 0;
     const cumNeg = input.cumulativeNeg ?? 0;
     let sentimentAlertContext = '';
-    if (cumNeg >= 5 || cumNeg > cumPos) {
-      sentimentAlertContext = `[🚨 긴급 경고: 현재 대화방에서 고객의 불신, 거부감, 혹은 경계심이 매우 높은 상태(누적 부정 지수 임계값 초과)입니다.
-1. 어떠한 링크 제공, 가입 요구, 버튼 클릭 제안, 환급금 조회/신청 권유도 답변에 절대 포함하지 마십시오.
-2. 오직 고객의 불편함이나 불신에 대해 정중히 사과하고, 의구심을 갖는 점에 대해 자세히 설명해 주며, 심리적으로 안정감을 주는 공감형 안심 답변만 정중하게 작성하십시오. 
-3. 고객의 부정적 감정을 해소하고 마음을 부드럽게 열어주는 데만 100% 집중해 주십시오.]`;
+    if (cumNeg >= 15 || (cumNeg > cumPos && cumNeg >= 10)) {
+      sentimentAlertContext = `[🚨 고객 경계 상태 주의 지침]:
+1. 어떠한 링크 제공, 가입 요구, 버튼 클릭 제안도 답변에 포함하지 마십시오.
+2. 절대 과장되게 굽신거리거나 신파극처럼 사과(😭 이모지 사용 금지, "얼마나 걱정되셨으면..." 같은 오버 멘트 금지)하지 마십시오. 조급한 느낌이 들면 오히려 사기꾼처럼 보입니다.
+3. 15년 차 전문가답게 여유롭고 덤덤하게 "앗, 잠시 서류 확인하느라 답변이 늦었네요~ ^^ 네네, 저 여기 있습니다!" 처럼 당당하고 기품 있게 대화를 이끌어 가십시오.`;
     }
 
     const previousSummary = input.previousSummary || "이전 요약 기록 없음";
@@ -297,28 +413,59 @@ const managerChatFlow = ai.defineFlow(
     const previousFacts = input.previousFacts || "기록된 사용자 팩트 없음";
     const previousPersonality = input.previousPersonality || "expressive (기본값: 친근감 선호형)";
 
+    // 3-B. Generate real-time KST Date, Day, and Time Period Context
+    const now = new Date();
+    const kstDateStr = now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", hour12: false });
+    const kstHour = parseInt(now.toLocaleString("ko-KR", { timeZone: "Asia/Seoul", hour: "numeric", hour12: false }), 10);
+    const dayNames = ["일요일", "월요일", "화요일", "수요일", "목요일", "금요일", "토요일"];
+    const kstDayIndex = new Date(now.toLocaleString("en-US", { timeZone: "Asia/Seoul" })).getDay();
+    const dayOfWeek = dayNames[kstDayIndex];
+    const isWeekend = dayOfWeek === "토요일" || dayOfWeek === "일요일";
+    
+    let timePeriod = "낮/업무시간대";
+    if (kstHour >= 22 || kstHour < 6) {
+      timePeriod = "늦은 밤/야간 시간대 (퇴근 후)";
+    } else if (kstHour >= 18) {
+      timePeriod = "저녁/퇴근시간대";
+    } else if (kstHour < 9) {
+      timePeriod = "이른 아침 시간대";
+    }
+    const currentKstTimeContext = `${kstDateStr} (${dayOfWeek}, ${timePeriod}${isWeekend ? ", 주말" : ""})`;
+
     // 4. Call Genkit prompt
     const { output } = await managerChatPrompt({
       ...input,
       message: cleanedText,
       matchedScriptsContext,
       matchedStepGuideContext,
+      matchedLearnedKnowledgeContext,
       historyContext,
       sentimentAlertContext,
       previousSummary,
       previousStep,
       previousFacts,
       previousPersonality,
+      currentKstTimeContext,
     });
 
     if (!output) {
       throw new Error('AI 매니저 답변을 생성하지 못했습니다.');
     }
 
-    // Fallback: Enforce stepGuidePayload card if LLM skipped generating a card
-    const finalRichCardPayload = (output.richCardPayload && output.richCardPayload.cardType !== 'none')
-      ? output.richCardPayload
-      : (stepGuidePayload || output.richCardPayload || { cardType: 'none' });
+    // 💡 백그라운드 비동기: 생성된 우수 Q&A 답변을 Supabase ai_knowledge_base에 자율 적재 (Self-Learning Ingestion)
+    if (!isSystemRequest && output.answer && cleanedText.length >= 4) {
+      Promise.resolve(
+        ingestSelfLearnedKnowledge(cleanedText, output.answer, 'chat_auto_cache', 'auto_ingest')
+      ).catch((err) => console.warn('[Self-Learning Auto Ingest Error]:', err));
+    }
+
+    // Only enforce stepGuidePayload card if the request was a STUCK helper request or if LLM explicitly requested a guide card
+    let finalRichCardPayload = output.richCardPayload || { cardType: 'none' };
+    if (isSystemRequest && input.message.includes("[STUCK_HELPER_SYSTEM_REQUEST]")) {
+      if (stepGuidePayload) {
+        finalRichCardPayload = stepGuidePayload;
+      }
+    }
 
     // 🚨 [GUIDE CARD MERGE]
     // stepGuidePayload가 있을 때 (DB에서 가이드 데이터를 찾은 경우):

@@ -253,3 +253,85 @@ export async function logConversionFeedback(
     return { success: false, error: err.message };
   }
 }
+
+export interface LearnedKnowledge {
+  id: number;
+  question: string;
+  answer: string;
+  category: string;
+  source_type: string;
+  similarity: number;
+  hit_count: number;
+}
+
+/**
+ * Retrieve cached knowledge from ai_knowledge_base based on semantic similarity
+ */
+export async function retrieveLearnedKnowledge(
+  queryText: string,
+  threshold: number = 0.85,
+  limit: number = 1
+): Promise<LearnedKnowledge[]> {
+  try {
+    const queryEmbedding = await getEmbedding(queryText);
+    const { data, error } = await supabaseAdmin.rpc('match_knowledge_base', {
+      query_embedding: queryEmbedding,
+      match_threshold: threshold,
+      match_count: limit,
+    });
+
+    if (error) {
+      console.warn('[Retrieve Knowledge RPC Warning]:', error);
+      return [];
+    }
+
+    return (data || []) as LearnedKnowledge[];
+  } catch (err) {
+    console.warn('[Retrieve Knowledge Error]:', err);
+    return [];
+  }
+}
+
+/**
+ * Save new self-learned Q&A pair into Supabase ai_knowledge_base table
+ */
+export async function ingestSelfLearnedKnowledge(
+  question: string,
+  answer: string,
+  category: string = 'general',
+  sourceType: string = 'google_search'
+): Promise<void> {
+  try {
+    if (!question || !answer || question.trim().length < 3 || answer.trim().length < 5) return;
+    
+    const embedding = await getEmbedding(question.trim()).catch(() => null);
+    if (!embedding) return;
+
+    // Check if similar knowledge already exists
+    const existing = await retrieveLearnedKnowledge(question.trim(), 0.90, 1);
+    if (existing && existing.length > 0) {
+      // Increment hit count
+      const matched = existing[0];
+      await supabaseAdmin
+        .from('ai_knowledge_base')
+        .update({ 
+          hit_count: (matched.hit_count || 1) + 1,
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', matched.id);
+      console.log(`[Self-Learning Cache] Knowledge already exists (ID: ${matched.id}). Incremented hit_count.`);
+    } else {
+      // Ingest new knowledge
+      await supabaseAdmin.from('ai_knowledge_base').insert({
+        question: question.trim(),
+        answer: answer.trim(),
+        category,
+        source_type: sourceType,
+        embedding
+      });
+      console.log(`[Self-Learning Cache] Successfully ingested new knowledge (${sourceType}): "${question.trim().substring(0, 30)}..."`);
+    }
+  } catch (err) {
+    console.error('[Ingest Knowledge Error]:', err);
+  }
+}

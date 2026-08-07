@@ -359,17 +359,17 @@ function RichCardRenderer({ card, language, currentStep }: { card: NonNullable<C
       );
     case 'security_badge':
       return (
-        <div className="mt-2.5 p-4.5 rounded-2xl bg-gradient-to-br from-[#0e213a] to-[#050f1b] border border-emerald-500/20 shadow-md text-slate-100 flex flex-col gap-2.5 max-w-full font-bold">
-          <div className="flex items-center gap-2 text-emerald-400 text-xs">
-            <svg className="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            <span>{title || "개인정보 보호 및 보안 인증"}</span>
-          </div>
-          <p className="text-[10px] text-slate-300 font-medium leading-relaxed">
+        <div className="mt-2.5 p-4 rounded-2xl bg-gradient-to-br from-[#0e213a] to-[#050f1b] border border-emerald-500/20 shadow-md text-slate-100 flex flex-col items-center gap-2 max-w-full font-bold">
+          <img
+            src="/certified_security_seal_premium_1774150786685.png"
+            alt="보안 인증 씰"
+            className="w-28 h-28 object-contain"
+          />
+          <span className="text-emerald-400 text-xs font-bold text-center">{title || "개인정보 보호 및 보안 인증"}</span>
+          <p className="text-[10px] text-slate-300 font-medium leading-relaxed text-center">
             {description || "고객님의 모든 정보는 시중 은행과 동일한 수준의 최고급 256-bit SSL 암호화 처리 후 국세청 연동 즉시 자동 파기됩니다."}
           </p>
-          <div className="flex flex-wrap gap-1.5 mt-1 text-[9px]">
+          <div className="flex flex-wrap justify-center gap-1.5 text-[9px]">
             <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">SSL 256bit</span>
             <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">국세청 가이드 준수</span>
           </div>
@@ -432,30 +432,24 @@ function RichCardRenderer({ card, language, currentStep }: { card: NonNullable<C
       );
     case 'guide': {
       const simStep = currentStep ?? 0;
-      const simLang = language || 'ko';
-      const simUrl = `/estimate?simulation=true&step=${simStep}&lang=${simLang}`;
       return (
-        <div className="mt-2.5 bg-slate-900/80 border border-[#b88c30]/30 rounded-2xl animate-in fade-in duration-300 overflow-hidden max-w-[280px] font-bold">
-          <div className="px-3 pt-2.5 pb-1 flex items-center gap-1.5">
-            <span className="text-[9px] text-[#e2b659] font-black uppercase tracking-wider">🎬 Step {simStep} 라이브 가이드</span>
+        <div className="mt-2.5 p-3.5 bg-gradient-to-br from-[#0f2442] to-[#071324] border border-[#e2b659]/50 rounded-2xl animate-in fade-in duration-300 overflow-hidden shadow-lg space-y-2.5 text-left font-bold">
+          <div className="flex items-center gap-2 text-[#e2b659] text-xs font-black">
+            <Sparkles className="w-4 h-4 text-[#e2b659] shrink-0" />
+            <span>{title || `Step ${simStep} 맞춤 안내`}</span>
           </div>
-          {/* Simulation iframe - live multilingual walkthrough */}
-          <div className="relative w-full overflow-hidden rounded-lg" style={{ height: '320px' }}>
-            <iframe
-              src={simUrl}
-              title={`Step ${simStep} 시뮬레이션 가이드`}
-              className="w-full h-full border-0 pointer-events-none"
-              style={{ transform: 'scale(0.55)', transformOrigin: 'top left', width: '182%', height: '182%' }}
-              scrolling="no"
-              tabIndex={-1}
-            />
-            {/* Transparent overlay so user can't accidentally interact with iframe */}
-            <div className="absolute inset-0" />
-          </div>
-          <div className="px-3 py-2.5 space-y-1 border-t border-white/5">
-            <h4 className="text-[11px] font-black text-white">{title}</h4>
-            <p className="text-[10px] text-slate-300 leading-relaxed font-bold">{description}</p>
-          </div>
+          <p className="text-[11px] text-slate-200 leading-relaxed font-medium bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
+            💡 {description || "환급 단계에서 어느 부분을 눌러야 하는지 보여주는 가상 화면입니다."}
+          </p>
+          <button
+            type="button"
+            onClick={() => {
+              window.dispatchEvent(new CustomEvent("open-step-guide", { detail: { step: simStep } }));
+            }}
+            className="w-full py-2.5 px-3 bg-gradient-to-r from-[#e2b659] to-amber-600 hover:from-amber-500 hover:to-amber-700 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-transform"
+          >
+            <span>🎬 Step {simStep} 시뮬레이션 가이드 보기</span>
+          </button>
         </div>
       );
     }
@@ -978,8 +972,14 @@ function FloatingConsultingPanelInner() {
 
     const handleUserStuck = (e: Event) => {
       const customEvent = e as CustomEvent;
-      const stuckStep = customEvent.detail?.step ?? 0;
-      console.log(`[FloatingAiChat] Stuck detected at step: ${stuckStep}. Triggering helper...`);
+      const stuckStep = customEvent.detail?.step ?? currentStep;
+      console.log(`[FloatingAiChat] Stuck detected at step: ${stuckStep}.`);
+
+      // 🚨 [필수 방어] 단순 인사/탐색/메인 단계(step 0 이하)에서는 STUCK 구출 메시지를 보내지 않습니다.
+      if (stuckStep <= 0) {
+        console.log(`[FloatingAiChat] Suppressing STUCK_HELPER for initial/greeting step (${stuckStep}).`);
+        return;
+      }
 
       // 🔊 경쾌한 수신 카톡 알림 사운드 재생
       try {
