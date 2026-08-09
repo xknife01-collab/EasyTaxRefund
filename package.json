@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "sync-translations": "node scratch/sync_translations.js"
+    "sync-translations": "node scratch/sync_translations.js",
+    "ingest-app-code": "tsx scripts/ingest-app-code.ts"
   },
   "dependencies": {
     "@genkit-ai/google-genai": "^1.28.0",

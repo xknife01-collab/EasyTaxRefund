@@ -1,7 +1,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { supabaseAdmin } from '@/lib/supabase';
-import { ingestSelfLearnedKnowledge } from '@/lib/ai-learning-db';
+import { ingestSelfLearnedKnowledge, retrieveLearnedKnowledge } from '@/lib/ai-learning-db';
 
 /**
  * 1. 실시간 구글 국세청/세무 지식 자율 탐색 툴 (Google Search Knowledge Tool)
@@ -76,8 +76,19 @@ export const scanAppCodeGuideTool = ai.defineTool(
       let exactSolution = '';
       let buttonLocation = '';
 
+      // 0. Supabase ai_knowledge_base 벡터 DB 우선 스캔
+      try {
+        const learned = await retrieveLearnedKnowledge(userQuestion, 0.65, 1);
+        if (learned && learned.length > 0) {
+          exactSolution = learned[0].answer;
+          console.log(`[App Code Guide Scan] Found vector match in ai_knowledge_base! ID: ${learned[0].id}`);
+        }
+      } catch (kvErr) {
+        console.warn('[App Code Guide Scan] Vector search warning:', kvErr);
+      }
+
       // 1. auth_slide_guides 테이블 스캔
-      if (authMethod && authMethod !== 'none') {
+      if (!exactSolution && authMethod && authMethod !== 'none') {
         const { data: slides } = await supabaseAdmin
           .from('auth_slide_guides')
           .select('slide_number, slide_title, action_ko, error_cases, tips')
@@ -98,8 +109,8 @@ export const scanAppCodeGuideTool = ai.defineTool(
             buttonLocation = '화면 하단 골드색 [이어서 정밀 진단 시작하기] 버튼';
             break;
           case 4:
-            exactSolution = '카카오톡, PASS, 하나인증서 중 스마트폰에 가입되어 있는 수단을 1개 선택 후 하단 [인증 요청하기] 버튼을 누르시면 됩니다.';
-            buttonLocation = '인증 수단선택 탭 및 하단 [인증 요청하기] 버튼';
+            exactSolution = '화면 상단의 골드색 [국세청 안전 연동으로 내 숨은 환급금 무료 조회하기] 버튼을 누르고 시작하여 4번째 본인인증 선택 화면으로 이동하신 후, 상단의 [카카오톡], [PASS], [하나은행] 탭을 터치하시면 화면에 그림으로 된 상세 가이드북이 나타납니다. 확인 후 하단 [인증 요청하기] 버튼을 누르시면 됩니다.';
+            buttonLocation = '메인 상단 [국세청 안전 연동으로 내 숨은 환급금 무료 조회하기] 버튼 ➔ 인증 선택 화면 상단 [카카오톡]/[PASS]/[하나은행] 탭 및 하단 [인증 요청하기] 버튼';
             break;
           case 5:
             exactSolution = '스마트폰으로 본인인증 푸시 알림이 발송되었습니다. 폰에서 카카오톡 또는 PASS 앱을 직접 켜시고 [인증 완료] 버튼을 누르시면 5초 내에 자동으로 다음 단계로 넘어갑니다.';

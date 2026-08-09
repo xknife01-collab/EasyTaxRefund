@@ -266,7 +266,7 @@ const managerChatFlow = ai.defineFlow(
     // 1-0. Retrieve cached self-learned knowledge from Supabase ai_knowledge_base
     let matchedLearnedKnowledgeContext = '자율 학습된 캐시 지식 없음 (최초 질의/신규 질의)';
     try {
-      const learnedKnowledge = isSystemRequest ? [] : await retrieveLearnedKnowledge(cleanedText, 0.85, 1);
+      const learnedKnowledge = isSystemRequest ? [] : await retrieveLearnedKnowledge(cleanedText, 0.65, 1);
       if (learnedKnowledge && learnedKnowledge.length > 0) {
         const item = learnedKnowledge[0];
         matchedLearnedKnowledgeContext = `[이전에 AI가 자율적으로 학습하여 Supabase 캐시에 저장해둔 정답 (유사도: ${Math.round(item.similarity * 100)}%)]: "${item.answer}"`;
@@ -314,12 +314,22 @@ const managerChatFlow = ai.defineFlow(
       }
     }
 
+    // 1-A2. Limit history to max 20 turns and format to historyContext
+    const recentHistory = input.history ? input.history.slice(-20) : [];
+    const historyContext = recentHistory.length > 0
+      ? recentHistory.map(h => `${h.role === 'user' ? '고객' : '김준현 매니저'}: ${h.text}`).join('\n')
+      : '이전 대화 기록 없음 (최초 대화 시작)';
+
     // 1-B. 슬라이드 단위 인증 가이드 조회 (auth_slide_guides)
-    // 고객 메시지에서 인증 수단 + 슬라이드 번호/키워드를 감지해 정밀 에러 케이스 주입
+    // 고객 메시지 및 최근 대화 맥락에서 인증 수단 + 슬라이드 번호/키워드를 감지해 정밀 에러 케이스 주입
     try {
       const msg = cleanedText.toLowerCase();
+      // 최근 대화 맥락 (김준현의 직전 멘트도 스캔하여 '카카오 가이드' 등을 짚어낸 문맥 잇기)
+      const recentBotText = (recentHistory.length > 0 && recentHistory[recentHistory.length - 1].role === 'model')
+        ? recentHistory[recentHistory.length - 1].text.toLowerCase()
+        : '';
 
-      // 인증 수단 감지
+      // 인증 수단 감지 (현재 메시지 우선, 없으면 직전 대화 맥락 스캔)
       let detectedAuthMethod: 'hana' | 'pass' | 'kakao' | null = null;
       if (/하나(원큐|은행|뱅크)?/.test(msg) || /hana/.test(msg)) {
         detectedAuthMethod = 'hana';
@@ -327,6 +337,12 @@ const managerChatFlow = ai.defineFlow(
         detectedAuthMethod = 'kakao';
       } else if (/패스|pass|통신사\s*인증/.test(msg)) {
         detectedAuthMethod = 'pass';
+      } else if (/가이드|어디|위치|어떻게\s*보|어딨어|어디에/.test(msg)) {
+        // 현재 메시지가 "어디 있어요 가이드가?" 처럼 수단 언급 없이 가이드를 묻는 경우 직전 맥락에서 수단 추론
+        if (/하나/.test(recentBotText)) detectedAuthMethod = 'hana';
+        else if (/카카오/.test(recentBotText)) detectedAuthMethod = 'kakao';
+        else if (/패스|pass/.test(recentBotText)) detectedAuthMethod = 'pass';
+        else detectedAuthMethod = 'kakao'; // 기본 fallback: 가장 많이 쓰이는 카카오톡
       }
 
       if (detectedAuthMethod) {
@@ -336,9 +352,13 @@ const managerChatFlow = ai.defineFlow(
           ? parseInt(slideNumMatch[1] || slideNumMatch[2], 10)
           : null;
 
-        // 키워드 기반 챕터 감지
+        // 키워드 기반 챕터 감지 (가이드 위치 문의도 포함)
         let detectedChapter: string | null = null;
-        if (/계좌.*(없|안 뜸|목록|선택)|비밀번호.*(잠|틀|오류)|atm/.test(msg)) {
+        const isAskingGuideLocation = /가이드|어디|위치|어떻게\s*보|어딨어|어디에/.test(msg);
+
+        if (isAskingGuideLocation) {
+          detectedChapter = '인증서 발급';
+        } else if (/계좌.*(없|안 뜸|목록|선택)|비밀번호.*(잠|틀|오류)|atm/.test(msg)) {
           detectedChapter = '인증서 발급';
         } else if (/푸시.*(안|못)|알림.*(안|못)|인증.*(안|못|실패)|승인/.test(msg)) {
           detectedChapter = '인증 승인';
@@ -373,8 +393,10 @@ const managerChatFlow = ai.defineFlow(
           if (data) slideRows = data;
         }
 
-        if (slideRows.length > 0) {
+        if (slideRows.length > 0 || isAskingGuideLocation) {
           const authLabel = detectedAuthMethod === 'hana' ? '하나원큐' : detectedAuthMethod === 'kakao' ? '카카오톡' : 'PASS';
+          const authTabName = detectedAuthMethod === 'hana' ? '[하나은행]' : detectedAuthMethod === 'kakao' ? '[카카오톡]' : '[PASS]';
+          
           const slideContext = slideRows.map(r => {
             const errors = (r.error_cases as any[]).map((e: any) =>
               `    ⚠️ [${e.symptom}] 원인: ${e.cause} / 해결: ${e.solution}${e.alt ? ` / 대안: ${e.alt}` : ''}`
@@ -382,22 +404,23 @@ const managerChatFlow = ai.defineFlow(
             return `  슬라이드 ${r.slide_number} (${r.chapter} - ${r.slide_title})\n  → 행동: ${r.action_ko}${r.tips ? `\n  💡 팁: ${r.tips}` : ''}${errors ? `\n${errors}` : ''}`;
           }).join('\n\n');
 
-          const slideContextBlock = `\n\n[🔐 ${authLabel} 슬라이드 단위 정밀 가이드 (auth_slide_guides DB 조회 결과)]:\n${slideContext}\n위 슬라이드 정보를 기반으로 고객의 증상에 맞는 원인과 해결책을 고객 모국어로 즉시 안내하십시오.`;
+          const appUiGuideNotice = `[🚨 우리 이지텍스 앱 화면 내 가이드 위치 지침 (개발 용어 'Step 4' 사용 절대 금지)]:
+- 고객은 'Step 4'라는 개발자 내부 단어를 알지 못합니다! 절대로 "Step 4로 가세요"라고 무책임하게 말하지 마십시오.
+- 고객에게 가이드 위치를 안내할 때는 반드시 사용자가 따라올 수 있는 **고객 시선의 친절한 동선 안내**로 설명하십시오:
+  1) "먼저 화면 상단의 골드색 **[국세청 안전 연동으로 내 숨은 환급금 무료 조회하기]** 버튼을 클릭하여 조회를 시작해 주세요!"
+  2) "신분증과 정보를 입력하시며 **인증 수단 선택 화면(4번째 화면)**까지 이동해 주시면 됩니다."
+  3) "해당 화면 상단에 보이는 **${authTabName} 탭**을 터치하시면 그림으로 쉽게 설명된 단계별 가이드북이 나타납니다! 아래 띄워드린 가이드 카드도 함께 참고해 보세요~ 😊"`;
+
+          const slideContextBlock = `\n\n[🔐 ${authLabel} 슬라이드 단위 정밀 가이드 (auth_slide_guides DB 조회 결과)]:\n${appUiGuideNotice}\n\n${slideContext}\n위 슬라이드 정보 및 위치 지침을 기반으로 고객의 질문에 맞게 고객 모국어로 즉시 안내하십시오.`;
           matchedStepGuideContext = matchedStepGuideContext + slideContextBlock;
-          console.log(`[Auth Slide Guide] Injected ${slideRows.length} slide(s) for method=${detectedAuthMethod}`);
+          console.log(`[Auth Slide Guide] Injected ${slideRows.length} slide(s) for method=${detectedAuthMethod} (isAskingLocation=${isAskingGuideLocation})`);
         }
       }
     } catch (err) {
       console.warn('[Auth Slide Guide] Query failed:', err);
     }
 
-    // 2. Limit history to max 20 turns and format to historyContext
-    const recentHistory = input.history ? input.history.slice(-20) : [];
-    const historyContext = recentHistory.length > 0
-      ? recentHistory.map(h => `${h.role === 'user' ? '고객' : '김준현 매니저'}: ${h.text}`).join('\n')
-      : '이전 대화 기록 없음 (최초 대화 시작)';
-
-    // 3. Dynamic prompting (눈치 메커니즘)
+    // 2. Dynamic prompting (눈치 메커니즘)
     const cumPos = input.cumulativePos ?? 0;
     const cumNeg = input.cumulativeNeg ?? 0;
     let sentimentAlertContext = '';
