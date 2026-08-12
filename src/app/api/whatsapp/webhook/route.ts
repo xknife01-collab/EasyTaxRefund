@@ -156,177 +156,179 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: false, error: msgErr.message }, { status: 500 });
     }
 
-    // 4. If AI Auto-responder is active, generate and send reply
+    // 4. If AI Auto-responder is active, generate and send reply asynchronously in the background
     if (isAiActive) {
-      try {
-        const { data: historyMsgs } = await supabaseAdmin
-          .from('support_messages')
-          .select('sender_type, original_text, translated_text')
-          .eq('chat_id', chatSession.id)
-          .order('created_at', { ascending: true })
-          .limit(10);
-
-        const history = (historyMsgs || [])
-          .filter((_, idx) => idx < (historyMsgs?.length || 0) - 1)
-          .map(m => ({
-            role: m.sender_type === 'customer' ? 'user' as const : 'model' as const,
-            text: m.sender_type === 'customer' ? m.original_text : (m.translated_text || m.original_text)
-          }));
-
-        const previousSummary = chatSession.metadata?.summary || "이전 요약 기록 없음";
-        const previousStep = chatSession.metadata?.current_step || "Step 0: Estimate (신청 준비 단계)";
-        const previousFactsObj = chatSession.metadata?.user_facts || {};
-        const previousFacts = Object.entries(previousFactsObj)
-          .map(([k, v]) => `- ${k}: ${v}`)
-          .join('\n') || "기록된 사용자 팩트 없음";
-        const previousPersonality = chatSession.metadata?.personality_type || "expressive (기본값: 친근감 선호형)";
-
-        const aiResult = await askManagerAi({
-          message: rawText,
-          language: sourceLang,
-          history,
-          channel: 'whatsapp',
-          cumulativePos,
-          cumulativeNeg,
-          previousSummary,
-          previousFacts,
-          previousStep,
-          previousPersonality,
-        });
-
-        const newPosScore = aiResult.posScore ?? 0;
-        const newNegScore = aiResult.negScore ?? 0;
-        const updatedCumulativePos = Math.max(0, cumulativePos + newPosScore - Math.round(newNegScore * 1.5));
-        const updatedCumulativeNeg = Math.max(0, cumulativeNeg + newNegScore - newPosScore);
-
-        const isExplicitHumanRequest = /(상담원|사람|직원|실제\s*매니저|사람과|사람하고|상담사|인간)\s*(연결|바꿔|대화|상담)/i.test(rawText.trim());
-
-        // 4a. Update chat session metadata and cumulative sentiment scores
-        const currentMetadata = chatSession.metadata || {};
-        const newFacts = aiResult.extractedFacts || {};
-        const updatedFacts = {
-          ...(currentMetadata.user_facts || {}),
-          ...newFacts
-        };
-        const updatedIsAiActive = isExplicitHumanRequest ? false : (currentMetadata.is_ai_active ?? true);
-        const isHighNegAlert = updatedCumulativeNeg >= 25;
-
-        const updatedMetadata = {
-          ...currentMetadata,
-          last_script_id: aiResult.matchedScriptId || currentMetadata.last_script_id,
-          is_ai_active: updatedIsAiActive,
-          summary: aiResult.conversationSummary || currentMetadata.summary,
-          current_step: aiResult.currentStep || currentMetadata.current_step,
-          personality_type: aiResult.detectedPersonality || currentMetadata.personality_type,
-          user_facts: updatedFacts,
-          takeover_alert: isHighNegAlert || (currentMetadata.takeover_alert || false),
-        };
-
-        if (isHighNegAlert) {
-          console.warn(`[🚨 HIGH NEGATIVE ALERT WhatsApp] Chat ${chatSession.id} reached ${updatedCumulativeNeg}. High negative sentiment detected.`);
-          if (!currentMetadata.takeover_alert) {
-            await sendTakeoverAlert({
-              chatId: chatSession.id,
-              channel: 'whatsapp',
-              userName: userName,
-              detectedLanguage: sourceLang,
-              cumulativeNeg: updatedCumulativeNeg,
-              summary: aiResult.conversationSummary || currentMetadata.summary || '요약 없음',
-              lastMessage: rawText,
-            }).catch(err => console.error('[Slack Alert WhatsApp Error]:', err));
-          }
-        }
-
-        await supabaseAdmin
-          .from('support_chats')
-          .update({
-            metadata: updatedMetadata,
-            cumulative_pos: updatedCumulativePos,
-            cumulative_neg: updatedCumulativeNeg
-          })
-          .eq('id', chatSession.id);
-
-        // 4b. Update the customer message with the evaluated sentiment scores
-        if (insertedMsg?.id) {
-          await supabaseAdmin
+      (async () => {
+        try {
+          const { data: historyMsgs } = await supabaseAdmin
             .from('support_messages')
+            .select('sender_type, original_text, translated_text')
+            .eq('chat_id', chatSession.id)
+            .order('created_at', { ascending: true })
+            .limit(10);
+
+          const history = (historyMsgs || [])
+            .filter((_, idx) => idx < (historyMsgs?.length || 0) - 1)
+            .map(m => ({
+              role: m.sender_type === 'customer' ? 'user' as const : 'model' as const,
+              text: m.sender_type === 'customer' ? m.original_text : (m.translated_text || m.original_text)
+            }));
+
+          const previousSummary = chatSession.metadata?.summary || "이전 요약 기록 없음";
+          const previousStep = chatSession.metadata?.current_step || "Step 0: Estimate (신청 준비 단계)";
+          const previousFactsObj = chatSession.metadata?.user_facts || {};
+          const previousFacts = Object.entries(previousFactsObj)
+            .map(([k, v]) => `- ${k}: ${v}`)
+            .join('\n') || "기록된 사용자 팩트 없음";
+          const previousPersonality = chatSession.metadata?.personality_type || "expressive (기본값: 친근감 선호형)";
+
+          const aiResult = await askManagerAi({
+            message: rawText,
+            language: sourceLang,
+            history,
+            channel: 'whatsapp',
+            cumulativePos,
+            cumulativeNeg,
+            previousSummary,
+            previousFacts,
+            previousStep,
+            previousPersonality,
+          });
+
+          const newPosScore = aiResult.posScore ?? 0;
+          const newNegScore = aiResult.negScore ?? 0;
+          const updatedCumulativePos = Math.max(0, cumulativePos + newPosScore - Math.round(newNegScore * 1.5));
+          const updatedCumulativeNeg = Math.max(0, cumulativeNeg + newNegScore - newPosScore);
+
+          const isExplicitHumanRequest = /(상담원|사람|직원|실제\s*매니저|사람과|사람하고|상담사|인간)\s*(연결|바꿔|대화|상담)/i.test(rawText.trim());
+
+          // 4a. Update chat session metadata and cumulative sentiment scores
+          const currentMetadata = chatSession.metadata || {};
+          const newFacts = aiResult.extractedFacts || {};
+          const updatedFacts = {
+            ...(currentMetadata.user_facts || {}),
+            ...newFacts
+          };
+          const updatedIsAiActive = isExplicitHumanRequest ? false : (currentMetadata.is_ai_active ?? true);
+          const isHighNegAlert = updatedCumulativeNeg >= 25;
+
+          const updatedMetadata = {
+            ...currentMetadata,
+            last_script_id: aiResult.matchedScriptId || currentMetadata.last_script_id,
+            is_ai_active: updatedIsAiActive,
+            summary: aiResult.conversationSummary || currentMetadata.summary,
+            current_step: aiResult.currentStep || currentMetadata.current_step,
+            personality_type: aiResult.detectedPersonality || currentMetadata.personality_type,
+            user_facts: updatedFacts,
+            takeover_alert: isHighNegAlert || (currentMetadata.takeover_alert || false),
+          };
+
+          if (isHighNegAlert) {
+            console.warn(`[🚨 HIGH NEGATIVE ALERT WhatsApp] Chat ${chatSession.id} reached ${updatedCumulativeNeg}. High negative sentiment detected.`);
+            if (!currentMetadata.takeover_alert) {
+              await sendTakeoverAlert({
+                chatId: chatSession.id,
+                channel: 'whatsapp',
+                userName: userName,
+                detectedLanguage: sourceLang,
+                cumulativeNeg: updatedCumulativeNeg,
+                summary: aiResult.conversationSummary || currentMetadata.summary || '요약 없음',
+                lastMessage: rawText,
+              }).catch(err => console.error('[Slack Alert WhatsApp Error]:', err));
+            }
+          }
+
+          await supabaseAdmin
+            .from('support_chats')
             .update({
-              pos_score: newPosScore,
-              neg_score: newNegScore
+              metadata: updatedMetadata,
+              cumulative_pos: updatedCumulativePos,
+              cumulative_neg: updatedCumulativeNeg
             })
-            .eq('id', insertedMsg.id);
-        }
+            .eq('id', chatSession.id);
 
-        const waToken = process.env.WHATSAPP_ACCESS_TOKEN;
-        const waPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
-        if (waToken && waPhoneId) {
-          const waUrl = `https://graph.facebook.com/v19.0/${waPhoneId}/messages`;
-          
-          // Parse answer into sentences/chunks using '|' or double line breaks '\n\n'
-          let chunks = aiResult.answer
-            .split(/[|]|\n{2,}/)
-            .map(c => c.trim())
-            .filter(c => c.length > 0);
-
-          // Forcefully cap to maximum 2 chunks to avoid spamming the client, merging the rest
-          if (chunks.length > 2) {
-            const first = chunks[0];
-            const rest = chunks.slice(1).join(" ");
-            chunks = [first, rest];
+          // 4b. Update the customer message with the evaluated sentiment scores
+          if (insertedMsg?.id) {
+            await supabaseAdmin
+              .from('support_messages')
+              .update({
+                pos_score: newPosScore,
+                neg_score: newNegScore
+              })
+              .eq('id', insertedMsg.id);
           }
 
-          const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+          const waToken = process.env.WHATSAPP_ACCESS_TOKEN;
+          const waPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+          if (waToken && waPhoneId) {
+            const waUrl = `https://graph.facebook.com/v19.0/${waPhoneId}/messages`;
+            
+            // Parse answer into sentences/chunks using '|' or double line breaks '\n\n'
+            let chunks = aiResult.answer
+              .split(/[|]|\n{2,}/)
+              .map(c => c.trim())
+              .filter(c => c.length > 0);
 
-          for (const chunk of chunks) {
-            // Calculate human-like irregular typing delay
-            const baseSpeed = 20 + Math.random() * 15; // 20ms to 35ms per character
-            const basePause = 300 + Math.random() * 400; // 300ms to 700ms base thinking/resting pause
-            const typingTime = Math.min(chunk.length * baseSpeed + basePause, 3000);
-            await delay(typingTime);
+            // Forcefully cap to maximum 2 chunks to avoid spamming the client, merging the rest
+            if (chunks.length > 2) {
+              const first = chunks[0];
+              const rest = chunks.slice(1).join(" ");
+              chunks = [first, rest];
+            }
 
-            await axios.post(
-              waUrl,
-              {
-                messaging_product: 'whatsapp',
-                recipient_type: 'individual',
-                to: whatsappChatId,
-                type: 'text',
-                text: {
-                  preview_url: false,
-                  body: chunk,
+            const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+            for (const chunk of chunks) {
+              // Calculate human-like irregular typing delay
+              const baseSpeed = 20 + Math.random() * 15; // 20ms to 35ms per character
+              const basePause = 300 + Math.random() * 400; // 300ms to 700ms base thinking/resting pause
+              const typingTime = Math.min(chunk.length * baseSpeed + basePause, 3000);
+              await delay(typingTime);
+
+              await axios.post(
+                waUrl,
+                {
+                  messaging_product: 'whatsapp',
+                  recipient_type: 'individual',
+                  to: whatsappChatId,
+                  type: 'text',
+                  text: {
+                    preview_url: false,
+                    body: chunk,
+                  },
                 },
-              },
-              {
-                headers: {
-                  Authorization: `Bearer ${waToken}`,
-                  'Content-Type': 'application/json',
-                },
-              }
-            ).catch(err => {
-              console.error('[WhatsApp AI Response] delivery failed:', err?.response?.data || err.message);
-            });
+                {
+                  headers: {
+                    Authorization: `Bearer ${waToken}`,
+                    'Content-Type': 'application/json',
+                  },
+                }
+              ).catch(err => {
+                console.error('[WhatsApp AI Response] delivery failed:', err?.response?.data || err.message);
+              });
 
-            // Realistic human-like typing pause gap between split messages
-            await delay(1200 + Math.random() * 600);
+              // Realistic human-like typing pause gap between split messages
+              await delay(1200 + Math.random() * 600);
+            }
           }
+
+          const richCardStr = aiResult.richCardPayload && aiResult.richCardPayload.cardType !== 'none'
+            ? `\n[RICH_CARD_JSON: ${JSON.stringify(aiResult.richCardPayload)}]`
+            : '';
+
+          await supabaseAdmin.from('support_messages').insert({
+            chat_id: chatSession.id,
+            sender_type: 'admin',
+            original_text: aiResult.answer + richCardStr,
+            translated_text: aiResult.answer + richCardStr,
+            source_lang: 'ko',
+            target_lang: sourceLang,
+            is_read: true,
+          });
+        } catch (aiErr) {
+          console.error('[WhatsApp Webhook] Failed to auto-respond with AI:', aiErr);
         }
-
-        const richCardStr = aiResult.richCardPayload && aiResult.richCardPayload.cardType !== 'none'
-          ? `\n[RICH_CARD_JSON: ${JSON.stringify(aiResult.richCardPayload)}]`
-          : '';
-
-        await supabaseAdmin.from('support_messages').insert({
-          chat_id: chatSession.id,
-          sender_type: 'admin',
-          original_text: aiResult.answer + richCardStr,
-          translated_text: aiResult.answer + richCardStr,
-          source_lang: 'ko',
-          target_lang: sourceLang,
-          is_read: true,
-        });
-      } catch (aiErr) {
-        console.error('[WhatsApp Webhook] Failed to auto-respond with AI:', aiErr);
-      }
+      })();
     }
 
     return NextResponse.json({ ok: true, translated: translatedText });
