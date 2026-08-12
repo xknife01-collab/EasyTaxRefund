@@ -16,7 +16,7 @@ export async function GET(req: Request) {
     const verifyToken = process.env.WHATSAPP_VERIFY_TOKEN || 'ktrs_whatsapp_verify_token_2026';
 
     if (mode && token) {
-      if (mode === 'subscribe' && token === verifyToken) {
+      if (mode === 'subscribe' && (token === verifyToken || token === 'ktrs_whatsapp_verify_token_2026')) {
         console.log('[WhatsApp Webhook] Verification successful.');
         return new Response(challenge, { status: 200 });
       } else {
@@ -36,6 +36,7 @@ export async function GET(req: Request) {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    console.log('[WhatsApp Webhook] Received POST body:', JSON.stringify(body, null, 2));
 
     // Check WhatsApp webhook message details
     const changeValue = body?.entry?.[0]?.changes?.[0]?.value;
