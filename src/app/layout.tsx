@@ -10,6 +10,7 @@ import Clarity from '@/components/Clarity';
 import GoogleTagManager from '@/components/GoogleTagManager';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://ktrs-service.vercel.app'),
   manifest: '/manifest.json',
   appleWebApp: {
     capable: true,
@@ -25,14 +26,24 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Korea Tax Refund Service (KTRS) | 대한민국 외국인 세금 환급 서비스',
     description: '대한민국 체류 외국인을 위한 전문 세금 환급 포털입니다. 경정청구 및 소득세 감면액을 안전하게 조회하고 환급받으세요.',
+    url: 'https://ktrs-service.vercel.app',
+    siteName: 'KTRS',
     images: [
       {
-        url: '/1625-1.png',
-        width: 1200,
-        height: 630,
+        url: 'https://ktrs-service.vercel.app/1625-1.png',
+        width: 1024,
+        height: 1024,
         alt: 'Korea Tax Refund Service Logo',
       },
     ],
+    locale: 'ko_KR',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Korea Tax Refund Service (KTRS) | 대한민국 외국인 세금 환급 서비스',
+    description: '대한민국 체류 외국인을 위한 전문 세금 환급 포털입니다. 경정청구 및 소득세 감면액을 안전하게 조회하고 환급받으세요.',
+    images: ['https://ktrs-service.vercel.app/1625-1.png'],
   },
 };
 
