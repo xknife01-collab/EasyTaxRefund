@@ -41,6 +41,7 @@ export async function POST(req: Request) {
     // Check WhatsApp webhook message details
     const changeValue = body?.entry?.[0]?.changes?.[0]?.value;
     const message = changeValue?.messages?.[0];
+    const metadataPhoneId = changeValue?.metadata?.phone_number_id;
 
     if (!message || message.type !== 'text') {
       // Return 200 to acknowledge receipt of other events (statuses, media, etc.)
@@ -97,6 +98,7 @@ export async function POST(req: Request) {
           unread_count: isAiActive ? 0 : (existingChat.unread_count || 0) + 1,
           metadata: {
             ...(existingChat.metadata || {}),
+            whatsapp_phone_number_id: metadataPhoneId || existingChat.metadata?.whatsapp_phone_number_id,
             follow_up_count: 0
           }
         })
@@ -121,6 +123,9 @@ export async function POST(req: Request) {
           unread_count: isAiActive ? 0 : 1,
           cumulative_pos: 0,
           cumulative_neg: 0,
+          metadata: {
+            whatsapp_phone_number_id: metadataPhoneId
+          }
         })
         .select('id, metadata, cumulative_pos, cumulative_neg')
         .single();
@@ -214,6 +219,7 @@ export async function POST(req: Request) {
 
           const updatedMetadata = {
             ...currentMetadata,
+            whatsapp_phone_number_id: chatSession.metadata?.whatsapp_phone_number_id || metadataPhoneId || currentMetadata.whatsapp_phone_number_id,
             last_script_id: aiResult.matchedScriptId || currentMetadata.last_script_id,
             is_ai_active: updatedIsAiActive,
             summary: aiResult.conversationSummary || currentMetadata.summary,
@@ -259,7 +265,7 @@ export async function POST(req: Request) {
           }
 
           const waToken = process.env.WHATSAPP_ACCESS_TOKEN;
-          const waPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+          const waPhoneId = chatSession.metadata?.whatsapp_phone_number_id || metadataPhoneId || process.env.WHATSAPP_PHONE_NUMBER_ID;
           if (waToken && waPhoneId) {
             const waUrl = `https://graph.facebook.com/v19.0/${waPhoneId}/messages`;
             

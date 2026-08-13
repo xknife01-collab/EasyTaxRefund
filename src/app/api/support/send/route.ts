@@ -31,7 +31,22 @@ export async function POST(req: Request) {
       }
     } else if (channel === 'whatsapp') {
       const waToken = process.env.WHATSAPP_ACCESS_TOKEN;
-      const waPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+      let waPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+
+      // Dynamically load WhatsApp Phone Number ID from metadata if present
+      try {
+        const { data: chatData } = await supabaseAdmin
+          .from('support_chats')
+          .select('metadata')
+          .eq('id', chatId)
+          .single();
+        if (chatData?.metadata?.whatsapp_phone_number_id) {
+          waPhoneId = chatData.metadata.whatsapp_phone_number_id;
+        }
+      } catch (err) {
+        console.error('[OmniChat] Failed to fetch chat metadata for custom phone ID:', err);
+      }
+
       if (waToken && waPhoneId) {
         const waUrl = `https://graph.facebook.com/v19.0/${waPhoneId}/messages`;
         await axios.post(

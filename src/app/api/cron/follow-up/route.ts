@@ -93,7 +93,7 @@ export async function GET(req: Request) {
           deliverySuccess = true;
         } else if (chat.channel === 'whatsapp') {
           const waToken = process.env.WHATSAPP_ACCESS_TOKEN;
-          const waPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
+          const waPhoneId = chat.metadata?.whatsapp_phone_number_id || process.env.WHATSAPP_PHONE_NUMBER_ID;
           if (waToken && waPhoneId && !waToken.includes('YOUR_')) {
             const waUrl = `https://graph.facebook.com/v19.0/${waPhoneId}/messages`;
             try {
