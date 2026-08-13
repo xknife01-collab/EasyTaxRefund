@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { translateIncomingTelegramMessage } from '@/ai/flows/telegram-translation-flow';
 import { askManagerAi } from '@/ai/flows/manager-chat-flow';
+import { analyzeScreenshot, downloadWhatsAppMedia } from '@/ai/flows/vision-analysis-flow';
 import axios from 'axios';
 import { sendTakeoverAlert } from '@/lib/slack';
 
@@ -43,12 +44,133 @@ export async function POST(req: Request) {
     const message = changeValue?.messages?.[0];
     const metadataPhoneId = changeValue?.metadata?.phone_number_id;
 
-    if (!message || message.type !== 'text') {
+    if (!message || (message.type !== 'text' && message.type !== 'image')) {
       // Return 200 to acknowledge receipt of other events (statuses, media, etc.)
       return NextResponse.json({ ok: true });
     }
 
     const whatsappChatId = message.from; // Sender's WhatsApp ID (usually phone number)
+
+    // Handle image messages via Vision AI
+    if (message.type === 'image') {
+      const mediaId = message.image?.id;
+      const caption = message.image?.caption || '';
+      if (!mediaId) {
+        return NextResponse.json({ ok: true });
+      }
+
+      console.log(`[WhatsApp Webhook] 📸 Image received from ${whatsappChatId}, mediaId: ${mediaId}`);
+
+      // Process image analysis in the background
+      (async () => {
+        try {
+          // 1. Download image from WhatsApp
+          const { base64, mimeType } = await downloadWhatsAppMedia(mediaId);
+          console.log(`[WhatsApp Vision] Image downloaded (${mimeType}, ${Math.round(base64.length / 1024)}KB base64)`);
+
+          // 2. Get existing chat session for context
+          const { data: existingChat } = await supabaseAdmin
+            .from('support_chats')
+            .select('id, metadata, detected_language')
+            .eq('channel', 'whatsapp')
+            .eq('external_chat_id', String(whatsappChatId))
+            .maybeSingle();
+
+          const lang = existingChat?.detected_language || 'en';
+          const previousStep = existingChat?.metadata?.current_step || undefined;
+          const previousSummary = existingChat?.metadata?.summary || undefined;
+
+          // 3. Analyze screenshot with Vision AI
+          const visionResult = await analyzeScreenshot({
+            imageBase64: base64,
+            mimeType,
+            caption,
+            language: lang,
+            previousStep,
+            previousSummary,
+          });
+
+          console.log(`[WhatsApp Vision] Analysis: step=${visionResult.detectedStep}, isKtrs=${visionResult.isKtrsScreen}, confidence=${visionResult.confidence}%`);
+
+          // 4. Store customer image message in support_messages
+          const chatId = existingChat?.id;
+          if (chatId) {
+            await supabaseAdmin.from('support_messages').insert({
+              chat_id: chatId,
+              sender_type: 'customer',
+              original_text: `[📸 스크린샷 전송]${caption ? ` ${caption}` : ''}`,
+              translated_text: `[📸 스크린샷 전송]${caption ? ` ${caption}` : ''}`,
+              source_lang: lang,
+              target_lang: 'ko',
+              is_read: true,
+            });
+          }
+
+          // 5. Send Vision AI response back to customer
+          const waToken = process.env.WHATSAPP_ACCESS_TOKEN;
+          const waPhoneId = existingChat?.metadata?.whatsapp_phone_number_id || metadataPhoneId || process.env.WHATSAPP_PHONE_NUMBER_ID;
+          if (waToken && waPhoneId) {
+            const waUrl = `https://graph.facebook.com/v19.0/${waPhoneId}/messages`;
+
+            // Split into max 2 chunks
+            let chunks = visionResult.guidanceMessage
+              .split(/[|]|\n{2,}/)
+              .map(c => c.trim())
+              .filter(c => c.length > 0);
+
+            if (chunks.length > 2) {
+              const first = chunks[0];
+              const rest = chunks.slice(1).join(" ");
+              chunks = [first, rest];
+            }
+
+            const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
+            for (const chunk of chunks) {
+              const baseSpeed = 20 + Math.random() * 15;
+              const basePause = 300 + Math.random() * 400;
+              const typingTime = Math.min(chunk.length * baseSpeed + basePause, 3000);
+              await delay(typingTime);
+
+              await axios.post(waUrl, {
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: whatsappChatId,
+                type: 'text',
+                text: { preview_url: false, body: chunk },
+              }, {
+                headers: {
+                  Authorization: `Bearer ${waToken}`,
+                  'Content-Type': 'application/json',
+                },
+              }).catch(err => {
+                console.error('[WhatsApp Vision Response] delivery failed:', err?.response?.data || err.message);
+              });
+
+              await delay(1200 + Math.random() * 600);
+            }
+          }
+
+          // 6. Store AI response in support_messages
+          if (chatId) {
+            await supabaseAdmin.from('support_messages').insert({
+              chat_id: chatId,
+              sender_type: 'admin',
+              original_text: `[📸 Vision AI 분석] ${visionResult.koreanSummary}\n${visionResult.guidanceMessage}`,
+              translated_text: visionResult.guidanceMessage,
+              source_lang: 'ko',
+              target_lang: lang,
+              is_read: true,
+            });
+          }
+        } catch (visionErr) {
+          console.error('[WhatsApp Webhook] Vision AI analysis failed:', visionErr);
+        }
+      })();
+
+      return NextResponse.json({ ok: true, type: 'image_processing' });
+    }
+
     const rawText = message.text?.body || '';
 
     if (!rawText.trim()) {
