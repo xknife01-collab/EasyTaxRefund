@@ -51,7 +51,12 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    const whatsappChatId = message.from; // Sender's WhatsApp ID (usually phone number)
+    let whatsappChatId = message.from; // Sender's WhatsApp ID (usually phone number)
+    // Sanitize phone number to Meta Graph API standard (e.g., 821058648577)
+    whatsappChatId = whatsappChatId.replace(/[^0-9]/g, '');
+    if (whatsappChatId.startsWith('010')) {
+      whatsappChatId = '82' + whatsappChatId.substring(1);
+    }
 
     // Handle image messages via Vision AI
     if (message.type === 'image') {

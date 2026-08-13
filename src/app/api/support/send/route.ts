@@ -49,12 +49,17 @@ export async function POST(req: Request) {
 
       if (waToken && waPhoneId) {
         const waUrl = `https://graph.facebook.com/v19.0/${waPhoneId}/messages`;
+        let recipientNumber = String(externalChatId).replace(/[^0-9]/g, '');
+        if (recipientNumber.startsWith('010')) {
+          recipientNumber = '82' + recipientNumber.substring(1);
+        }
+
         await axios.post(
           waUrl,
           {
             messaging_product: 'whatsapp',
             recipient_type: 'individual',
-            to: externalChatId,
+            to: recipientNumber,
             type: 'text',
             text: {
               preview_url: false,
