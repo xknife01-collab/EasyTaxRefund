@@ -177,7 +177,7 @@ export const GUIDE_KNOWLEDGE_DB: Record<string, GuideStepKnowledgeItem> = {
     imageUrl: '/images/guide/pass/pass_06.jpg',
     targetName: '전화 관리 권한 [허용] 버튼',
     targetCoords: { x: 50, y: 80, width: 70, height: 8 },
-    visualLocationHint: '스마트폰 팝업창 하단 [허용] 버튼 (x: 50, y: 80)',
+    visualLocationHint: '스마트폰 화면 중앙 팝업창 아래쪽 파란색 [허용] 버튼',
     actionInstruction: '팝업에서 [허용]을 눌러 전화 관리 권한을 승인해 주세요.',
     actionReason: '현재 기기의 유심(USIM) 전화번호와 일치하는지 통신사 자동 확인을 하기 위함입니다.',
     quickQuestions: [
@@ -191,7 +191,7 @@ export const GUIDE_KNOWLEDGE_DB: Record<string, GuideStepKnowledgeItem> = {
     imageUrl: '/images/guide/pass/pass_07.jpg',
     targetName: '성명, 외국인등록번호, 휴대폰번호 입력',
     targetCoords: { x: 50, y: 88, width: 85, height: 8 },
-    visualLocationHint: '성명(y:20), 외국인등록번호(y:34), 휴대폰번호(y:46) 입력 후 하단 [다음]',
+    visualLocationHint: '화면 위쪽부터 차례대로 성명, 외국인등록번호, 휴대폰번호 입력 후 맨 아래 파란색 [다음] 버튼',
     actionInstruction: '성명, 외국인등록번호(13자리), 휴대폰번호를 입력 후 하단 [다음]을 눌러주세요.',
     actionReason: '외국인등록증에 기재된 정확한 영문 성명으로 통신사 가입자 정보와 대조하기 위함입니다.',
     quickQuestions: [
@@ -205,7 +205,7 @@ export const GUIDE_KNOWLEDGE_DB: Record<string, GuideStepKnowledgeItem> = {
     imageUrl: '/images/guide/pass/pass_08.jpg',
     targetName: '필수 약관 전체 동의 및 [다음]',
     targetCoords: { x: 50, y: 88.5, width: 85, height: 8 },
-    visualLocationHint: '화면 중앙 필수 약관 체크(y:47.5) 후 하단 [다음](y:88.5)',
+    visualLocationHint: '화면 중앙의 [필수] 약관 동의 체크 후 맨 아래 파란색 [다음] 버튼',
     actionInstruction: 'PASS 필수 항목을 선택하여 모두 동의하신 후 하단 [다음] 버튼을 눌러주세요.',
     actionReason: '본인인증 서비스 이용을 위한 통신사 필수 이용약관 동의 절차입니다.',
     quickQuestions: [
@@ -219,7 +219,7 @@ export const GUIDE_KNOWLEDGE_DB: Record<string, GuideStepKnowledgeItem> = {
     imageUrl: '/images/guide/pass/pass_09.jpg',
     targetName: '문자 인증번호 6자리 입력',
     targetCoords: { x: 50, y: 88.5, width: 85, height: 8 },
-    visualLocationHint: '화면 상단 인증번호 입력칸(y:17.5) 후 하단 [다음](y:88.5)',
+    visualLocationHint: '화면 위쪽 6자리 인증번호 입력창에 숫자 입력 후 맨 아래 파란색 [다음] 버튼',
     actionInstruction: '휴대폰 문자로 수신된 6자리 인증번호를 입력하고 하단 [다음]을 눌러주세요.',
     actionReason: '본인 명의의 휴대폰 기기인지 확인하는 SMS 인증 절차입니다.',
     quickQuestions: [

@@ -455,6 +455,62 @@ function LiveVisualCoachCard({
     kakao: language === 'vi' ? 'KakaoTalk' : '카카오톡'
   };
 
+  const locationLabels: Record<string, string> = {
+    vi: '🎯 Vị trí:',
+    zh: '🎯 位置:',
+    uz: '🎯 Joylashuv:',
+    id: '🎯 Lokasi:',
+    th: '🎯 ตำแหน่ง:',
+    km: '🎯 ទីតាំង:',
+    my: '🎯 နေရာ:',
+    ne: '🎯 स्थान:',
+    mn: '🎯 Байршил:',
+    bn: '🎯 অবস্থান:',
+    kk: '🎯 Орын:',
+    si: '🎯 ස්ථානය:',
+    ur: '🎯 مقام:',
+    en: '🎯 Location:',
+    ko: '🎯 위치:'
+  };
+
+  const reasonLabels: Record<string, string> = {
+    vi: '💡 Lý do:',
+    zh: '💡 原因:',
+    uz: '💡 Sabab:',
+    id: '💡 Alasan:',
+    th: '💡 เหตุผล:',
+    km: '💡 មូលហេតុ:',
+    my: '💡 အကြောင်းပြချက်:',
+    ne: '💡 कारण:',
+    mn: '💡 Шалтгаан:',
+    bn: '💡 কারণ:',
+    kk: '💡 Себебі:',
+    si: '💡 හේතුව:',
+    ur: '💡 وجہ:',
+    en: '💡 Reason:',
+    ko: '💡 이유:'
+  };
+
+  const quickAskLabels: Record<string, string> = {
+    vi: 'Hỏi nhanh Quản lý Kim:',
+    zh: '金经理一键提问:',
+    uz: 'Menejer Kimga tezkor savol:',
+    id: 'Tanya Cepat Manajer Kim:',
+    th: 'ถามผู้จัดการคิมด่วน:',
+    km: 'សួរសំណួររហ័សទៅកាន់អ្នកគ្រប់គ្រង Kim:',
+    my: 'မန်နေဂျာ Kim ထံ အမြန်မေးမြန်းရန်:',
+    ne: 'प्रबन्धक Kim लाई द्रुत प्रश्न:',
+    mn: 'Менежер Кимээс түргэн асуух:',
+    bn: 'ম্যানেজার Kim-কে দ্রুত প্রশ্ন:',
+    kk: 'Менеджер Кимге жылдам сұрақ:',
+    si: 'කළමනාකරු Kim ගෙන් ඉක්මන් ප්‍රශ්නයක්:',
+    ur: 'مینیجر Kim سے فوری سوال:',
+    en: 'Quick Question for Manager Kim:',
+    ko: '김준현 매니저 원클릭 질문:'
+  };
+
+  const langKey = language || 'ko';
+
   return (
     <div className="mt-2.5 p-3.5 rounded-2xl bg-[#081220] border-2 border-[#e2b659]/50 shadow-2xl text-slate-100 flex flex-col gap-2.5 max-w-[310px] animate-in fade-in zoom-in-95 duration-300 font-bold">
       {/* 1. Header: Active slide status */}
@@ -471,7 +527,7 @@ function LiveVisualCoachCard({
       {/* 2. Visual Point & Exact Location Callout */}
       <div className="bg-[#112338] p-2.5 rounded-xl border border-[#e2b659]/30 flex flex-col gap-1.5">
         <div className="flex items-center gap-1 text-[#e2b659] text-[10px] font-black">
-          <span>🎯 위치:</span>
+          <span>{locationLabels[langKey] || locationLabels.ko}</span>
           <span className="text-white">{info.visualLocationHint}</span>
         </div>
         <p className="text-[11px] font-bold text-slate-100 leading-snug">
@@ -481,14 +537,14 @@ function LiveVisualCoachCard({
 
       {/* 3. Action Reason Box */}
       <div className="bg-slate-900/90 p-2 rounded-xl border border-white/10 text-[10px] text-slate-300 font-medium leading-relaxed">
-        <span className="text-[#e2b659] font-black">💡 이유: </span>
+        <span className="text-[#e2b659] font-black">{reasonLabels[langKey] || reasonLabels.ko} </span>
         <span>{info.actionReason}</span>
       </div>
 
       {/* 4. Instant Troubleshooting Quick Chips */}
       <div className="flex flex-col gap-1.5 mt-0.5">
         <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider">
-          {language === 'vi' ? 'Hỏi nhanh Quản lý Kim:' : '김준현 매니저 원클릭 질문:'}
+          {quickAskLabels[langKey] || quickAskLabels.ko}
         </span>
         <div className="flex flex-wrap gap-1.5">
           {info.quickQuestions.map((item, idx) => (
@@ -670,6 +726,7 @@ function FloatingConsultingPanelInner() {
   const [hasCheckedHistory, setHasCheckedHistory] = useState(false);
   const inactivityTimerRef = useRef<any>(null);
   const messageCountRef = useRef<number>(0);
+  const chatInputRef = useRef<HTMLInputElement>(null);
 
   // Simple UUID generator
   const generateUUID = () => {
@@ -1328,7 +1385,7 @@ function FloatingConsultingPanelInner() {
     <div
       id="floating-chat-container"
       data-floating-chat="true"
-      className="fixed bottom-2 right-2 sm:bottom-4 sm:right-4 z-[99999] floating-ai-widget flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-16px)] pointer-events-auto"
+      className="fixed bottom-20 sm:bottom-24 right-3 sm:right-6 z-[999999] floating-ai-widget flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)] pointer-events-auto"
     >
       {/* 1. collapsed state: capsule button, simulation button & proactive speech bubble */}
       {!isOpen && (
@@ -1407,7 +1464,7 @@ function FloatingConsultingPanelInner() {
 
       {/* 2. expanded state: pop-up dialog */}
       {isOpen && (
-        <div className="w-[350px] max-w-[calc(100vw-24px)] h-[520px] max-h-[calc(100dvh-100px)] lg:max-h-[85vh] bg-[#0f1e36] rounded-[1.75rem] sm:rounded-[2.5rem] shadow-[0_20px_50px_rgba(15,30,54,0.5)] border border-[#b88c30]/40 flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-5 duration-300 z-[200]">
+        <div className="w-[380px] max-w-[calc(100vw-24px)] h-[530px] max-h-[calc(100dvh-130px)] bg-[#0f1e36] rounded-3xl shadow-[0_25px_70px_rgba(0,0,0,0.85)] border-2 border-[#b88c30] flex flex-col overflow-hidden animate-in fade-in slide-in-from-bottom-3 duration-300 z-[999999]">
           
           {/* Header */}
           <div className="px-4 sm:px-6 pt-3.5 pb-3 flex items-center justify-between shrink-0 sticky top-0 bg-[#0f1e36] z-20 border-b border-white/10 shadow-md">
@@ -1551,7 +1608,7 @@ function FloatingConsultingPanelInner() {
             <div className="flex-1 flex flex-col min-h-0 bg-[#081220]">
               
               {/* Chat Message Stream */}
-              <div ref={chatScrollRef} className="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar">
+              <div ref={chatScrollRef} className="flex-1 overflow-y-auto overflow-x-hidden p-3.5 space-y-3 custom-scrollbar min-h-0">
                 {isLoadingHistory ? (
                   <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-2">
                     <Loader2 className="h-6 w-6 animate-spin text-[#e2b659]" />
@@ -1626,7 +1683,7 @@ function FloatingConsultingPanelInner() {
               </div>
 
               {/* Quick Suggestion Chips */}
-              <div className="px-3 py-1.5 bg-[#0f1e36]/80 border-t border-white/5 flex gap-1.5 overflow-x-auto no-scrollbar">
+              <div className="px-3 py-2 bg-[#081220] border-t border-white/5 flex gap-1.5 overflow-x-auto overflow-y-hidden no-scrollbar shrink-0 max-w-full">
                 {getQuickQuestions().map((q, idx) => (
                   <button
                     key={idx}
@@ -1639,10 +1696,23 @@ function FloatingConsultingPanelInner() {
               </div>
 
               {/* Chat Input Bar */}
-              <div className="p-3 bg-[#0f1e36] border-t border-white/10 flex items-center gap-2 shrink-0">
+              <div 
+                onPointerDown={(e) => e.stopPropagation()} 
+                onMouseDown={(e) => e.stopPropagation()}
+                onClick={(e) => e.stopPropagation()}
+                className="p-3 bg-[#081220] border-t-2 border-[#b88c30] flex items-center gap-2 shrink-0 z-50 shadow-2xl pointer-events-auto"
+              >
                 <input
+                  id="chat-user-input-box"
+                  ref={chatInputRef}
                   type="text"
                   value={inputMessage}
+                  onPointerDown={(e) => e.stopPropagation()}
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    chatInputRef.current?.focus();
+                  }}
                   onChange={(e) => {
                     const val = e.target.value;
                     setInputMessage(val);
@@ -1672,22 +1742,31 @@ function FloatingConsultingPanelInner() {
                       }
                     }, 150);
                   }}
-                  onKeyDown={(e) => e.key === "Enter" && handleSendMessage()}
+                  onKeyDown={(e) => {
+                    e.stopPropagation();
+                    if (e.key === "Enter") {
+                      handleSendMessage();
+                    }
+                  }}
                   placeholder={
-                    language === "vi" ? "Nhập câu hỏi của bạn..." :
-                    language === "zh" ? "请输入您的疑问..." :
+                    language === "vi" ? "Nhập câu hỏi cho Quản lý Kim..." :
+                    language === "zh" ? "输入您的问题向金经理咨询..." :
                     language === "uz" ? "Savolingizni kiriting..." :
-                    language === "id" ? "Ketik pertanyaan Anda..." :
-                    language === "en" ? "Type your question..." :
-                    "모국어로 질문을 입력하세요..."
+                    language === "id" ? "Ketik pertanyaan untuk Manajer Kim..." :
+                    language === "en" ? "Ask Manager Kim a question..." :
+                    "김준현 매니저에게 직접 질문하기 (예: 6자리 비밀번호가 뭐예요?)"
                   }
-                  className="flex-1 bg-slate-900/80 border border-white/10 rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-[#b88c30] transition-colors font-bold"
+                  className="flex-1 bg-slate-900 border-2 border-[#b88c30] focus:border-[#e2b659] rounded-xl px-3.5 py-2.5 text-xs text-white placeholder:text-slate-400 focus:outline-none transition-colors font-bold shadow-inner pointer-events-auto cursor-text select-text"
                 />
                 <button
-                  onClick={() => handleSendMessage()}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleSendMessage();
+                  }}
                   disabled={!inputMessage.trim() || isSending}
-                  className="h-8 w-8 rounded-xl bg-gradient-to-r from-[#b88c30] to-[#e2b659] hover:brightness-110 disabled:opacity-40 flex items-center justify-center text-[#0f1e36] transition-all shrink-0 cursor-pointer shadow-sm"
+                  className="h-10 px-3.5 rounded-xl bg-gradient-to-r from-[#b88c30] to-[#e2b659] hover:brightness-110 disabled:opacity-40 flex items-center justify-center gap-1 text-slate-950 font-black text-xs transition-all shrink-0 cursor-pointer shadow-md active:scale-95 pointer-events-auto"
                 >
+                  <span>전송</span>
                   <Send className="h-3.5 w-3.5" />
                 </button>
               </div>

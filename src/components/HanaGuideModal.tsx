@@ -538,7 +538,7 @@ export function HanaGuideModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+    <Dialog modal={false} open={isOpen} onOpenChange={(open) => !open && onClose()}>
       <DialogContent
         onPointerDownOutside={(e) => {
           const target = e.target as HTMLElement;
@@ -547,6 +547,12 @@ export function HanaGuideModal({
           }
         }}
         onInteractOutside={(e) => {
+          const target = e.target as HTMLElement;
+          if (target?.closest?.('.floating-ai-widget') || target?.closest?.('[data-floating-chat]') || target?.closest?.('#floating-chat-container')) {
+            e.preventDefault();
+          }
+        }}
+        onFocusOutside={(e) => {
           const target = e.target as HTMLElement;
           if (target?.closest?.('.floating-ai-widget') || target?.closest?.('[data-floating-chat]') || target?.closest?.('#floating-chat-container')) {
             e.preventDefault();
