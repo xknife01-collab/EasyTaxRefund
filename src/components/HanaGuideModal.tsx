@@ -510,12 +510,20 @@ export function HanaGuideModal({
 
   React.useEffect(() => {
     if (isOpen) {
+      const guideData = {
+        method: 'hana' as const,
+        slideIndex: current,
+        total: displaySteps.length,
+        isModal: true
+      };
+      if (typeof window !== 'undefined') {
+        (window as any).__KTRS_ACTIVE_GUIDE__ = guideData;
+        try {
+          localStorage.setItem('ktrs_active_guide', JSON.stringify(guideData));
+        } catch (e) {}
+      }
       window.dispatchEvent(new CustomEvent('ktrs-guide-slide-change', {
-        detail: {
-          method: 'hana',
-          slideIndex: current,
-          total: displaySteps.length
-        }
+        detail: guideData
       }));
     }
   }, [isOpen, current, displaySteps.length]);

@@ -1302,11 +1302,33 @@ function FloatingConsultingPanelInner() {
     }
   };
 
+  const [ratedMessageIds, setRatedMessageIds] = useState<Record<string, 'up' | 'down'>>({});
+
+  const handleRateMessage = async (msgId: string, isHelpful: boolean, questionText?: string, answerText?: string) => {
+    setRatedMessageIds(prev => ({ ...prev, [msgId]: isHelpful ? 'up' : 'down' }));
+    try {
+      await fetch('/api/chat/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          authMethod: activeGuide?.method || 'hana',
+          slideIndex: activeGuide?.slideIndex ?? 0,
+          question: questionText || (activeGuide ? `Step ${activeGuide.slideIndex + 1} 안내` : '가이드 질의'),
+          answer: answerText || '',
+          isHelpful,
+          rating: isHelpful ? 10 : 0
+        })
+      });
+    } catch (e) {
+      // ignore
+    }
+  };
+
   return (
     <div
       id="floating-chat-container"
       data-floating-chat="true"
-      className="fixed bottom-[98px] lg:bottom-6 right-3 sm:right-6 z-[99999] floating-ai-widget flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)] pointer-events-auto"
+      className="fixed bottom-2 right-2 sm:bottom-4 sm:right-4 z-[99999] floating-ai-widget flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-16px)] pointer-events-auto"
     >
       {/* 1. collapsed state: capsule button, simulation button & proactive speech bubble */}
       {!isOpen && (

@@ -1,55 +1,39 @@
 import { NextRequest, NextResponse } from "next/server";
-import { logConversionFeedback } from "@/lib/ai-learning-db";
-
-const SCORE_MAP: Record<string, number> = {
-  signed: 10,              // 가입 서명 완료
-  auth_success: 8,          // 인증 완료
-  auth_started: 7,          // 인증번호 요청 진행
-  positive_reply: 6,        // 긍정적 대화 반응
-  slider_interacted: 5,     // 슬라이더 조작
-  verification_input: 3,    // 인증 입력 단계 이탈
-  chat_negotiation: 2,      // 대화 중 이탈
-  inactivity_10min: 1,      // 10분 무응답
-  instant_close: 0,         // 즉시 닫기
-  
-  // Legacy support compatibility
-  success: 8,
-  fail: 1
-};
+import { supabaseAdmin } from "@/lib/supabase";
 
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { chatId, action } = body;
+    const { logId, authMethod, slideIndex, question, answer, isHelpful, rating } = body;
 
-    if (!chatId || !action) {
-      return NextResponse.json(
-        { error: "chatId and action are required" },
-        { status: 400 }
-      );
+    const scoreDelta = isHelpful ? (rating || 5) : -2;
+
+    // 1. If specific logId is provided, update ai_learning_logs
+    if (logId) {
+      await supabaseAdmin
+        .from("ai_learning_logs")
+        .update({
+          is_resolved: isHelpful,
+          updated_at: new Date().toISOString()
+        })
+        .eq("id", logId);
     }
 
-    const score = SCORE_MAP[action] !== undefined ? SCORE_MAP[action] : 2; // Default to 2 (chat negotiation level) if not matched
-
-    const result = await logConversionFeedback(chatId, action, score);
-
-    if (!result.success) {
-      return NextResponse.json(
-        { error: result.error || "Failed to log feedback" },
-        { status: 500 }
-      );
+    // 2. Insert or update quality-scored entry in ai_learning_logs
+    if (authMethod && typeof slideIndex === 'number' && question && answer) {
+      await supabaseAdmin.from("ai_learning_logs").insert({
+        auth_method: authMethod,
+        slide_index: slideIndex,
+        user_question: question.trim(),
+        ai_answer: answer.trim(),
+        is_resolved: isHelpful,
+        created_at: new Date().toISOString()
+      });
     }
 
-    return NextResponse.json({
-      success: true,
-      score,
-      action
-    });
-  } catch (error: any) {
-    console.error("Feedback API Error:", error);
-    return NextResponse.json(
-      { error: error.message || "Internal Server Error" },
-      { status: 500 }
-    );
+    return NextResponse.json({ success: true, scoreDelta });
+  } catch (err: any) {
+    console.error("[Chat Feedback API Error]:", err);
+    return NextResponse.json({ success: false, error: err.message }, { status: 500 });
   }
 }

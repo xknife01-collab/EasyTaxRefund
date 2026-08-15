@@ -335,3 +335,37 @@ export async function ingestSelfLearnedKnowledge(
     console.error('[Ingest Knowledge Error]:', err);
   }
 }
+
+/**
+ * Retrieve highest scoring Q&A pairs for a specific auth guide step from Supabase
+ */
+export async function retrieveTopScoredGuideKnowledge(
+  authMethod: string,
+  slideIndex: number,
+  limit: number = 3
+): Promise<Array<{ question: string; answer: string; is_resolved: boolean }>> {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('ai_learning_logs')
+      .select('user_question, ai_answer, is_resolved')
+      .eq('auth_method', authMethod)
+      .eq('slide_index', slideIndex)
+      .eq('is_resolved', true)
+      .order('created_at', { ascending: false })
+      .limit(limit);
+
+    if (error || !data) {
+      return [];
+    }
+
+    return data.map(item => ({
+      question: item.user_question,
+      answer: item.ai_answer,
+      is_resolved: item.is_resolved
+    }));
+  } catch (err) {
+    console.warn('[Retrieve Top Guide Knowledge Warning]:', err);
+    return [];
+  }
+}
+

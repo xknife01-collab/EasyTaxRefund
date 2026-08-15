@@ -25,6 +25,8 @@ interface ChatWithLastMessage extends SupportChat {
   lastMessageText?: string;
   lastMessageSender?: string;
   isDemo?: boolean;
+  cumulative_pos?: number;
+  cumulative_neg?: number;
 }
 
 const CHANNEL_UI: Record<string, { label: string; icon: string; badgeClass: string }> = {
@@ -326,8 +328,9 @@ export function LiveMessengerFeed({ onOpenChat }: LiveMessengerFeedProps) {
                   <TableHead className="font-bold pl-8 py-5">메신저 / 고객</TableHead>
                   <TableHead className="font-bold">연락처</TableHead>
                   <TableHead className="font-bold">국적 / 언어</TableHead>
+                  <TableHead className="font-bold">🎯 AI 4대 분석 (긍정/부정/행동/감정)</TableHead>
                   <TableHead className="font-bold">최근 문의 시간</TableHead>
-                  <TableHead className="font-bold w-[45%]">실시간 대화 요약 (AI 한국어 번역)</TableHead>
+                  <TableHead className="font-bold w-[35%]">실시간 대화 요약 (AI 한국어 번역)</TableHead>
                   <TableHead className="font-bold pr-8 text-right">상태 제어</TableHead>
                 </TableRow>
               </TableHeader>
@@ -335,6 +338,11 @@ export function LiveMessengerFeed({ onOpenChat }: LiveMessengerFeedProps) {
                 {liveChats.map((chat) => {
                   const lang = LANG_FLAG_MAP[chat.detected_language || "ko"] || { flag: "🌐", label: chat.detected_language };
                   const channel = CHANNEL_UI[chat.channel] || { label: chat.channel, icon: "❓", badgeClass: "bg-slate-100 text-slate-500" };
+
+                  const posVal = chat.cumulative_pos ?? (chat.isDemo ? 8 : 0);
+                  const negVal = chat.cumulative_neg ?? (chat.isDemo ? 0 : 0);
+                  const actionTypeStr = chat.metadata?.last_action_type || chat.metadata?.current_step?.split(':')[0] || (chat.isDemo ? "Step 4: 본인인증" : "상담중");
+                  const emotionStr = chat.metadata?.detected_personality || chat.metadata?.sentiment || (negVal >= 5 ? "🚨 의심/경계" : "안심/호의");
 
                   return (
                     <TableRow 
@@ -388,16 +396,40 @@ export function LiveMessengerFeed({ onOpenChat }: LiveMessengerFeedProps) {
                         </Badge>
                       </TableCell>
 
+                      {/* 🎯 AI 4대 분석 지표: 긍정 / 부정 / 행동 / 감정 */}
+                      <TableCell>
+                        <div className="flex flex-col gap-1.5 min-w-[180px]">
+                          {/* 긍정 / 부정 바 */}
+                          <div className="flex items-center gap-1.5 text-[10px] font-black">
+                            <span className="px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-mono">
+                              🟢 긍정: +{posVal}
+                            </span>
+                            <span className={`px-1.5 py-0.5 rounded font-mono ${negVal >= 5 ? 'bg-rose-100 text-rose-700 border border-rose-300 font-black animate-pulse' : 'bg-slate-100 text-slate-500 border border-slate-200'}`}>
+                              🔴 부정: -{negVal}
+                            </span>
+                          </div>
+                          {/* 행동 & 감정 뱃지 */}
+                          <div className="flex items-center gap-1 text-[9px] font-bold text-slate-600">
+                            <span className="bg-amber-50 text-amber-800 border border-amber-200 px-1.5 py-0.5 rounded truncate max-w-[110px]" title={actionTypeStr}>
+                              ⚡ {actionTypeStr}
+                            </span>
+                            <span className="bg-violet-50 text-violet-700 border border-violet-200 px-1.5 py-0.5 rounded truncate max-w-[80px]" title={emotionStr}>
+                              🎭 {emotionStr}
+                            </span>
+                          </div>
+                        </div>
+                      </TableCell>
+
                       {/* 최근 문의 시간 */}
                       <TableCell>
-                        <div className="flex items-center gap-1.5 text-slate-500 text-xs font-bold">
+                        <div className="flex items-center gap-1.5 text-slate-500 text-xs font-bold whitespace-nowrap">
                           <Clock className="w-3.5 h-3.5 text-slate-400" />
                           <span>{getFormattedTime(chat.last_message_at)}</span>
                         </div>
                       </TableCell>
 
                       {/* 실시간 대화 요약 (AI 번역) */}
-                      <TableCell className="max-w-[300px]">
+                      <TableCell className="max-w-[260px]">
                         <div className="flex items-start gap-2 bg-sky-50/50 border border-sky-100/75 rounded-2xl px-4 py-2 text-xs">
                           <div className="flex-1">
                             <div className="flex items-center gap-1.5 mb-0.5">

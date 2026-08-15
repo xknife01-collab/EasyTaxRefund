@@ -371,12 +371,20 @@ export function PassGuideModal({
 
   React.useEffect(() => {
     if (isOpen) {
+      const guideData = {
+        method: 'pass' as const,
+        slideIndex: absoluteIndex,
+        total: PASS_GUIDE_STEPS.length,
+        isModal: true
+      };
+      if (typeof window !== 'undefined') {
+        (window as any).__KTRS_ACTIVE_GUIDE__ = guideData;
+        try {
+          localStorage.setItem('ktrs_active_guide', JSON.stringify(guideData));
+        } catch (e) {}
+      }
       window.dispatchEvent(new CustomEvent('ktrs-guide-slide-change', {
-        detail: {
-          method: 'pass',
-          slideIndex: absoluteIndex,
-          total: PASS_GUIDE_STEPS.length
-        }
+        detail: guideData
       }));
     }
   }, [isOpen, absoluteIndex]);

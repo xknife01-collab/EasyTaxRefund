@@ -57,19 +57,28 @@ export function EmbeddedAuthGuide({ authMethod, mode = "auth", onClick }: Embedd
     const onSelect = () => {
       const idx = api.selectedScrollSnap();
       setCurrent(idx);
-      window.dispatchEvent(new CustomEvent('ktrs-guide-slide-change', {
-        detail: {
-          method: authMethod === 'app' ? 'pass' : authMethod,
-          slideIndex: idx,
-          total: stepsToRender.length
-        }
-      }));
+      // Only dispatch if modal is NOT open
+      if (!document.body.classList.contains("guide-modal-open")) {
+        const fullIndex = mode === "auth" 
+          ? (authMethod === "kakao" ? idx + 32 : authMethod === "hana" ? idx + 27 : idx + 23)
+          : idx;
+        const totalSlides = authMethod === "kakao" ? 37 : authMethod === "hana" ? 32 : 28;
+        
+        window.dispatchEvent(new CustomEvent('ktrs-guide-slide-change', {
+          detail: {
+            method: authMethod === 'app' ? 'pass' : authMethod,
+            slideIndex: fullIndex,
+            total: totalSlides,
+            isEmbedded: true
+          }
+        }));
+      }
     };
     api.on("select", onSelect);
     return () => {
       api.off("select", onSelect);
     };
-  }, [api, authMethod, stepsToRender.length]);
+  }, [api, authMethod, mode]);
 
   // Autoplay slides every 4 seconds
   useEffect(() => {

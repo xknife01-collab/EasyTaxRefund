@@ -1,7 +1,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { AI_MANAGER_SYSTEM_PROMPT } from '@/lib/ai-manager-persona';
-import { retrieveMatchedScripts, retrieveLearnedKnowledge, ingestSelfLearnedKnowledge } from '@/lib/ai-learning-db';
+import { retrieveMatchedScripts, retrieveLearnedKnowledge, ingestSelfLearnedKnowledge, retrieveTopScoredGuideKnowledge } from '@/lib/ai-learning-db';
 import { searchGoogleKnowledgeTool, scanAppCodeGuideTool } from '@/ai/tools/knowledge-ingestion-tools';
 import { supabaseAdmin } from '@/lib/supabase';
 import { getGuideStepKnowledge } from '@/lib/guide-knowledge-db';
@@ -116,8 +116,13 @@ const managerChatPrompt = ai.definePrompt({
 [Supabase에 이전에 자율 수집/적재된 캐시 지식 (Learned Knowledge Cache)]:
 {{{matchedLearnedKnowledgeContext}}}
 
-[현재 이지텍스 화면 단계 가이드 (In-App Step Guide Memory)]:
+[현재 고객이 보고 있는 인증서 화면 및 시각 가이드 지식 (In-App Visual Slide Memory)]:
 {{{matchedStepGuideContext}}}
+
+[📸 모르는 질문이나 돌발 질문 시 사람처럼 화면을 직접 보고 판단하는 절대 원칙]:
+1. 고객이 예상 밖의 질문이나 모르는 질문을 하더라도, 절대로 기계처럼 "모릅니다" 또는 "상담원에게 문의하세요"라고 무책임하게 넘기지 마십시오!
+2. 고객이 현재 보고 있는 화면의 글자(예: "앱 실행 시 사용할 숫자 6자리 비밀번호를 설정해 주세요", "연속된 숫자나 생년월일 피하기" 등)와 노란 점선 위치를 사람 직원이 스마트폰 화면을 옆에서 함께 들여다보듯 파악하여 설명하십시오.
+3. 과거 고객들이 가장 쉽게 이해하여 최고 점수를 기록한 단어와 친절한 비유 표현(예: "화면 가운데 동그라미 6개 보이시죠? 앞으로 로그인할 때 쓸 나만의 6자리 비밀번호를 누르시는 단계예요!")을 우선적으로 구사하십시오.
 
 [이전에 기록된 사용자 정보 (User Facts Memory)]:
 {{{previousFacts}}}
@@ -453,6 +458,46 @@ const managerChatFlow = ai.defineFlow(
       }
     } catch (err) {
       console.warn('[Auth Slide Guide] Query failed:', err);
+    }
+
+    // 1-C. 실시간 모달 가이드 시각 코칭 컨텍스트 주입 (Live Visual Coaching)
+    if (input.activeGuideContext) {
+      const g = input.activeGuideContext;
+      const methodStr = (g.method || 'AUTH').toUpperCase();
+      const slideNum = (g.slideIndex ?? 0) + 1;
+      const liveCoachBlock = `\n\n[🎯 실시간 고객 시각 가이드 화면 컨텍스트 (Live Slide Coaching)]:
+- 현재 고객이 보고 있는 인증 수단: ${methodStr} 인증 가이드
+- 현재 슬라이드 단계: Step ${slideNum} (${g.chapterTitle || '인증 가이드'})
+- 타겟 요소 명칭: ${g.targetName || '안내 영역'}
+- 🎯 시각적 위치 설명 (고객 시선 기준): "${g.visualLocationHint || '화면 안내 영역'}"
+- 필수 수행 행동: "${g.actionInstruction || '화면 안내에 따라 진행해 주세요.'}"
+- 이 행동을 해야 하는 이유: "${g.actionReason || '본인인증을 완료하기 위함입니다.'}"
+
+🚨 [위치 안내 절대 철칙 (Never Mention Coordinates)]:
+1. 절대로 x, y 좌표나 숫자(예: 'x: 50, y: 80', '50%', '좌표' 등)를 고객에게 말하지 마십시오!
+2. 고객에게 위치를 가르쳐 줄 때는 오직 "${g.visualLocationHint}" 처럼 고객 눈에 바로 보이는 **인간적이고 직관적인 표현**("화면 맨 위 오른쪽 상단의 작은 [X] 닫기 버튼", "화면 중앙 팝업창 아래쪽의 파란색 [허용] 버튼", "화면 맨 아래 하단의 골드색 [다음] 버튼" 등)으로만 설명하십시오.
+3. 고객이 "어디 있어요?", "왜 해야 해요?"라고 질문하면, [어디를 보아야 하는지 (화면 상단/중앙/하단)] + [어떤 버튼인지] + [왜 해야 하는지]를 옆에서 1:1로 손가락으로 짚어주듯 과외식으로 친절하게 가르쳐 주십시오.`;
+
+      matchedStepGuideContext = matchedStepGuideContext + liveCoachBlock;
+
+      // 1-D. 과거 고객 이해도 1위 최고 점수 모범 답변 조회 및 주입 (Scored High-Clarity Knowledge)
+      try {
+        const topQa = await retrieveTopScoredGuideKnowledge(
+          g.method || 'hana',
+          g.slideIndex ?? 0,
+          2
+        );
+
+        if (topQa && topQa.length > 0) {
+          const topQaText = topQa.map((item, idx) => 
+            `  [과거 고객 평가 1위 모범 설명 ${idx + 1}]:\n  - 고객 질문: "${item.question}"\n  - 이해도 최고 득점 답변: "${item.answer}"`
+          ).join('\n\n');
+
+          matchedStepGuideContext += `\n\n[🌟 Supabase에 기록된 실제 고객 만족도 최고 점수 모범 답변 (Best Scored Explanation)]:\n${topQaText}\n\n👉 위 모범 답변의 '가장 알기 쉬운 단어'와 '친절한 비유 표현'을 우선적으로 계승하여 이번 답변을 작성하십시오!`;
+        }
+      } catch (e) {
+        // ignore
+      }
     }
 
     // 2. Dynamic prompting (눈치 메커니즘)

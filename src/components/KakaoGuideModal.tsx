@@ -782,15 +782,23 @@ export function KakaoGuideModal({
 
   React.useEffect(() => {
     if (isOpen) {
+      const guideData = {
+        method: 'kakao' as const,
+        slideIndex: absoluteIndex,
+        total: 37,
+        isModal: true
+      };
+      if (typeof window !== 'undefined') {
+        (window as any).__KTRS_ACTIVE_GUIDE__ = guideData;
+        try {
+          localStorage.setItem('ktrs_active_guide', JSON.stringify(guideData));
+        } catch (e) {}
+      }
       window.dispatchEvent(new CustomEvent('ktrs-guide-slide-change', {
-        detail: {
-          method: 'kakao',
-          slideIndex: absoluteIndex,
-          total: stepsToRender.length
-        }
+        detail: guideData
       }));
     }
-  }, [isOpen, absoluteIndex, stepsToRender.length]);
+  }, [isOpen, absoluteIndex]);
 
   const currentChapterIndex = CHAPTERS.findIndex((ch, i) => {
     const nextCh = CHAPTERS[i + 1];
