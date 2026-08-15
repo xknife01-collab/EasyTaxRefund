@@ -8,6 +8,7 @@ import { PWASetup } from '@/components/PWASetup';
 import { FloatingAiChat } from '@/components/FloatingAiChat';
 import Clarity from '@/components/Clarity';
 import GoogleTagManager from '@/components/GoogleTagManager';
+import MetaPixel from '@/components/MetaPixel';
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://ktrs-service.vercel.app'),
@@ -69,6 +70,7 @@ export default function RootLayout({
           <FloatingAiChat />
           <Clarity />
           <GoogleTagManager />
+          <MetaPixel />
         </LanguageProvider>
       </body>
     </html>
