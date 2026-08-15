@@ -82,7 +82,8 @@ import {
   Send,
   Download,
   Printer,
-  Stamp
+  Stamp,
+  Maximize2
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/hooks/use-toast";
@@ -242,19 +243,81 @@ export default function EstimatePage() {
 
   const [step, setStep] = useState(0);
 
-  // 🛠️ 개발 모드용 강제 단계 점핑 파라미터 연동
+  // 🛠️ URL 쿼리 파라미터로 Step 4 직행 및 데이터 자동 채우기 연동 (메신저/외부 링크 지원)
   useEffect(() => {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
+      const isPrefill = urlParams.get('prefill') === '1' || urlParams.get('name') !== null;
+      const paramName = urlParams.get('name') || '';
+      const paramRegNo = urlParams.get('regNo') || urlParams.get('registrationNumber') || '';
+      const paramPhone = urlParams.get('phone') || '';
+      const paramCarrier = urlParams.get('carrier') || '';
+      const paramSalary = urlParams.get('salary');
+      const paramWorkMonths = urlParams.get('workMonths');
       const forceStep = urlParams.get('step');
+
+      if (isPrefill) {
+        setFormData(prev => ({
+          ...prev,
+          officialName: paramName || prev.officialName,
+          authName: paramName || prev.authName,
+          registrationNumber: paramRegNo || prev.registrationNumber,
+          phone: paramPhone || prev.phone,
+          carrier: paramCarrier || prev.carrier,
+        }));
+
+        if (paramSalary || paramWorkMonths) {
+          setPreFilterData(prev => ({
+            ...prev,
+            avgSalary: paramSalary ? parseInt(paramSalary) : prev.avgSalary,
+            workMonths: paramWorkMonths ? parseInt(paramWorkMonths) : prev.workMonths,
+          }));
+        }
+      }
+
       if (forceStep) {
         const targetStep = parseFloat(forceStep);
         if (!isNaN(targetStep) && targetStep !== step) {
           setStep(targetStep);
         }
+      } else if (isPrefill && (paramName || paramRegNo)) {
+        setStep(4);
       }
     }
-  }, [step]);
+  }, []);
+
+  // 🤖 AI 매니저 선제적 정보 수집 완료 시 자동 폼 입력 및 Step 4 점프
+  useEffect(() => {
+    const handleAutoFill = (e: any) => {
+      const detail = e.detail;
+      if (!detail) return;
+      console.log("[ktrs-auto-fill] Received proactive collected data:", detail);
+
+      setFormData(prev => ({
+        ...prev,
+        officialName: detail.name || prev.officialName,
+        authName: detail.name || prev.authName,
+        registrationNumber: detail.registrationNumber || prev.registrationNumber,
+        phone: detail.phone || prev.phone,
+        carrier: detail.carrier || prev.carrier,
+      }));
+
+      if (detail.salary || detail.workMonths) {
+        setPreFilterData(prev => ({
+          ...prev,
+          avgSalary: detail.salary ? Number(detail.salary) : prev.avgSalary,
+          workMonths: detail.workMonths ? Number(detail.workMonths) : prev.workMonths,
+        }));
+      }
+
+      setStep(4);
+    };
+
+    window.addEventListener("ktrs-auto-fill", handleAutoFill);
+    return () => {
+      window.removeEventListener("ktrs-auto-fill", handleAutoFill);
+    };
+  }, []);
 
   const [isStepGuideModalOpen, setIsStepGuideModalOpen] = useState(false);
 
@@ -3092,7 +3155,17 @@ export default function EstimatePage() {
                       {/* 메인 CTA 버튼 */}
                       <Button
                         id="step0-submit-btn"
-                        onClick={() => { setStep(0.5); saveProgress(0.5); }}
+                        onClick={() => {
+                          setStep(0.5);
+                          saveProgress(0.5);
+                          if (typeof window !== "undefined") {
+                            window.dispatchEvent(
+                              new CustomEvent("ktrs-step0-submit", {
+                                detail: { estimate: preFilterEstimate }
+                              })
+                            );
+                          }
+                        }}
                         className="w-full min-h-[5rem] h-auto py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-2xl shadow-2xl shadow-[#b88c30]/20 flex items-center justify-center flex-wrap gap-4 text-center leading-tight whitespace-normal break-words transition-all hover:scale-[1.02] active:scale-[0.98] group"
                       >
                         <span className="flex-1 text-left">{t('이어서 정밀 진단 시작하기')}</span>
@@ -3468,6 +3541,50 @@ export default function EstimatePage() {
                       </div>
                     </div>
 
+                    {/* ★ 김준현 매니저의 안심 가이드 & 직접 입력 선택 안내 */}
+                    <div className="p-5 bg-gradient-to-r from-[#0f1e36] to-[#152a45] rounded-2xl border-2 border-[#b88c30]/50 shadow-lg relative overflow-hidden">
+                      <div className="flex items-start gap-4">
+                        <div className="relative shrink-0 mt-1">
+                          <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
+                            <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
+                          </div>
+                          <span className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
+                        </div>
+                        <div className="space-y-2 flex-1 text-left">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
+                              {t('김준현 공식 매니저 안심 가이드')}
+                            </span>
+                            <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
+                              {t('조회 즉시 영구 파기')}
+                            </Badge>
+                          </div>
+                          <p className="text-xs font-bold text-slate-200 leading-relaxed">
+                            {t('신분증 사진 촬영이 불안하시거나 카메라가 불편하신가요? 걱정 마세요! 촬영하신 사진은 국세청 조회 즉시 영구 파기(저장 NO!)됩니다.')}
+                          </p>
+                          <p className="text-xs font-black text-[#e2b659] leading-relaxed">
+                            {t('👉 사진 촬영이 부담스러우시면 아래에 [영문 이름]과 [외국인등록번호]를 직접 손으로 타이핑하여 입력하셔도 100% 안전하게 조회가 가능합니다!')}
+                          </p>
+                          <div className="pt-1 flex flex-wrap gap-2">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const inputElem = document.getElementById('step2-name-input');
+                                if (inputElem) {
+                                  inputElem.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                                  inputElem.focus();
+                                }
+                              }}
+                              className="text-[11px] font-black text-[#0b192c] bg-[#b88c30] hover:bg-[#cfa54c] px-3.5 py-1.5 rounded-full inline-flex items-center gap-1.5 shadow-md active:scale-95 transition-all"
+                            >
+                              <span>✍️ {t('사진 대신 직접 타이핑해서 입력하기')}</span>
+                              <ArrowRight className="h-3 w-3" />
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     {/* 카메라 / 촬영 영역 */}
                     {!isCameraActive ? (
                       <div onClick={startCamera} className="border-2 border-dashed border-[#b88c30]/30 rounded-2xl p-10 text-center bg-[#b88c30]/5 cursor-pointer hover:bg-[#b88c30]/10 transition-all group">
@@ -3676,6 +3793,43 @@ export default function EstimatePage() {
                       </p>
                     </div>
 
+                    {/* ★ 김준현 매니저의 3단계 안심 & 알뜰폰 선택 꿀팁 배너 */}
+                    <div className="p-5 bg-gradient-to-r from-[#0f1e36] to-[#152a45] rounded-2xl border-2 border-[#b88c30]/50 shadow-lg relative overflow-hidden text-left">
+                      <div className="flex items-start gap-4">
+                        <div className="relative shrink-0 mt-1">
+                          <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
+                            <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
+                          </div>
+                          <span className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
+                        </div>
+                        <div className="space-y-2 flex-1">
+                          <div className="flex items-center gap-2">
+                            <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
+                              {t('김준현 공식 매니저 꿀팁 가이드')}
+                            </span>
+                            <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
+                              {t('스팸 0% 안심 인증')}
+                            </Badge>
+                          </div>
+                          <p className="text-xs font-bold text-slate-200 leading-relaxed">
+                            {t('휴대폰 번호는 국세청 본인 인증을 위해서만 1회 사용되며 스팸이나 광고 연락은 절대 가지 않습니다. 🔒')}
+                          </p>
+                          <div className="p-3 bg-[#0a1523]/80 rounded-xl border border-[#b88c30]/30 space-y-1.5 text-left">
+                            <p className="text-xs font-black text-[#e2b659] flex items-center gap-1.5">
+                              <span>💡</span>
+                              <span>{t('알뜰폰을 쓰고 계신가요?')}</span>
+                            </p>
+                            <p className="text-[11.5px] font-medium text-slate-300 leading-relaxed">
+                              {t('통신사 선택 시 꼭 [알뜰폰]을 선택해 주셔야 다음 단계에서 국세청 인증이 막히지 않고 정상 도착합니다!')}
+                            </p>
+                            <p className="text-[11.5px] font-medium text-slate-400 leading-relaxed">
+                              {t('이어서 진행할 국세청 인증 알림 누르는 법도 제가 옆에서 하나씩 짚어드릴 테니, 편하게 번호를 입력해 주세요! 👍')}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
                     <form onSubmit={handleContactSubmit} className="space-y-6">
                       <div className="grid gap-5">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
@@ -3691,7 +3845,7 @@ export default function EstimatePage() {
                           </div>
                           <div className="space-y-2">
                             <Label className="text-xs font-black text-[#b88c30] uppercase tracking-widest ml-1">{t('통신사')}</Label>
-                            <Select value={formData.carrier || undefined} onValueChange={(v) => setFormData({ ...formData, carrier: v })}>
+                            <Select value={formData.carrier || ""} onValueChange={(v) => setFormData({ ...formData, carrier: v })}>
                               <SelectTrigger id="step3-carrier-select" className="h-14 px-5 rounded-xl bg-[#0f2441] border border-slate-700/60 text-white font-bold text-base focus:ring-2 focus:ring-[#b88c30]/50 focus:border-[#b88c30]/50">
                                 <SelectValue placeholder={t('통신사 선택')} />
                               </SelectTrigger>
@@ -3938,8 +4092,8 @@ export default function EstimatePage() {
                         <CardTitle className="text-2xl sm:text-3xl font-black text-white break-keep relative z-10">
                           {t('인증서가 스마트폰에 설치되어 있나요?')}
                         </CardTitle>
-                        <p className="font-bold text-slate-400 text-sm mt-3 relative z-10 max-w-sm mx-auto leading-relaxed">
-                          {t('국세청 조회를 위해서는 본인 명의의 인증서가 반드시 필요합니다. 현재 아래 인증서 중 가입된 인증서가 있으신가요?')}
+                        <p className="font-bold text-slate-400 text-sm mt-3 relative z-10 max-w-md mx-auto leading-relaxed">
+                          {t('한국 사이트 로그인 시 카카오톡, PASS 앱 또는 하나 원큐인증서로 [인증 요청 알림]을 받아 승인해 보신 적이 있는지 확인해 주세요.')}
                         </p>
 
                         {/* {t('지원 인증서')} 배지 */}
@@ -3962,6 +4116,39 @@ export default function EstimatePage() {
 
                       {/* 선택 카드 */}
                       <CardContent className="p-5 sm:p-8 space-y-4 bg-[#0d1e30]">
+                        {/* ★ 김준현 매니저의 4단계 인증서 선택 친절 가이드 */}
+                        <div className="p-5 bg-gradient-to-r from-[#0f1e36] to-[#152a45] rounded-2xl border-2 border-[#b88c30]/50 shadow-lg relative overflow-hidden text-left">
+                          <div className="flex items-start gap-4">
+                            <div className="relative shrink-0 mt-1">
+                              <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
+                                <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
+                              </div>
+                              <span className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
+                            </div>
+                            <div className="space-y-2 flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
+                                  {t('김준현 공식 매니저 안심 가이드')}
+                                </span>
+                                <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
+                                  {t('1:1 맞춤 지원')}
+                                </Badge>
+                              </div>
+                              <p className="text-xs font-bold text-slate-200 leading-relaxed">
+                                💬 {t('한국 사이트 로그인할 때 카카오톡이나 PASS 앱 또는 하나 원큐인증서로 [인증 요청 알림]을 받아서 승인(전자서명)해 보신 적이 있나요? 🔐')}
+                              </p>
+                              <div className="p-3 bg-[#0a1523]/80 rounded-xl border border-[#b88c30]/30 space-y-1.5 text-left">
+                                <p className="text-[11.5px] font-medium text-emerald-400 leading-relaxed">
+                                  👉 <strong>[네]</strong>: {t('카카오페이 인증서, PASS 인증서, 하나 원큐인증서를 따로 발급받아 써보신 분만 선택해 주세요!')}
+                                </p>
+                                <p className="text-[11.5px] font-medium text-[#e2b659] leading-relaxed">
+                                  👉 <strong>[아니오 (추천!)]</strong>: {t('통장 비밀번호와 다른 것입니다! 조금이라도 헷갈리거나 처음 들어보신다면 무조건 [아니오]를 눌러주세요. 인증서를 쉽게 발급받는 방법을 안내해 드릴게요! 👍')}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                         <div className="grid grid-cols-1 gap-4">
                           {/* YES 카드 */}
                           <div
@@ -3977,7 +4164,7 @@ export default function EstimatePage() {
                                 {t('네, 이미 가입된 인증서가 있습니다.')}
                               </h4>
                               <p className="text-sm text-slate-400 font-medium mt-1">
-                                {t('하나은행, PASS, 카카오톡 인증서 중 하나가 이미 휴대폰에 설치되어 있습니다.')}
+                                {t('카카오페이, PASS, 하나 원큐인증서를 따로 발급받아 인증 알림을 받아본 적이 있습니다.')}
                               </p>
                             </div>
                             <div className="shrink-0 h-8 w-8 rounded-full border border-emerald-700/40 flex items-center justify-center group-hover:bg-emerald-800/30 transition-colors">
@@ -3995,11 +4182,14 @@ export default function EstimatePage() {
                               <AlertCircle className="h-8 w-8 text-amber-400 animate-pulse" />
                             </div>
                             <div className="flex-1 text-left">
-                              <h4 className="font-black text-lg text-white leading-tight">
-                                {t('아니오, 인증서가 없습니다 (설치/발급 필요)')}
-                              </h4>
+                              <div className="flex items-center gap-2">
+                                <h4 className="font-black text-lg text-white leading-tight">
+                                  {t('아니오, 인증서가 없거나 잘 모르겠습니다 (추천)')}
+                                </h4>
+                                <Badge className="bg-[#b88c30]/20 text-[#e2b659] border border-[#b88c30]/40 text-[9px] font-black">{t('추천')}</Badge>
+                              </div>
                               <p className="text-sm text-slate-400 font-medium mt-1">
-                                {t('인증서가 없으시다면, 먼저 설치 및 발급을 진행하셔야 환급 조회가 가능합니다.')}
+                                {t('통장 비밀번호와 다릅니다. 인증서를 쉽게 발급받는 방법을 친절히 안내해 드립니다.')}
                               </p>
                             </div>
                             <div className="shrink-0 h-8 w-8 rounded-full border border-amber-700/40 flex items-center justify-center group-hover:bg-amber-800/30 transition-colors">
@@ -4081,56 +4271,158 @@ export default function EstimatePage() {
                         </div>
 
                         <CardTitle className="text-2xl sm:text-3xl font-black text-white break-keep relative z-10">
-                          {t('인증서가 없으신가요? (추천)')}
+                          {t('1분 만에 무료 인증서 발급받기')}
                         </CardTitle>
-                        <div className="relative z-10 mt-4 p-4 bg-amber-950/30 border border-amber-800/30 rounded-2xl text-left max-w-lg mx-auto">
-                          <p className="text-[12px] sm:text-[13px] font-black text-amber-300 leading-relaxed flex items-start gap-2">
-                            <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
-                            {t('국세청 조회를 하려면 아래 인증서 중 하나가 반드시 설치되어 있어야 합니다. 안내에 따라 설치 및 발급을 완료해 주세요.')}
-                          </p>
-                        </div>
+                        <p className="font-bold text-slate-400 text-sm mt-2 relative z-10 max-w-md mx-auto leading-relaxed">
+                          {t('아래 중 가장 편리한 앱을 선택하시면 사진과 함께 1분 발급 방법을 쉽게 안내해 드립니다.')}
+                        </p>
                       </CardHeader>
-                      <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8 bg-[#0d1e30]">
+                      <CardContent className="p-4 sm:p-8 space-y-4 sm:space-y-6 bg-[#0d1e30]">
+                        {/* ★ 김준현 매니저의 인증서 발급 꿀팁 가이드 */}
+                        <div className="p-5 bg-gradient-to-r from-[#0f1e36] to-[#152a45] rounded-2xl border-2 border-[#b88c30]/50 shadow-lg relative overflow-hidden text-left">
+                          <div className="flex items-start gap-4">
+                            <div className="relative shrink-0 mt-1">
+                              <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
+                                <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
+                              </div>
+                              <span className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
+                            </div>
+                            <div className="space-y-2 flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
+                                  {t('김준현 공식 매니저 안심 가이드')}
+                                </span>
+                                <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
+                                  {t('100% 무료 · 1분 발급')}
+                                </Badge>
+                              </div>
+                              <p className="text-xs font-bold text-slate-200 leading-relaxed">
+                                💬 {t('인증서 발급은 100% 무료이며 1분이면 끝납니다! 가장 편한 방법을 골라주세요. 🔐')}
+                              </p>
+                              <div className="p-3 bg-[#0a1523]/80 rounded-xl border border-[#b88c30]/30 space-y-2 text-left">
+                                <div className="space-y-1">
+                                  <p className="text-[11.5px] font-black text-[#008485] flex items-center gap-1.5">
+                                    <span>🥇</span>
+                                    <span>{t('하나은행 추천 (외국어 지원 1등)')}</span>
+                                  </p>
+                                  <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
+                                    {t('하나은행 통장이나 앱을 쓰고 계시다면 [하나은행]을 가장 추천합니다!')}
+                                  </p>
+                                </div>
+                                <div className="space-y-1">
+                                  <p className="text-[11.5px] font-black text-red-400 flex items-center gap-1.5">
+                                    <span>🥈</span>
+                                    <span>{t('PASS 추천 (통장 없을 때 차선책)')}</span>
+                                  </p>
+                                  <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
+                                    {t('하나은행이 없다면 [PASS]를 선택해 주세요! 통신사 번호로 1분 만에 발급됩니다.')}
+                                  </p>
+                                </div>
+                                <div className="space-y-1">
+                                  <p className="text-[11.5px] font-black text-[#e2b659] flex items-center gap-1.5">
+                                    <span>🥉</span>
+                                    <span>{t('카카오톡')}</span>
+                                  </p>
+                                  <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
+                                    {t('카카오페이를 평소에 자주 쓰시는 분께 추천합니다.')}
+                                  </p>
+                                </div>
+                                <div className="p-2.5 bg-[#b88c30]/15 border border-[#b88c30]/40 rounded-xl space-y-1">
+                                  <p className="text-[11.5px] font-black text-white flex items-center gap-1.5">
+                                    <Maximize2 className="h-3.5 w-3.5 text-[#e2b659]" />
+                                    <span>{t('🔍 화면을 클릭(터치)하면 큰 전체화면으로 더 쉽게 보실 수 있습니다!')}</span>
+                                  </p>
+                                  <p className="text-[11px] font-medium text-slate-300 leading-relaxed pl-5">
+                                    {t('선택 후 아래 가이드 이미지를 누르면 확대된 전체화면으로 편하게 따라 하실 수 있습니다.')}
+                                  </p>
+                                </div>
+                                <p className="text-[11px] font-bold text-[#e2b659] pt-1 border-t border-slate-800">
+                                  👉 {t('발급을 마치신 뒤, 맨 아래 [설치 및 가입 완료] 버튼을 눌러주세요! 👍')}
+                                </p>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                         {/* Selection Tabs in Guide Mode */}
-                        <div className="grid grid-cols-3 gap-2">
+                        <div className="grid grid-cols-3 gap-2 sm:gap-3">
                           {/* Hana */}
                           <div
                             onClick={() => setAuthMethod('hana')}
                             className={cn(
-                              "p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2",
-                              authMethod === 'hana' ? "bg-emerald-950/40 border-[#008485]" : "bg-white/5 border-white/10 hover:border-slate-500 text-slate-400"
+                              "p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2 relative",
+                              authMethod === 'hana' ? "bg-emerald-950/40 border-[#008485] shadow-lg shadow-[#008485]/10" : "bg-white/5 border-white/10 hover:border-slate-500 text-slate-400"
                             )}
                           >
-                            <Image src="/images/logo/hana_1q.png" alt="Hana" width={32} height={32} className="object-contain" />
+                            <span className="absolute -top-2.5 bg-[#008485] text-white text-[8.5px] font-black px-2 py-0.5 rounded-full shadow-sm">
+                              {t('1순위 추천')}
+                            </span>
+                            <Image src="/images/logo/hana_1q.png" alt="Hana" width={32} height={32} className="object-contain mt-1" />
                             <span className={cn("text-xs font-black", authMethod === 'hana' ? "text-[#008485]" : "text-slate-400")}>{t('하나은행')}</span>
                           </div>
                           {/* PASS */}
                           <div
                             onClick={() => setAuthMethod('app')}
                             className={cn(
-                              "p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2",
-                              authMethod === 'app' ? "bg-red-950/40 border-red-500" : "bg-white/5 border-white/10 hover:border-slate-500 text-slate-400"
+                              "p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2 relative",
+                              authMethod === 'app' ? "bg-red-950/40 border-red-500 shadow-lg shadow-red-500/10" : "bg-white/5 border-white/10 hover:border-slate-500 text-slate-400"
                             )}
                           >
-                            <Image src="/images/logo/pass.png" alt="PASS" width={32} height={32} className="object-contain" />
+                            <span className="absolute -top-2.5 bg-red-600 text-white text-[8.5px] font-black px-2 py-0.5 rounded-full shadow-sm">
+                              {t('2순위 추천')}
+                            </span>
+                            <Image src="/images/logo/pass.png" alt="PASS" width={32} height={32} className="object-contain mt-1" />
                             <span className={cn("text-xs font-black", authMethod === 'app' ? "text-red-400" : "text-slate-400")}>{t('PASS')}</span>
                           </div>
                           {/* Kakao */}
                           <div
                             onClick={() => setAuthMethod('kakao')}
                             className={cn(
-                              "p-3 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2",
-                              authMethod === 'kakao' ? "bg-amber-950/30 border-[#b88c30]" : "bg-white/5 border-white/10 hover:border-slate-500 text-slate-400"
+                              "p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex flex-col items-center gap-2 relative",
+                              authMethod === 'kakao' ? "bg-amber-950/30 border-[#b88c30] shadow-lg shadow-[#b88c30]/10" : "bg-white/5 border-white/10 hover:border-slate-500 text-slate-400"
                             )}
                           >
-                            <Image src="/images/logo/kakao.png" alt="Kakao" width={32} height={32} className="object-contain" />
+                            <Image src="/images/logo/kakao.png" alt="Kakao" width={32} height={32} className="object-contain mt-1" />
                             <span className={cn("text-xs font-black", authMethod === 'kakao' ? "text-[#e2b659]" : "text-slate-400")}>{t('카카오톡')}</span>
                           </div>
                         </div>
 
                         {/* Guide Component */}
                         {authMethod && (
-                          <div className="mt-2 animate-in fade-in slide-in-from-top-4 duration-500">
+                          <div className="mt-2 animate-in fade-in slide-in-from-top-4 duration-500 space-y-2">
+                            {/* ★ 전체화면 확대 안내 배너 */}
+                            <div
+                              onClick={() => {
+                                if (authMethod === 'hana') {
+                                  setHanaGuideMode('full');
+                                  setIsHanaGuideOpen(true);
+                                } else if (authMethod === 'kakao') {
+                                  setIsKakaoGuideOpen(true);
+                                } else {
+                                  setIsGuideOpen(true);
+                                }
+                              }}
+                              className="flex items-center justify-between p-3.5 bg-gradient-to-r from-[#0f2441] to-[#153258] hover:from-[#153258] hover:to-[#1b3f70] border border-[#b88c30]/50 rounded-2xl cursor-pointer transition-all shadow-md group"
+                            >
+                              <div className="flex items-center gap-2.5">
+                                <div className="h-8 w-8 bg-[#b88c30]/20 rounded-xl flex items-center justify-center text-[#e2b659] group-hover:scale-110 transition-transform">
+                                  <Maximize2 className="h-4 w-4 text-[#e2b659]" />
+                                </div>
+                                <div className="text-left">
+                                  <p className="text-xs font-black text-white group-hover:text-[#e2b659] transition-colors">
+                                    {t('화면을 클릭하면 큰 전체화면으로 볼 수 있어요!')}
+                                  </p>
+                                  <p className="text-[10px] font-medium text-slate-400">
+                                    {t('글씨와 이미지가 크게 확대되어 따라하기가 훨씬 쉽습니다.')}
+                                  </p>
+                                </div>
+                              </div>
+                              <span className="text-[10px] font-black text-[#0b192c] bg-[#b88c30] group-hover:bg-[#cfa54c] px-3 py-1.5 rounded-full shrink-0 shadow-sm flex items-center gap-1">
+                                <span>{t('전체화면')}</span>
+                                <ArrowRight className="h-3 w-3" />
+                              </span>
+                            </div>
+
                             <EmbeddedAuthGuide
                               authMethod={authMethod}
                               mode="registration"
@@ -4234,14 +4526,58 @@ export default function EstimatePage() {
                         <p className="font-bold text-slate-400 text-sm mt-3 relative z-10 max-w-sm mx-auto">
                           {t('가장 편리한 방법으로 본인을 인증해 주세요.')}
                         </p>
-                        <div className="relative z-10 mt-4 p-4 bg-amber-950/30 border border-amber-800/30 rounded-2xl max-w-lg mx-auto">
-                          <p className="text-[12px] sm:text-[13px] font-black text-amber-300 leading-relaxed text-left flex items-start gap-2">
-                            <span className="shrink-0 mt-0.5 text-amber-500 italic">💡</span>
-                            {t('한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.')}
-                          </p>
-                        </div>
                       </CardHeader>
-                      <CardContent className="p-4 sm:p-10 space-y-4 sm:space-y-8 bg-[#0d1e30]">
+                      <CardContent className="p-4 sm:p-8 space-y-4 sm:space-y-6 bg-[#0d1e30]">
+                        {/* ★ 김준현 매니저의 [인증 요청 전 필독 3단계 액션 가이드] 배너 */}
+                        <div className="p-5 bg-gradient-to-r from-[#0f1e36] to-[#152a45] rounded-2xl border-2 border-[#b88c30]/50 shadow-lg relative overflow-hidden text-left">
+                          <div className="flex items-start gap-4">
+                            <div className="relative shrink-0 mt-1">
+                              <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
+                                <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
+                              </div>
+                              <span className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
+                            </div>
+                            <div className="space-y-2.5 flex-1">
+                              <div className="flex items-center gap-2">
+                                <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
+                                  {t('김준현 공식 매니저 안심 가이드')}
+                                </span>
+                                <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
+                                  {t('인증 요청 전 필독')}
+                                </Badge>
+                              </div>
+                              <p className="text-xs font-bold text-slate-200 leading-relaxed">
+                                💬 {t('아래 [인증 요청하기]를 누르시기 전 꼭 확인해 주세요! 🔐')}
+                              </p>
+                              <div className="p-3.5 bg-[#0a1523]/90 rounded-xl border border-[#b88c30]/30 space-y-2 text-left">
+                                <div className="space-y-1">
+                                  <p className="text-[11.5px] font-black text-emerald-400 flex items-center gap-1.5">
+                                    <span>1️⃣</span>
+                                    <span>{t('선택하신 스마트폰 앱으로 인증 알림이 도착합니다!')}</span>
+                                  </p>
+                                  <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
+                                    {t('[인증 요청하기]를 누르면 고객님의 휴대폰(하나은행/PASS/카카오톡)으로 인증 푸시 알림이 즉시 전송됩니다.')}
+                                  </p>
+                                </div>
+                                <div className="space-y-1">
+                                  <p className="text-[11.5px] font-black text-[#e2b659] flex items-center gap-1.5">
+                                    <span>2️⃣</span>
+                                    <span>{t('해당 앱을 열어 비밀번호를 누르고 [승인]해 주세요!')}</span>
+                                  </p>
+                                  <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
+                                    {t('알림을 누르고 앱에서 승인(전자서명)을 완료하셔야 국세청 실시간 환급금 조회가 정상 진행됩니다.')}
+                                  </p>
+                                </div>
+                                <div className="space-y-1 pt-1 border-t border-slate-800">
+                                  <p className="text-[11px] font-medium text-slate-400 leading-relaxed">
+                                    💡 {t('혹시 인증서가 없거나 오류가 난다면, 하단의 [인증서가 없으신가요? (추천)]을 눌러 1분 만에 무료로 발급받으실 수 있습니다! 👍')}
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
                         {/* Selection Cards (Middle of CardContent) */}
                         <div className="grid grid-cols-1 gap-4">
                           {/* Hana Bank Card */}
@@ -4803,6 +5139,54 @@ export default function EstimatePage() {
                           ))}
                         </div>
                       </div>
+
+                      {/* ★ 김준현 매니저의 100% 후불 정산 & 지금 0원 안심 배너 */}
+                      <div className="max-w-md mx-auto p-5 sm:p-6 bg-gradient-to-r from-[#0f1e36] to-[#152a45] rounded-3xl border-2 border-[#b88c30]/50 shadow-2xl relative overflow-hidden text-left">
+                        <div className="flex items-start gap-4">
+                          <div className="relative shrink-0 mt-1">
+                            <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
+                              <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
+                            </div>
+                            <span className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
+                          </div>
+                          <div className="space-y-2.5 flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
+                                {t('김준현 공식 매니저 안심 약속')}
+                              </span>
+                              <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
+                                {t('지금 결제 0원 · 100% 후불제')}
+                              </Badge>
+                            </div>
+                            <p className="text-xs font-bold text-slate-200 leading-relaxed">
+                              🎉 {t('축하드립니다! 지금 신청하실 때 미리 입금하실 수수료는 전혀 없습니다 (0원!).')}
+                            </p>
+                            <div className="p-3.5 bg-[#0a1523]/90 rounded-2xl border border-[#b88c30]/30 space-y-2 text-left">
+                              <div className="space-y-1">
+                                <p className="text-[11.5px] font-black text-emerald-400 flex items-center gap-1.5">
+                                  <span>1️⃣</span>
+                                  <span>{t('선입금 0원! 통장에 돈 들어온 뒤에 정산')}</span>
+                                </p>
+                                <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
+                                  {t('국세청에서 고객님 통장으로 환급금이 완전히 입금된 후에만 수수료가 정산됩니다.')}
+                                </p>
+                              </div>
+                              <div className="space-y-1">
+                                <p className="text-[11.5px] font-black text-[#e2b659] flex items-center gap-1.5">
+                                  <span>2️⃣</span>
+                                  <span>{t('환급금 없으면 수수료 0원 (완전 무료)')}</span>
+                                </p>
+                                <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
+                                  {t('만약 국세청에서 환급금이 승인되지 않으면 비용은 1원도 발생하지 않습니다.')}
+                                </p>
+                              </div>
+                              <p className="text-[11px] font-bold text-[#e2b659] pt-1 border-t border-slate-800">
+                                👉 {t('안심하시고 아래 버튼을 눌러 환급금을 입금받으실 통장 계좌를 등록해 주세요! 👍')}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   )}
                   {result.refundEstimate === 0 ? (
@@ -4869,10 +5253,52 @@ export default function EstimatePage() {
                   <CardTitle className="text-3xl font-black font-headline text-white relative z-10">{t('Step 8: 대한민국 국세청 회원가입 대행')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-8 p-4 sm:p-10 bg-[#0d1e30]">
-                  <div className="p-6 bg-white/5 rounded-2xl border border-[#b88c30]/20 space-y-4">
-                    <p className="text-slate-300 font-bold text-base leading-relaxed">
-                      {t('안전한 대한민국 국세청 회원가입 대행 및 환급금 지급 현황 모니터링을 위해 국세청 보안 계정을 생성합니다. 아래의 본인 확인 인증(SMS)을 완료하시면 가입 절차가 자동으로 완료됩니다.')}
-                    </p>
+                  {/* ★ 김준현 매니저의 8단계 국세청 정식 접수 & 1분 SMS 인증 가이드 */}
+                  <div className="p-5 sm:p-6 bg-gradient-to-r from-[#0f1e36] to-[#152a45] rounded-3xl border-2 border-[#b88c30]/50 shadow-2xl relative overflow-hidden text-left">
+                    <div className="flex items-start gap-4">
+                      <div className="relative shrink-0 mt-1">
+                        <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
+                          <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
+                        </div>
+                        <span className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
+                      </div>
+                      <div className="space-y-2.5 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
+                            {t('김준현 공식 매니저 1분 가이드')}
+                          </span>
+                          <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
+                            {t('국세청 정식 접수 마지막 단계')}
+                          </Badge>
+                        </div>
+                        <p className="text-xs font-bold text-slate-200 leading-relaxed">
+                          🏛️ {t('국세청에 환급 신청서를 정식 접수하고 입금 현황을 실시간 추적하기 위해 국세청 보안 계정을 자동으로 생성해 드립니다. 🔒')}
+                        </p>
+                        <div className="p-3.5 bg-[#0a1523]/90 rounded-2xl border border-[#b88c30]/30 space-y-2 text-left">
+                          <div className="space-y-1">
+                            <p className="text-[11.5px] font-black text-emerald-400 flex items-center gap-1.5">
+                              <span>1️⃣</span>
+                              <span>{t('아이디 자동 생성 완료')}</span>
+                            </p>
+                            <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
+                              {t('복잡한 회원가입 절차는 시스템이 안전하게 알아서 자동으로 처리해 드립니다.')}
+                            </p>
+                          </div>
+                          <div className="space-y-1">
+                            <p className="text-[11.5px] font-black text-[#e2b659] flex items-center gap-1.5">
+                              <span>2️⃣</span>
+                              <span>{t('문자로 온 6자리 인증번호만 입력하면 끝!')}</span>
+                            </p>
+                            <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
+                              {t('아래 [인증문자 발송하기]를 누르신 후, 휴대폰 문자로 도착한 6자리 번호만 넣어주세요.')}
+                            </p>
+                          </div>
+                          <p className="text-[11px] font-bold text-[#e2b659] pt-1 border-t border-slate-800">
+                            👉 {t('문자 6자리 입력 즉시 환급금을 입금받으실 통장 계좌 등록(9단계)으로 넘어갑니다! 👍')}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
                   </div>
 
                   <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-3">
@@ -5092,6 +5518,39 @@ export default function EstimatePage() {
                   <CardTitle className="text-2xl sm:text-3xl font-black font-headline text-white relative z-10">{t('Step 10: 최종 수임 동의')}</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6 sm:space-y-10 p-4 sm:p-10 bg-[#0d1e30]">
+                  {/* ★ 김준현 매니저의 10단계 따뜻한 감사와 마무리 안심 배너 */}
+                  <div className="p-6 sm:p-8 bg-gradient-to-r from-[#0f1e36] via-[#152a45] to-[#0f1e36] rounded-3xl border-2 border-[#b88c30]/50 shadow-2xl relative overflow-hidden text-left">
+                    <div className="flex items-start gap-4">
+                      <div className="relative shrink-0 mt-1">
+                        <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
+                          <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
+                        </div>
+                        <span className="absolute bottom-0 right-0 h-4 w-4 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
+                      </div>
+                      <div className="space-y-3 flex-1">
+                        <div className="flex items-center gap-2">
+                          <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
+                            {t('김준현 공식 매니저의 진심 어린 약속')}
+                          </span>
+                          <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
+                            {t('1:1 평생 전담 케어')}
+                          </Badge>
+                        </div>
+                        <p className="text-sm font-bold text-white leading-relaxed">
+                          🌟 {t('한국에서 땀 흘려 열심히 일하시느라 정말 고생 많으셨습니다!')}
+                        </p>
+                        <div className="p-4 bg-[#0a1523]/90 rounded-2xl border border-[#b88c30]/30 space-y-2 text-left">
+                          <p className="text-xs font-medium text-slate-200 leading-relaxed">
+                            {t('고객님의 소중한 땀방울이 헛되지 않도록, 국세청 환급 신청 접수부터 통장 입금 확인까지 제가 끝까지 곁에서 책임지고 안전하게 챙겨드리겠습니다.')}
+                          </p>
+                          <p className="text-xs font-bold text-[#e2b659] leading-relaxed pt-1 border-t border-slate-800">
+                            👉 {t('아래 서명 상자에 손가락으로 서명해 주시면 모든 신청이 안전하게 완료됩니다. 대단히 감사합니다! 😊')}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
                   {/* 환급 신청 안내 배너 */}
                   <Alert className="bg-[#b88c30]/10 border-[#b88c30]/30 rounded-[2rem] p-8 shadow-sm">
                     <div className="flex gap-4">
@@ -5237,6 +5696,32 @@ export default function EstimatePage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="p-4 sm:p-12 text-center space-y-4 sm:space-y-6">
+                  {/* 김준현 매니저의 감사 마무리 카드 */}
+                  <div className="p-6 bg-gradient-to-r from-[#0f1e36] to-[#152a45] rounded-3xl border border-[#b88c30]/40 text-left text-white shadow-xl flex items-start gap-4">
+                    <div className="relative shrink-0 mt-1">
+                      <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
+                        <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
+                      </div>
+                      <span className="absolute bottom-0 right-0 h-4 w-4 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
+                    </div>
+                    <div className="space-y-2 flex-1">
+                      <div className="flex items-center gap-2">
+                        <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
+                          {t('김준현 공식 매니저의 감사 인사')}
+                        </span>
+                        <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
+                          {t('신청 접수 성공')}
+                        </Badge>
+                      </div>
+                      <p className="text-sm font-bold text-white leading-relaxed">
+                        🎉 {t('소중한 환급 신청이 안전하게 국세청에 접수되었습니다!')}
+                      </p>
+                      <p className="text-xs text-slate-300 font-medium leading-relaxed">
+                        {t('타국에서 성실히 일하시느라 고생 많으셨습니다. 국세청에서 통장으로 입금되는 마지막 순간까지 제가 꼼꼼하게 챙겨드리겠습니다. 궁금하신 점이 있으시면 언제든지 1:1 상담을 찾아주세요! 감사합니다. 😊')}
+                      </p>
+                    </div>
+                  </div>
+
                   <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
                     <p className="text-lg font-black text-slate-800">{t('환급금 신청 내역 확인')}</p>
                     <div className="mt-4 space-y-2 text-left text-sm text-slate-600 font-bold">

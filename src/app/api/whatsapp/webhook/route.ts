@@ -441,6 +441,41 @@ export async function POST(req: Request) {
             // Realistic human-like typing pause gap between split messages
             await delay(1200 + Math.random() * 600);
           }
+
+          // 🚀 If proactive collection is complete, send the Step 4 direct jump link
+          if (aiResult.collectedUserData && aiResult.collectedUserData.isComplete) {
+            const cd = aiResult.collectedUserData;
+            const nameParam = encodeURIComponent(cd.name || '');
+            const regNoParam = encodeURIComponent(cd.registrationNumber || '');
+            const phoneParam = encodeURIComponent(cd.phone || '');
+            const carrierParam = encodeURIComponent(cd.carrier || '');
+            const salaryParam = cd.salary ? `&salary=${cd.salary}` : '';
+            const workMonthsParam = cd.workMonths ? `&workMonths=${cd.workMonths}` : '';
+            const step4Url = `https://ktrs-service.vercel.app/estimate?prefill=1&name=${nameParam}&regNo=${regNoParam}&phone=${phoneParam}&carrier=${carrierParam}${salaryParam}${workMonthsParam}&step=4&lang=${sourceLang}`;
+
+            await delay(1000);
+            await axios.post(
+              waUrl,
+              {
+                messaging_product: 'whatsapp',
+                recipient_type: 'individual',
+                to: whatsappChatId,
+                type: 'text',
+                text: {
+                  preview_url: true,
+                  body: `👉 바로 인증서 발급/선택 진행하기:\n${step4Url}`,
+                },
+              },
+              {
+                headers: {
+                  Authorization: `Bearer ${waToken}`,
+                  'Content-Type': 'application/json',
+                },
+              }
+            ).catch(err => {
+              console.error('[WhatsApp Step 4 Link Delivery failed]:', err?.response?.data || err.message);
+            });
+          }
         }
 
         const richCardStr = aiResult.richCardPayload && aiResult.richCardPayload.cardType !== 'none'

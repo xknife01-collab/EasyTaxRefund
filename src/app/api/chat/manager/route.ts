@@ -6,7 +6,7 @@ import { sendTakeoverAlert } from "@/lib/slack";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { message, language, history, chatId, clientOs, clientIsInApp, currentPathname, currentStep } = body;
+    const { message, language, history, chatId, clientOs, clientIsInApp, currentPathname, currentStep, activeGuideContext } = body;
 
     if (!message || typeof message !== "string" || !message.trim()) {
       return NextResponse.json(
@@ -205,8 +205,24 @@ export async function POST(req: NextRequest) {
       clientOs,
       clientIsInApp,
       currentPathname,
-      currentStep: typeof currentStep === 'number' ? currentStep : undefined
+      currentStep: typeof currentStep === 'number' ? currentStep : undefined,
+      activeGuideContext: activeGuideContext || undefined
     });
+
+    // 🚀 자가 학습 로그 비동기 수집 (ai_learning_logs)
+    if (activeGuideContext && !isSystemRequest) {
+      Promise.resolve(
+        supabaseAdmin.from("ai_learning_logs").insert({
+          auth_method: activeGuideContext.method || 'unknown',
+          slide_index: activeGuideContext.slideIndex ?? 0,
+          user_language: language || 'ko',
+          user_question: message.trim(),
+          ai_answer: result.answer,
+          target_coords: activeGuideContext.targetCoords || null,
+          is_resolved: true
+        })
+      ).catch((err) => console.warn("[ai_learning_logs] Log error:", err));
+    }
 
     // 시스템 요청(STUCK/SYSTEM_NOTIFICATION)은 고객 감정이 아니므로 점수 누적 제외
     const newPosScore = isSystemRequest ? 0 : (result.posScore ?? 0);
@@ -472,7 +488,8 @@ export async function POST(req: NextRequest) {
       negScore: newNegScore,
       actionScore: result.actionScore,
       actionType: result.actionType,
-      richCardPayload: result.richCardPayload
+      richCardPayload: result.richCardPayload,
+      collectedUserData: result.collectedUserData
     });
   } catch (error: any) {
     console.error("AI Manager Chat API Error:", error);

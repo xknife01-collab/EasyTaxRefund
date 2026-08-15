@@ -8,38 +8,7 @@ const translate = (s: string) => s;
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
-
-// FAQ Items definition
-const FAQ_ITEMS = [
-  {
-    title: translate("Korea Tax Refund Service, 믿을 수 있나요?"),
-    content: translate("네, 안심하고 이용하셔도 좋습니다! Korea Tax Refund Service를 믿을 수 있는 3가지 확실한 이유를 말씀드릴게요. 🛡️\n\n1️⃣ 100% 한국 국세청(NTS)에서 직접 입금해 드립니다.\n가장 많이 걱정하시는 부분이죠! 저희는 고객님의 환급금에 절대 손대지 않습니다. 신고가 완료되면 환급금은 저희를 거치지 않고, 한국 국세청에서 고객님 본인 명의의 계좌로 직접 송금합니다.\n\n2️⃣ 국가 공인 전문 세무사가 전담합니다.\n모든 환급 절차는 엄격한 자격을 갖춘 대한민국 국가 공인 전문 세무사가 합법적이고 꼼꼼하게 처리합니다.\n\n3️⃣ 철저한 개인정보 보호\n본인 인증과 개인정보는 오직 정부(국세청) 시스템에 세금 환급을 신고하기 위한 목적으로만 사용되며, 철저한 보안 속에 안전하게 보호됩니다.\n\n매년 수많은 외국인 근로자분들이 잘 몰라서 놓치고 있는 '정당하게 돌려받아야 할 내 돈'을 안전하게 찾아드리고 있습니다. 안심하고 화면의 안내에 따라 조회를 시작해 보세요! 👍")
-  },
-  {
-    title: translate("수수료는 왜 내야 하나요?"),
-    content: translate("수수료 22%는 고객님의 세금을 꼼꼼하게 다시 계산해서 국세청에 대신 신고해 주는 '전문 세무사'의 정당한 수임료(인건비)입니다. 👨‍💼💼\n\n세금 환급은 단순히 버튼만 누른다고 돈이 나오는 것이 아니라, 과거 5년 치의 복잡한 세금 기록을 세무사가 직접 분석하고 국세청에 신고 서류를 제출해야 하는 까다로운 법적 절차입니다.\n\n💎 신청 시 결제 금액 0원! 100% 후불 결제 원칙\n저희 Korea Tax Refund Service는 '선결제 0원 / 후불제 수수료' 정책을 적용하고 있습니다. 신청 단계에서는 비용이 전혀 청구되지 않으며, 한국 국세청에서 고객님의 통장으로 환급금이 실제로 입금된 것이 확인된 후에만 수수료(22%) 결제가 진행됩니다.\n\n⚠️ 환급 실패 시 수수료 0원 (100% 안심 보장)\n세무사의 최종 검토 결과 환급이 불가능하거나 국세청에서 환급금이 나오지 않는 경우에는 수수료를 단 1원도 청구하지 않습니다. 고객님께는 어떠한 금전적 위험도 없으니 안심하고 신청하셔도 됩니다!")
-  },
-  {
-    title: translate("언제 입금되나요?"),
-    content: translate("환급 신청을 완료하신 후, 실제 통장으로 돈이 입금되기까지는 보통 45일에서 최대 60일 정도 소요됩니다. ⏳\n\n시간이 꽤 걸리는 이유는, 한국 국세청(NTS)의 공무원들이 고객님의 지난 5년 치 세금 기록을 하나하나 꼼꼼히 확인하고 승인하는 심사 기간이 필요하기 때문입니다. (관할 세무서의 업무량에 따라 조금 더 빠르거나 늦어질 수 있습니다.)\n\n환급 진행 상황은 언제든지 Korea Tax Refund Service의 [나의 환급 진행사항] 메뉴에서 실시간으로 확인하실 수 있으니 안심하고 기다려 주세요!")
-  },
-  {
-    title: translate("신분증 사진, 안전한가요?"),
-    content: translate("네, 100% 안전합니다! 신분증 사진이 혹시라도 나쁜 곳에 쓰일까 걱정하시는 마음, 충분히 이해합니다. Korea Tax Refund Service의 철저한 보안 원칙 3가지를 약속드립니다. 🔒\n\n1️⃣ 전송 즉시 영구 삭제 (저장 NO!)\n촬영하신 신분증 사진은 저희 서버나 휴대폰에 절대 '저장'되지 않습니다. 오직 세무서에 본인 확인용으로 제출되는 즉시 영구적으로 파기됩니다.\n\n2️⃣ 국세청(정부) 필수 제출 서류\n한국 국세청(NTS)에서 세금 환급을 승인하려면, '이 사람이 진짜 본인이 맞는지' 확인하기 위해 반드시 신분증 사본을 요구합니다. 저희는 이 필수 서류를 국세청에 대신 내드리는 역할만 할 뿐, 대출이나 휴대폰 개통 등 다른 어떤 목적으로도 절대 사용할 수 없습니다.\n\n3️⃣ 은행급 암호화 보안\n고객님의 모든 정보는 한국의 대형 은행들과 동일한 수준의 강력한 암호화 시스템을 통해 국세청으로만 바로 전송됩니다. \n\n내 소중한 개인정보가 유출될 일은 절대 없으니, 안심하고 안내에 따라 신분증을 촬영해 주세요!")
-  },
-  {
-    title: translate("환급액이 0원이라고 나오는데 왜 그런가요?"),
-    content: translate("조회 결과 환급액이 0원으로 나오셨나요? 이는 정상적인 결과일 수 있습니다. 📊\n\n세금 환급은 '내가 낸 세금' 중에서 '돌려받을 자격이 있는 세금'을 돌려받는 것입니다. 만약 과거에 다니던 회사에서 연말정산을 완벽하게 잘 처리해주었거나, 납부한 세금 자체가 적었다면 돌려받을 추가 금액(숨은 세금)이 없을 수 있습니다. \n\n이번에는 환급액이 0원이더라도, 내년이나 이직 후에 다시 조회해 보시면 환급금이 발생할 수 있으니 내년에 Korea Tax Refund Service를 다시 꼭 찾아주세요!")
-  },
-  {
-    title: translate("다른 사람 명의 은행 계좌로 받을 수 있나요?"),
-    content: translate("아니요, 절대 불가능합니다! 🚫\n\n금융 사기 및 명의 도용을 방지하기 위해 한국 국세청(NTS)은 '환급을 신청한 본인 이름'과 정확히 일치하는 은행 계좌로만 돈을 입금합니다. \n\n따라서 반드시 환급자 본인 명의로 된 한국 은행 계좌를 입력해 주셔야 하며, 다른 일체의 계좌 번호를 입력하시면 국세청에서 환급금 송금을 거절하게 됩니다.")
-  },
-  {
-    title: translate("이미 한국을 떠났는데 환급받을 수 있나요?"),
-    content: translate("네, 조건만 맞으면 가능합니다! ✈️\n\n비록 현재 한국에 없더라도, 아래 두 가지 조건만 충족하신다면 Korea Tax Refund Service를 통해 환급 신청이 가능합니다.\n\n1. 본인 인증 통과: 현재 가입되어 있는 한국 통신사(알뜰폰 포함) 번호를 통해 본인 인증(PASS 문자 등)을 받을 수 있어야 합니다.\n2. 한국 은행 계좌 유지: 환급금을 입금받을 수 있는 본인 명의의 '한국 은행 계좌'가 아직 정지되지 않고 열려 있어야 합니다.\n\n위 두 가지가 가능하시다면 타국에서도 문제없이 앱을 통해 환급을 신청하실 수 있습니다!")
-  }
-];
+import { getGuideStepKnowledge } from "@/lib/guide-knowledge-db";
 
 // Local translation dictionary for the consultation widget
 const TRANSLATIONS: Record<string, Record<string, string>> = {
@@ -331,7 +300,225 @@ function parseRichCardFromText(rawText: string): { text: string; richCard?: Chat
   return { text: rawText, richCard: undefined };
 }
 
-function RichCardRenderer({ card, language, currentStep }: { card: NonNullable<ChatMessage['richCard']>; language?: string; currentStep?: number }) {
+
+// 🌟 0단계 ~ 10단계 매니저 실시간 선제적 맞춤형 안내 가이드
+const getStepProactiveMessage = (step: number, lang: string = 'ko'): { text: string; richCard?: ChatMessage['richCard'] } => {
+  const dummyTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  
+  switch (step) {
+    case 0:
+      return {
+        text: lang === 'vi' ? 'Xin chào~ 😊 Nếu thấy các bước khó khăn, hãy nói với tôi trước nhé! Tôi sẽ giúp bạn hoàn tất các bước phức tạp nhất~ Tên tiếng Anh trên thẻ ARC của bạn là gì?'
+            : lang === 'zh' ? '您好~ 😊 如果觉得步骤复杂，可以先告诉我！我来帮您搞定最难的步骤~ 请问您登录证上的英文姓名是？'
+            : lang === 'uz' ? 'Salom~ 😊 Agar bosqichlar qiyin tuyulsa, avval menga ayting! Eng qiyin bosqichlarni o\'tishingizga yordam beraman~ ARC kartangizdagi ismingiz qanday?'
+            : lang === 'id' ? 'Halo~ 😊 Jika terasa sulit, beri tahu saya dulu ya! Saya akan bantu lewati langkah paling rumit~ Siapa nama lengkap Anda di kartu ARC?'
+            : lang === 'en' ? 'Hello~ 😊 If the steps feel overwhelming, talk to me first! I will help you breeze through the hardest parts~ What is your name on your ARC?'
+            : '안녕하세요~ 😊 어려우시면 저한테 먼저 말씀해 주세요! 제가 가장 어려운 단계를 넘어가게 도와드릴게요~ 이름이 어떻게 되세요?'
+      };
+    case 1:
+      return {
+        text: lang === 'vi' ? 'Bước 1: Vui lòng chọn thời gian làm việc tại Hàn Quốc và mức lương trung bình hàng tháng. Hệ thống sẽ tính số tiền hoàn thuế ước tính trong 0.1 giây!'
+            : lang === 'zh' ? '第1步：请选择在韩国的工作年限和月平均工资。系统将在0.1秒内计算出预估退税金额！'
+            : lang === 'uz' ? '1-bosqich: Koreyadagi ish staji va o\'rtacha oylik maoshingizni tanlang. Tizim 0.1 soniyada taxminiy qaytarish summasini hisoblab beradi!'
+            : lang === 'id' ? 'Langkah 1: Pilih masa kerja di Korea dan rata-rata gaji bulanan Anda. Sistem akan menghitung perkiraan pengembalian pajak dalam 0,1 detik!'
+            : lang === 'en' ? 'Step 1: Select your work period in Korea and approximate monthly salary. The system will calculate your estimated refund in 0.1 seconds!'
+            : '1단계: 한국 근무 기간과 대략적인 월급을 선택해 주세요. 0.1초 만에 예상 환급액을 정밀 계산해 드립니다!',
+        richCard: {
+          cardType: 'estimate_preview',
+          title: '실시간 환급금 모의 정밀 분석',
+          description: '현재 조건 기준 잠정 예상 환급금',
+          metrics: { estimated_refund: '₩450,000 ~ ₩1,800,000' }
+        }
+      };
+    case 2:
+      return {
+        text: lang === 'vi' ? 'Bước 2: Nhập họ tên tiếng Anh và 13 số CMND người nước ngoài (ARC). Mọi thông tin đều được mã hóa an toàn 256-bit SSL 🔒'
+            : lang === 'zh' ? '第2步：请输入登录证上的英文姓名和13位外国人登录号。所有数据均受 256-bit SSL 高级加密保护 🔒'
+            : lang === 'uz' ? '2-bosqich: ARC kartangizdagi inglizcha ismingiz va 13 xonali raqamingizni kiriting. Barcha ma\'lumotlar 256-bit SSL bilan himoyalangan 🔒'
+            : lang === 'id' ? 'Langkah 2: Masukkan nama Inggris di kartu ARC dan 13 digit nomor ARC. Semua data dienkripsi aman dengan 256-bit SSL 🔒'
+            : lang === 'en' ? 'Step 2: Enter your English name and 13-digit Foreigner Registration Number. All data is protected with 256-bit SSL encryption 🔒'
+            : '2단계: 외국인등록증에 적힌 영문 성함과 외국인등록번호 13자리를 입력해 주세요. 모든 정보는 256-bit SSL로 안전하게 암호화됩니다 🔒',
+        richCard: {
+          cardType: 'security_badge',
+          title: '개인정보 보호 및 보안 인증',
+          description: '시중 은행과 동일한 수준의 256-bit SSL 암호화 처리 후 국세청 연동 즉시 자동 파기됩니다.'
+        }
+      };
+    case 3:
+      return {
+        text: lang === 'vi' ? 'Bước 3: Vui lòng chọn nhà mạng (SKT, KT, LGU+, Alttle) và số điện thoại chính chủ để nhận mã OTP xác thực 📱'
+            : lang === 'zh' ? '第3步：请选择手机运营商（SKT、KT、LGU+、廉价卡）并输入本人名义的手机号以接收验证码 📱'
+            : lang === 'uz' ? '3-bosqich: O\'z nomingizdagi aloqa operatori (SKT, KT, LGU+, Alttle) va telefon raqamingizni tanlang 📱'
+            : lang === 'id' ? 'Langkah 3: Pilih operator telekomunikasi (SKT, KT, LGU+, Hemat) dan nomor telepon atas nama Anda sendiri 📱'
+            : lang === 'en' ? 'Step 3: Select your mobile carrier (SKT, KT, LGU+, MVNO) and enter your registered phone number 📱'
+            : '3단계: 본인 명의 휴대폰 번호와 통신사를 선택해 주세요! 알뜰폰 고객님은 대행 통신사 구분을 정확히 확인해 주셔야 인증 문자가 옵니다 📱',
+        richCard: {
+          cardType: 'telecom_helper',
+          title: '통신사 본인인증 도우미',
+          description: '인증 문자가 오지 않는 경우 스팸 차단 설정 및 알뜰폰 대행사 구분을 확인해 주세요.'
+        }
+      };
+    case 4:
+      return {
+        text: lang === 'vi' ? 'Bước 4: Chọn chứng chỉ tiện lợi nhất (Hana Bank, PASS, KakaoTalk). Nếu gặp khó khăn, hãy nhắn cho tôi để nhận ảnh hướng dẫn 1:1 nhé 🛡️'
+            : lang === 'zh' ? '第4步：请选择最方便的认证方式（韩亚银行、PASS、KakaoTalk）。如果遇到困难，请告诉我，我将提供1:1图片引导 🛡️'
+            : lang === 'uz' ? '4-bosqich: Qulay sertifikatni tanlang (Hana Bank, PASS, KakaoTalk). Qiyin bo\'lsa, menga yozing, 1:1 rasmli qo\'llanma beraman 🛡️'
+            : lang === 'id' ? 'Langkah 4: Pilih sertifikat yang paling nyaman (Hana Bank, PASS, KakaoTalk). Jika kesulitan, beri tahu saya untuk panduan foto 1:1 🛡️'
+            : lang === 'en' ? 'Step 4: Select your preferred authentication certificate (Hana Bank, PASS, KakaoTalk). Ask me if you need a step-by-step photo guide 🛡️'
+            : '4단계: 하나은행, PASS, 카카오톡 중 가장 편하신 인증서를 선택해 주세요! 인증서 발급이 어려우시면 저한테 말씀해 주시면 1:1 사진으로 하나씩 안내해 드릴게요 🛡️',
+        richCard: {
+          cardType: 'guide'
+        }
+      };
+    case 5:
+      return {
+        text: lang === 'vi' ? 'Bước 5: Vui lòng phê duyệt thông báo xác thực trên điện thoại hoặc nhập mã PIN 6 chữ số. Hệ thống sẽ kết nối an toàn với Cơ quan Thuế ✨'
+            : lang === 'zh' ? '第5步：请在手机上批准认证请求或输入6位PIN密码。即将安全连接国税厅系统 ✨'
+            : lang === 'uz' ? '5-bosqich: Telefonga kelgan tasdiqlash so\'rovini tasdiqlang yoki 6 xonali PIN-kodni kiriting ✨'
+            : lang === 'id' ? 'Langkah 5: Setujui notifikasi verifikasi di ponsel Anda atau masukkan PIN 6 digit ✨'
+            : lang === 'en' ? 'Step 5: Please approve the auth notification on your phone or enter your 6-digit PIN ✨'
+            : '5단계: 휴대폰으로 도착한 인증 요청 알림을 승인해 주시거나 화면에 6자리 비밀번호를 입력해 주세요! 잠시 후 국세청과 안전하게 연동됩니다 ✨'
+      };
+    case 6:
+      return {
+        text: lang === 'vi' ? 'Bước 6: Đang kết nối trực tiếp với hệ thống Hometax của Cơ quan Thuế để tính toán chính xác tiền hoàn thuế 5 năm qua. Vui lòng giữ màn hình ⏳'
+            : lang === 'zh' ? '第6步：正在与国税厅 Hometax 系统安全联网，精准计算过去5年的退税金额。请稍候，请勿关闭页面 ⏳'
+            : lang === 'uz' ? '6-bosqich: Soliq idorasi tizimi bilan bog\'lanib, so\'nggi 5 yillik qaytariladigan soliq aniq hisoblanmoqda. Iltimos, kutib turing ⏳'
+            : lang === 'id' ? 'Langkah 6: Sedang terhubung dengan sistem Kantor Pajak untuk menghitung pengembalian pajak 5 tahun terakhir secara akurat. Harap tunggu ⏳'
+            : lang === 'en' ? 'Step 6: Connecting with the National Tax Service to calculate your exact 5-year tax refund. Please wait a moment ⏳'
+            : '6단계: 국세청 홈택스 시스템과 안전하게 연동하여 지난 5년간의 세금 환급금을 정밀 계산 중입니다. 화면을 닫지 마시고 잠시만 기다려 주세요 ⏳'
+      };
+    case 7:
+      return {
+        text: lang === 'vi' ? 'Bước 7: Chúc mừng! Số tiền hoàn thuế của bạn đã được tính toán thành công 🎉 Hãy kiểm tra và nhấn [Nhập tài khoản]!'
+            : lang === 'zh' ? '第7步：恭喜您！您的隐藏退税金额已成功计算完毕 🎉 请确认金额后点击 [输入银行账户]！'
+            : lang === 'uz' ? '7-bosqich: Tabriklaymiz! Qaytariladigan soliq summasi muvaffaqiyatli hisoblab chiqildi 🎉 Ma\'lumotni tekshiring va davom eting!'
+            : lang === 'id' ? 'Langkah 7: Selamat! Jumlah pengembalian pajak tersembunyi Anda telah berhasil dihitung 🎉 Periksa hasilnya dan lanjutkan!'
+            : lang === 'en' ? 'Step 7: Congratulations! Your hidden tax refund has been calculated successfully 🎉 Check the details and proceed!'
+            : '7단계: 축하드립니다! 고객님의 숨은 세금 환급액이 정확하게 산출되었습니다 🎉 계산 결과를 확인하시고 [계좌 입력하기]를 눌러주세요!'
+      };
+    case 8:
+      return {
+        text: lang === 'vi' ? 'Bước 8: Vui lòng nhập số tài khoản ngân hàng chính chủ tại Hàn Quốc để nhận tiền hoàn thuế trực tiếp từ Cơ quan Thuế 🏦'
+            : lang === 'zh' ? '第8步：请输入您本人的韩国银行账户，国税厅将直接把退税款存入该账户 🏦'
+            : lang === 'uz' ? '8-bosqich: Soliq idorasi to\'g\'ridan-to\'g\'ri pul o\'tkazishi uchun o\'z nomingizdagi bank hisob raqamini kiriting 🏦'
+            : lang === 'id' ? 'Langkah 8: Masukkan nomor rekening bank di Korea atas nama Anda sendiri untuk menerima transfer langsung dari Kantor Pajak 🏦'
+            : lang === 'en' ? 'Step 8: Enter your Korean bank account number in your name to receive the refund directly from the Tax Office 🏦'
+            : '8단계: 국세청에서 세금을 직접 입금받으실 고객님 본인 명의의 은행 계좌번호를 입력해 주세요 🏦'
+      };
+    case 9:
+      return {
+        text: lang === 'vi' ? 'Bước 9: Vui lòng kiểm tra điều khoản ủy quyền nộp hồ sơ cho kế toán thuế và ký tên. Chính sách thanh toán sau 100%, chi phí hiện tại là 0đ ✍️'
+            : lang === 'zh' ? '第9步：请确认税务师委托申报条款并进行电子签名。100% 后结结算政策，当前支付金额为 0韩元 ✍️'
+            : lang === 'uz' ? '9-bosqich: Soliq mutaxassisiga ishonchnoma shartlarini tekshiring va imzo qo\'ying. 100% natijadan keyin to\'lov, hozir 0 von ✍️'
+            : lang === 'id' ? 'Langkah 9: Periksa ketentuan kuasa konsultan pajak dan tanda tangani. Kebijakan pembayaran pascabayar 100%, biaya saat ini adalah 0 won ✍️'
+            : lang === 'en' ? 'Step 9: Review the tax agent authorization terms and sign. 100% pay-after-refund policy, amount due right now is 0 won ✍️'
+            : '9단계: 세무사 경정청구 위임 약관을 확인하시고 서명해 주시면 접수가 완료됩니다! 100% 후불 정산이므로 지금 결제되는 금액은 0원입니다 ✍️',
+        richCard: {
+          cardType: 'completion_checklist',
+          title: '환급금 신청 진행 체크리스트'
+        }
+      };
+    case 10:
+      return {
+        text: lang === 'vi' ? 'Bước 10: Hồ sơ hoàn thuế đã được tiếp nhận thành công! Tôi sẽ đồng hành cùng bạn đến khi tiền về tài khoản 🚀'
+            : lang === 'zh' ? '第10步：退税申请已成功受理！从税务局审核到退税款到账，我将全程为您保驾护航 🚀'
+            : lang === 'uz' ? '10-bosqich: Soliqni qaytarish arizasi muvaffaqiyatli qabul qilindi! Pul tushguncha barchasini kuzatib boraman 🚀'
+            : lang === 'id' ? 'Langkah 10: Permohonan pengembalian pajak berhasil diajukan! Saya akan memantau prosesnya hingga dana masuk ke rekening Anda 🚀'
+            : lang === 'en' ? 'Step 10: Tax refund application submitted successfully! I will look after your process until the refund arrives in your bank 🚀'
+            : '10단계: 환급 신청이 성공적으로 접수되었습니다! 관할 세무서 심사부터 계좌 입금까지 제가 꼼꼼하게 챙겨드릴게요. 추가 문의사항이 있으시면 언제든 말씀하세요 🚀'
+      };
+    default:
+      return {
+        text: '궁금하신 점이 있으시면 언제든 질문해 주세요! 공식 매니저 김준현이 친절히 안내해 드립니다 🛡️'
+      };
+  }
+};
+
+function LiveVisualCoachCard({
+  activeGuide,
+  language,
+  onAskQuestion
+}: {
+  activeGuide?: { method: 'hana' | 'pass' | 'kakao'; slideIndex: number; total: number } | null;
+  language?: string;
+  onAskQuestion?: (q: string) => void;
+}) {
+  const method = activeGuide?.method || 'hana';
+  const slideIndex = activeGuide?.slideIndex ?? 0;
+  const total = activeGuide?.total ?? 32;
+  const info = getGuideStepKnowledge(method, slideIndex);
+
+  const methodNames = {
+    hana: language === 'vi' ? 'Ngân hàng Hana' : language === 'zh' ? '韩亚银行' : '하나은행',
+    pass: 'PASS',
+    kakao: language === 'vi' ? 'KakaoTalk' : '카카오톡'
+  };
+
+  return (
+    <div className="mt-2.5 p-3.5 rounded-2xl bg-[#081220] border-2 border-[#e2b659]/50 shadow-2xl text-slate-100 flex flex-col gap-2.5 max-w-[310px] animate-in fade-in zoom-in-95 duration-300 font-bold">
+      {/* 1. Header: Active slide status */}
+      <div className="flex items-center justify-between text-[11px] text-slate-300 font-black border-b border-white/10 pb-2">
+        <div className="flex items-center gap-1.5 text-[#e2b659]">
+          <span className="h-2 w-2 rounded-full bg-green-400 animate-ping" />
+          <span>{methodNames[method]} {slideIndex + 1}/{total}</span>
+        </div>
+        <span className="bg-[#b88c30]/20 border border-[#b88c30]/40 px-2 py-0.5 rounded-full text-[9px] font-black text-[#e2b659]">
+          {info.chapterTitle}
+        </span>
+      </div>
+
+      {/* 2. Visual Point & Exact Location Callout */}
+      <div className="bg-[#112338] p-2.5 rounded-xl border border-[#e2b659]/30 flex flex-col gap-1.5">
+        <div className="flex items-center gap-1 text-[#e2b659] text-[10px] font-black">
+          <span>🎯 위치:</span>
+          <span className="text-white">{info.visualLocationHint}</span>
+        </div>
+        <p className="text-[11px] font-bold text-slate-100 leading-snug">
+          {info.actionInstruction}
+        </p>
+      </div>
+
+      {/* 3. Action Reason Box */}
+      <div className="bg-slate-900/90 p-2 rounded-xl border border-white/10 text-[10px] text-slate-300 font-medium leading-relaxed">
+        <span className="text-[#e2b659] font-black">💡 이유: </span>
+        <span>{info.actionReason}</span>
+      </div>
+
+      {/* 4. Instant Troubleshooting Quick Chips */}
+      <div className="flex flex-col gap-1.5 mt-0.5">
+        <span className="text-[9px] text-slate-400 font-black uppercase tracking-wider">
+          {language === 'vi' ? 'Hỏi nhanh Quản lý Kim:' : '김준현 매니저 원클릭 질문:'}
+        </span>
+        <div className="flex flex-wrap gap-1.5">
+          {info.quickQuestions.map((item, idx) => (
+            <button
+              key={idx}
+              onClick={() => onAskQuestion && onAskQuestion(item.q)}
+              className="text-left py-1 px-2 rounded-lg bg-white/5 hover:bg-[#b88c30]/20 hover:border-[#e2b659]/60 border border-white/10 text-[10px] text-slate-200 hover:text-[#e2b659] transition-all cursor-pointer font-bold"
+            >
+              💬 {item.q}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function RichCardRenderer({
+  card,
+  language,
+  currentStep,
+  activeGuide,
+  onAskQuestion
+}: {
+  card: NonNullable<ChatMessage['richCard']>;
+  language?: string;
+  currentStep?: number;
+  activeGuide?: { method: 'hana' | 'pass' | 'kakao'; slideIndex: number; total: number } | null;
+  onAskQuestion?: (q: string) => void;
+}) {
   const { cardType, title, description, metrics } = card;
 
   switch (cardType) {
@@ -359,17 +546,17 @@ function RichCardRenderer({ card, language, currentStep }: { card: NonNullable<C
       );
     case 'security_badge':
       return (
-        <div className="mt-2.5 p-4 rounded-2xl bg-gradient-to-br from-[#0e213a] to-[#050f1b] border border-emerald-500/20 shadow-md text-slate-100 flex flex-col items-center gap-2 max-w-full font-bold">
-          <img
-            src="/certified_security_seal_premium_1774150786685.png"
-            alt="보안 인증 씰"
-            className="w-28 h-28 object-contain"
-          />
-          <span className="text-emerald-400 text-xs font-bold text-center">{title || "개인정보 보호 및 보안 인증"}</span>
-          <p className="text-[10px] text-slate-300 font-medium leading-relaxed text-center">
+        <div className="mt-2.5 p-4.5 rounded-2xl bg-gradient-to-br from-[#0e213a] to-[#050f1b] border border-emerald-500/20 shadow-md text-slate-100 flex flex-col gap-2.5 max-w-full font-bold">
+          <div className="flex items-center gap-2 text-emerald-400 text-xs">
+            <svg className="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+            <span>{title || "개인정보 보호 및 보안 인증"}</span>
+          </div>
+          <p className="text-[10px] text-slate-300 font-medium leading-relaxed">
             {description || "고객님의 모든 정보는 시중 은행과 동일한 수준의 최고급 256-bit SSL 암호화 처리 후 국세청 연동 즉시 자동 파기됩니다."}
           </p>
-          <div className="flex flex-wrap justify-center gap-1.5 text-[9px]">
+          <div className="flex flex-wrap gap-1.5 mt-1 text-[9px]">
             <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">SSL 256bit</span>
             <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">국세청 가이드 준수</span>
           </div>
@@ -430,29 +617,8 @@ function RichCardRenderer({ card, language, currentStep }: { card: NonNullable<C
           </div>
         </div>
       );
-    case 'guide': {
-      const simStep = currentStep ?? 0;
-      return (
-        <div className="mt-2.5 p-3.5 bg-gradient-to-br from-[#0f2442] to-[#071324] border border-[#e2b659]/50 rounded-2xl animate-in fade-in duration-300 overflow-hidden shadow-lg space-y-2.5 text-left font-bold">
-          <div className="flex items-center gap-2 text-[#e2b659] text-xs font-black">
-            <Sparkles className="w-4 h-4 text-[#e2b659] shrink-0" />
-            <span>{title || `Step ${simStep} 맞춤 안내`}</span>
-          </div>
-          <p className="text-[11px] text-slate-200 leading-relaxed font-medium bg-slate-900/60 p-2.5 rounded-xl border border-white/5">
-            💡 {description || "환급 단계에서 어느 부분을 눌러야 하는지 보여주는 가상 화면입니다."}
-          </p>
-          <button
-            type="button"
-            onClick={() => {
-              window.dispatchEvent(new CustomEvent("open-step-guide", { detail: { step: simStep } }));
-            }}
-            className="w-full py-2.5 px-3 bg-gradient-to-r from-[#e2b659] to-amber-600 hover:from-amber-500 hover:to-amber-700 text-slate-950 font-black rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-md active:scale-95 transition-transform"
-          >
-            <span>🎬 Step {simStep} 시뮬레이션 가이드 보기</span>
-          </button>
-        </div>
-      );
-    }
+    case 'guide':
+      return <LiveVisualCoachCard activeGuide={activeGuide} language={language} onAskQuestion={onAskQuestion} />;
     default:
       return null;
   }
@@ -485,7 +651,6 @@ function FloatingConsultingPanelInner() {
   const [viewMode, setViewMode] = useState<"menu" | "live_chat">("menu");
   const [deferredPrompt, setDeferredPrompt] = useState<any>(null);
   const [isInAppBrowser, setIsInAppBrowser] = useState(false);
-  const [expandedFaqIndex, setExpandedFaqIndex] = useState<number | null>(null);
 
   // Live Chat State
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -495,6 +660,9 @@ function FloatingConsultingPanelInner() {
 
   // 🚨 실시간 단계값 동기화 및 Stuck 감지 자동 사운드 개입 연동
   const [currentStep, setCurrentStep] = useState(0);
+  const [showSpeechBubble, setShowSpeechBubble] = useState(true);
+  const [currentBubbleText, setCurrentBubbleText] = useState("");
+  const [activeGuide, setActiveGuide] = useState<{ method: 'hana' | 'pass' | 'kakao'; slideIndex: number; total: number } | null>(null);
 
   const [chatId, setChatId] = useState<string>("");
   const [isTyping, setIsTyping] = useState(false);
@@ -593,6 +761,22 @@ function FloatingConsultingPanelInner() {
 
   const isEstimatePage = pathname?.startsWith("/estimate");
 
+  // 🚀 /estimate 첫 진입 시 선제적 채팅창 자동 열기 (sessionStorage 체크)
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (isEstimatePage) {
+      const alreadyOpened = sessionStorage.getItem("ktrs_chat_auto_opened");
+      if (!alreadyOpened) {
+        const timer = setTimeout(() => {
+          setIsOpen(true);
+          setViewMode("live_chat");
+          sessionStorage.setItem("ktrs_chat_auto_opened", "true");
+        }, 600);
+        return () => clearTimeout(timer);
+      }
+    }
+  }, [isEstimatePage]);
+
   // Helper function to translate keys using local dictionary with English fallback
   const translate = (key: string) => {
     const lang = language || "ko";
@@ -607,73 +791,177 @@ function FloatingConsultingPanelInner() {
     return key;
   };
 
-  // Initial welcome message in live chat
+  // Helper to generate initial welcome & card messages
+  const getDefaultWelcomeMessages = (): ChatMessage[] => {
+    const dummyTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    const getWelcomeMessage = () => {
+      if (isEstimatePage) {
+        switch (language) {
+          case "vi": return "Xin chào~ 😊 Nếu thấy các bước khó khăn, hãy nói với tôi trước nhé! Tôi sẽ giúp bạn hoàn tất các bước phức tạp nhất~ Tên tiếng Anh trên thẻ ARC của bạn là gì?";
+          case "zh": return "您好~ 😊 如果觉得步骤复杂，可以先告诉我！我来帮您搞定最难的步骤~ 请问您登录证上的英文姓名是？";
+          case "id": return "Halo~ 😊 Jika terasa sulit, beri tahu saya dulu ya! Saya akan bantu lewati langkah paling rumit~ Siapa nama lengkap Anda di kartu ARC?";
+          case "uz": return "Salom~ 😊 Agar bosqichlar qiyin tuyulsa, avval menga ayting! Eng qiyin bosqichlarni o'tishingizga yordam beraman~ ARC kartangizdagi ismingiz qanday?";
+          case "th": return "สวัสดีครับ~ 😊 หากรู้สึกว่าขั้นตอนยุ่งยาก บอกผมได้เลยนะครับ! ผมจะช่วยข้ามขั้นตอนที่ยากที่สุดให้~ ขอทราบชื่อภาษาอังกฤษบนบัตรต่างด้าวหน่อยครับ?";
+          case "km": return "សួស្តី~ 😊 ប្រសិនបើពិបាក សូមប្រាប់ខ្ញុំមុន! ខ្ញុំនឹងជួយអ្នករំលងជំហានដែលពិបាកបំផុត~ តើឈ្មោះជាភាសាអង់គ្លេសលើកាត ARC របស់អ្នកឈ្មោះអ្វី?";
+          case "my": return "မင်္ဂလာပါ~ 😊 အဆင့်တွေ ခက်ခဲနေပါက ကျွန်တော့်ကို အရင်ပြောပြပါ! အခက်ခဲဆုံး အပိုင်းတွေကို ကူညီပေးပါမယ်~ ARC ကတ်ပေါ်က သင့်နာမည်က ဘာပါလဲ။";
+          case "ne": return "नमस्कार~ 😊 यदि प्रक्रिया गाह्रो लागेमा पहिले मलाई भन्नुहोस्! म सबैभन्दा गाह्रो चरणहरू पार गर्न मद्दत गर्नेछु~ तपाईंको ARC कार्डमा भएको अंग्रेजी नाम के हो?";
+          case "mn": return "Сайн байна уу~ 😊 Хэрэव хэцүү байвал надад эхлээд хэлээрэй! Би хамгийн төвөгтэй алхмуудыг алгасахад тусална~ ARC карт дээрх англи нэр тань хэн бэ?";
+          case "bn": return "হ্যালো~ 😊 যদি ধাপগুলো কঠিন মনে হয়, তবে প্রথমে আমাকে বলুন! আমি আপনাকে সবচেয়ে জটিল ধাপগুলো পার করতে সাহায্য করব~ আপনার ARC কার্ডের ইংরেজি নামটি কী?";
+          case "kk": return "Сәлеметсіз бе~ 😊 Егер қиын болса, алдымен маған айтыңыз! Ең қиын қадамдарды өтуге көмектесемін~ ARC картаңыздағы ағылшынша атыңыз кім?";
+          case "si": return "ආයුබෝවන්~ 😊 පියවර අපහසු නම්, මුලින්ම මට කියන්න! මම වඩාත්ම සංකීර්ණ පියවර මඟහැරීමට උදවු කරන්නෙමි~ ඔබේ ARC නම කුමක්ද?";
+          case "ur": return "ہیلو~ 😊 اگر مشکل لگے تو پہلے مجھے بتائیں! میں سب سے مشکل مراحل پار کرنے میں آپ کی مدد کروں گا~ آپ کے ARC پر انگریزی نام کیا ہے؟";
+          case "en": return "Hello~ 😊 If the steps feel overwhelming, talk to me first! I will help you breeze through the hardest parts~ What is your name on your ARC?";
+          default: return "안녕하세요~ 😊 어려우시면 저한테 먼저 말씀해 주세요! 제가 가장 어려운 단계를 넘어가게 도와드릴게요~ 이름이 어떻게 되세요?";
+        }
+      }
+
+      switch (language) {
+        case "vi": return "Xin chào! Tôi là Kim Jun-hyun, Quản lý chính thức. 👋 Tôi có thể giúp gì cho bạn về hoàn thuế thu nhập?";
+        case "zh": return "您好！我是官方经理金俊贤。👋 请问有什么关于所得税退税的问题我可以帮您？";
+        case "id": return "Halo! Saya Kim Jun-hyun, Manajer Resmi. 👋 Ada yang bisa saya bantu terkait pengembalian pajak Anda?";
+        case "uz": return "Salom! Men Rasmiy menejer Kim Jun-hyunman. 👋 Daromad solig'ini qaytarish bo'yicha qanday yordam bera olaman?";
+        case "th": return "สวัสดีครับ! ผมคือผู้จัดการอย่างเป็นทางการ คิม จุนฮยอน 👋 มีอะไรให้ผมช่วยเหลือเกี่ยวกับภาษีเงินได้ไหมครับ?";
+        case "km": return "សួស្តី! ខ្ញុំគឺ គីម ជុនហ្យុន អ្នកគ្រប់គ្រងផ្លូវការ។ 👋 តើខ្ញុំអាចជួយអ្វីអ្នកបានខ្លះអំពីการបង្វិលពន្ធ?";
+        case "my": return "မင်္ဂလာပါ။ ကျွန်တော်က တရားဝင်မန်နေဂျာ Kim Jun-hyun ပါ။ 👋 အခွန်ပြန်အမ်းငွေနှင့် ပတ်သက်၍ ဘာကူညီပေးရမလဲ။";
+        case "ne": return "नमस्कार! म आधिकारिक प्रबन्धक किम जुन-ह्युन हुँ। 👋 कर फिर्ता सम्बन्धी केही सोध्नु छ?";
+        case "mn": return "Сайн байна уу! Би албан ёсны менежер Ким Жүн-хён байна. 👋 Татварын буцаан олголтын талаאר юу асуумаар байна?";
+        case "bn": return "হ্যালো! আমি অফিসিয়াল ম্যানেজার কিম জুন-হিউন। 👋 কর ফেরত সম্পর্কে কীভাবে সাহায্য করতে পারি?";
+        case "kk": return "Сәлеметсіз бе! Мен ресми менеджер Ким Джун Хенмін. 👋 Салықты қайтару бойынша қалай көмектесе аламын?";
+        case "si": return "ආයුබෝවන්! මම නිල කළමනාකරු කිම් ජුන්-හ්යුන්. 👋 ආදායම් බදු ආපසු ගෙවීම පිළිබඳව ඔබට කෙසේ උදව් කළ හැකිද?";
+        case "ur": return "ہیلو! میں آفیشل مینیجر کم جون ہیون ہوں۔ 👋 میں انکم ٹیکس ریفنڈ میں آپ کی کیا مدد کر سکتا ہوں؟";
+        case "en": return "Hello! I'm Official Manager Kim Jun-hyun. 👋 How can I assist you with your tax refund query today?";
+        default: return "안녕하세요! 김준현 공식 매니저입니다. 👋 환급금 조회, 본인 인증, 수수료 등 궁금하신 점을 편하게 모국어로 물어보세요!";
+      }
+    };
+
+    const getCardMessage = () => {
+      switch (language) {
+        case "vi": return "Đây là danh thiếp chính thức của tôi. Hãy lưu lại để liên hệ nhé! 🤝";
+        case "zh": return "这是我的官方名片。请保存以备参考！🤝";
+        case "id": return "Ini kartu nama resmi saya. Silakan simpan untuk referensi Anda! 🤝";
+        case "uz": return "Bu mening rasmiy tashrif qog'ozim. Malumot uchun saqlab qo'ying! 🤝";
+        case "th": return "นี่คือนามบัตรอย่างเป็นทางการของผม โปรดบันทึกไว้เพื่ออ้างอิงครับ! 🤝";
+        case "km": return "នេះគឺជាកាតអាជីវកម្មផ្លូវការរបស់ខ្ញុំ។ សូមរក្សាទុកវាសម្រាប់ជាឯកសារយោង! 🤝";
+        case "my": return "ဒါကတော့ ကျွန်ုပ်ရဲ့ တရားဝင် မိတ်ဆက်ကတ်ပြား ဖြစ်ပါတယ်။ ကိုးကားရန် သိမ်းဆည်းထားပါ! 🤝";
+        case "ne": return "यो मेरो आधिकारिक व्यापार कार्ड हो। कृपया सन्दर्भको लागि बचत गर्नुहोस्! 🤝";
+        case "mn": return "Энэ бол миний албан ёсны нэрийн хуудас юм. Хадгалж авна уу! 🤝";
+        case "bn": return "এটি আমার অফিসিয়াল বিজনেস কার্ড। অনুগ্রহ করে রেফারেন্সের জন্য সংরক্ষণ করুন! 🤝";
+        case "kk": return "Бұл менің ресми визиткам. Сілтеме үшін сақтап қойыңыз! 🤝";
+        case "si": return "මෙය මගේ නිල ව්‍යාපාරික කාඩ්පතයි. කරුණාකර එය සුරැකීමට තබන්න! 🤝";
+        case "ur": return "یہ میرا آفیشل بزنس کارڈ ہے۔ براہ کرم حوالہ کے لیے محفوظ کر لیں! 🤝";
+        case "en": return "Here is my official business card. Please save it for reference! 🤝";
+        default: return "제 모바일 명함입니다. 신뢰할 수 있는 공식 매니저이니 언제든 안심하고 문의해 주세요! 🤝";
+      }
+    };
+
+    return [
+      {
+        id: "welcome-1",
+        sender: "manager",
+        text: getWelcomeMessage(),
+        timestamp: dummyTimestamp,
+      },
+      {
+        id: "welcome-card",
+        sender: "manager",
+        imageUrl: "/kim_junhyun_card.png",
+        text: getCardMessage(),
+        timestamp: dummyTimestamp,
+      }
+    ];
+  };
+
+
+  // 🎯 0단계 ~ 10단계 단계 변경 감지 및 실시간 선제적 가이드 발송
   useEffect(() => {
-    if (viewMode === "live_chat" && messages.length === 0 && !isLoadingHistory && hasCheckedHistory) {
-      const getWelcomeMessage = () => {
-        switch (language) {
-          case "vi": return "Xin chào! Tôi là Kim Jun-hyun, Quản lý chính thức. 👋 Tôi có thể giúp gì cho bạn về hoàn thuế thu nhập?";
-          case "zh": return "您好！我是官方经理金俊贤。👋 请问有什么关于所得税退税的问题我可以帮您？";
-          case "id": return "Halo! Saya Kim Jun-hyun, Manajer Resmi. 👋 Ada yang bisa saya bantu terkait pengembalian pajak Anda?";
-          case "uz": return "Salom! Men Rasmiy menejer Kim Jun-hyunman. 👋 Daromad solig'ini qaytarish bo'yicha qanday yordam bera olaman?";
-          case "th": return "สวัสดีครับ! ผมคือผู้จัดการอย่างเป็นทางการ คิม จุนฮยอน 👋 มีอะไรให้ผมช่วยเหลือเกี่ยวกับภาษีเงินได้ไหมครับ?";
-          case "km": return "សួស្តី! ខ្ញុំគឺ គីម ជុនហ្យុន អ្នកគ្រប់គ្រងផ្លូវការ។ 👋 តើខ្ញុំអាចជួយអ្វីអ្នកបានខ្លះអំពីការបង្វិលពន្ធ?";
-          case "my": return "မင်္ဂလာပါ။ ကျွန်တော်က တရားဝင်မန်နေဂျာ Kim Jun-hyun ပါ။ 👋 အခွန်ပြန်အမ်းငွေနှင့် ပတ်သက်၍ ဘာကူညီပေးရမလဲ။";
-          case "ne": return "नमस्कार! म आधिकारिक प्रबन्धक किम जुन-ह्युन हुँ। 👋 कर फिर्ता सम्बन्धी केही सोध्नु छ?";
-          case "mn": return "Сайн байна уу! Би албан ёсны менежер Ким Жүн-хён байна. 👋 Татварын буцаан олголтын талаар юу асуумаар байна?";
-          case "bn": return "হ্যালো! আমি অফিসিয়াল ম্যানেজার কিম জুন-হিউন। 👋 কর ফেরত সম্পর্কে কীভাবে সাহায্য করতে পারি?";
-          case "kk": return "Сәлеметсіз бе! Мен ресми менеджер Ким Джун Хенмін. 👋 Салықты қайтару бойынша қалай көмектесе аламын?";
-          case "si": return "ආයුබෝවන්! මම නිල කළමනාකරු කිම් ජුන්-හ්යුන්. 👋 බදු ආපසු ගෙවීම ගැන ඔබට කෙසේ උපකාර කළ හැකිද?";
-          case "ur": return "ہیلو! میں آفیشل مینیجر کم جون ہیون ہوں۔ 👋 ٹیکس ریفنڈ کے بارے میں میں آپ کی کیا مدد کر سکتا ہوں؟";
-          case "en": return "Hello! I'm Official Manager Kim Jun-hyun. 👋 How can I assist you with your tax refund query today?";
-          default: return "안녕하세요! 김준현 공식 매니저입니다. 👋 환급금 조회, 본인 인증, 수수료 등 궁금하신 점을 편하게 모국어로 물어보세요!";
-        }
-      };
+    const handleStepChange = (e: any) => {
+      const newStep = e.detail?.step;
+      if (typeof newStep === 'number') {
+        setCurrentStep(newStep);
+        
+        // 채팅창이 열려있을 때 단계별 맞춤 선제 안내 메시지 자동 추가
+        const stepMsgData = getStepProactiveMessage(newStep, language || 'ko');
+        setCurrentBubbleText(stepMsgData.text);
+        setShowSpeechBubble(true);
+        const dummyTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        setMessages(prev => {
+          // 이미 해당 단계 안내가 가장 최근 메시지로 들어가 있다면 중복 발송 방지
+          const lastMsg = prev[prev.length - 1];
+          if (lastMsg && (lastMsg.id === `step-proactive-${newStep}` || lastMsg.text === stepMsgData.text)) {
+            return prev;
+          }
+          return [
+            ...prev,
+            {
+              id: `step-proactive-${newStep}-${Date.now()}`,
+              sender: "manager",
+              text: stepMsgData.text,
+              richCard: stepMsgData.richCard,
+              timestamp: dummyTimestamp
+            }
+          ];
+        });
+      }
+    };
 
-      const getCardMessage = () => {
-        switch (language) {
-          case "vi": return "Đây là danh thiếp chính thức của tôi. Hãy lưu lại để liên hệ nhé! 🛡️";
-          case "zh": return "这是我的官方名片。请保存以备参考！🛡️";
-          case "id": return "Ini kartu nama resmi saya. Silakan simpan untuk referensi Anda! 🛡️";
-          case "uz": return "Bu mening rasmiy tashrif qog'ozim. Malumot uchun saqlab qo'ying! 🛡️";
-          case "th": return "นี่คือนามบัตรอย่างเป็นทางการของผม โปรดบันทึกไว้เพื่ออ้างอิงครับ! 🛡️";
-          case "km": return "នេះគឺជាកាតអាជីវកម្មផ្លូវការរបស់ខ្ញុំ។ សូមរក្សាទុកវាសម្រាប់ជាឯកសារយោង! 🛡️";
-          case "my": return "ဒါကတော့ ကျွန်ုပ်ရဲ့ တရားဝင် မိတ်ဆက်ကတ်ပြား ဖြစ်ပါတယ်။ ကိုးကားရန် သိမ်းဆည်းထားပါ! 🛡️";
-          case "ne": return "यो मेरो आधिकारिक व्यापार कार्ड हो। कृपया सन्दर्भको लागि बचत गर्नुहोस्! 🛡️";
-          case "mn": return "Энэ бол миний албан ёсны нэрийн хуудас юм. Хадгалж авна уу! 🛡️";
-          case "bn": return "এটি আমার অফিসিয়াল বিজনেস কার্ড। অনুগ্রহ করে রেফারেন্সের জন্য সংরক্ষণ করুন! 🛡️";
-          case "kk": return "Бұл менің ресми визиткам. Сілтеме үшін сақтап қойыңыз! 🛡️";
-          case "si": return "මෙය මගේ නිල ව්‍යාපාරික කාඩ්පතයි. කරුණාකර එය සුරැකීමට තබන්න! 🛡️";
-          case "ur": return "یہ میرا آفیشل بزنس کارڈ ہے۔ براہ کرم حوالہ کے لیے محفوظ کر لیں! 🛡️";
-          case "en": return "Here is my official business card. Please save it for reference! 🛡️";
-          default: return "제 모바일 명함입니다. 신뢰할 수 있는 공식 매니저이니 언제든 안심하고 문의해 주세요! 🛡️";
-        }
-      };
-
-      setMessages([
+    const handleStuckEvent = () => {
+      // 30초 정체 시 구출 가이드 자동 오픈 및 안내
+      setIsOpen(true);
+      setViewMode("live_chat");
+      const dummyTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      setMessages(prev => [
+        ...prev,
         {
-          id: "welcome-1",
+          id: `stuck-help-${Date.now()}`,
           sender: "manager",
-          text: getWelcomeMessage(),
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-        },
-        {
-          id: "welcome-card",
-          sender: "manager",
-          imageUrl: "/kim_junhyun_card.png",
-          text: getCardMessage(),
-          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          text: (language === 'vi' ? 'Bạn đang gặp khó khăn ở bước này phải không? Tôi đã mở sẵn video hướng dẫn mô phỏng trực tiếp bên dưới cho bạn nhé! 😊'
+               : language === 'zh' ? '您在这个步骤遇到困难了吗？我为您准备了下方的实时模拟引导视频，请参考操作！😊'
+               : '혹시 이 단계에서 진행이 어려우신가요? 고객님을 위해 아래에 실시간 시뮬레이션 가이드를 준비해 두었습니다! 천천히 따라해 보세요 😊'),
+          richCard: { cardType: 'guide' },
+          timestamp: dummyTimestamp
         }
       ]);
-    }
-  }, [viewMode, language]);
+    };
 
-  // Load previous messages from Supabase
-  useEffect(() => {
-    if (viewMode !== "live_chat" || !chatId) {
-      if (viewMode !== "live_chat") {
-        setHasCheckedHistory(false);
+    const handleGuideSlideChange = (e: any) => {
+      if (e && e.detail) {
+        setActiveGuide({
+          method: e.detail.method || 'hana',
+          slideIndex: e.detail.slideIndex ?? 0,
+          total: e.detail.total ?? 32
+        });
       }
+    };
+
+    window.addEventListener("ktrs-step-change", handleStepChange);
+    window.addEventListener("ktrs-user-stuck", handleStuckEvent);
+    window.addEventListener("ktrs-guide-slide-change", handleGuideSlideChange as EventListener);
+    return () => {
+      window.removeEventListener("ktrs-step-change", handleStepChange);
+      window.removeEventListener("ktrs-user-stuck", handleStuckEvent);
+      window.removeEventListener("ktrs-guide-slide-change", handleGuideSlideChange as EventListener);
+    };
+  }, [language, currentStep]);
+
+  // 1. Initial welcome message check when entering live chat
+  useEffect(() => {
+    if (viewMode === "live_chat" && messages.length === 0) {
+      setMessages(getDefaultWelcomeMessages());
+    }
+  }, [viewMode, language, isEstimatePage]);
+
+  // 2. Load previous messages from Supabase
+  useEffect(() => {
+    if (viewMode !== "live_chat") {
+      setHasCheckedHistory(false);
+      return;
+    }
+
+    const currentActiveChatId = chatId || (typeof window !== 'undefined' ? localStorage.getItem("ktrs_chat_session_id") : null);
+    if (!currentActiveChatId) {
+      setHasCheckedHistory(true);
       return;
     }
 
@@ -686,10 +974,10 @@ function FloatingConsultingPanelInner() {
           .from("support_chats")
           .select("id")
           .eq("channel", "web")
-          .eq("external_chat_id", chatId)
+          .eq("external_chat_id", currentActiveChatId)
           .maybeSingle();
 
-        if (chatSession) {
+        if (chatSession && isMounted) {
           const { data: dbMessages } = await supabase
             .from("support_messages")
             .select("*")
@@ -697,7 +985,7 @@ function FloatingConsultingPanelInner() {
             .order("created_at", { ascending: true });
 
           if (isMounted && dbMessages && dbMessages.length > 0) {
-            const mapped = dbMessages.map((msg) => {
+            const mapped: ChatMessage[] = dbMessages.map((msg) => {
               const isUser = msg.sender_type === "customer";
               const isKo = (language || "ko") === "ko";
               const rawText = isUser 
@@ -720,32 +1008,14 @@ function FloatingConsultingPanelInner() {
                 m.id === "welcome-1" ||
                 m.id === "welcome-card" ||
                 m.text.includes("공식 매니저") ||
-                m.text.includes("모바일 명함")
+                m.text.includes("명함") ||
+                m.text.includes("이름이 어떻게 되세요")
             );
 
             if (hasWelcomeAlready) {
               setMessages(mapped);
             } else {
-              const dummyTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-              const welcomeText = translate("안녕하세요! 김준현 공식 매니저입니다. 👋 환급금 조회, 본인 인증, 수수료 등 궁금하신 점을 편하게 모국어로 물어보세요!");
-              const cardText = translate("제 모바일 명함입니다. 신뢰할 수 있는 공식 매니저이니 언제든 안심하고 문의해 주세요! 🛡️");
-
-              const welcomeMsgs: ChatMessage[] = [
-                {
-                  id: "welcome-1",
-                  sender: "manager",
-                  text: welcomeText,
-                  timestamp: dummyTimestamp,
-                },
-                {
-                  id: "welcome-card",
-                  sender: "manager",
-                  imageUrl: "/kim_junhyun_card.png",
-                  text: cardText,
-                  timestamp: dummyTimestamp,
-                }
-              ];
-              setMessages([...welcomeMsgs, ...mapped]);
+              setMessages([...getDefaultWelcomeMessages(), ...mapped]);
             }
           }
         }
@@ -764,7 +1034,7 @@ function FloatingConsultingPanelInner() {
     return () => {
       isMounted = false;
     };
-  }, [viewMode, chatId, language]);
+  }, [viewMode, chatId, language, isEstimatePage]);
 
   // Auto-scroll to bottom of chat
   useEffect(() => {
@@ -874,16 +1144,19 @@ function FloatingConsultingPanelInner() {
           clientOs: device.os,
           clientIsInApp: device.isInApp,
           currentPathname: pathname,
-          currentStep: typeof forcedStep === 'number' ? forcedStep : currentStep
+          currentStep: typeof forcedStep === 'number' ? forcedStep : currentStep,
+          activeGuideContext: activeGuide ? getGuideStepKnowledge(activeGuide.method, activeGuide.slideIndex) : undefined
         }),
       });
 
-      if (!res.ok) {
-        throw new Error(`HTTP error! status: ${res.status}`);
-      }
-
       const data = await res.json();
       setIsSending(false); // Hide main loading spinner
+
+      // 🚀 정보 수집 완료 시 Step 4 자동 점프 (ktrs-auto-fill)
+      if (data.collectedUserData && (data.collectedUserData.isComplete || (data.collectedUserData.name && data.collectedUserData.registrationNumber && data.collectedUserData.phone))) {
+        console.log("[FloatingAiChat] Auto-filling collected user data to estimate form:", data.collectedUserData);
+        window.dispatchEvent(new CustomEvent("ktrs-auto-fill", { detail: data.collectedUserData }));
+      }
       
       // If AI response is disabled (Manual Takeover), do not print any automatic answers.
       if (data.isAiActive === false || data.answer === "") {
@@ -976,14 +1249,8 @@ function FloatingConsultingPanelInner() {
 
     const handleUserStuck = (e: Event) => {
       const customEvent = e as CustomEvent;
-      const stuckStep = customEvent.detail?.step ?? currentStep;
-      console.log(`[FloatingAiChat] Stuck detected at step: ${stuckStep}.`);
-
-      // 🚨 [필수 방어] 단순 인사/탐색/메인 단계(step 0 이하)에서는 STUCK 구출 메시지를 보내지 않습니다.
-      if (stuckStep <= 0) {
-        console.log(`[FloatingAiChat] Suppressing STUCK_HELPER for initial/greeting step (${stuckStep}).`);
-        return;
-      }
+      const stuckStep = customEvent.detail?.step ?? 0;
+      console.log(`[FloatingAiChat] Stuck detected at step: ${stuckStep}. Triggering helper...`);
 
       // 🔊 경쾌한 수신 카톡 알림 사운드 재생
       try {
@@ -1030,9 +1297,48 @@ function FloatingConsultingPanelInner() {
 
   return (
     <div className="fixed bottom-[98px] lg:bottom-6 right-3 sm:right-6 z-[200] flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)]">
-      {/* 1. collapsed state: capsule button */}
+      {/* 1. collapsed state: capsule button, simulation button & proactive speech bubble */}
       {!isOpen && (
-        <div className="flex flex-col items-end gap-2 group max-w-[280px]">
+        <div className="flex flex-col items-end gap-2 group max-w-[320px]">
+          {/* 💬 0단계부터 10단계까지 실시간 선제적 말풍선 팝업 (Speech Bubble) */}
+          {showSpeechBubble && (
+            <div
+              onClick={() => {
+                setIsOpen(true);
+                setViewMode("live_chat");
+              }}
+              className="relative bg-[#0f1e36] text-white border-2 border-[#b88c30] rounded-2xl p-3 pr-7 shadow-[0_10px_30px_rgba(0,0,0,0.5)] animate-in fade-in slide-in-from-bottom-2 duration-300 text-xs font-bold leading-snug cursor-pointer hover:border-[#e2b659] hover:scale-[1.02] transition-all"
+            >
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setShowSpeechBubble(false);
+                }}
+                className="absolute top-2 right-2 text-slate-400 hover:text-white transition-colors"
+                title="말풍선 닫기"
+              >
+                <X className="h-3.5 w-3.5" />
+              </button>
+              <div className="flex items-center gap-1.5 mb-1 text-[#e2b659] text-[10px] font-black uppercase">
+                <span className="h-2 w-2 rounded-full bg-green-400 animate-pulse" />
+                <span>
+                  {language === 'vi' ? `Mẹo Bước ${currentStep} từ Quản lý Kim`
+                   : language === 'zh' ? `金经理的第${currentStep}步实时引导`
+                   : language === 'uz' ? `Menejer Kimning ${currentStep}-bosqich yordami`
+                   : language === 'id' ? `Panduan Langkah ${currentStep} dari Manajer Kim`
+                   : language === 'en' ? `Manager Kim's Step ${currentStep} Live Guide`
+                   : `김준현 매니저의 Step ${currentStep} 실시간 안내`}
+                </span>
+              </div>
+              <p className="text-slate-200 text-[11px] break-keep font-medium leading-relaxed">
+                {getStepProactiveMessage(currentStep, language || 'ko').text}
+              </p>
+              {/* 말풍선 꼬리 */}
+              <div className="absolute -bottom-2 right-8 w-0 h-0 border-l-[8px] border-l-transparent border-r-[8px] border-r-transparent border-t-[8px] border-t-[#b88c30]" />
+            </div>
+          )}
+
+          {/* 메인 캡슐 버튼 */}
           <button
             onClick={() => {
               setIsOpen(true);
@@ -1142,45 +1448,13 @@ function FloatingConsultingPanelInner() {
                 </p>
               </div>
 
-              {/* FAQ or Core Info Display Box */}
+              {/* Manager Headline Info Display Box */}
               <div className="px-5 pb-3">
-                {isEstimatePage ? (
-                  <div className="bg-[#081220] border border-[#b88c30]/20 rounded-3xl p-4 shadow-inner text-left">
-                    <div className="text-[11px] font-black text-[#b88c30] uppercase tracking-wider mb-2.5 px-1 flex items-center justify-between">
-                      <span>{t('자주 묻는 질문 (FAQ)')}</span>
-                      <span className="text-[9px] text-slate-500 font-medium lowercase">click to expand</span>
-                    </div>
-                    <div className="max-h-[170px] overflow-y-auto pr-1 space-y-2.5 custom-scrollbar">
-                      {FAQ_ITEMS.map((faq, i) => (
-                        <div key={i} className="border-b border-white/5 last:border-0 pb-2 last:pb-0">
-                          <button
-                            onClick={() => setExpandedFaqIndex(expandedFaqIndex === i ? null : i)}
-                            className="w-full flex justify-between items-start text-left py-0.5 hover:text-[#e2b659] transition-colors group"
-                          >
-                            <span className="text-xs font-black text-slate-200 leading-snug break-keep pr-2 group-hover:text-[#e2b659]">
-                              {t(faq.title)}
-                            </span>
-                            <ChevronRight className={cn(
-                              "h-3.5 w-3.5 shrink-0 text-slate-500 transition-transform duration-200 mt-0.5",
-                              expandedFaqIndex === i ? "rotate-90 text-[#b88c30]" : "group-hover:text-[#e2b659]"
-                            )} />
-                          </button>
-                          {expandedFaqIndex === i && (
-                            <div className="mt-2 text-[11px] font-bold text-slate-400 bg-white/5 rounded-2xl p-3 leading-relaxed whitespace-pre-wrap break-keep animate-in fade-in slide-in-from-top-1 duration-200">
-                              {t(faq.content)}
-                            </div>
-                          )}
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ) : (
-                  <div className="text-center">
-                    <p className="text-[#e2b659] font-black text-xs sm:text-sm tracking-tight break-keep leading-snug">
-                      {translate("외국인 중소 기업 청년 소득세 환급을 도와 드립니다.")}
-                    </p>
-                  </div>
-                )}
+                <div className="text-center">
+                  <p className="text-[#e2b659] font-black text-xs sm:text-sm tracking-tight break-keep leading-snug">
+                    {translate("외국인 중소 기업 청년 소득세 환급을 도와 드립니다.")}
+                  </p>
+                </div>
               </div>
 
               {/* Action Links Container */}
@@ -1281,7 +1555,15 @@ function FloatingConsultingPanelInner() {
                             )}
                             {msg.text}
                           </div>
-                          {msg.richCard && <RichCardRenderer card={msg.richCard} language={language} currentStep={currentStep} />}
+                          {msg.richCard && (
+                            <RichCardRenderer
+                              card={msg.richCard}
+                              language={language}
+                              currentStep={currentStep}
+                              activeGuide={activeGuide}
+                              onAskQuestion={(q) => handleSendMessage(q)}
+                            />
+                          )}
                           <span className={cn(
                             "text-[9px] text-slate-500 font-bold mt-1 px-1",
                             msg.sender === "user" ? "text-right" : "text-left"

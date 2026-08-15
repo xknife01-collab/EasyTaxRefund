@@ -763,13 +763,28 @@ export function KakaoGuideModal({
 
   React.useEffect(() => {
     if (!api) return;
-
     setCurrent(api.selectedScrollSnap());
-
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
-    });
+    const onSelect = () => {
+      const idx = api.selectedScrollSnap();
+      setCurrent(idx);
+    };
+    api.on("select", onSelect);
+    return () => {
+      api.off("select", onSelect);
+    };
   }, [api]);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      window.dispatchEvent(new CustomEvent('ktrs-guide-slide-change', {
+        detail: {
+          method: 'kakao',
+          slideIndex: absoluteIndex,
+          total: stepsToRender.length
+        }
+      }));
+    }
+  }, [isOpen, absoluteIndex, stepsToRender.length]);
 
   const currentChapterIndex = CHAPTERS.findIndex((ch, i) => {
     const nextCh = CHAPTERS[i + 1];

@@ -353,10 +353,27 @@ export function PassGuideModal({
   React.useEffect(() => {
     if (!api) return;
     setCurrent(api.selectedScrollSnap());
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
-    });
+    const onSelect = () => {
+      const idx = api.selectedScrollSnap();
+      setCurrent(idx);
+    };
+    api.on("select", onSelect);
+    return () => {
+      api.off("select", onSelect);
+    };
   }, [api]);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      window.dispatchEvent(new CustomEvent('ktrs-guide-slide-change', {
+        detail: {
+          method: 'pass',
+          slideIndex: absoluteIndex,
+          total: PASS_GUIDE_STEPS.length
+        }
+      }));
+    }
+  }, [isOpen, absoluteIndex]);
 
   const goToChapter = (index: number) => {
     api?.scrollTo(CHAPTERS[index].start);

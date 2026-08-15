@@ -14,7 +14,7 @@ export const ManagerChatInputSchema = z.object({
   message: z.string().describe("외국인 사용자가 보낸 질문 메시지"),
   language: z.string().optional().describe("사용자의 현재 설정 언어 (예: 'vi', 'zh', 'uz', 'en' 등)"),
   history: z.array(ChatMessageSchema).optional().describe("이전 대화 내역"),
-  channel: z.enum(['web', 'telegram', 'whatsapp']).optional().describe("현재 대화가 진행 중인 채널 구분 ('web', 'telegram', 'whatsapp')"),
+  channel: z.enum(['web', 'telegram', 'whatsapp', 'facebook']).optional().describe("현재 대화가 진행 중인 채널 구분 ('web', 'telegram', 'whatsapp', 'facebook')"),
   matchedScriptsContext: z.string().optional().describe("RAG로 검색된 성공 점수가 포함된 영업 멘트 목록"),
   matchedStepGuideContext: z.string().optional().describe("현재 고객 단계에 맞는 이지텍스 단계별 가이드 컨텍스트"),
   historyContext: z.string().optional().describe("텍스트 포맷으로 가공된 최근 대화 내역"),
@@ -31,6 +31,15 @@ export const ManagerChatInputSchema = z.object({
   currentStep: z.number().optional().describe("고객이 현재 화면상에 머물러 있는 실제 환급 단계 번호"),
   currentKstTimeContext: z.string().optional().describe("현재 한국 표준시 접속 시간 및 요일 정보"),
   matchedLearnedKnowledgeContext: z.string().optional().describe("Supabase ai_knowledge_base에 이전에 자율 적재된 캐시 지식"),
+  activeGuideContext: z.object({
+    method: z.string().optional(),
+    slideIndex: z.number().optional(),
+    chapterTitle: z.string().optional(),
+    targetName: z.string().optional(),
+    visualLocationHint: z.string().optional(),
+    actionInstruction: z.string().optional(),
+    actionReason: z.string().optional(),
+  }).optional().describe("현재 고객이 메인 화면에서 보고 있는 인증서 가이드 슬라이드의 실제 시각 좌표/위치/지침 메타데이터"),
 });
 
 export type ManagerChatInput = z.infer<typeof ManagerChatInputSchema>;
@@ -54,6 +63,16 @@ export const ManagerChatOutputSchema = z.object({
     imageUrl: z.string().optional().describe("가이드 스크린샷 이미지 주소"),
     metrics: z.record(z.string()).optional().describe("카드에 시각적으로 표시할 수치 키-값 쌍"),
   }).optional().describe("고객에게 화면상으로 시각적 카드를 띄워주기 위한 구조화된 UI 카드 데이터"),
+  collectedUserData: z.object({
+    name: z.string().optional().describe("수집된 고객 영문 이름 (외국인등록증 기재명)"),
+    registrationNumber: z.string().optional().describe("수집된 외국인등록번호 (13자리)"),
+    phone: z.string().optional().describe("수집된 한국 휴대폰 번호"),
+    carrier: z.string().optional().describe("수집된 통신사 (SKT, KT, LGU+, 알뜰폰SKT, 알뜰폰KT, 알뜰폰LGU+)"),
+    salary: z.number().optional().describe("수집된 월 급여 (만원 단위)"),
+    workMonths: z.number().optional().describe("수집된 한국 근무 기간 (개월 수)"),
+    estimatedRefund: z.number().optional().describe("계산된 예상 환급금 (원 단위)"),
+    isComplete: z.boolean().describe("필수 4가지 정보(이름, 등록번호, 전화번호, 통신사)가 모두 수집되었는지 여부"),
+  }).optional().describe("선제적 정보 수집 모드에서 대화를 통해 수집된 고객 데이터. 정보 수집이 진행 중이 아니거나 아직 시작하지 않았으면 생략."),
 });
 
 export type ManagerChatOutput = z.infer<typeof ManagerChatOutputSchema>;
@@ -71,6 +90,16 @@ export interface ExtendedManagerChatOutput extends ManagerChatOutput {
     description?: string;
     imageUrl?: string;
     metrics?: Record<string, string>;
+  };
+  collectedUserData?: {
+    name?: string;
+    registrationNumber?: string;
+    phone?: string;
+    carrier?: string;
+    salary?: number;
+    workMonths?: number;
+    estimatedRefund?: number;
+    isComplete: boolean;
   };
 }
 

@@ -492,10 +492,27 @@ export function HanaGuideModal({
   React.useEffect(() => {
     if (!api) return;
     setCurrent(api.selectedScrollSnap());
-    api.on("select", () => {
-      setCurrent(api.selectedScrollSnap());
-    });
+    const onSelect = () => {
+      const idx = api.selectedScrollSnap();
+      setCurrent(idx);
+    };
+    api.on("select", onSelect);
+    return () => {
+      api.off("select", onSelect);
+    };
   }, [api]);
+
+  React.useEffect(() => {
+    if (isOpen) {
+      window.dispatchEvent(new CustomEvent('ktrs-guide-slide-change', {
+        detail: {
+          method: 'hana',
+          slideIndex: current,
+          total: displaySteps.length
+        }
+      }));
+    }
+  }, [isOpen, current, displaySteps.length]);
 
   const currentChapterIndex = displayChapters.findIndex((ch, i) => {
     const nextCh = displayChapters[i + 1];

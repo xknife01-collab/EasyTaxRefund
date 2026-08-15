@@ -186,7 +186,7 @@ export const common = {
   "나의 실시간 환급 현황": "Trạng thái hoàn thuế thời gian thực của tôi",
   "회사는 전문적인 분석을 통해 최선의 환급 서비스를 제공합니다. 만약 국세청 심사 결과 환급액이 발생하지 않거나 기각(거절)되는 경우, 사용자가 지불해야 할 수수료는 0원이며 어떠한 요금도 청구되지 않습니다. 사용자의 리스크는 0%입니다.": "Công ty cung cấp dịch vụ hoàn tiền tốt nhất thông qua phân tích chuyên nghiệp. Nếu khoản tiền hoàn lại không được thực hiện hoặc bị từ chối (từ chối) do Cơ quan Thuế Quốc gia xem xét, thì khoản phí mà người dùng phải trả là 0 won và không bị tính phí. Rủi ro của bạn là 0%.",
   "홈": "Trang chủ",
-  "외국인은 통신사마다 이름 형식이 다를 수 있습니다. 아래 추천된 형식 중 본인의 [통신사 앱]에 등록된 것과 \"완벽히 똑같은\" 것을 선택해 주세요.": "Người nước ngoài có thể có các định dạng tên khác nhau tùy thuộc vào nhà cung cấp dịch vụ của họ. Trong số các định dạng được đề xuất bên dưới, vui lòng chọn định dạng “giống hệt” với định dạng đã đăng ký trong [ứng dụng telco] của bạn.",
+  "외국인은 통신사마다 이름 형식이 다를 수 있습니다. 아래 추천된 형식 중 본인의 [통신사 앱]에 등록된 것과 \"완벽히 똑같은\" 것을 선택해 주세요.": "Người nước ngoài có thể có định dạng tên khác nhau tùy theo nhà mạng. Vui lòng chọn định dạng 'hoàn toàn trùng khớp' với thông tin đã đăng ký trong [ứng dụng nhà mạng] của bạn.",
   "한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.": "Cần có chứng chỉ bên dưới để đăng nhập vào Dịch vụ Thuế Quốc gia Hàn Quốc. Chứng chỉ được sử dụng để xác thực chính bạn. Nếu bạn chưa có chứng chỉ, vui lòng đảm bảo lấy được chứng chỉ trước khi bắt đầu.",
   "인증번호가 일치하지 않습니다. 다시 입력해 주세요.": "Mã xác thực không khớp. Vui lòng nhập lại.",
   "신분증 정보가 자동 입력되었습니다.": "Thông tin giấy tờ tùy thân đã được nhập tự động.",

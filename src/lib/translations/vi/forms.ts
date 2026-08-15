@@ -50,7 +50,7 @@ export const forms = {
   "KT 알뜰폰": "Mạng giá rẻ KT",
   "LGU+ 알뜰폰": "Mạng giá rẻ LGU+",
   "AI 성명 최적화 분석 중...": "AI đang phân tích tối ưu hóa tên...",
-  "외국인은 통신사마다 이름 형식이 다를 수 있습니다. 아래 추천된 형식 중 본인의 [통신사 앱]에 등록된 것과 \"완벽히 똑같은\" 것을 선택해 주세요.": "Người nước ngoài có thể có định dạng tên khác nhau tùy nhà mạng. Vui lòng chọn định dạng \\",
+  "외국인은 통신사마다 이름 형식이 다를 수 있습니다. 아래 추천된 형식 중 본인의 [통신사 앱]에 등록된 것과 \"완벽히 똑같은\" 것을 선택해 주세요.": "Người nước ngoài có thể có định dạng tên khác nhau tùy theo nhà mạng. Vui lòng chọn định dạng 'hoàn toàn trùng khớp' với thông tin đã đăng ký trong [ứng dụng nhà mạng] của bạn.",
   "성공 확률이 가장 높은 이름을 찾는 중...": "Đang tìm tên có tỷ lệ thành công cao nhất...",
   "통신사 전산망의 다양한 영문 표기법을 분석하고 있습니다.": "Đang phân tích các cách viết tên tiếng Anh khác nhau trên hệ thống nhà mạng.",
   "통신사에 등록된 이름을 그대로 입력": "Nhập chính xác tên đã đăng ký với nhà mạng",

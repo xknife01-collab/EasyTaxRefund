@@ -186,7 +186,7 @@ export const common = {
   "나의 실시간 환급 현황": "Status Pengembalian Real-time",
   "회사는 전문적인 분석을 통해 최선의 환급 서비스를 제공합니다. 만약 국세청 심사 결과 환급액이 발생하지 않거나 기각(거절)되는 경우, 사용자가 지불해야 할 수수료는 0원이며 어떠한 요금도 청구되지 않습니다. 사용자의 리스크는 0%입니다.": "Perusahaan menyediakan layanan pengembalian dana terbaik melalui analisis profesional. Jika hasil pemeriksaan Kantor Pajak Nasional menunjukkan tidak ada jumlah pengembalian dana atau ditolak (dibatalkan), biaya yang harus dibayar pengguna adalah 0 won, dan tidak ada biaya lain yang akan dibebankan. Risiko pengguna adalah 0%.",
   "홈": "Beranda",
-  "외국인은 통신사마다 이름 형식이 다를 수 있습니다. 아래 추천된 형식 중 본인의 [통신사 앱]에 등록된 것과 \"완벽히 똑같은\" 것을 선택해 주세요.": "Untuk orang asing, format nama mungkin berbeda tergantung pada penyedia telekomunikasi. Harap pilih format yang \\",
+  "외국인은 통신사마다 이름 형식이 다를 수 있습니다. 아래 추천된 형식 중 본인의 [통신사 앱]에 등록된 것과 \"완벽히 똑같은\" 것을 선택해 주세요.": "Bagi warga asing, format nama mungkin berbeda untuk tiap operator. Silakan pilih format yang 'benar-benar sama persis' dengan yang terdaftar di [Aplikasi Operator] Anda.",
   "한국국세청에 로그인하기 위해서는 꼭 아래의 인증서가 필요합니다. 인증서는 본인 인증을 위해서 사용되며, 인증서가 없으신 분들은 인증서를 꼭 발급받으신 후 시작해주세요.": "Untuk masuk ke Badan Pajak Nasional Korea, sertifikat di bawah ini sangat diperlukan. Sertifikat digunakan untuk verifikasi identitas, jadi bagi yang belum memiliki sertifikat, harap dapatkan sertifikat terlebih dahulu sebelum memulai.",
   "인증번호가 일치하지 않습니다. 다시 입력해 주세요.": "Kode verifikasi tidak cocok. Silakan masukkan kembali.",
   "신분증 정보가 자동 입력되었습니다.": "Informasi ARC telah diisi secara otomatis.",

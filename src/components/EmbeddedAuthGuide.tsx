@@ -55,13 +55,21 @@ export function EmbeddedAuthGuide({ authMethod, mode = "auth", onClick }: Embedd
     if (!api) return;
     setCurrent(api.selectedScrollSnap());
     const onSelect = () => {
-      setCurrent(api.selectedScrollSnap());
+      const idx = api.selectedScrollSnap();
+      setCurrent(idx);
+      window.dispatchEvent(new CustomEvent('ktrs-guide-slide-change', {
+        detail: {
+          method: authMethod === 'app' ? 'pass' : authMethod,
+          slideIndex: idx,
+          total: stepsToRender.length
+        }
+      }));
     };
     api.on("select", onSelect);
     return () => {
       api.off("select", onSelect);
     };
-  }, [api]);
+  }, [api, authMethod, stepsToRender.length]);
 
   // Autoplay slides every 4 seconds
   useEffect(() => {

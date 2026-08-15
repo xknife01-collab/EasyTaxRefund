@@ -12,13 +12,13 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Fetch chats that are active, on Telegram/WhatsApp, and haven't had a message in 20 hours
+    // 2. Fetch chats that are active, on Telegram/WhatsApp/Facebook, and haven't had a message in 20 hours
     const cutoffTime = new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString();
 
     const { data: eligibleChats, error: fetchErr } = await supabaseAdmin
       .from('support_chats')
       .select('id, channel, external_chat_id, detected_language, metadata')
-      .in('channel', ['telegram', 'whatsapp'])
+      .in('channel', ['telegram', 'whatsapp', 'facebook'])
       .lt('last_message_at', cutoffTime);
 
     if (fetchErr) {
@@ -121,6 +121,26 @@ export async function GET(req: Request) {
             }
           } else {
             console.warn(`[Cron DryRun] WhatsApp Token missing or dummy. Simulating sending to ${chat.external_chat_id}: "${aiResult.answer}"`);
+          }
+          deliverySuccess = true;
+        } else if (chat.channel === 'facebook') {
+          const fbToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+          if (fbToken && !fbToken.includes('YOUR_')) {
+            const fbUrl = `https://graph.facebook.com/v19.0/me/messages?access_token=${fbToken}`;
+            try {
+              await axios.post(
+                fbUrl,
+                {
+                  recipient: { id: chat.external_chat_id },
+                  message: { text: aiResult.answer },
+                },
+                { timeout: 8000 }
+              );
+            } catch (err: any) {
+              console.warn(`[Cron FollowUp] Facebook API delivery returned error: ${err.message}`);
+            }
+          } else {
+            console.warn(`[Cron DryRun] Facebook Token missing or dummy. Simulating sending to ${chat.external_chat_id}: "${aiResult.answer}"`);
           }
           deliverySuccess = true;
         }
