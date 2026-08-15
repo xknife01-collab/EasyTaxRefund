@@ -251,6 +251,8 @@ const CHAPTERS = [
   { title: t("인증 승인"), start: 24, icon: "✅" },
 ];
 
+let cachedPassSlideIndex = 0;
+
 export function PassGuideModal({ 
   isOpen, 
   onClose,
@@ -269,7 +271,7 @@ export function PassGuideModal({
   const { t } = useTranslation();
   const { toast } = useToast();
   const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(cachedPassSlideIndex);
 
   const [isAiHelperOpen, setIsAiHelperOpen] = useState(false);
   const [isAiProcessing, setIsAiProcessing] = useState(false);
@@ -352,16 +354,20 @@ export function PassGuideModal({
 
   React.useEffect(() => {
     if (!api) return;
+    if (cachedPassSlideIndex > 0 && cachedPassSlideIndex < stepsToRender.length) {
+      setTimeout(() => api.scrollTo(cachedPassSlideIndex, true), 50);
+    }
     setCurrent(api.selectedScrollSnap());
     const onSelect = () => {
       const idx = api.selectedScrollSnap();
+      cachedPassSlideIndex = idx;
       setCurrent(idx);
     };
     api.on("select", onSelect);
     return () => {
       api.off("select", onSelect);
     };
-  }, [api]);
+  }, [api, stepsToRender.length]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -452,7 +458,21 @@ export function PassGuideModal({
   return (
     <>
       <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-        <DialogContent className="max-w-4xl p-0 overflow-hidden bg-slate-950/95 border-none h-[95vh] flex flex-col sm:rounded-[2.5rem]">
+        <DialogContent
+          onPointerDownOutside={(e) => {
+            const target = e.target as HTMLElement;
+            if (target?.closest?.('.floating-ai-widget') || target?.closest?.('[data-floating-chat]') || target?.closest?.('#floating-chat-container')) {
+              e.preventDefault();
+            }
+          }}
+          onInteractOutside={(e) => {
+            const target = e.target as HTMLElement;
+            if (target?.closest?.('.floating-ai-widget') || target?.closest?.('[data-floating-chat]') || target?.closest?.('#floating-chat-container')) {
+              e.preventDefault();
+            }
+          }}
+          className="max-w-4xl p-0 overflow-hidden bg-slate-950/95 border-none h-[95vh] flex flex-col sm:rounded-[2.5rem]"
+        >
         <DialogHeader className="p-6 bg-white shrink-0 border-b z-50 relative pr-12">
           <button 
             onClick={onClose}

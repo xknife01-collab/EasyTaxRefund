@@ -454,6 +454,8 @@ FINAL_CELEBRATION_STEPS.forEach(idx => {
   }];
 });
 
+let cachedHanaSlideIndex = 0;
+
 export function HanaGuideModal({
   isOpen,
   onClose,
@@ -465,7 +467,7 @@ export function HanaGuideModal({
 }) {
   const { t } = useTranslation();
   const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(cachedHanaSlideIndex);
 
   const displaySteps = React.useMemo(() => {
     if (mode === 'auth') return HANA_GUIDE_STEPS.slice(27, 33);
@@ -491,16 +493,20 @@ export function HanaGuideModal({
 
   React.useEffect(() => {
     if (!api) return;
+    if (cachedHanaSlideIndex > 0 && cachedHanaSlideIndex < displaySteps.length) {
+      setTimeout(() => api.scrollTo(cachedHanaSlideIndex, true), 50);
+    }
     setCurrent(api.selectedScrollSnap());
     const onSelect = () => {
       const idx = api.selectedScrollSnap();
+      cachedHanaSlideIndex = idx;
       setCurrent(idx);
     };
     api.on("select", onSelect);
     return () => {
       api.off("select", onSelect);
     };
-  }, [api]);
+  }, [api, displaySteps.length]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -525,7 +531,21 @@ export function HanaGuideModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white/95 border-none h-[95vh] flex flex-col sm:rounded-[2.5rem]">
+      <DialogContent
+        onPointerDownOutside={(e) => {
+          const target = e.target as HTMLElement;
+          if (target?.closest?.('.floating-ai-widget') || target?.closest?.('[data-floating-chat]') || target?.closest?.('#floating-chat-container')) {
+            e.preventDefault();
+          }
+        }}
+        onInteractOutside={(e) => {
+          const target = e.target as HTMLElement;
+          if (target?.closest?.('.floating-ai-widget') || target?.closest?.('[data-floating-chat]') || target?.closest?.('#floating-chat-container')) {
+            e.preventDefault();
+          }
+        }}
+        className="max-w-4xl p-0 overflow-hidden bg-white/95 border-none h-[95vh] flex flex-col sm:rounded-[2.5rem]"
+      >
         <DialogHeader className="p-6 bg-white shrink-0 border-b z-50 relative pr-12">
           <button
             id="hana-guide-close-btn"

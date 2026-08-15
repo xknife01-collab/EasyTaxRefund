@@ -674,6 +674,8 @@ KAKAO_GUIDE_STEPS[37].markers = [
   },
 ];
 
+let cachedKakaoSlideIndex = 0;
+
 export function KakaoGuideModal({
   isOpen,
   onClose,
@@ -686,7 +688,7 @@ export function KakaoGuideModal({
   const { t } = useTranslation();
   const { toast } = useToast();
   const [api, setApi] = useState<CarouselApi>();
-  const [current, setCurrent] = useState(0);
+  const [current, setCurrent] = useState(cachedKakaoSlideIndex);
 
   const [isAiHelperOpen, setIsAiHelperOpen] = useState(false);
   const [isAiProcessing, setIsAiProcessing] = useState(false);
@@ -763,16 +765,20 @@ export function KakaoGuideModal({
 
   React.useEffect(() => {
     if (!api) return;
+    if (cachedKakaoSlideIndex > 0 && cachedKakaoSlideIndex < stepsToRender.length) {
+      setTimeout(() => api.scrollTo(cachedKakaoSlideIndex, true), 50);
+    }
     setCurrent(api.selectedScrollSnap());
     const onSelect = () => {
       const idx = api.selectedScrollSnap();
+      cachedKakaoSlideIndex = idx;
       setCurrent(idx);
     };
     api.on("select", onSelect);
     return () => {
       api.off("select", onSelect);
     };
-  }, [api]);
+  }, [api, stepsToRender.length]);
 
   React.useEffect(() => {
     if (isOpen) {
@@ -811,7 +817,21 @@ export function KakaoGuideModal({
   return (
     <>
     <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
-      <DialogContent className="max-w-4xl p-0 overflow-hidden bg-white/95 border-none h-[95vh] flex flex-col sm:rounded-[2.5rem]">
+      <DialogContent
+        onPointerDownOutside={(e) => {
+          const target = e.target as HTMLElement;
+          if (target?.closest?.('.floating-ai-widget') || target?.closest?.('[data-floating-chat]') || target?.closest?.('#floating-chat-container')) {
+            e.preventDefault();
+          }
+        }}
+        onInteractOutside={(e) => {
+          const target = e.target as HTMLElement;
+          if (target?.closest?.('.floating-ai-widget') || target?.closest?.('[data-floating-chat]') || target?.closest?.('#floating-chat-container')) {
+            e.preventDefault();
+          }
+        }}
+        className="max-w-4xl p-0 overflow-hidden bg-white/95 border-none h-[95vh] flex flex-col sm:rounded-[2.5rem]"
+      >
         <DialogHeader className="p-6 bg-white shrink-0 border-b z-50 relative pr-12">
           <button 
             onClick={onClose}

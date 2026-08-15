@@ -935,13 +935,20 @@ function FloatingConsultingPanelInner() {
       }
     };
 
+    const handleOpenChatEvent = () => {
+      setIsOpen(true);
+      setViewMode("live_chat");
+    };
+
     window.addEventListener("ktrs-step-change", handleStepChange);
     window.addEventListener("ktrs-user-stuck", handleStuckEvent);
     window.addEventListener("ktrs-guide-slide-change", handleGuideSlideChange as EventListener);
+    window.addEventListener("open-ai-consult-chat", handleOpenChatEvent);
     return () => {
       window.removeEventListener("ktrs-step-change", handleStepChange);
       window.removeEventListener("ktrs-user-stuck", handleStuckEvent);
       window.removeEventListener("ktrs-guide-slide-change", handleGuideSlideChange as EventListener);
+      window.removeEventListener("open-ai-consult-chat", handleOpenChatEvent);
     };
   }, [language, currentStep]);
 
@@ -1296,7 +1303,11 @@ function FloatingConsultingPanelInner() {
   };
 
   return (
-    <div className="fixed bottom-[98px] lg:bottom-6 right-3 sm:right-6 z-[200] flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)]">
+    <div
+      id="floating-chat-container"
+      data-floating-chat="true"
+      className="fixed bottom-[98px] lg:bottom-6 right-3 sm:right-6 z-[99999] floating-ai-widget flex flex-col items-end gap-3 print:hidden max-w-[calc(100vw-24px)] pointer-events-auto"
+    >
       {/* 1. collapsed state: capsule button, simulation button & proactive speech bubble */}
       {!isOpen && (
         <div className="flex flex-col items-end gap-2 group max-w-[320px]">
