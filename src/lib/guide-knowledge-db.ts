@@ -98,26 +98,155 @@ export const GUIDE_KNOWLEDGE_DB: Record<string, GuideStepKnowledgeItem> = {
     ]
   },
 
-  // PASS APP (27 Slides)
+  // PASS APP (28 Slides)
   'pass-0': {
     method: 'pass',
     slideIndex: 0,
-    chapterTitle: 'PASS 앱 설치',
+    chapterTitle: 'PASS 시작',
     imageUrl: '/images/guide/pass/pass_01.jpg',
-    targetName: '통신사별 PASS 앱',
-    visualLocationHint: '스토어 검색 결과 상단',
-    actionInstruction: '본인이 이용 중인 통신사(SKT, KT, LGU+)의 PASS 앱을 설치해 주세요.',
-    actionReason: '알뜰폰 고객님도 망(SKT망/KT망/LGU+망)에 맞는 PASS 앱을 설치하시면 됩니다.',
+    targetName: '통신사별 PASS 앱 선택',
+    targetCoords: { x: 50, y: 18, width: 80, height: 10 },
+    visualLocationHint: '화면 상단 통신사 목록 (SKT 알뜰폰→SKT / KT 알뜰폰→KT / LG 알뜰폰→LG)',
+    actionInstruction: '본인 통신사에 맞는 PASS 앱을 설치해 주세요.',
+    actionReason: '알뜰폰 고객님도 망에 맞는 PASS 앱을 선택하셔야 본인인증이 가능합니다.',
     quickQuestions: [
       { q: '알뜰폰은 어떤 PASS를 받나요?', a: '가입하신 알뜰폰이 사용하는 통신망(SKT, KT, LGU+)의 PASS 앱을 다운받으시면 됩니다.' }
+    ]
+  },
+  'pass-1': {
+    method: 'pass',
+    slideIndex: 1,
+    chapterTitle: 'PASS 앱 설치',
+    imageUrl: '/images/guide/pass/pass_02.jpg',
+    targetName: 'PASS 앱 설치 버튼',
+    targetCoords: { x: 50, y: 16, width: 80, height: 10 },
+    visualLocationHint: '스토어 화면 상단 [설치] 버튼',
+    actionInstruction: '스토어에서 PASS 앱 [설치]를 눌러 다운로드해 주세요.',
+    actionReason: '국세청 모바일 본인인증을 진행하기 위해 전용 앱이 필요합니다.',
+    quickQuestions: [
+      { q: '다운로드가 안 돼요', a: 'Wi-Fi 연결 상태를 확인하시거나 스토어 계정 로그인을 확인해 주세요.' }
+    ]
+  },
+  'pass-2': {
+    method: 'pass',
+    slideIndex: 2,
+    chapterTitle: 'PASS 앱 실행',
+    imageUrl: '/images/guide/pass/pass_03.jpg',
+    targetName: 'PASS 앱 [열기] 버튼',
+    targetCoords: { x: 50, y: 20, width: 80, height: 10 },
+    visualLocationHint: '스토어 화면 오른쪽 [열기] 버튼',
+    actionInstruction: '설치가 완료되면 [열기]를 눌러 앱을 실행해 주세요.',
+    actionReason: 'PASS 앱 회원가입 및 인증서 발급을 시작하기 위함입니다.',
+    quickQuestions: [
+      { q: '열기 버튼이 어디 있나요?', a: '스토어 앱 설치 완료 후 상단 오른쪽에 초록색/파란색 [열기] 버튼이 나타납니다.' }
+    ]
+  },
+  'pass-3': {
+    method: 'pass',
+    slideIndex: 3,
+    chapterTitle: '앱 이용 권한 안내',
+    imageUrl: '/images/guide/pass/pass_04.jpg',
+    targetName: '이용 권한 [확인] 버튼',
+    targetCoords: { x: 50, y: 89, width: 85, height: 8 },
+    visualLocationHint: '화면 맨 아래 하단 [확인] 버튼 (x: 50, y: 89)',
+    actionInstruction: '아래로 스크롤하여 권한 내용을 확인하신 후, 하단의 [확인] 버튼을 눌러주세요.',
+    actionReason: '본인인증 문자 수신 및 푸시 알림 작동을 위한 필수 권한 안내입니다.',
+    quickQuestions: [
+      { q: '확인 버튼이 안 눌려요', a: '화면을 맨 아래로 끝까지 스크롤하시면 하단 확인 버튼이 활성화됩니다.' }
+    ]
+  },
+  'pass-4': {
+    method: 'pass',
+    slideIndex: 4,
+    chapterTitle: '앱 알림 권한 승인 (Step 5)',
+    imageUrl: '/images/guide/pass/pass_05.jpg',
+    targetName: '앱 알림 권한 [허용] 버튼',
+    targetCoords: { x: 50, y: 80, width: 70, height: 8 },
+    visualLocationHint: '스마트폰 팝업창 하단 오른쪽/중앙의 [허용] 버튼 (x: 50, y: 80)',
+    actionInstruction: '팝업에서 [허용]을 눌러 PASS 앱의 알림 권한을 승인해 주세요.',
+    actionReason: '국세청 홈택스 본인인증 요청 시 스마트폰으로 실시간 푸시 알림을 받기 위해 알림 권한이 반드시 필요합니다.',
+    quickQuestions: [
+      { q: '허용을 안 누르면 어떻게 되나요?', a: '나중에 국세청 인증 요청 알림이 스마트폰에 뜨지 않아 진행이 막힐 수 있으니 꼭 [허용]을 눌러주세요.' },
+      { q: '허용 버튼이 안 보여요', a: '화면 중앙에 떠 있는 팝업창 아래쪽에 파란색 [허용] 글자를 누르시면 됩니다.' }
+    ]
+  },
+  'pass-5': {
+    method: 'pass',
+    slideIndex: 5,
+    chapterTitle: '전화 관리 권한 승인 (Step 6)',
+    imageUrl: '/images/guide/pass/pass_06.jpg',
+    targetName: '전화 관리 권한 [허용] 버튼',
+    targetCoords: { x: 50, y: 80, width: 70, height: 8 },
+    visualLocationHint: '스마트폰 팝업창 하단 [허용] 버튼 (x: 50, y: 80)',
+    actionInstruction: '팝업에서 [허용]을 눌러 전화 관리 권한을 승인해 주세요.',
+    actionReason: '현재 기기의 유심(USIM) 전화번호와 일치하는지 통신사 자동 확인을 하기 위함입니다.',
+    quickQuestions: [
+      { q: '전화 권한은 왜 필요한가요?', a: '고객님의 스마트폰에 꽂힌 유심 번호와 가입자 번호가 일치하는지 안전하게 확인하기 위함입니다.' }
+    ]
+  },
+  'pass-6': {
+    method: 'pass',
+    slideIndex: 6,
+    chapterTitle: '회원가입 기본정보 입력 (Step 7)',
+    imageUrl: '/images/guide/pass/pass_07.jpg',
+    targetName: '성명, 외국인등록번호, 휴대폰번호 입력',
+    targetCoords: { x: 50, y: 88, width: 85, height: 8 },
+    visualLocationHint: '성명(y:20), 외국인등록번호(y:34), 휴대폰번호(y:46) 입력 후 하단 [다음]',
+    actionInstruction: '성명, 외국인등록번호(13자리), 휴대폰번호를 입력 후 하단 [다음]을 눌러주세요.',
+    actionReason: '외국인등록증에 기재된 정확한 영문 성명으로 통신사 가입자 정보와 대조하기 위함입니다.',
+    quickQuestions: [
+      { q: '이름은 어떻게 적나요?', a: '외국인등록증 상의 영문 성명을 띄어쓰기 포함하여 대문자로 정확히 입력해 주세요.' }
+    ]
+  },
+  'pass-7': {
+    method: 'pass',
+    slideIndex: 7,
+    chapterTitle: 'PASS 필수 약관 동의 (Step 8)',
+    imageUrl: '/images/guide/pass/pass_08.jpg',
+    targetName: '필수 약관 전체 동의 및 [다음]',
+    targetCoords: { x: 50, y: 88.5, width: 85, height: 8 },
+    visualLocationHint: '화면 중앙 필수 약관 체크(y:47.5) 후 하단 [다음](y:88.5)',
+    actionInstruction: 'PASS 필수 항목을 선택하여 모두 동의하신 후 하단 [다음] 버튼을 눌러주세요.',
+    actionReason: '본인인증 서비스 이용을 위한 통신사 필수 이용약관 동의 절차입니다.',
+    quickQuestions: [
+      { q: '선택 항목도 체크해야 하나요?', a: '아닙니다, [필수] 항목만 체크하시고 선택 항목은 체크하지 않으셔도 진행됩니다.' }
+    ]
+  },
+  'pass-8': {
+    method: 'pass',
+    slideIndex: 8,
+    chapterTitle: 'SMS 인증번호 입력 (Step 9)',
+    imageUrl: '/images/guide/pass/pass_09.jpg',
+    targetName: '문자 인증번호 6자리 입력',
+    targetCoords: { x: 50, y: 88.5, width: 85, height: 8 },
+    visualLocationHint: '화면 상단 인증번호 입력칸(y:17.5) 후 하단 [다음](y:88.5)',
+    actionInstruction: '휴대폰 문자로 수신된 6자리 인증번호를 입력하고 하단 [다음]을 눌러주세요.',
+    actionReason: '본인 명의의 휴대폰 기기인지 확인하는 SMS 인증 절차입니다.',
+    quickQuestions: [
+      { q: '문자가 오지 않아요', a: '외국인등록증 영문 이름 순서(성/이름 띄어쓰기)가 통신사 등록 정보와 다를 수 있습니다. 신분증 분석 도우미를 이용해 보세요.' }
+    ]
+  },
+  'pass-9': {
+    method: 'pass',
+    slideIndex: 9,
+    chapterTitle: '비밀번호 6자리 설정 (Step 10)',
+    imageUrl: '/images/guide/pass/pass_10.jpg',
+    targetName: '숫자 6자리 비밀번호 입력',
+    targetCoords: { x: 50, y: 30, width: 80, height: 10 },
+    visualLocationHint: '화면 중앙 숫자 키패드',
+    actionInstruction: '앞으로 PASS 앱 실행 및 인증 시 사용할 숫자 6자리 비밀번호를 설정해 주세요.',
+    actionReason: '간편하고 안전한 인증을 위한 개인 보안 핀번호입니다.',
+    quickQuestions: [
+      { q: '연속된 숫자는 안 되나요?', a: '123456이나 생년월일 같은 연속/반복 숫자는 보안상 불가하니 기억하기 쉬운 조합으로 설정해 주세요.' }
     ]
   },
   'pass-14': {
     method: 'pass',
     slideIndex: 14,
-    chapterTitle: '계좌 1원 인증',
+    chapterTitle: '계좌 1원 인증 (Step 15)',
     imageUrl: '/images/guide/pass/pass_15.jpg',
     targetName: '1원 송금 입금자명 4자리 입력칸',
+    targetCoords: { x: 50, y: 80.5, width: 85, height: 8 },
     visualLocationHint: '화면 중앙 4칸 입력 상자',
     actionInstruction: '본인 통장으로 입금된 1원의 입금자명 앞 4자리 숫자를 입력해 주세요.',
     actionReason: '본인 명의의 실제 금융 계좌가 맞는지 검증하는 2차 보안 절차입니다.',
@@ -128,9 +257,10 @@ export const GUIDE_KNOWLEDGE_DB: Record<string, GuideStepKnowledgeItem> = {
   'pass-26': {
     method: 'pass',
     slideIndex: 26,
-    chapterTitle: 'PASS 푸시 승인',
+    chapterTitle: 'PASS 푸시 승인 (Step 27)',
     imageUrl: '/images/guide/pass/pass_27.jpg',
     targetName: 'PASS 푸시 알림 [확인]',
+    targetCoords: { x: 50, y: 36, width: 80, height: 10 },
     visualLocationHint: '화면 중앙 확인 버튼',
     actionInstruction: '스마트폰 상단에 도착한 PASS 인증 알림을 누르고 6자리 비밀번호를 입력해 주세요.',
     actionReason: '국세청 홈택스 접속 승인을 완료하기 위함입니다.',

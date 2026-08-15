@@ -4,6 +4,7 @@ import { AI_MANAGER_SYSTEM_PROMPT } from '@/lib/ai-manager-persona';
 import { retrieveMatchedScripts, retrieveLearnedKnowledge, ingestSelfLearnedKnowledge } from '@/lib/ai-learning-db';
 import { searchGoogleKnowledgeTool, scanAppCodeGuideTool } from '@/ai/tools/knowledge-ingestion-tools';
 import { supabaseAdmin } from '@/lib/supabase';
+import { getGuideStepKnowledge } from '@/lib/guide-knowledge-db';
 
 const ChatMessageSchema = z.object({
   role: z.enum(['user', 'model']),
@@ -375,11 +376,16 @@ const managerChatFlow = ai.defineFlow(
       }
 
       if (detectedAuthMethod) {
-        // 슬라이드 번호 직접 언급 감지 (예: "20번", "슬라이드 21")
-        const slideNumMatch = msg.match(/(\d{1,2})\s*번|슬라이드\s*(\d{1,2})/);
+        // 슬라이드 번호 직접 언급 감지 (예: "5단계", "패스 5", "20번", "슬라이드 21", "step 4")
+        const slideNumMatch = msg.match(/(?:(?:패스|pass|하나|hana|카카오|kakao|카톡)\s*)?(\d{1,2})\s*(?:단계|번|step)|슬라이드\s*(\d{1,2})|(?:pass|패스|하나|hana|kakao|카톡|카카오)\s*(\d{1,2})/i);
         const mentionedSlide = slideNumMatch
-          ? parseInt(slideNumMatch[1] || slideNumMatch[2], 10)
+          ? parseInt(slideNumMatch[1] || slideNumMatch[2] || slideNumMatch[3] || '0', 10)
           : null;
+
+        // 사용자가 명시적으로 단계나 수단을 말했고 아직 activeGuideContext가 없다면 자동 주입!
+        if (mentionedSlide && mentionedSlide > 0 && !input.activeGuideContext) {
+          input.activeGuideContext = getGuideStepKnowledge(detectedAuthMethod, mentionedSlide - 1);
+        }
 
         // 키워드 기반 챕터 감지 (가이드 위치 문의도 포함)
         let detectedChapter: string | null = null;
