@@ -5,6 +5,7 @@ import { askManagerAi } from '@/ai/flows/manager-chat-flow';
 import { analyzeScreenshot } from '@/ai/flows/vision-analysis-flow';
 import axios from 'axios';
 import { sendTakeoverAlert } from '@/lib/slack';
+import { getFacebookPageToken } from '@/lib/facebook';
 
 export const maxDuration = 60;
 
@@ -53,8 +54,9 @@ export async function POST(req: Request) {
     }
 
     const psid = messagingEvent.sender?.id; // Page Scoped ID (Unique client id)
+    const pageId = entry?.id || messagingEvent.recipient?.id;
     const rawText = messagingEvent.message.text || '';
-    const pageAccessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+    const pageAccessToken = getFacebookPageToken(pageId);
 
     if (!psid) {
       return NextResponse.json({ ok: true });
@@ -249,6 +251,7 @@ export async function POST(req: Request) {
           last_message_at: new Date().toISOString(),
           unread_count: 1,
           metadata: {
+            page_id: pageId,
             is_ai_active: true,
             summary: '신규 페이스북 메신저 고객 유입',
             current_step: 'Step 0: Estimate (신청 준비 단계)',

@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { translateOutgoingTelegramMessage } from '@/ai/flows/telegram-translation-flow';
 import axios from 'axios';
+import { getFacebookPageToken } from '@/lib/facebook';
 
 export async function POST(req: Request) {
   try {
@@ -79,7 +80,8 @@ export async function POST(req: Request) {
         console.warn('[OmniChat] WhatsApp Access Token or Phone Number ID is missing in environment variables.');
       }
     } else if (channel === 'facebook') {
-      const pageAccessToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+      const pageId = (chatSession?.metadata as any)?.page_id;
+      const pageAccessToken = getFacebookPageToken(pageId);
       if (pageAccessToken) {
         const facebookUrl = `https://graph.facebook.com/v19.0/me/messages?access_token=${pageAccessToken}`;
         await axios.post(facebookUrl, {
@@ -89,7 +91,7 @@ export async function POST(req: Request) {
           console.error('[OmniChat] Facebook delivery failed:', err?.response?.data || err.message);
         });
       } else {
-        console.warn('[OmniChat] Facebook Page Access Token is missing in environment variables.');
+        console.warn('[OmniChat] Facebook Page Access Token is missing for page:', pageId);
       }
     } else if (channel === 'kakao') {
       const kakaoRestApiKey = process.env.KAKAO_REST_API_KEY;
