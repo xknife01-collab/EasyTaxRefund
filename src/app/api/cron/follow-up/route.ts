@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase';
 import { askFollowUpAi } from '@/ai/flows/manager-chat-flow';
 import axios from 'axios';
+import { getFacebookPageToken } from '@/lib/facebook';
 
 export async function GET(req: Request) {
   try {
@@ -12,8 +13,8 @@ export async function GET(req: Request) {
       return NextResponse.json({ ok: false, error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Fetch chats that are active, on Telegram/WhatsApp/Facebook, and haven't had a message in 20 hours
-    const cutoffTime = new Date(Date.now() - 20 * 60 * 60 * 1000).toISOString();
+    // 2. Fetch chats that are active, on Telegram/WhatsApp/Facebook, and haven't had a message in at least 4 hours
+    const cutoffTime = new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString();
 
     const { data: eligibleChats, error: fetchErr } = await supabaseAdmin
       .from('support_chats')
@@ -124,7 +125,8 @@ export async function GET(req: Request) {
           }
           deliverySuccess = true;
         } else if (chat.channel === 'facebook') {
-          const fbToken = process.env.FACEBOOK_PAGE_ACCESS_TOKEN;
+          const pageId = chat.metadata?.page_id;
+          const fbToken = getFacebookPageToken(pageId);
           if (fbToken && !fbToken.includes('YOUR_')) {
             const fbUrl = `https://graph.facebook.com/v19.0/me/messages?access_token=${fbToken}`;
             try {
@@ -140,7 +142,7 @@ export async function GET(req: Request) {
               console.warn(`[Cron FollowUp] Facebook API delivery returned error: ${err.message}`);
             }
           } else {
-            console.warn(`[Cron DryRun] Facebook Token missing or dummy. Simulating sending to ${chat.external_chat_id}: "${aiResult.answer}"`);
+            console.warn(`[Cron DryRun] Facebook Token missing or dummy for page ${pageId}. Simulating sending to ${chat.external_chat_id}: "${aiResult.answer}"`);
           }
           deliverySuccess = true;
         }
