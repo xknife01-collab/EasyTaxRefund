@@ -1337,67 +1337,40 @@ export default function HomePage() {
             </h2>
           </div>
 
-          {/* 🌟 숏폼 비디오 실제 환급 인터뷰 하이라이트 (베트남어 페이지 전용) */}
+          {/* 🌟 숏폼 비디오 실제 환급 인터뷰 하이라이트 (베트남어 페이지 전용 - 중앙 집중형 숏폼 뷰어) */}
           {language === 'vi' && (
-            <div className="container mx-auto px-4 max-w-4xl mb-12">
-              <div className="bg-gradient-to-br from-[#0b192c] via-[#0f2442] to-[#1a365d] rounded-3xl p-6 sm:p-8 border-2 border-[#e2b659]/40 shadow-2xl overflow-hidden relative">
-                <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
-                  {/* 좌측: 비디오 플레이어 카드 (9:16 모바일 숏폼 뷰어) */}
-                  <div className="md:col-span-5 flex justify-center">
-                    <div className="relative w-full max-w-[260px] aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl border-2 border-[#e2b659]/60 bg-black group">
-                      <video
-                        id="review-video-player"
-                        src="/reviews/vietnam_refund_review.mp4"
-                        poster="/reviews/nguyen.png"
-                        controls
-                        playsInline
-                        preload="metadata"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                  </div>
+            <div className="container mx-auto px-4 max-w-sm sm:max-w-md mb-12 flex flex-col items-center">
+              <div className="w-full bg-[#0b192c] rounded-3xl p-4 sm:p-5 border-2 border-[#e2b659]/50 shadow-2xl overflow-hidden relative flex flex-col items-center">
+                {/* 상단 콤팩트 헤더 뱃지 */}
+                <div className="w-full flex items-center justify-between pb-3 px-1">
+                  <Badge className="bg-[#e2b659] text-slate-950 font-black px-2.5 py-0.5 text-xs shadow-sm">
+                    🇻🇳 Nguyen (+3,100,000 Won)
+                  </Badge>
+                  <span className="text-[11px] text-amber-300 font-bold flex items-center gap-1">
+                    <BadgeCheck className="w-3.5 h-3.5 text-amber-400" /> {t('실제 입금 인증 영상')}
+                  </span>
+                </div>
 
-                  {/* 우측: 핵심 인증 내용 및 원클릭 신청 버튼 */}
-                  <div className="md:col-span-7 space-y-4 text-left">
-                    <div className="flex items-center gap-2">
-                      <Badge className="bg-[#e2b659] text-slate-950 font-black px-3 py-1 text-xs">
-                        {t('실제 입금 인증 영상')} 🇻🇳🇰🇷
-                      </Badge>
-                      <span className="text-xs text-amber-300 font-bold">Verified Story</span>
-                    </div>
+                {/* 중앙: 9:16 숏폼 비디오 플레이어 */}
+                <div className="relative w-full aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl border-2 border-[#e2b659]/60 bg-black group">
+                  <video
+                    id="review-video-player"
+                    src="/reviews/vietnam_refund_review.mp4"
+                    poster="/reviews/nguyen.png"
+                    controls
+                    playsInline
+                    preload="metadata"
+                    className="w-full h-full object-cover"
+                  />
+                </div>
 
-                    <h3 className="text-2xl sm:text-3xl font-black text-white leading-tight">
-                      {t('베트남 Nguyen 님의')} <br />
-                      <span className="text-[#e2b659]">{t('실제 3,100,000원 환급 성공 인터뷰')}</span>
-                    </h3>
-
-                    <p className="text-slate-300 text-sm leading-relaxed font-medium">
-                      {t('한국어를 잘 몰라도 스마트폰으로 1분 만에 조회하고, 국세청에서 통장으로 310만 원을 직접 환급받은 실제 외국인 근로자의 생생한 30초 후기 영상입니다.')}
-                    </p>
-
-                    <div className="grid grid-cols-3 gap-2 pt-2">
-                      <div className="bg-white/10 rounded-xl p-3 text-center border border-white/10">
-                        <span className="block text-[#e2b659] font-black text-base sm:text-lg">₩3.1M</span>
-                        <span className="text-[11px] text-slate-300 font-medium">{t('실제 환급액')}</span>
-                      </div>
-                      <div className="bg-white/10 rounded-xl p-3 text-center border border-white/10">
-                        <span className="block text-emerald-400 font-black text-base sm:text-lg">90%</span>
-                        <span className="text-[11px] text-slate-300 font-medium">{t('소득세 감면')}</span>
-                      </div>
-                      <div className="bg-white/10 rounded-xl p-3 text-center border border-white/10">
-                        <span className="block text-sky-400 font-black text-base sm:text-lg">100%</span>
-                        <span className="text-[11px] text-slate-300 font-medium">{t('후불 정산제')}</span>
-                      </div>
-                    </div>
-
-                    <div className="pt-2">
-                      <Link href="/estimate" className="block w-full">
-                        <Button className="w-full bg-[#e2b659] hover:bg-[#f0c870] text-slate-950 font-black text-base h-12 rounded-xl shadow-lg transition-all hover:scale-[1.02]">
-                          {t('나의 환급금 1분 만에 조회하기')} <ArrowRight className="ml-2 h-5 w-5" />
-                        </Button>
-                      </Link>
-                    </div>
-                  </div>
+                {/* 하단: 직관적인 환급 신청 버튼 */}
+                <div className="w-full pt-4">
+                  <Link href="/estimate" className="block w-full">
+                    <Button className="w-full bg-[#e2b659] hover:bg-[#f0c870] text-slate-950 font-black text-base h-12 rounded-xl shadow-lg transition-all hover:scale-[1.02] flex items-center justify-center gap-2">
+                      {t('나의 환급금 1분 만에 조회하기')} <ArrowRight className="h-5 w-5" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
