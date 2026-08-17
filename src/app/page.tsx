@@ -148,6 +148,13 @@ const COUNTRY_REVIEW_VIDEOS: Record<string, { name: string; amount: string; flag
     flag: "🇲🇲",
     poster: "/reviews/kyaw.png",
     videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/myanmar_refund_review.mp4"
+  },
+  uz: {
+    name: "Hassan",
+    amount: "+1,850,000 Won",
+    flag: "🇺🇿",
+    poster: "/reviews/hassan.png",
+    videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/uzbek_refund_review.mp4"
   }
 };
 
