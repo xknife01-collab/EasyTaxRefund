@@ -65,3 +65,11 @@ find_commas.js
 find_line.js
 fix_guides.js
 global_search.js
+
+# media / videos
+*.mp4
+*.webm
+*.mov
+*.avi
+/public/reviews/*.mp4
+

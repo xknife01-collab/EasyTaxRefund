@@ -127,6 +127,16 @@ const HERO_TRUST_TEXTS: Record<string, string> = {
   ur: "* تصدیق شدہ ٹیکس اکاؤنٹنٹ کے ذریعہ جائزہ لیا گیا۔ چیک کیا گیا ڈیٹا فوری طور پر مستقل طور پر حذف کر دیا جاتا ہے۔"
 };
 
+const COUNTRY_REVIEW_VIDEOS: Record<string, { name: string; amount: string; flag: string; poster: string; videoUrl: string }> = {
+  vi: {
+    name: "Nguyen",
+    amount: "+3,100,000 Won",
+    flag: "🇻🇳",
+    poster: "/reviews/nguyen.png",
+    videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/vietnam_refund_review.mp4"
+  }
+};
+
 export default function HomePage() {
   const router = useRouter();
   const { t, isReady, setLanguage, language } = useTranslation();
@@ -1337,26 +1347,26 @@ export default function HomePage() {
             </h2>
           </div>
 
-          {/* 🌟 숏폼 비디오 실제 환급 인터뷰 하이라이트 (베트남어 페이지 전용 - 중앙 집중형 숏폼 뷰어) */}
-          {language === 'vi' && (
+          {/* 🌟 숏폼 비디오 실제 환급 인터뷰 하이라이트 (Supabase CDN 초경량 스트리밍) */}
+          {COUNTRY_REVIEW_VIDEOS[language] && (
             <div className="container mx-auto px-4 max-w-sm sm:max-w-md mb-12 flex flex-col items-center">
               <div className="w-full bg-[#0b192c] rounded-3xl p-4 sm:p-5 border-2 border-[#e2b659]/50 shadow-2xl overflow-hidden relative flex flex-col items-center">
                 {/* 상단 콤팩트 헤더 뱃지 */}
                 <div className="w-full flex items-center justify-between pb-3 px-1">
                   <Badge className="bg-[#e2b659] text-slate-950 font-black px-2.5 py-0.5 text-xs shadow-sm">
-                    🇻🇳 Nguyen (+3,100,000 Won)
+                    {COUNTRY_REVIEW_VIDEOS[language].flag} {COUNTRY_REVIEW_VIDEOS[language].name} ({COUNTRY_REVIEW_VIDEOS[language].amount})
                   </Badge>
                   <span className="text-[11px] text-amber-300 font-bold flex items-center gap-1">
                     <BadgeCheck className="w-3.5 h-3.5 text-amber-400" /> {t('실제 입금 인증 영상')}
                   </span>
                 </div>
 
-                {/* 중앙: 9:16 숏폼 비디오 플레이어 */}
+                {/* 중앙: 9:16 숏폼 비디오 플레이어 (Supabase CDN) */}
                 <div className="relative w-full aspect-[9/16] rounded-2xl overflow-hidden shadow-2xl border-2 border-[#e2b659]/60 bg-black group">
                   <video
                     id="review-video-player"
-                    src="/reviews/vietnam_refund_review.mp4"
-                    poster="/reviews/nguyen.png"
+                    src={COUNTRY_REVIEW_VIDEOS[language].videoUrl}
+                    poster={COUNTRY_REVIEW_VIDEOS[language].poster}
                     controls
                     playsInline
                     preload="metadata"
