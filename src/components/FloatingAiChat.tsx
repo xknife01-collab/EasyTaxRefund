@@ -798,6 +798,27 @@ function detectDeviceAndBrowser(): { os: 'ios' | 'android' | 'other'; isInApp: b
 }
 
 export function FloatingAiChat() {
+  const [isMounted, setIsMounted] = useState(false);
+  const [shouldHide, setShouldHide] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    if (typeof window !== "undefined") {
+      try {
+        const inIframe = window.self !== window.top;
+        const params = new URLSearchParams(window.location.search);
+        const isSim = params.get("simulation") === "true";
+        if (inIframe || isSim) {
+          setShouldHide(true);
+        }
+      } catch (e) {
+        setShouldHide(true);
+      }
+    }
+  }, []);
+
+  if (!isMounted || shouldHide) return null;
+
   return <FloatingConsultingPanelInner />;
 }
 

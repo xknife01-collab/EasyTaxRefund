@@ -4139,10 +4139,10 @@ export default function EstimatePage() {
                               </p>
                               <div className="p-3 bg-[#0a1523]/80 rounded-xl border border-[#b88c30]/30 space-y-1.5 text-left">
                                 <p className="text-[11.5px] font-medium text-emerald-400 leading-relaxed">
-                                  👉 <strong>[네]</strong>: {t('카카오페이 인증서, PASS 인증서, 하나 원큐인증서를 따로 발급받아 써보신 분만 선택해 주세요!')}
+                                  👉 <strong>[{t('네')}]</strong>: {t('카카오페이 인증서, PASS 인증서, 하나 원큐인증서를 따로 발급받아 써보신 분만 선택해 주세요!')}
                                 </p>
                                 <p className="text-[11.5px] font-medium text-[#e2b659] leading-relaxed">
-                                  👉 <strong>[아니오 (추천!)]</strong>: {t('통장 비밀번호와 다른 것입니다! 조금이라도 헷갈리거나 처음 들어보신다면 무조건 [아니오]를 눌러주세요. 인증서를 쉽게 발급받는 방법을 안내해 드릴게요! 👍')}
+                                  👉 <strong>[{t('아니오 (추천!)')}]</strong>: {t('통장 비밀번호와 다른 것입니다! 조금이라도 헷갈리거나 처음 들어보신다면 무조건 [아니오]를 눌러주세요. 인증서를 쉽게 발급받는 방법을 안내해 드릴게요! 👍')}
                                 </p>
                               </div>
                             </div>
@@ -6774,15 +6774,15 @@ export default function EstimatePage() {
           <DialogHeader className="flex flex-row items-center justify-between pb-3 border-b border-white/10">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#e2b659] text-slate-950 font-black flex items-center justify-center text-sm shadow-md">
-                김준현
+                {t('김준현')}
               </div>
               <div>
                 <DialogTitle className="text-xl font-black text-white flex items-center gap-2">
-                  <span>🛠️ 15개국어 시뮬레이션 제어판 (Step {typeof step === 'number' ? Math.floor(step) : step})</span>
-                  <Badge className="bg-[#e2b659] text-slate-950 hover:bg-[#e2b659] font-bold">1:1 AI 매니저 가이드</Badge>
+                  <span>🛠️ {t('15개국어 시뮬레이션 제어판')} (Step {typeof step === 'number' ? Math.floor(step) : step})</span>
+                  <Badge className="bg-[#e2b659] text-slate-950 hover:bg-[#e2b659] font-bold">{t('1:1 AI 매니저 가이드')}</Badge>
                 </DialogTitle>
                 <DialogDescription className="text-xs text-amber-200/90 font-medium">
-                  환급 단계에서 어느 부분을 눌러야 하는지 보여주는 가상 화면입니다.
+                  {t('환급 단계에서 어느 부분을 눌러야 하는지 보여주는 가상 화면입니다.')}
                 </DialogDescription>
               </div>
             </div>
@@ -6794,13 +6794,13 @@ export default function EstimatePage() {
 
           <DialogFooter className="pt-3 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-3">
             <p className="text-xs text-slate-300 font-medium">
-              💡 가이드를 모두 확인하셨으면 아래 버튼을 눌러 바로 신청을 재개해 주세요.
+              💡 {t('가이드를 모두 확인하셨으면 아래 버튼을 눌러 바로 신청을 재개해 주세요.')}
             </p>
             <Button
               onClick={() => setIsStepGuideModalOpen(false)}
               className="bg-[#e2b659] text-slate-950 font-black hover:bg-[#f0c870] px-6 rounded-xl text-sm h-11 shadow-lg"
             >
-              이어서 신청 진행하기 <ArrowRight className="ml-2 h-4 w-4" />
+              {t('이어서 신청 진행하기')} <ArrowRight className="ml-2 h-4 w-4" />
             </Button>
           </DialogFooter>
         </DialogContent>

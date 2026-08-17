@@ -1,6 +1,6 @@
 import { common } from './common';
 import { faq } from './faq';
-import { mnFormsContent as forms } from './forms_v2';
+import { forms } from './forms_v2';
 import { guides } from './guides';
 import { legal } from './legal';
 import { main } from './main';

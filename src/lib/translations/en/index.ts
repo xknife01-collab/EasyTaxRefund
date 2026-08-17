@@ -3,7 +3,7 @@ import { main } from './main';
 import { faq } from './faq';
 import { legal } from './legal';
 import { portal } from './portal';
-import { forms_v2 } from './forms_v2';
+import { forms } from './forms_v2';
 import { notifications } from './notifications';
 import { guides } from './guides';
 import { reviews } from './reviews';
@@ -17,7 +17,7 @@ export const en = {
   ...faq,
   ...legal,
   ...portal,
-  ...forms_v2,
+  ...forms,
   ...notifications,
   ...guides,
   ...reviews,
