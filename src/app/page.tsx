@@ -141,6 +141,13 @@ const COUNTRY_REVIEW_VIDEOS: Record<string, { name: string; amount: string; flag
     flag: "🇳🇵",
     poster: "/reviews/sita.png",
     videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/nepal_refund_review.mp4"
+  },
+  my: {
+    name: "Kyaw",
+    amount: "+1,150,000 Won",
+    flag: "🇲🇲",
+    poster: "/reviews/kyaw.png",
+    videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/myanmar_refund_review.mp4"
   }
 };
 
