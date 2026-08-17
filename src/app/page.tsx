@@ -169,6 +169,13 @@ const COUNTRY_REVIEW_VIDEOS: Record<string, { name: string; amount: string; flag
     flag: "🇲🇳",
     poster: "/reviews/bat.png",
     videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/mongolian_refund_review.mp4"
+  },
+  zh: {
+    name: "Chen",
+    amount: "+2,250,000 Won",
+    flag: "🇨🇳",
+    poster: "/reviews/chen.png",
+    videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/chinese_refund_review.mp4"
   }
 };
 
