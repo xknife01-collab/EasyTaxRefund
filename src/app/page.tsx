@@ -134,6 +134,13 @@ const COUNTRY_REVIEW_VIDEOS: Record<string, { name: string; amount: string; flag
     flag: "🇻🇳",
     poster: "/reviews/nguyen.png",
     videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/vietnam_refund_review.mp4"
+  },
+  ne: {
+    name: "Sita",
+    amount: "+3,000,000 Won",
+    flag: "🇳🇵",
+    poster: "/reviews/sita.png",
+    videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/nepal_refund_review.mp4"
   }
 };
 
@@ -1453,7 +1460,7 @@ export default function HomePage() {
                               <div className="flex items-center gap-2">
                                 <span className="font-black text-slate-900 text-lg tracking-tight">{review.name}</span>
                                 <Badge className="bg-[#b88c30]/10 text-[#b88c30] border border-[#b88c30]/20 font-bold text-[9px] h-4 px-2 uppercase tracking-wider">VERIFIED</Badge>
-                                {language === 'vi' && review.name === 'Nguyen' && (
+                                {COUNTRY_REVIEW_VIDEOS[language]?.name === review.name && (
                                   <Badge 
                                     onClick={(e) => {
                                       e.stopPropagation();

@@ -9,4 +9,5 @@ export const reviews = {
   "소득세 감면": "Tax Relief",
   "후불 정산제": "Pay-After",
   "나의 환급금 1분 만에 조회하기": "Check My Refund in 1 Minute",
+  "인터뷰 영상": "Watch Interview Video",
 };

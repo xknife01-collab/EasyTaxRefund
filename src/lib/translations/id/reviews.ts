@@ -9,4 +9,5 @@ export const reviews = {
   "소득세 감면": "Pemotongan Pajak",
   "후불 정산제": "Bayar di Akhir",
   "나의 환급금 1분 만에 조회하기": "Cek Refund Saya dalam 1 Menit",
+  "인터뷰 영상": "Video Wawancara",
 };

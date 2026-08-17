@@ -9,4 +9,5 @@ export const reviews = {
   "소득세 감면": "Soliq imtiyozi",
   "후불 정산제": "Keyin to'lash",
   "나의 환급금 1분 만에 조회하기": "1 daqiqada pulimni tekshirish",
+  "인터뷰 영상": "Intervyu videosi",
 };
