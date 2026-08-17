@@ -1684,7 +1684,7 @@ function FloatingConsultingPanelInner() {
                 </h3>
                 
                 <p className="text-slate-400 font-bold text-[11px] mt-0.5">
-                  Official Center 010-5864-8577
+                  Official Center 010-5964-5340
                 </p>
               </div>
 

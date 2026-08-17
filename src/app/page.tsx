@@ -460,7 +460,7 @@ export default function HomePage() {
                     <div className="text-slate-300 font-bold text-xs mt-0.5">{t("외국인 중소기업 청년 소득세 환급 전문")}</div>
                     <div className="flex items-center justify-center gap-2 mt-2">
                       <span className="h-1.5 w-1.5 bg-emerald-400 rounded-full animate-pulse" />
-                      <span className="text-emerald-400 text-xs font-black">{t("지금 상담 가능 · 010-5864-8577")}</span>
+                      <span className="text-emerald-400 text-xs font-black">{t("지금 상담 가능 · 010-5964-5340")}</span>
                     </div>
                   </div>
                 </div>

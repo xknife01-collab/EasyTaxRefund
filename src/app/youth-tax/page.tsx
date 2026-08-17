@@ -413,7 +413,7 @@ export default function YouthTaxPage() {
                 {t("연락처 안내")}
               </div>
               {[
-                { icon: <Phone className="h-5 w-5" />, label: t("전화번호"), value: "010-5864-8577", href: "tel:010-5864-8577" },
+                { icon: <Phone className="h-5 w-5" />, label: t("전화번호"), value: "010-5964-5340", href: "tel:010-5964-5340" },
                 { icon: <Mail className="h-5 w-5" />, label: t("이메일"), value: "zkfnth021@gmail.com", href: "mailto:zkfnth021@gmail.com" },
                 { icon: <ExternalLink className="h-5 w-5" />, label: t("홈페이지"), value: "ktrs-service.vercel.app/welcome", href: "/welcome" },
               ].map((item, i) => (

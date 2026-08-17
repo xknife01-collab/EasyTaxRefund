@@ -52,11 +52,11 @@ export default function SupportPage() {
         {/* ─── QUICK CONTACT STRIP ─── */}
         <section className="w-full bg-[#b88c30] py-8 px-6">
           <div className="max-w-5xl mx-auto flex flex-wrap items-center justify-center gap-8 sm:gap-16 text-[#0f1e36]">
-            <a href="tel:010-5864-8577" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <a href="tel:010-5964-5340" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
               <Phone className="h-5 w-5 shrink-0" />
               <div>
                 <div className="text-[10px] font-black uppercase tracking-widest opacity-70">{t("전화 상담")}</div>
-                <div className="text-base font-black">010-5864-8577</div>
+                <div className="text-base font-black">010-5964-5340</div>
               </div>
             </a>
             <div className="h-8 w-px bg-[#0f1e36]/20 hidden sm:block" />
@@ -105,8 +105,8 @@ export default function SupportPage() {
                       </div>
                       <h3 className="text-base font-black text-[#0f1e36]">{t("전화 상담")}</h3>
                     </div>
-                    <a href="tel:010-5864-8577" className="text-2xl font-black text-[#0f1e36] hover:text-[#b88c30] transition-colors block">
-                      010-5864-8577
+                    <a href="tel:010-5964-5340" className="text-2xl font-black text-[#0f1e36] hover:text-[#b88c30] transition-colors block">
+                      010-5964-5340
                     </a>
                     <p className="text-slate-400 text-xs font-bold">{t("평일 09:00 ~ 18:00 (주말·공휴일 휴무)")}</p>
                   </div>

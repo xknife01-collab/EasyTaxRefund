@@ -145,7 +145,7 @@ export function Footer() {
               <div className="flex flex-wrap gap-x-4 gap-y-2 text-slate-400 font-bold">
                 <span>{t('주소: 경기도 남양주시 부평로 48번길 140, 107-1102')}</span>
                 <span className="hidden sm:inline text-slate-600">|</span>
-                <span>{t('연락처: 010-5864-8577')}</span>
+                <span>{t('연락처: 010-5964-5340')}</span>
                 <span className="hidden sm:inline text-slate-600">|</span>
                 <span>{t('이메일: zkfnth021@gmail.com')}</span>
               </div>
