@@ -190,6 +190,13 @@ const COUNTRY_REVIEW_VIDEOS: Record<string, { name: string; amount: string; flag
     flag: "🇨🇳",
     poster: "/reviews/chen.png",
     videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/chinese_refund_review.mp4"
+  },
+  km: {
+    name: "Sopheak",
+    amount: "+2,450,000 Won",
+    flag: "🇰🇭",
+    poster: "/reviews/cambodia.png",
+    videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/cambodia_refund_review.mp4"
   }
 };
 
