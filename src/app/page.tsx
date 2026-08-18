@@ -135,6 +135,13 @@ const COUNTRY_REVIEW_VIDEOS: Record<string, { name: string; amount: string; flag
     poster: "/reviews/nguyen.png",
     videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/vietnam_refund_review.mp4"
   },
+  th: {
+    name: "Somchai",
+    amount: "+2,120,000 Won",
+    flag: "🇹🇭",
+    poster: "/reviews/somchai.png",
+    videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/thailand_refund_review.mp4"
+  },
   ne: {
     name: "Sita",
     amount: "+3,000,000 Won",

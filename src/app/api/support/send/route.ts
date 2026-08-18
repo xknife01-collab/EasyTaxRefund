@@ -15,6 +15,20 @@ export async function POST(req: Request) {
     // 1. Translate Korean to customer's target language via AI Flow
     const { translatedText } = await translateOutgoingTelegramMessage(koreanText, targetLang || 'en');
 
+    let chatData: any = null;
+    if (channel === 'whatsapp' || channel === 'facebook') {
+      try {
+        const { data } = await supabaseAdmin
+          .from('support_chats')
+          .select('metadata')
+          .eq('id', chatId)
+          .single();
+        chatData = data;
+      } catch (err) {
+        console.error('[OmniChat] Failed to fetch chat metadata:', err);
+      }
+    }
+
     // 2. Deliver message based on the source channel
     if (channel === 'telegram') {
       const botToken = process.env.TELEGRAM_BOT_TOKEN;
@@ -34,18 +48,8 @@ export async function POST(req: Request) {
       const waToken = process.env.WHATSAPP_ACCESS_TOKEN;
       let waPhoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
 
-      // Dynamically load WhatsApp Phone Number ID from metadata if present
-      try {
-        const { data: chatData } = await supabaseAdmin
-          .from('support_chats')
-          .select('metadata')
-          .eq('id', chatId)
-          .single();
-        if (chatData?.metadata?.whatsapp_phone_number_id) {
-          waPhoneId = chatData.metadata.whatsapp_phone_number_id;
-        }
-      } catch (err) {
-        console.error('[OmniChat] Failed to fetch chat metadata for custom phone ID:', err);
+      if (chatData?.metadata?.whatsapp_phone_number_id) {
+        waPhoneId = chatData.metadata.whatsapp_phone_number_id;
       }
 
       if (waToken && waPhoneId) {
@@ -80,7 +84,7 @@ export async function POST(req: Request) {
         console.warn('[OmniChat] WhatsApp Access Token or Phone Number ID is missing in environment variables.');
       }
     } else if (channel === 'facebook') {
-      const pageId = (chatSession?.metadata as any)?.page_id;
+      const pageId = (chatData?.metadata as any)?.page_id;
       const pageAccessToken = getFacebookPageToken(pageId);
       if (pageAccessToken) {
         const facebookUrl = `https://graph.facebook.com/v19.0/me/messages?access_token=${pageAccessToken}`;

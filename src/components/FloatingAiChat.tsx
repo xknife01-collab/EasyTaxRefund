@@ -306,23 +306,23 @@ const getStepProactiveMessage = (step: number, lang: string = 'ko'): { text: str
   const dummyTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   
   switch (step) {
-    case 0:
+        case 0:
       return {
-        text: lang === 'vi' ? 'Xin chào~ 😊 Nếu thấy các bước khó khăn, hãy nói với tôi trước nhé! Tôi sẽ giúp bạn hoàn tất các bước phức tạp nhất~ Tên tiếng Anh trên thẻ ARC của bạn là gì?'
-            : lang === 'zh' ? '您好~ 😊 如果觉得步骤复杂，可以先告诉我！我来帮您搞定最难的步骤~ 请问您登录证上的英文姓名是？'
-            : lang === 'ne' ? 'नमस्कार~ 😊 यदि प्रक्रिया गाह्रो लागेमा पहिले मलाई भन्नुहोस्! म सबैभन्दा गाह्रो चरणहरू पार गर्न मद्दत गर्नेछु~ तपाईंको नाम के हो?'
-            : lang === 'th' ? 'สวัสดีครับ~ 😊 หากรู้สึกว่าขั้นตอนยุ่งยาก บอกผมได้เลยนะครับ! ผมจะช่วยข้ามขั้นตอนที่ยากที่สุดให้~ ขอทราบชื่อหน่อยครับ?'
-            : lang === 'km' ? 'សួស្តី~ 😊 ប្រសិនបើពិបាក សូមប្រាប់ខ្ញុំមុន! ខ្ញុំនឹងជួយអ្នករំលងជំហានដែលពិបាកបំផុត~ តើអ្នកឈ្មោះអ្វី?'
-            : lang === 'my' ? 'မင်္ဂလာပါ~ 😊 ခက်ခဲနေပါက ကျွန်တော့်ကို အရင်ပြောပြပါ! အခက်ခဲဆုံး အပိုင်းတွေကို ကူညီပေးပါမယ်~ နာမည်လေး ပြောပြပါဦး။'
-            : lang === 'uz' ? 'Salom~ 😊 Agar bosqichlar qiyin tuyulsa, avval menga ayting! Eng qiyin bosqichlarni o\'tishingizga yordam beraman~ Ismingiz nima?'
-            : lang === 'id' ? 'Halo~ 😊 Jika terasa sulit, beri tahu saya dulu ya! Saya akan bantu lewati langkah paling rumit~ Siapa nama lengkap Anda?'
-            : lang === 'mn' ? 'Сайн байна уу~ 😊 Хэрэв хэцүү байвал надад эхлээд хэлээрэй! Би хамгийн төвөгтэй алхмуудыг алгасахад тусална~ Нэр тань хэн бэ?'
-            : lang === 'bn' ? 'হ্যালো~ 😊 যদি কঠিন মনে হয়, তবে প্রথমে আমাকে বলুন! আমি আপনাকে সবচেয়ে জটিল ধাপগুলো পার করতে সাহায্য করব~ আপনার নাম কী?'
-            : lang === 'kk' ? 'Сәлеметсіз бе~ 😊 Егер қиын болса, алдымен маған айтыңыз! Ең қиын қадамдарды өтуге көмектесемін~ Атыңыз кім?'
-            : lang === 'si' ? 'ආයුබෝවන්~ 😊 පියවර අපහසු නම්, මුලින්ම මට කියන්න! මම වඩාත්ම සංකීර්ණ පියවර මඟහැරීමට උදවු කරන්නෙමි~ ඔබේ නම කුමක්ද?'
-            : lang === 'ur' ? 'ہیلو~ 😊 اگر مشکل لگے تو پہلے مجھے بتائیں! میں سب سے مشکل مراحل پار کرنے میں آپ کی مدد کروں گا~ آپ کا نام کیا ہے؟'
-            : lang === 'en' ? 'Hello~ 😊 If the steps feel overwhelming, talk to me first! I will help you breeze through the hardest parts~ What is your name?'
-            : '안녕하세요~ 😊 어려우시면 저한테 먼저 말씀해 주세요! 제가 가장 어려운 단계를 넘어가게 도와드릴게요~ 이름이 어떻게 되세요?'
+        text: lang === 'vi' ? 'Bạn có thắc mắc mình có thể nhận lại bao nhiêu tiền hoàn thuế không? 😊 Nếu có bất kỳ câu hỏi nào hoặc cần giúp đỡ, hãy nói với tôi bất cứ lúc nào nhé!'
+            : lang === 'zh' ? '想知道您可以拿回多少退税金吗？😊 如果您有任何疑问或需要帮助，请随时告诉我！'
+            : lang === 'ne' ? 'तपाईंले कति कर फिर्ता पाउन सक्नुहुन्छ भनेर जान्न उत्सुक हुनुहुन्छ? 😊 यदि केही सोध्नु परेमा वा मद्दत चाहिएमा जुनसुकै बेला मलाई भन्नुहोस्!'
+            : lang === 'th' ? 'อยากรู้ไหมว่าคุณจะได้รับเงินคืนภาษีเท่าไหร่? 😊 หากมีข้อสงสัยหรือต้องการความช่วยเหลือ สามารถบอกผมได้ตลอดเวลาเลยนะครับ!'
+            : lang === 'km' ? 'តើអ្នកចង់ដឹងថាតើអ្នកអាចទទួលបានប្រាក់ពន្ធបង្វិលសងវិញប៉ុន្មានដែរឬទេ? 😊 ប្រសិនបើមានចម្ងល់ ឬត្រូវការជំនួយ សូមប្រាប់ខ្ញុំបានគ្រប់ពេល!'
+            : lang === 'my' ? 'သင့်အခွန်ပြန်အမ်းငွေ ဘယ်လောက်ရနိုင်မလဲ သိချင်ပါသလား။ 😊 သိလိုသည်များရှိပါက သို့မဟုတ် အကူအညီလိုအပ်ပါက အချိန်မရွေး ပြောပြပေးပါ။'
+            : lang === 'uz' ? 'Qancha soliq qaytarib olishingiz mumkinligi qiziqmi? 😊 Savollaringiz bo\'lsa yoki yordam kerak bo\'lsa, istalgan vaqtda menga ayting!'
+            : lang === 'id' ? 'Penasaran berapa banyak pengembalian pajak yang bisa Anda dapatkan? 😊 Jika ada pertanyaan atau butuh bantuan, jangan ragu untuk memberi tahu saya kapan saja!'
+            : lang === 'mn' ? 'Та хэдэн төгрөгийн татварын буцаан олголт авах боломжтойгоо мэдмээр байна уу? 😊 Асуух зүйл байвал эсвэл тусламж хэрэгтэй бол хэзээ ч хамаагүй надад хэлээрэй!'
+            : lang === 'bn' ? 'আপনি কত টাকা ট্যাক্স ফেরত পেতে পারেন তা কি জানতে চান? 😊 কোনো প্রশ্ন থাকলে বা সাহায্যের প্রয়োজন হলে যে কোনো সময় আমাকে জানান!'
+            : lang === 'kk' ? 'Қанша салық қайтарып ала алатыныңызды білгіңіз келе ме? 😊 Сұрақтарыңыз болса немесе көмек қажет болса, кез келген уақытта маған айтыңыз!'
+            : lang === 'si' ? 'ඔබට කොපමණ බදු මුදලක් ආපසු ලබාගත හැකිදැයි දැන ගැනීමට අවශ්‍යද? 😊 කිසියම් ප්‍රශ්නයක් ඇත්නම් හෝ උදවු අවශ්‍ය නම් ඕනෑම වේලාවක මට කියන්න!'
+            : lang === 'ur' ? 'کیا آپ جاننا چاہتے ہیں کہ آپ کو کتنا ٹیکس ریفنڈ مل سکتا ہے؟ 😊 اگر آپ کا کوئی سوال ہے یا مدد کی ضرورت ہے تو کسی بھی وقت مجھے بتائیں!'
+            : lang === 'en' ? 'Wondering how much tax refund you can get? 😊 If you have any questions or need help, feel free to let me know anytime!'
+            : '내 세금 환급금, 얼마나 받을 수 있는지 궁금하신가요? 😊 궁금한 점이 있으시거나 도움이 필요하시면 언제든 말씀해 주세요!'
       };
     case 1:
       return {
@@ -1196,7 +1196,7 @@ function FloatingConsultingPanelInner() {
                 m.id === "welcome-card" ||
                 m.text.includes("공식 매니저") ||
                 m.text.includes("명함") ||
-                m.text.includes("이름이 어떻게 되세요")
+                m.text.includes("이름이 어떻게 되세요") || m.text.includes("궁금하신가요") || m.text.includes("환급금")
             );
 
             if (hasWelcomeAlready) {
