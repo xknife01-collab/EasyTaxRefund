@@ -197,6 +197,13 @@ const COUNTRY_REVIEW_VIDEOS: Record<string, { name: string; amount: string; flag
     flag: "🇰🇭",
     poster: "/reviews/cambodia.png",
     videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/cambodia_refund_review.mp4"
+  },
+  kk: {
+    name: "Oleg",
+    amount: "+2,150,000 Won",
+    flag: "🇰🇿",
+    poster: "/reviews/kazakhstan.png",
+    videoUrl: "https://ilvxvohksgwdiyvpkwag.supabase.co/storage/v1/object/public/review-videos/kazakhstan_refund_review.mp4"
   }
 };
 
@@ -1429,10 +1436,9 @@ export default function HomePage() {
                   <video
                     id="review-video-player"
                     src={COUNTRY_REVIEW_VIDEOS[language].videoUrl}
-                    poster={COUNTRY_REVIEW_VIDEOS[language].poster}
                     controls
                     playsInline
-                    preload="metadata"
+                    preload="auto"
                     className="w-full h-full object-cover"
                   />
                 </div>
