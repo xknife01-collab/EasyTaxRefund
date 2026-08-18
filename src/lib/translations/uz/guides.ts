@@ -55,7 +55,7 @@ export const guides = {
   "약관에 체크해 주세요.": "Shartlarni belgilang.",
   "휴대폰 번호 입력": "Telefon raqamini kiriting",
   "우측 하단의 '인증' 버튼을 눌러주세요": "O'ng pastki burchakdagi 'Tasdiqlash' tugmasini bosing.",
-  "인증이 완료되었습니다! '확인'을 눌러주세요.\n\n그 후 이지텍스리펀드 웹페이지로 돌아가 '인증 완료'를 누르세요!": "Tasdiqlash yakunlandi! 'Tasdiqlash' tugmasini bosing.\n\nKeyin KTRSRefund veb-sahifasiga qaytib, 'Tasdiqlash yakunlandi' tugmasini bosing!",
+  "인증이 완료되었습니다! '확인'을 눌러주세요.\n\n그 후 KTRS 웹페이지로 돌아가 '인증 완료'를 누르세요!": "Tasdiqlash yakunlandi! 'Tasdiqlash' tugmasini bosing.\n\nKeyin KTRSRefund veb-sahifasiga qaytib, 'Tasdiqlash yakunlandi' tugmasini bosing!",
   "내 추천 성명 보기": "Mening tavsiya etilgan ismimni ko'rish",
   "인증서 서비스를 이용하기 위해 필수 항목을 선택하여 모두 동의해 주세요": "Sertifikat xizmatidan foydalanish uchun barcha kerakli elementlarni tanlab rozilik bildiring.",
   "PASS 시작": "PASS Boshlash",

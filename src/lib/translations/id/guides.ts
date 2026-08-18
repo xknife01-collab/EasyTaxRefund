@@ -55,7 +55,7 @@ export const guides = {
   "약관에 체크해 주세요.": "Silakan centang syarat dan ketentuan.",
   "휴대폰 번호 입력": "Masukkan Nomor Ponsel",
   "우측 하단의 '인증' 버튼을 눌러주세요": "Tekan tombol 'Verifikasi' di kanan bawah.",
-  "인증이 완료되었습니다! '확인'을 눌러주세요.\n\n그 후 이지텍스리펀드 웹페이지로 돌아가 '인증 완료'를 누르세요!": "Verifikasi telah selesai! Silakan tekan 'Konfirmasi'.\n\nSetelah itu, kembali ke halaman web Korea Tax Refund Service dan tekan 'Verifikasi Selesai'!",
+  "인증이 완료되었습니다! '확인'을 눌러주세요.\n\n그 후 KTRS 웹페이지로 돌아가 '인증 완료'를 누르세요!": "Verifikasi telah selesai! Silakan tekan 'Konfirmasi'.\n\nSetelah itu, kembali ke halaman web Korea Tax Refund Service dan tekan 'Verifikasi Selesai'!",
   "내 추천 성명 보기": "Lihat Nama Rekomendasi Saya",
   "인증서 서비스를 이용하기 위해 필수 항목을 선택하여 모두 동의해 주세요": "Untuk menggunakan layanan sertifikat, pilih semua item wajib dan setujui.",
   "PASS 시작": "Mulai PASS",

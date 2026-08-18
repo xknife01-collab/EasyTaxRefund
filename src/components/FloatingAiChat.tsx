@@ -340,13 +340,7 @@ const getStepProactiveMessage = (step: number, lang: string = 'ko'): { text: str
             : lang === 'si' ? 'පියවර 1: කොරියාවේ සේවා කාලය සහ සාමාන්‍ය මාසික වැටුප තෝරන්න. තත්පර 0.1 කින් ආපසු ගෙවීම ගණනය කෙරේ!'
             : lang === 'ur' ? 'مرحلہ 1: کوریا میں کام کی مدت اور اوسط ماہانہ تنخواہ منتخب کریں۔ سسٹم 0.1 سیکنڈ میں تخمینہ ریفنڈ کا حساب لگائے گا!'
             : lang === 'en' ? 'Step 1: Select your work period in Korea and approximate monthly salary. The system will calculate your estimated refund in 0.1 seconds!'
-            : '1단계: 한국 근무 기간과 대략적인 월급을 선택해 주세요. 0.1초 만에 예상 환급액을 정밀 계산해 드립니다!',
-        richCard: {
-          cardType: 'estimate_preview',
-          title: lang === 'ne' ? 'प्रत्यक्ष कर फिर्ता सिमुलेशन' : lang === 'vi' ? 'Mô phỏng hoàn thuế thời gian thực' : '실시간 환급금 모의 정밀 분석',
-          description: lang === 'ne' ? 'हालको अवस्था अनुसार सम्भावित फिर्ता रकम' : lang === 'vi' ? 'Số tiền hoàn thuế ước tính theo điều kiện hiện tại' : '현재 조건 기준 잠정 예상 환급금',
-          metrics: { estimated_refund: '₩450,000 ~ ₩1,800,000' }
-        }
+            : '1단계: 한국 근무 기간과 대략적인 월급을 선택해 주세요. 0.1초 만에 예상 환급액을 정밀 계산해 드립니다!'
       };
     case 2:
       return {
@@ -364,12 +358,7 @@ const getStepProactiveMessage = (step: number, lang: string = 'ko'): { text: str
             : lang === 'si' ? 'පියවර 2: ඔබේ ඉංග්‍රීසි නම සහ ඉලක්කම් 13 ක ARC අංකය ඇතුළත් කරන්න. සියලුම දත්ත 256-bit SSL මඟින් සුරක්ෂිත කර ඇත 🔒'
             : lang === 'ur' ? 'مرحلہ 2: اپنا انگریزی نام اور 13 ہندسوں کا ARC نمبر درج کریں۔ تمام ڈیٹا 256-bit SSL سے محفوظ ہے 🔒'
             : lang === 'en' ? 'Step 2: Enter your English name and 13-digit Foreigner Registration Number. All data is protected with 256-bit SSL encryption 🔒'
-            : '2단계: 외국인등록증에 적힌 영문 성함과 외국인등록번호 13자리를 입력해 주세요. 모든 정보는 256-bit SSL로 안전하게 암호화됩니다 🔒',
-        richCard: {
-          cardType: 'security_badge',
-          title: lang === 'ne' ? 'गोपनीयता र सुरक्षा प्रमाणीकरण' : lang === 'vi' ? 'Bảo mật và Mã hóa thông tin' : '개인정보 보호 및 보안 인증',
-          description: lang === 'ne' ? '२५६-बिट SSL ईन्क्रिप्शन सुरक्षा र राष्ट्रिय कर सेवा प्रमाणीकरणपछि तुरुन्तै मेटाउने व्यवस्था।' : '시중 은행과 동일한 수준의 256-bit SSL 암호화 처리 후 국세청 연동 즉시 자동 파기됩니다.'
-        }
+            : '2단계: 외국인등록증에 적힌 영문 성함과 외국인등록번호 13자리를 입력해 주세요. 모든 정보는 256-bit SSL로 안전하게 암호화됩니다 🔒'
       };
     case 3:
       return {
@@ -387,12 +376,7 @@ const getStepProactiveMessage = (step: number, lang: string = 'ko'): { text: str
             : lang === 'si' ? 'පියවර 3: ජංගම දුරකථන ක්‍රියාකරු තෝරා OTP කේතය ලබා ගැනීමට ඔබේ දුරකථන අංකය ඇතුළත් කරන්න 📱'
             : lang === 'ur' ? 'مرحلہ 3: موبائل آپریٹر منتخب کریں اور تصدیقی کوڈ حاصل کرنے کے لیے اپنا فون نمبر درج کریں 📱'
             : lang === 'en' ? 'Step 3: Select your mobile carrier (SKT, KT, LGU+, MVNO) and enter your registered phone number 📱'
-            : '3단계: 본인 명의 휴대폰 번호와 통신사를 선택해 주세요! 알뜰폰 고객님은 대행 통신사 구분을 정확히 확인해 주셔야 인증 문자가 옵니다 📱',
-        richCard: {
-          cardType: 'telecom_helper',
-          title: lang === 'ne' ? 'टेलिकम प्रमाणीकरण सहयोगी' : '통신사 본인인증 도우미',
-          description: lang === 'ne' ? 'यदि प्रमाणीकरण एसएमएस नआएमा स्प्याम सेटिङ वा टेलिकम प्रकार जाँच गर्नुहोस्।' : '인증 문자가 오지 않는 경우 스팸 차단 설정 및 알뜰폰 대행사 구분을 확인해 주세요.'
-        }
+            : '3단계: 본인 명의 휴대폰 번호와 통신사를 선택해 주세요! 알뜰폰 고객님은 대행 통신사 구분을 정확히 확인해 주셔야 인증 문자가 옵니다 📱'
       };
     case 4:
       return {
@@ -503,11 +487,7 @@ const getStepProactiveMessage = (step: number, lang: string = 'ko'): { text: str
             : lang === 'si' ? 'පියවර 9: බදු නියෝජිත කොන්දේසි පරීක්ෂා කර අත්සන් කරන්න. 100% පසුගෙවුම් ප්‍රතිපත්තිය, දැන් 0 වොන් ✍️'
             : lang === 'ur' ? 'مرحلہ 9: ٹیکس ایجنٹ کے شرائط چیک کریں اور دستخط کریں۔ 100% بعد میں ادائیگی کی پالیسی، ابھی 0 وون ✍️'
             : lang === 'en' ? 'Step 9: Review the tax agent authorization terms and sign. 100% pay-after-refund policy, amount due right now is 0 won ✍️'
-            : '9단계: 세무사 경정청구 위임 약관을 확인하시고 서명해 주시면 접수가 완료됩니다! 100% 후불 정산이므로 지금 결제되는 금액은 0원입니다 ✍️',
-        richCard: {
-          cardType: 'completion_checklist',
-          title: lang === 'ne' ? 'कर फिर्ता आवेदन चेकलिस्ट' : '환급금 신청 진행 체크리스트'
-        }
+            : '9단계: 세무사 경정청구 위임 약관을 확인하시고 서명해 주시면 접수가 완료됩니다! 100% 후불 정산이므로 지금 결제되는 금액은 0원입니다 ✍️'
       };
     case 10:
       return {
@@ -677,104 +657,10 @@ function RichCardRenderer({
   activeGuide?: { method: 'hana' | 'pass' | 'kakao'; slideIndex: number; total: number } | null;
   onAskQuestion?: (q: string) => void;
 }) {
-  const { cardType, title, description, metrics } = card;
+  const { cardType } = card;
 
+  // Clunky graphics (badges, locks, checklists) are permanently disabled for premium 1:1 manager experience
   switch (cardType) {
-    case 'estimate_preview':
-      return (
-        <div className="mt-2.5 p-4.5 rounded-2xl bg-gradient-to-br from-[#1d385a] to-[#0a1d33] border border-[#e2b659]/30 shadow-lg text-slate-100 flex flex-col gap-3.5 max-w-full font-bold">
-          <div className="flex items-center gap-2 text-[#e2b659] text-xs">
-            <svg className="w-4.5 h-4.5 shrink-0 text-[#e2b659]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-            </svg>
-            <span>{title || "실시간 환급금 모의 정밀 분석"}</span>
-          </div>
-          <div className="flex flex-col gap-1">
-            <span className="text-[10px] text-slate-400 font-medium">{description || "현재 정보 기준 잠정 예상 환급금"}</span>
-            <span className="text-xl font-extrabold text-[#e2b659]">
-              {metrics?.estimated_refund || "₩450,000"}
-            </span>
-          </div>
-          <div className="h-px bg-white/10 w-full" />
-          <div className="flex items-center justify-between text-[9px] text-slate-400">
-            <span>보안 분석 엔진 v2.5</span>
-            <span className="text-[#e2b659]">분석 신뢰도 99%</span>
-          </div>
-        </div>
-      );
-    case 'security_badge':
-      return (
-        <div className="mt-2.5 p-4.5 rounded-2xl bg-gradient-to-br from-[#0e213a] to-[#050f1b] border border-emerald-500/20 shadow-md text-slate-100 flex flex-col gap-2.5 max-w-full font-bold">
-          <div className="flex items-center gap-2 text-emerald-400 text-xs">
-            <svg className="w-4.5 h-4.5 shrink-0 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
-            </svg>
-            <span>{title || "개인정보 보호 및 보안 인증"}</span>
-          </div>
-          <p className="text-[10px] text-slate-300 font-medium leading-relaxed">
-            {description || "고객님의 모든 정보는 시중 은행과 동일한 수준의 최고급 256-bit SSL 암호화 처리 후 국세청 연동 즉시 자동 파기됩니다."}
-          </p>
-          <div className="flex flex-wrap gap-1.5 mt-1 text-[9px]">
-            <span className="px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">SSL 256bit</span>
-            <span className="px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">국세청 가이드 준수</span>
-          </div>
-        </div>
-      );
-    case 'telecom_helper':
-      return (
-        <div className="mt-2.5 p-4.5 rounded-2xl bg-gradient-to-br from-[#1d385a] to-[#0a1d33] border border-blue-400/20 shadow-md text-slate-100 flex flex-col gap-3 max-w-full font-bold">
-          <div className="flex items-center gap-2 text-blue-400 text-xs">
-            <svg className="w-4.5 h-4.5 shrink-0 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-            <span>{title || "통신사 본인인증 도우미"}</span>
-          </div>
-          <div className="flex flex-col gap-1.5 text-[10px] text-slate-300 font-medium">
-            <p className="text-slate-400">{description || "본인인증 문자가 오지 않는 경우 조치 방법:"}</p>
-            <div className="flex flex-col gap-1">
-              <div className="flex gap-1.5 items-start">
-                <span className="text-[#e2b659] shrink-0">1.</span>
-                <span>휴대폰 스팸 메시지 보관함 또는 통신사 인증 차단 서비스 설정을 확인해 주세요.</span>
-              </div>
-              <div className="flex gap-1.5 items-start">
-                <span className="text-[#e2b659] shrink-0">2.</span>
-                <span>알뜰폰 고객님의 경우 대행사 통신사 구분을 정확히 입력하셨는지 확인 바랍니다.</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    case 'completion_checklist':
-      return (
-        <div className="mt-2.5 p-4.5 rounded-2xl bg-[#0d1e35] border border-white/10 shadow-md text-slate-100 flex flex-col gap-3 max-w-full font-bold">
-          <div className="flex items-center gap-2 text-[#e2b659] text-xs">
-            <svg className="w-4.5 h-4.5 shrink-0 text-[#e2b659]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
-            </svg>
-            <span>{title || "환급금 신청 진행 체크리스트"}</span>
-          </div>
-          <div className="flex flex-col gap-2.5 text-[10px]">
-            <div className="flex items-center justify-between">
-              <span className="text-slate-400">1단계: 세무 환급금 모의 조회</span>
-              <span className="text-emerald-400 flex items-center gap-1">
-                <svg className="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
-                조회 성공
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-slate-400">2단계: 국세청 안전 본인인증</span>
-              <span className="text-emerald-400 flex items-center gap-1">
-                <svg className="w-3.5 h-3.5 text-emerald-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"></path></svg>
-                인증 성공
-              </span>
-            </div>
-            <div className="flex items-center justify-between">
-              <span className="text-slate-200">3단계: 최종 환급 승인 서명</span>
-              <span className="text-[#e2b659] animate-pulse">최종 서명 대기</span>
-            </div>
-          </div>
-        </div>
-      );
     case 'guide':
       return <LiveVisualCoachCard activeGuide={activeGuide} language={language} onAskQuestion={onAskQuestion} />;
     default:

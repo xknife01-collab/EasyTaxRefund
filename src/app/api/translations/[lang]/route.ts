@@ -58,4 +58,4 @@ export async function GET(
   }
 }
 
-// Force translation cache invalidation: 2026-06-28T18:59
+// Force translation cache invalidation: 2026-08-18T11:10:00
