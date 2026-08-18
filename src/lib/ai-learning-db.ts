@@ -25,18 +25,25 @@ export interface MatchedScript {
   refund_step: string;
   target_psychology: string;
   script_text: string;
+  detected_language?: string;
+  target_personality?: string;
+  generation_origin?: string;
   success_weight: number;
+  impressions_count?: number;
+  conversions_count?: number;
+  conversion_rate?: number;
   similarity: number;
 }
 
 /**
- * Retrieve matched refund scripts based on user message semantic search
+ * Retrieve matched refund scripts based on user message semantic search and matrix RL
  */
 export async function retrieveMatchedScripts(
   messageText: string,
   lang: string = 'ko',
   step?: string,
-  threshold: number = 0.5,
+  personality: string = 'all',
+  threshold: number = 0.45,
   limit: number = 3
 ): Promise<MatchedScript[]> {
   try {
@@ -45,13 +52,14 @@ export async function retrieveMatchedScripts(
     // Fetch slightly more candidates from RPC to allow reranking
     const fetchLimit = Math.max(limit * 3, 10);
 
-    // Call Supabase RPC
+    // Call Supabase RPC with matrix parameters
     const { data, error } = await supabaseAdmin.rpc('match_refund_scripts', {
       query_embedding: queryEmbedding,
       match_threshold: threshold,
       match_count: fetchLimit,
       p_step: step || null,
       p_lang: lang,
+      p_personality: personality || 'all',
     });
 
     if (error) {
@@ -62,10 +70,15 @@ export async function retrieveMatchedScripts(
     const rawList = (data || []) as MatchedScript[];
     if (rawList.length === 0) return [];
 
-    // Re-rank candidates by weighting similarity (60%) and success_weight (40%)
+    // Re-rank candidates using Multi-Armed Bandit (Sim 45% + Conversion Rate 40% + Exploration Bonus 15%)
     const rerankedList = [...rawList].sort((a, b) => {
-      const scoreA = (a.similarity * 0.6) + (Math.min(a.success_weight || 0, 100) / 100 * 0.4);
-      const scoreB = (b.similarity * 0.6) + (Math.min(b.success_weight || 0, 100) / 100 * 0.4);
+      const rateA = a.conversion_rate || 0.0;
+      const rateB = b.conversion_rate || 0.0;
+      const bonusA = (a.impressions_count || 0) < 5 ? 0.15 : 0.02;
+      const bonusB = (b.impressions_count || 0) < 5 ? 0.15 : 0.02;
+
+      const scoreA = (a.similarity * 0.45) + (rateA * 0.40) + bonusA;
+      const scoreB = (b.similarity * 0.45) + (rateB * 0.40) + bonusB;
       return scoreB - scoreA;
     });
 
@@ -77,16 +90,31 @@ export async function retrieveMatchedScripts(
 }
 
 /**
- * Log conversion feedback and increment success weight of the script
+ * Atomically record script impression count
+ */
+export async function recordScriptImpression(scriptId: number): Promise<void> {
+  try {
+    if (!scriptId) return;
+    await supabaseAdmin.rpc('record_script_impression', {
+      p_script_id: scriptId,
+    });
+  } catch (err) {
+    console.warn('[Record Impression Warning]:', err);
+  }
+}
+
+/**
+ * Log conversion feedback and atomically increment conversion stats of the script
  */
 export async function logConversionFeedback(
   chatId: string,
   actionType: string,
-  score: number
+  score: number,
+  lang: string = 'ko',
+  personality: string = 'all'
 ): Promise<{ success: boolean; error?: string }> {
   try {
     // 1. Find the support chat session to check its metadata for the last script ID
-    // We try querying by external_chat_id first since the client widget sends that
     let chat = null;
     let chatErr = null;
 
@@ -99,7 +127,6 @@ export async function logConversionFeedback(
     if (!extErr && chatByExt) {
       chat = chatByExt;
     } else {
-      // Fallback to checking by primary key id if it's a valid UUID
       const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
       if (uuidRegex.test(chatId)) {
         const { data: chatById, error: idErr } = await supabaseAdmin
@@ -127,8 +154,6 @@ export async function logConversionFeedback(
 
     const scriptId = chat.metadata?.last_script_id;
     if (!scriptId) {
-      // It's normal if there was no script sent yet in this session (e.g. instant close without AI dialogue)
-      // We still insert the log without a script_id to track the raw action
       const { error: logErr } = await supabaseAdmin
         .from('script_conversion_logs')
         .insert({
@@ -160,26 +185,32 @@ export async function logConversionFeedback(
       return { success: false, error: `Failed to log conversion: ${logErr.message}` };
     }
 
-    // 3. Update refund_scripts success_weight (increment by score)
-    const { data: updatedScript, error: scriptErr } = await supabaseAdmin.rpc('increment_script_weight', {
-      script_id_input: scriptId,
-      increment_amount: score
+    // 3. Atomically record conversion via RPC
+    const { error: scriptErr } = await supabaseAdmin.rpc('record_script_conversion', {
+      p_script_id: scriptId,
+      p_score: score
     });
 
-    // Fallback if rpc is not created yet
     if (scriptErr) {
-      console.warn('RPC increment_script_weight failed, using direct query update:', scriptErr.message);
-      
+      console.warn('RPC record_script_conversion failed, using fallback update:', scriptErr.message);
       const { data: script } = await supabaseAdmin
         .from('refund_scripts')
-        .select('success_weight')
+        .select('success_weight, conversions_count, impressions_count')
         .eq('id', scriptId)
         .single();
         
       if (script) {
+        const nextConversions = (script.conversions_count || 0) + 1;
+        const impressions = script.impressions_count || 1;
+        const nextRate = Math.round((nextConversions / impressions) * 10000) / 10000;
         await supabaseAdmin
           .from('refund_scripts')
-          .update({ success_weight: (script.success_weight || 0) + score })
+          .update({ 
+            success_weight: (script.success_weight || 0) + score,
+            conversions_count: nextConversions,
+            conversion_rate: nextRate,
+            updated_at: new Date().toISOString()
+          })
           .eq('id', scriptId);
       }
     }
@@ -198,7 +229,6 @@ export async function logConversionFeedback(
             const currentMsg = messages[i];
             const nextMsg = messages[i + 1];
 
-            // Match Customer -> Admin (Manager response) pair
             if (currentMsg.sender_type === 'customer' && nextMsg.sender_type === 'admin') {
               const queryText = currentMsg.original_text || '';
               const responseText = nextMsg.original_text || nextMsg.translated_text || '';
@@ -206,33 +236,25 @@ export async function logConversionFeedback(
               if (queryText.trim().length > 5 && responseText.trim().length > 10) {
                 const embedding = await getEmbedding(queryText.trim()).catch(() => null);
                 if (embedding) {
-                  const existingMatches = await retrieveMatchedScripts(queryText.trim(), currentMsg.source_lang || 'ko', undefined, 0.85, 1);
+                  const existingMatches = await retrieveMatchedScripts(queryText.trim(), currentMsg.source_lang || 'ko', undefined, personality, 0.85, 1);
                   if (existingMatches && existingMatches.length > 0) {
                     const matchedScript = existingMatches[0];
-                    console.log(`[Self-Learning RAG] Found highly similar script (ID: ${matchedScript.id}, Similarity: ${matchedScript.similarity}). Incrementing success weight instead of inserting duplicate.`);
-                    await Promise.resolve(supabaseAdmin.rpc('increment_script_weight', {
-                      script_id_input: matchedScript.id,
-                      increment_amount: 15
-                    })).catch(async () => {
-                      const { data: script } = await supabaseAdmin
-                        .from('refund_scripts')
-                        .select('success_weight')
-                        .eq('id', matchedScript.id)
-                        .single();
-                      if (script) {
-                        await supabaseAdmin
-                          .from('refund_scripts')
-                          .update({ success_weight: (script.success_weight || 0) + 15 })
-                          .eq('id', matchedScript.id);
-                      }
-                    });
+                    await Promise.resolve(supabaseAdmin.rpc('record_script_conversion', {
+                      p_script_id: matchedScript.id,
+                      p_score: 15
+                    })).catch(() => {});
                   } else {
                     await supabaseAdmin.from('refund_scripts').insert({
                       refund_step: 'success_case',
                       target_psychology: 'real_conversion_case',
                       script_text: responseText.trim(),
                       detected_language: currentMsg.source_lang || 'ko',
+                      target_personality: personality || 'all',
+                      generation_origin: 'ai_self_generated',
                       success_weight: 15,
+                      impressions_count: 1,
+                      conversions_count: 1,
+                      conversion_rate: 1.0,
                       embedding: embedding
                     });
                     console.log(`[Self-Learning RAG] Successfully learned new successful response in: ${currentMsg.source_lang || 'ko'}`);
@@ -251,6 +273,84 @@ export async function logConversionFeedback(
   } catch (err: any) {
     console.error('[Feedback Logging Error]:', err);
     return { success: false, error: err.message };
+  }
+}
+
+/**
+ * 🚀 AI Self-Prompting Synthesizer: Synthesize and auto-register new sales scripts
+ */
+export async function generateAndEvolveScripts(params?: {
+  targetLanguage?: string;
+  targetPersonality?: 'driver' | 'skeptical' | 'analytical' | 'expressive' | 'all';
+  targetStep?: string;
+  count?: number;
+}): Promise<{ success: boolean; generatedCount: number; scripts: any[] }> {
+  const lang = params?.targetLanguage || 'vi';
+  const personality = params?.targetPersonality || 'all';
+  const step = params?.targetStep || 'general';
+  const count = params?.count || 3;
+
+  try {
+    // 1. Fetch current top performing scripts for reference
+    const { data: topScripts } = await supabaseAdmin
+      .from('refund_scripts')
+      .select('script_text, success_weight, conversion_rate')
+      .or(`detected_language.eq.${lang},detected_language.eq.all,detected_language.eq.ko`)
+      .order('conversion_rate', { ascending: false })
+      .limit(3);
+
+    const topTexts = (topScripts || []).map(s => s.script_text);
+
+    // 2. Call synthesizer flow
+    const { synthesizeNewScripts } = await import('@/ai/flows/script-synthesizer-flow');
+    const synthesized = await synthesizeNewScripts({
+      targetLanguage: lang,
+      targetPersonality: personality,
+      targetStep: step,
+      topPerformingScripts: topTexts,
+      count: count,
+    });
+
+    const insertedScripts: any[] = [];
+
+    // 3. Generate embeddings and insert into refund_scripts
+    for (const item of synthesized.generatedScripts) {
+      try {
+        const embedding = await getEmbedding(item.script_text);
+        const { data, error } = await supabaseAdmin
+          .from('refund_scripts')
+          .insert({
+            refund_step: item.refund_step || step,
+            target_psychology: item.target_psychology,
+            script_text: item.script_text,
+            detected_language: item.detected_language || lang,
+            target_personality: item.target_personality || personality,
+            generation_origin: 'ai_self_generated',
+            success_weight: 50,
+            impressions_count: 1, // Start with 1 for exploration bonus
+            conversions_count: 0,
+            conversion_rate: 0.0,
+            embedding: embedding,
+          })
+          .select()
+          .single();
+
+        if (!error && data) {
+          insertedScripts.push(data);
+        }
+      } catch (embErr) {
+        console.warn('[Evolve Script Embedding Error]:', embErr);
+      }
+    }
+
+    return {
+      success: insertedScripts.length > 0,
+      generatedCount: insertedScripts.length,
+      scripts: insertedScripts,
+    };
+  } catch (err: any) {
+    console.error('[Generate and Evolve Scripts Error]:', err);
+    return { success: false, generatedCount: 0, scripts: [] };
   }
 }
 

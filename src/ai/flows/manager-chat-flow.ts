@@ -1,7 +1,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import { AI_MANAGER_SYSTEM_PROMPT } from '@/lib/ai-manager-persona';
-import { retrieveMatchedScripts, retrieveLearnedKnowledge, ingestSelfLearnedKnowledge, retrieveTopScoredGuideKnowledge } from '@/lib/ai-learning-db';
+import { retrieveMatchedScripts, retrieveLearnedKnowledge, ingestSelfLearnedKnowledge, retrieveTopScoredGuideKnowledge, recordScriptImpression } from '@/lib/ai-learning-db';
 import { searchGoogleKnowledgeTool, scanAppCodeGuideTool } from '@/ai/tools/knowledge-ingestion-tools';
 import { supabaseAdmin } from '@/lib/supabase';
 import { getGuideStepKnowledge } from '@/lib/guide-knowledge-db';
@@ -243,9 +243,10 @@ const managerChatFlow = ai.defineFlow(
       }
     }
 
-    // 1. Retrieve RAG matched scripts from Supabase Vector DB using cleaned text
+    // 1. Retrieve RAG matched scripts from Supabase Vector DB using cleaned text and matrix RL
     const lang = input.language || 'ko';
-    const scripts = isSystemRequest ? [] : await retrieveMatchedScripts(cleanedText, lang, undefined, 0.4, 3);
+    const personality = input.previousPersonality ? input.previousPersonality.split(' ')[0].toLowerCase().trim() : 'all';
+    const scripts = isSystemRequest ? [] : await retrieveMatchedScripts(cleanedText, lang, undefined, personality, 0.4, 3);
     
     let matchedScriptsContext = '';
     let highestWeightScriptId: number | undefined = undefined;
@@ -282,13 +283,14 @@ const managerChatFlow = ai.defineFlow(
       }
 
       if (filteredScripts.length > 0) {
-        const bestScript = filteredScripts.reduce((prev, current) => 
-          (prev.success_weight > current.success_weight) ? prev : current
-        );
+        const bestScript = filteredScripts[0];
         highestWeightScriptId = bestScript.id;
 
+        // Atomically record impression in background
+        Promise.resolve(recordScriptImpression(bestScript.id)).catch(() => {});
+
         matchedScriptsContext = filteredScripts.map((s, idx) => 
-          `영업노트 ${idx + 1} (성공점수: ${s.success_weight}점, 신뢰도: ${Math.round(s.similarity * 100)}%): "${s.script_text}"`
+          `영업노트 ${idx + 1} (성공점수: ${s.success_weight}점, 전환율: ${Math.round((s.conversion_rate || 0) * 100)}%, 신뢰도: ${Math.round(s.similarity * 100)}%): "${s.script_text}"`
         ).join('\n');
       } else {
         matchedScriptsContext = '매칭된 영업 노하우가 없습니다. 김준현 매니저의 기존 지식 베이스를 바탕으로 친절하고 확신에 찬 자신감으로 직접 답변을 구성하십시오.';
@@ -607,6 +609,10 @@ const FollowUpInputSchema = z.object({
   previousSummary: z.string().optional().describe("이전 대화 요약"),
   previousStep: z.string().optional().describe("이전 대화 진행 단계"),
   previousFacts: z.string().optional().describe("이전에 기록된 사용자 프로필/정보 팩트 목록"),
+  isSms: z.boolean().optional().describe("문자메시지(SMS/LMS) 발송 여부"),
+  customerName: z.string().optional().describe("고객 성명"),
+  estimatedAmount: z.number().optional().describe("예상 환급액 (원 단위)"),
+  resumeUrl: z.string().optional().describe("복구 딥링크 주소"),
 });
 
 const FollowUpOutputSchema = z.object({
@@ -658,6 +664,10 @@ export async function askFollowUpAi(input: {
   previousSummary?: string;
   previousStep?: string;
   previousFacts?: string;
+  isSms?: boolean;
+  customerName?: string;
+  estimatedAmount?: number;
+  resumeUrl?: string;
 }) {
   const { output } = await followUpPrompt(input);
   if (!output) {

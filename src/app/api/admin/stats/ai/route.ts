@@ -74,12 +74,12 @@ export async function GET(req: NextRequest) {
       }
     });
 
-    // 2. Fetch top successful RAG scripts
+    // 2. Fetch top successful RAG scripts with matrix metrics
     const { data: scripts } = await supabaseAdmin
       .from('refund_scripts')
-      .select('id, refund_step, target_psychology, script_text, success_weight, detected_language')
-      .order('success_weight', { ascending: false })
-      .limit(5);
+      .select('id, refund_step, target_psychology, script_text, success_weight, detected_language, target_personality, generation_origin, impressions_count, conversions_count, conversion_rate')
+      .order('conversion_rate', { ascending: false })
+      .limit(10);
 
     return NextResponse.json({
       success: true,

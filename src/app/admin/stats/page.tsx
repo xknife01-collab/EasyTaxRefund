@@ -106,6 +106,68 @@ export default function AdminStatsPage() {
   const [adminVerified, setAdminVerified] = useState(false);
   const [aiStats, setAiStats] = useState<any>(null);
   const [loadingAi, setLoadingAi] = useState(true);
+  const [isEvolving, setIsEvolving] = useState(false);
+  const [targetEvolveLang, setTargetEvolveLang] = useState('vi');
+
+  const fetchAiStats = () => {
+    setLoadingAi(true);
+    fetch('/api/admin/stats/ai')
+      .then(res => res.json())
+      .then(data => {
+        if (data.success) {
+          setAiStats(data.stats);
+        }
+        setLoadingAi(false);
+      })
+      .catch(err => {
+        console.error('Failed to load AI stats:', err);
+        setLoadingAi(false);
+      });
+  };
+
+  const handleEvolveScripts = async () => {
+    try {
+      setIsEvolving(true);
+      toast({
+        title: "AI 신규 화법 자율 창작 시작",
+        description: `선택하신 국적(${targetEvolveLang.toUpperCase()})의 전환율 데이터를 기반으로 Gemini AI가 신규 화법을 창작하고 임베딩합니다...`,
+      });
+
+      const res = await fetch('/api/admin/scripts/evolve', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          targetLanguage: targetEvolveLang,
+          targetPersonality: 'all',
+          targetStep: 'general',
+          count: 3
+        })
+      });
+
+      const data = await res.json();
+      if (data.success) {
+        toast({
+          title: "자율 진화 완료! 🎉",
+          description: `${data.generatedCount}개의 신규 고전환율 화법이 생성되어 Supabase에 자동 등록되었습니다.`,
+        });
+        fetchAiStats();
+      } else {
+        toast({
+          variant: "destructive",
+          title: "생성 실패",
+          description: data.error || "알 수 없는 오류가 발생했습니다.",
+        });
+      }
+    } catch (err: any) {
+      toast({
+        variant: "destructive",
+        title: "오류 발생",
+        description: err.message,
+      });
+    } finally {
+      setIsEvolving(false);
+    }
+  };
 
   const handleExportCsv = () => {
     if (!apps.length) {
@@ -731,36 +793,124 @@ export default function AdminStatsPage() {
 
                           <Separator className="bg-slate-100" />
 
-                          {/* Top scripts */}
-                          <div className="space-y-4">
-                             <h4 className="text-xs font-black text-slate-500 uppercase tracking-wider">💡 최다 전환 기여 영업 RAG 스크립트 (Top 5)</h4>
-                             <div className="space-y-3">
-                                {aiStats.topScripts && aiStats.topScripts.length > 0 ? (
-                                   aiStats.topScripts.map((script: any) => (
-                                      <div key={script.id} className="p-4 bg-slate-50 rounded-2xl border border-slate-100 space-y-1">
-                                         <div className="flex items-center justify-between">
-                                            <Badge className="bg-indigo-100 text-indigo-600 border-none font-black text-[9px] rounded-lg">
-                                               {script.refund_step.toUpperCase()} / {script.detected_language.toUpperCase()}
-                                            </Badge>
-                                            <span className="text-[10px] font-black text-slate-500">
-                                               성공 가중치: <span className="text-indigo-600 font-mono">{script.success_weight}점</span>
-                                            </span>
-                                         </div>
-                                         <p className="text-xs font-bold text-slate-600 line-clamp-2 leading-relaxed">
-                                            "{script.script_text}"
-                                         </p>
-                                      </div>
-                                   ))
-                                ) : (
-                                   <p className="text-xs font-bold text-slate-400 py-2">학습된 영업 RAG 스크립트가 아직 존재하지 않습니다.</p>
-                                )}
-                             </div>
-                          </div>
-                       </div>
-                    ) : (
-                       <p className="text-xs font-bold text-slate-400 py-8 text-center">AI 통계 정보를 불러오지 못했습니다.</p>
-                    )}
-                 </Card>
+                           {/* AI Self-Evolution & Matrix Optimizer Panel */}
+                           <div className="p-5 bg-gradient-to-r from-indigo-50/70 via-purple-50/50 to-sky-50/70 rounded-3xl border border-indigo-100/80 space-y-4">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                 <div className="space-y-0.5">
+                                    <div className="flex items-center gap-2">
+                                       <Zap className="h-4 w-4 text-indigo-600 fill-indigo-600" />
+                                       <h4 className="text-xs font-black text-slate-800 uppercase tracking-wider">AI 자율 화법 진화 엔진 (Self-Prompting)</h4>
+                                    </div>
+                                    <p className="text-[11px] font-bold text-slate-500">
+                                       실시간 전환율 데이터를 기반으로 Gemini AI가 신규 세일즈 멘트를 스스로 창작하고 임베딩합니다.
+                                    </p>
+                                 </div>
+                                 <div className="flex items-center gap-2">
+                                    <Select value={targetEvolveLang} onValueChange={setTargetEvolveLang}>
+                                       <SelectTrigger className="w-[120px] h-9 text-xs font-black bg-white rounded-xl border-indigo-200">
+                                          <SelectValue placeholder="국적 선택" />
+                                       </SelectTrigger>
+                                       <SelectContent className="rounded-xl">
+                                          <SelectItem value="vi">🇻🇳 베트남 (vi)</SelectItem>
+                                          <SelectItem value="mn">🇲🇳 몽골 (mn)</SelectItem>
+                                          <SelectItem value="uz">🇺🇿 우즈벡 (uz)</SelectItem>
+                                          <SelectItem value="ne">🇳🇵 네팔 (ne)</SelectItem>
+                                          <SelectItem value="km">🇰🇭 캄보디아 (km)</SelectItem>
+                                          <SelectItem value="my">🇲🇲 미얀마 (my)</SelectItem>
+                                          <SelectItem value="th">🇹🇭 태국 (th)</SelectItem>
+                                          <SelectItem value="id">🇮🇩 인도네시아 (id)</SelectItem>
+                                          <SelectItem value="all">🌐 글로벌 공통</SelectItem>
+                                       </SelectContent>
+                                    </Select>
+                                    <Button
+                                       onClick={handleEvolveScripts}
+                                       disabled={isEvolving}
+                                       className="h-9 px-4 text-xs font-black bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl shadow-md shadow-indigo-200 transition-all flex items-center gap-1.5"
+                                    >
+                                       {isEvolving ? (
+                                          <>
+                                             <RefreshCw className="h-3.5 w-3.5 animate-spin" />
+                                             창작 중...
+                                          </>
+                                       ) : (
+                                          <>
+                                             <Zap className="h-3.5 w-3.5 fill-current" />
+                                             화법 자율 창작 실행
+                                          </>
+                                       )}
+                                    </Button>
+                                 </div>
+                              </div>
+                           </div>
+
+                           <Separator className="bg-slate-100" />
+
+                           {/* Top scripts with Matrix metrics */}
+                           <div className="space-y-4">
+                              <div className="flex items-center justify-between">
+                                 <h4 className="text-xs font-black text-slate-500 uppercase tracking-wider">💡 국적·성향별 실시간 영업 스크립트 성과 (Top 10)</h4>
+                                 <span className="text-[10px] font-bold text-slate-400">다차원 MAB 랭킹 적용</span>
+                              </div>
+                              <div className="space-y-3">
+                                 {aiStats.topScripts && aiStats.topScripts.length > 0 ? (
+                                    aiStats.topScripts.map((script: any) => (
+                                       <div key={script.id} className="p-4 bg-slate-50 hover:bg-slate-100/80 transition-colors rounded-2xl border border-slate-100 space-y-2">
+                                          <div className="flex flex-wrap items-center justify-between gap-2">
+                                             <div className="flex items-center gap-1.5">
+                                                <Badge className="bg-indigo-100 text-indigo-700 border-none font-black text-[9px] rounded-lg">
+                                                   {script.refund_step?.toUpperCase() || 'GENERAL'}
+                                                </Badge>
+                                                <Badge className="bg-slate-200 text-slate-700 border-none font-black text-[9px] rounded-lg uppercase">
+                                                   🌍 {script.detected_language || 'ALL'}
+                                                </Badge>
+                                                {script.target_personality && script.target_personality !== 'all' && (
+                                                   <Badge className="bg-amber-100 text-amber-800 border-none font-black text-[9px] rounded-lg">
+                                                      🎯 {script.target_personality}
+                                                   </Badge>
+                                                )}
+                                                {script.generation_origin === 'ai_self_generated' ? (
+                                                   <Badge className="bg-purple-100 text-purple-700 border-none font-black text-[9px] rounded-lg flex items-center gap-1">
+                                                      <Zap className="h-2.5 w-2.5 fill-purple-600 text-purple-600" />
+                                                      AI 자율창작
+                                                   </Badge>
+                                                ) : (
+                                                   <Badge className="bg-slate-100 text-slate-500 border border-slate-200 font-bold text-[9px] rounded-lg">
+                                                      시드 멘트
+                                                   </Badge>
+                                                )}
+                                             </div>
+                                             <div className="flex items-center gap-3 text-[11px] font-black">
+                                                <span className="text-slate-500">
+                                                   노출: <span className="font-mono text-slate-800">{script.impressions_count || 0}</span>회
+                                                </span>
+                                                <span className="text-slate-500">
+                                                   전환: <span className="font-mono text-emerald-600">{script.conversions_count || 0}</span>회
+                                                </span>
+                                                <span className="text-indigo-600 font-mono bg-indigo-50 px-2 py-0.5 rounded-md">
+                                                   전환율: {Math.round((script.conversion_rate || 0) * 100)}%
+                                                </span>
+                                             </div>
+                                          </div>
+                                          <p className="text-xs font-bold text-slate-700 leading-relaxed">
+                                             "{script.script_text}"
+                                          </p>
+                                          {script.target_psychology && (
+                                             <p className="text-[10px] font-bold text-slate-400">
+                                                💡 소구 심리: {script.target_psychology}
+                                             </p>
+                                          )}
+                                       </div>
+                                    ))
+                                 ) : (
+                                    <p className="text-xs font-bold text-slate-400 py-2">학습된 영업 RAG 스크립트가 아직 존재하지 않습니다.</p>
+                                 )}
+                              </div>
+                           </div>
+                        </div>
+                     ) : (
+                        <p className="text-xs font-bold text-slate-400 py-8 text-center">AI 통계 정보를 불러오지 못했습니다.</p>
+                     )}
+                  </Card>
 
                  {/* Right: AI Customer Personality Distribution */}
                  <Card className="lg:col-span-1 premium-card rounded-[2.5rem] border-none shadow-sm bg-white p-10 space-y-8">
