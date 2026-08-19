@@ -104,6 +104,47 @@ export interface ExtendedManagerChatOutput extends ManagerChatOutput {
   };
 }
 
+const denoisePrompt = ai.definePrompt({
+  name: 'denoisePrompt',
+  input: { schema: z.object({ text: z.string(), lang: z.string() }) },
+  output: { schema: z.object({ cleanedText: z.string() }) },
+  prompt: `You are a preprocessor for foreign worker chat messages in Korea.
+Input language code: {{lang}}
+Raw text: "{{text}}"
+Task:
+1. Fix common typos, OCR mistakes, voice recognition errors, slang or mixed language.
+2. If text contains amount or years worked (e.g. "35.000000von", "3500000", "7 yil"), retain numerical meaning accurately.
+3. Return the cleaned, normalized natural sentence.`,
+});
+
+const forceTranslatePrompt = ai.definePrompt({
+  name: 'forceTranslatePrompt',
+  input: { schema: z.object({ text: z.string(), targetLang: z.string() }) },
+  output: { schema: z.object({ translatedText: z.string() }) },
+  prompt: `You are a professional multi-language translator for KTRS tax refund.
+Translate the following Korean/mixed text into the EXACT target native language based on the code ({{targetLang}}):
+- ne: Nepali (नेपाली 문자 사용)
+- vi: Vietnamese (Tiếng Việt)
+- uz: Uzbek (O'zbek tili, lotin alifbosi)
+- my: Burmese (မြန်မာစာ)
+- km: Khmer (ភាសាខ្មែរ)
+- mn: Mongolian (Монгол хэл)
+- id: Indonesian (Bahasa Indonesia)
+- th: Thai (ภาษาไทย)
+- si: Sinhala (සිංහල)
+- bn: Bengali (বাংলা)
+- zh: Chinese (中文)
+- en: English
+- tl: Tagalog / Filipino
+
+Tone: Warm, polite, and friendly conversational tone as official tax manager Kim Jun-hyun.
+Keep URLs, links (e.g., https://ktrs-service.vercel.app/...), brackets, and numbers intact.
+CRITICAL: Do NOT output English if targetLang is not 'en'. Output MUST be written in the native script of {{targetLang}}.
+
+Text to translate:
+{{text}}`,
+});
+
 const managerChatPrompt = ai.definePrompt({
   name: 'managerChatPrompt',
   input: { schema: ManagerChatInputSchema },
@@ -444,7 +485,7 @@ const managerChatFlow = ai.defineFlow(
         if (slideRows.length > 0 || isAskingGuideLocation) {
           const authLabel = detectedAuthMethod === 'hana' ? '하나원큐' : detectedAuthMethod === 'kakao' ? '카카오톡' : 'PASS';
           const authTabName = detectedAuthMethod === 'hana' ? '[하나은행]' : detectedAuthMethod === 'kakao' ? '[카카오톡]' : '[PASS]';
-          
+
           const slideContext = slideRows.map(r => {
             const errors = (r.error_cases as any[]).map((e: any) =>
               `    ⚠️ [${e.symptom}] 원인: ${e.cause} / 해결: ${e.solution}${e.alt ? ` / 대안: ${e.alt}` : ''}`
@@ -598,9 +639,30 @@ const managerChatFlow = ai.defineFlow(
       }
     }
 
+    // 🛡️ [Language Guard Fail-safe] 외국어 세션인데 한국어가 출력된 경우 강제 모국어 번역
+    let safeAnswer = output.answer;
+    const targetLang = input.language || 'ko';
+    if (targetLang !== 'ko' && safeAnswer) {
+      const koreanCharCount = (safeAnswer.match(/[가-힣]/g) || []).length;
+      // 한글이 10자 이상 포함되어 있으면 번역 실패로 간주하고 즉시 강제 번역
+      if (koreanCharCount >= 10) {
+        try {
+          console.warn(`[Language Guard Triggered] Detected ${koreanCharCount} Korean characters for ${targetLang}. Auto-translating...`);
+          const transRes = await forceTranslatePrompt({ text: safeAnswer, targetLang });
+          if (transRes && transRes.output?.translatedText) {
+            safeAnswer = transRes.output.translatedText;
+            console.log(`[Language Guard Resolved] Translated answer to ${targetLang}:`, safeAnswer.substring(0, 60));
+          }
+        } catch (err) {
+          console.error('[Language Guard Translation Failed]:', err);
+        }
+      }
+    }
+
     // Return extended output containing matchedScriptId
     return {
       ...output,
+      answer: safeAnswer,
       richCardPayload: finalRichCardPayload,
       matchedScriptId: highestWeightScriptId,
     };
@@ -699,18 +761,3 @@ export async function askFollowUpAi(input: {
   }
   return output;
 }
-
-
-
-const denoisePrompt = ai.definePrompt({
-  name: 'denoisePrompt',
-  input: { schema: z.object({ text: z.string(), lang: z.string() }) },
-  output: { schema: z.object({ cleanedText: z.string().describe("정제되고 오탈자가 교정된 표준어 문장") }) },
-  prompt: `당신은 맞춤법 검사기 및 문장 정제기입니다.
-아래 문장은 한국어 또는 다국어로 번역되는 과정에서 오탈자가 발생했거나 구어체/사투리 노이즈가 섞여 있을 수 있습니다.
-내용의 본래 의미는 절대 훼손하지 말고, 오탈자 교정 및 비문 수정을 거쳐 문맥이 깔끔한 표준형 문장으로 정제하여 한 줄로 출력하십시오.
-
-입력 문장: {{{text}}}
-설정 언어: {{{lang}}}
-`,
-});

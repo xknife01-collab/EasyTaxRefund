@@ -552,12 +552,16 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
         text: m.message
       }));
 
+      const targetLang = activeRoom?.detected_language && activeRoom.detected_language !== 'ko' 
+        ? activeRoom.detected_language 
+        : 'ne';
+
       const res = await fetch("/api/chat/manager", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: userMsgText,
-          language: "ko",
+          language: targetLang,
           history: chatHistory.slice(-10),
           chatId: activeRoom?.id,
           clientOs: 'web'
@@ -587,12 +591,16 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
         text: m.message
       }));
 
+      const targetLang = activeRoom?.detected_language && activeRoom.detected_language !== 'ko' 
+        ? activeRoom.detected_language 
+        : 'ne';
+
       const res = await fetch("/api/chat/manager", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: userMsgText,
-          language: "ko",
+          language: targetLang,
           history: chatHistory.slice(-10),
           chatId: activeRoom?.id,
           clientOs: 'web'
