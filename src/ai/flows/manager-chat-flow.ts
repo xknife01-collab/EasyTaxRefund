@@ -46,7 +46,7 @@ export const ManagerChatInputSchema = z.object({
 export type ManagerChatInput = z.infer<typeof ManagerChatInputSchema>;
 
 export const ManagerChatOutputSchema = z.object({
-  thinkingProcess: z.string().describe("가장 성공적인 환급 전환을 유도하기 위한 세무 영업 전문가로서의 심사숙고 분석 및 전략적 영업 판단 과정 (고객 심리 상태 분석, RAG 영업 멘트 매칭 판단 등)"),
+  thinkingProcess: z.string().describe("가장 성공적인 환급 전환을 유도하기 위한 세무 영업 전문가로서의 3단계 인간적 사고 과정: 1) [역지사지 시뮬레이션: 고객의 처지와 숨은 불안 헤아리기] -> 2) [감정 우선 수용 및 공감 포인트 선정] -> 3) [세일즈 압박 없는 여유롭고 명확한 조언 전략]"),
   answer: z.string().describe("외국인 사용자의 질문에 대한 김준현 매니저의 모국어 친절 답변"),
   koreanSummary: z.string().describe("관리자 페이지(한국인 매니저)를 위한 질문과 답변의 한 줄 한국어 요약"),
   posScore: z.number().int().min(0).max(10).describe("이번 사용자 메시지에서 나타난 긍정/동조/신뢰 지수 (0~10점 범위)"),
@@ -173,7 +173,11 @@ const managerChatPrompt = ai.definePrompt({
 - 긴급 경고 상태일 때는 사용자의 불안을 해소하고 공감/사과하는 안심 유도 설명 외에는 어떠한 다음 행동 제안(버튼 클릭 권유 포함)도 응답(answer)에 넣지 마십시오.
 
 사용자가 질문한 언어나 설정 언어({{{language}}})로 친절하고 정확하며 안심을 주는 3~4문장 내외의 풍부하고 세밀한 답변(answer)을 작성하십시오.
-답변(answer)을 작성하기 전에, 먼저 세무 영업의 신으로서 [Thinking Process 강화]: "이 고객이 방금 던진 질문 뒤에 숨겨진 진짜 의도와 걱정(Context)은 무엇인가?"를 이전 대화 내역 및 파악된 사용자 정보와 엮어서 심도 있게 분석하는 과정을 thinkingProcess 필드에 기록하십시오.
+답변(answer)을 작성하기 전에, 먼저 세무 영업의 신으로서 [Thinking Process 강화: 3단계 역지사지 시뮬레이션]:
+1) [고객 처지 역지사지]: "내가 지금 타국 공장/현장에서 일하는 외국인 노동자라면 이 질문을 던질 때 어떤 불안과 고단함이 있을까?"
+2) [감정 우선 수용]: "어떤 따뜻한 위로와 100% 공감으로 이 고객의 방어기제를 먼저 녹여드릴 것인가?"
+3) [인간적이고 여유로운 조언]: "조급한 버튼 클릭 유도 없이, 어떻게 15년 차 베테랑다운 넉넉한 확신과 안심을 줄 것인가?"
+위 3단계 분석 과정을 thinkingProcess 필드에 명확히 기록하십시오.
 동시에, 한국인 관리자가 대화 내용을 한눈에 파악할 수 있도록 [한국어 요약(koreanSummary)]도 함께 작성하십시오. (예: "질문: 환급금 언제 입금되나요? / 답변: 45~60일 소요 안내")
 또한, 사용자 질문의 문맥을 파악하여 긍정/동조 지수(posScore)와 부정/의심 지수(negScore)를 각각 0~10점 범위에서 객관적으로 판독하여 기재하십시오.
 

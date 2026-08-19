@@ -340,7 +340,7 @@ const getStepProactiveMessage = (step: number, lang: string = 'ko'): { text: str
             : lang === 'si' ? 'පියවර 1: කොරියාවේ සේවා කාලය සහ සාමාන්‍ය මාසික වැටුප තෝරන්න. තත්පර 0.1 කින් ආපසු ගෙවීම ගණනය කෙරේ!'
             : lang === 'ur' ? 'مرحلہ 1: کوریا میں کام کی مدت اور اوسط ماہانہ تنخواہ منتخب کریں۔ سسٹم 0.1 سیکنڈ میں تخمینہ ریفنڈ کا حساب لگائے گا!'
             : lang === 'en' ? 'Step 1: Select your work period in Korea and approximate monthly salary. The system will calculate your estimated refund in 0.1 seconds!'
-            : '1단계: 한국 근무 기간과 대략적인 월급을 선택해 주세요. 0.1초 만에 예상 환급액을 정밀 계산해 드립니다!'
+            : '타국에서 일하시느라 정말 고생 많으셨어요 😊 한국 근무 기간과 대략적인 월급을 선택해 주시면 제가 예상 환급액을 정밀 계산해 드릴게요!'
       };
     case 2:
       return {
