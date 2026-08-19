@@ -15,7 +15,7 @@ export default function PricingPage() {
 
         {/* HERO */}
         <div className="relative w-full h-[70vh] min-h-[500px] overflow-hidden flex items-center justify-center pt-20">
-          <img src="/asian-business-professionals-collaborating-office-meeting.jpg" alt={t("Pricing Hero")} className="absolute inset-0 w-full h-full object-cover object-center brightness-[0.35]" />
+          <img src="/asian-business-professionals-collaborating-office-meeting.jpg" alt={t("Pricing Hero")} className="absolute inset-0 w-full h-full object-cover object-center" />
           <div className="relative z-10 text-center px-6 space-y-5">
             <div className="flex items-center justify-center gap-3">
               <div className="h-px w-10 bg-[#b88c30]" />
