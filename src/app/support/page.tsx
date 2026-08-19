@@ -132,7 +132,7 @@ export default function SupportPage() {
                       <h3 className="text-base font-black text-[#0f1e36]">{t("회사 위치")}</h3>
                     </div>
                     <p className="text-slate-600 text-sm font-bold leading-relaxed break-keep">
-                      {t("경기도 남양주시 부평로 48번길 140, 107-1102")}
+                      {t("서울특별시 광진구 광나루로 436, 5층(화양동, 에듀킨빌딩)")}
                     </p>
                   </div>
                 </div>
@@ -241,7 +241,7 @@ export default function SupportPage() {
             </div>
             <div className="w-full overflow-hidden rounded-3xl border border-slate-200 shadow-lg bg-white h-[450px]">
               <iframe
-                src="https://maps.google.com/maps?q=%EA%B2%BD%EA%B8%B0%EB%8F%84%20%EB%82%A8%EC%96%91%EC%A3%BC%EC%8B%9C%20%EB%B6%85%ED%8F%89%EB%A1%9C%2048%EB%B2%88%EA%B8%B8%20140&t=&z=16&ie=UTF8&iwloc=&output=embed"
+                src="https://maps.google.com/maps?q=%EC%84%9C%EC%9A%B8%ED%8A%B9%EB%B3%84%EC%8B%9C%20%EA%B4%91%EC%A7%84%EA%B5%AC%20%EA%B4%91%EB%82%98%EB%A3%A8%EB%A1%9C%20436&t=&z=16&ie=UTF8&iwloc=&output=embed"
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}

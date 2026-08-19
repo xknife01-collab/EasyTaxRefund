@@ -27,7 +27,7 @@ export const legal = {
   "대한민국 국세청(NTS)의 직접 입금 원칙에 따라, 수수료는 신청 시점에 선결제(선임료) 방식으로 지급되어야 합니다.": "Theo nguyên tắc nộp trực tiếp của Cục Thuế Quốc gia Hàn Quốc (NTS), phí dịch vụ phải được thanh toán dưới hình thức trả trước (phí sử dụng dịch vụ nền tảng) tại thời điểm đăng ký.",
   "국세청 검토 과정에서 세무서의 추가 소명 요청이 있을 경우, 이용자는 성실히 협조해야 합니다.": "Trong quá trình xem xét của Cơ quan Thuế Quốc gia, nếu có yêu cầu giải trình bổ sung từ cơ quan thuế, người dùng phải hợp tác chân thành.",
   "4. 개인정보의 보유 및 이용 기간": "4. Thời hạn lưu trữ và sử dụng thông tin cá nhân",
-  "본 약관은 더윤컴퍼니(이하 \"회사\")가 운영하는 \"Korea Tax Refund Service\" 서비스를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.": "Điều khoản này nhằm mục đích quy định quyền và nghĩa vụ giữa Công ty và người dùng trong việc sử dụng dịch vụ \\",
+  "본 약관은 주식회사 펫에이앤씨(이하 \"회사\")가 운영하는 \"Korea Tax Refund Service\" 서비스를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.": "Điều khoản này nhằm mục đích quy định quyền và nghĩa vụ giữa Công ty và người dùng trong việc sử dụng dịch vụ \\",
   "본 서비스는 환급 성공 시에만 수수료를 지급하는 성공 조건부 후불제(CMS 자동이체) 방식으로 운영됩니다.": "Dịch vụ này hoạt động theo hình thức thanh toán sau dựa trên kết quả thành công (chuyển khoản tự động CMS), phí chỉ được thanh toán khi hoàn thuế thành công.",
   "제 2 조 (서비스 수수료 및 후불 정산)": "Điều 2 (Phí dịch vụ và Thanh toán sau)",
   "증빙 서류: 외국인등록증 사진, 급여명세서, 세무 대리 수임 동의서(전자서명 포함)": "Hồ sơ chứng minh: ảnh Thẻ đăng ký người nước ngoài, bảng lương, bản đồng ý ủy quyền của Chuyên viên Thuế Liên kết được Nhà nước Hàn Quốc Chứng nhận (bao gồm chữ ký điện tử).",

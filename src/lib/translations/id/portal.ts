@@ -18,7 +18,7 @@ export const portal = {
   "원문": "Teks Asli",
   "증빙 서류 제출": "Penyerahan Dokumen Pendukung",
   "인쇄창을 띄우기 위해 브라우저 설정에서 팝업을 허용해주세요.": "Mohon aktifkan pop-up di pengaturan browser Anda untuk menampilkan jendela cetak.",
-  "김홍일": "Kim Hong-il",
+  "전기창": "Jeon Gi-chang",
   "보완 서류 제출이 필요합니다": "Diperlukan penyerahan dokumen pelengkap",
   "클릭하여 파일 선택": "Klik untuk memilih file",
   "Real-time Support": "Dukungan Real-time",

@@ -11,11 +11,11 @@ export default function PricingPage() {
   return (
     <div className="min-h-screen flex flex-col font-body bg-white text-[#0f1e36]">
       <Navbar />
-      <main className="flex-1 flex flex-col items-center w-full pt-[96px]">
+      <main className="flex-1 flex flex-col items-center w-full">
 
         {/* HERO */}
-        <div className="relative w-full h-[70vh] overflow-hidden flex items-center justify-center">
-          <img src="/asian-business-professionals-collaborating-office-meeting.jpg" alt={t("Pricing Hero")} className="absolute inset-0 w-full h-full object-cover object-center" />
+        <div className="relative w-full h-[70vh] min-h-[500px] overflow-hidden flex items-center justify-center pt-20">
+          <img src="/asian-business-professionals-collaborating-office-meeting.jpg" alt={t("Pricing Hero")} className="absolute inset-0 w-full h-full object-cover object-center brightness-[0.35]" />
           <div className="relative z-10 text-center px-6 space-y-5">
             <div className="flex items-center justify-center gap-3">
               <div className="h-px w-10 bg-[#b88c30]" />
@@ -286,16 +286,25 @@ export default function PricingPage() {
         </section>
 
         {/* TRUST QUOTE CTA */}
-        <section className="w-full bg-[#0f1e36] py-20 px-6 border-t-4 border-[#b88c30]">
-          <div className="max-w-3xl mx-auto text-center space-y-6">
+        <section className="relative w-full py-24 px-6 overflow-hidden border-t-4 border-[#b88c30]">
+          <img 
+            src="/serene-light-wood-office-interior-ai-generation.jpg" 
+            alt="Office Background" 
+            className="absolute inset-0 w-full h-full object-cover object-center brightness-[0.25]"
+          />
+          <div className="relative z-10 max-w-3xl mx-auto text-center space-y-6">
             <div className="flex items-center justify-center gap-3">
               <div className="h-px w-10 bg-[#b88c30]" />
               <span className="text-[#b88c30] text-xs font-black tracking-widest uppercase">{t("신뢰 보장")}</span>
               <div className="h-px w-10 bg-[#b88c30]" />
             </div>
-            <blockquote className="text-3xl sm:text-4xl font-black text-white italic leading-tight">{t('"전문적인 서비스, 리스크 제로."')}</blockquote>
-            <p className="text-slate-400 font-bold">{t("환급이 끝난 후에만 수수료를 받습니다. 리스크는 제로.")}</p>
-            <Link href="/estimate" className="inline-flex items-center gap-2 bg-[#b88c30] hover:bg-[#b88c30]/90 text-[#0f1e36] font-black text-base px-10 py-5 rounded-2xl transition-all hover:scale-105 shadow-xl mt-4">
+            <blockquote className="text-3xl sm:text-5xl font-black text-white italic leading-tight drop-shadow-md">
+              &ldquo;{t('전문적인 서비스, 리스크 제로.')}&rdquo;
+            </blockquote>
+            <p className="text-slate-300 font-bold text-base sm:text-lg">
+              {t("환급이 끝난 후에만 수수료를 받습니다. 리스크는 제로.")}
+            </p>
+            <Link href="/estimate" className="inline-flex items-center gap-2 bg-[#b88c30] hover:bg-[#b88c30]/90 text-[#0f1e36] font-black text-base px-10 py-5 rounded-2xl transition-all hover:scale-105 shadow-2xl shadow-[#b88c30]/30 mt-4">
               {t("예상 환급액 무료 조회하기")} <ArrowRight className="h-5 w-5" />
             </Link>
           </div>

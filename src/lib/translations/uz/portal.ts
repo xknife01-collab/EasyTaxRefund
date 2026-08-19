@@ -18,7 +18,7 @@ export const portal = {
   "원문": "Asl nusxa",
   "증빙 서류 제출": "Hujjatlarni topshirish",
   "인쇄창을 띄우기 위해 브라우저 설정에서 팝업을 허용해주세요.": "Pop-up oynalarga ruxsat bering.",
-  "김홍일": "Kim Hong-il",
+  "전기창": "Jeon Gi-chang",
   "보완 서류 제출이 필요합니다": "Qo'shimcha hujjatlar kerak",
   "클릭하여 파일 선택": "Faylni tanlash uchun bosing",
   "Real-time Support": "Real vaqtda qo'llab-quvvatlash",

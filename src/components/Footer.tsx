@@ -134,16 +134,16 @@ export function Footer() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2 space-y-4 text-xs font-medium text-slate-400 leading-relaxed">
               <div className="flex flex-wrap gap-x-4 gap-y-2 text-slate-400 font-bold">
-                <span>{t('사업자명: 더윤컴퍼니')}</span>
+                <span>{t('사업자명: 주식회사 펫에이앤씨')}</span>
                 <span className="hidden sm:inline text-slate-600">|</span>
-                <span>{t('대표자: 윤희수')}</span>
+                <span>{t('대표자: 전기창')}</span>
                 <span className="hidden sm:inline text-slate-600">|</span>
-                <span>{t('사업자 등록번호: 105-1278126')}</span>
+                <span>{t('사업자 등록번호: 229-86-03034')}</span>
                 <span className="hidden sm:inline text-slate-600">|</span>
                 <span>{t('통신판매업 번호: 제 2023-진접오남-0680호')}</span>
               </div>
               <div className="flex flex-wrap gap-x-4 gap-y-2 text-slate-400 font-bold">
-                <span>{t('주소: 경기도 남양주시 부평로 48번길 140, 107-1102')}</span>
+                <span>{t('주소: 서울특별시 광진구 광나루로 436, 5층(화양동, 에듀킨빌딩)')}</span>
                 <span className="hidden sm:inline text-slate-600">|</span>
                 <span>{t('연락처: 010-5964-5340')}</span>
                 <span className="hidden sm:inline text-slate-600">|</span>
@@ -183,7 +183,7 @@ export function Footer() {
               </div>
 
               <p className="text-xs font-bold text-slate-500 text-center lg:text-right mt-2">
-                © 2026 Korea Tax Refund Service. THEYOON COMPANY. All rights reserved.
+                © 2026 Korea Tax Refund Service. 주식회사 펫에이앤씨. All rights reserved.
               </p>
             </div>
           </div>

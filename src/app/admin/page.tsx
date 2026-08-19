@@ -1660,17 +1660,17 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                     <div className="space-y-2">
                       <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">2. 서비스 제공자 (회사) 정보</p>
                       <div className="grid grid-cols-2 gap-2 text-slate-600">
-                        <div>• 상호: 더윤컴퍼니</div>
-                        <div>• 대표자: 김홍일</div>
-                        <div>• 사업자번호: 105-12-78126</div>
-                        <div>• 소재지: 경기도 남양주시 부평로 48번길 140, 107-1102</div>
+                        <div>• 상호: 주식회사 펫에이앤씨</div>
+                        <div>• 대표자: 전기창</div>
+                        <div>• 사업자번호: 229-86-03034</div>
+                        <div>• 소재지: 서울특별시 광진구 광나루로 436, 5층(화양동, 에듀킨빌딩)</div>
                       </div>
                     </div>
  
                     <div className="space-y-2">
                       <p className="font-bold text-slate-900 text-[10px] border-b border-slate-200 pb-1 uppercase tracking-wider">3. 주요 정산 및 법적 조항 요약</p>
                       <p className="text-slate-500 text-[10px] leading-relaxed text-justify">
-                        본 계약은 이용자가 더윤컴퍼니의 Korea Tax Refund Service 솔루션을 이용하여 환급을 신청하고, 실제 환급이 완료된 후 실지급액의 22%(성공보수)를 후불로 CMS(대행기관: 효성CMS 등) 자동이체 인출하는 계약입니다. 본 플랫폼은 솔루션 프로그램 제공업자(통신판매업)로서 실제 대리 신고 업무는 대한민국 국가공인 제휴 세무사/세무법인이 대행함을 상호 인지합니다.
+                        본 계약은 이용자가 주식회사 펫에이앤씨의 Korea Tax Refund Service 솔루션을 이용하여 환급을 신청하고, 실제 환급이 완료된 후 실지급액의 22%(성공보수)를 후불로 CMS(대행기관: 효성CMS 등) 자동이체 인출하는 계약입니다. 본 플랫폼은 솔루션 프로그램 제공업자(통신판매업)로서 실제 대리 신고 업무는 대한민국 국가공인 제휴 세무사/세무법인이 대행함을 상호 인지합니다.
                       </p>
                     </div>
  

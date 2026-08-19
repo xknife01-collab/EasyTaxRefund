@@ -5790,7 +5790,7 @@ export default function EstimatePage() {
                 <div className="space-y-2">
                   <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제1조 (목적)')}</h3>
                   <p>
-                    {t("본 계약은 위임인(이하 '이용자')이 더윤컴퍼니(이하 '회사')가 제공하는 'Korea Tax Refund Service(Korea Tax Refund Service)' 세무 분석 솔루션 프로그램을 이용하고, 이에 따른 플랫폼 이용료(수수료)를 환급 성공 후 후불 정산 및 CMS 자동이체 방식으로 지불하기 위한 조항 및 출금 동의 사항을 규정함을 목적으로 합니다.")}
+                    {t("본 계약은 위임인(이하 '이용자')이 주식회사 펫에이앤씨(이하 '회사')가 제공하는 'Korea Tax Refund Service(Korea Tax Refund Service)' 세무 분석 솔루션 프로그램을 이용하고, 이에 따른 플랫폼 이용료(수수료)를 환급 성공 후 후불 정산 및 CMS 자동이체 방식으로 지불하기 위한 조항 및 출금 동의 사항을 규정함을 목적으로 합니다.")}
                   </p>
                 </div>
 
@@ -5827,19 +5827,19 @@ export default function EstimatePage() {
                     <div className="grid grid-cols-2 gap-y-2 pl-4 text-base">
                       <div className="flex border-b border-slate-100 py-1">
                         <span className="w-40 font-black text-slate-500">{t('상 호')}</span>
-                        <span className="font-bold text-slate-900">{t('더윤컴퍼니')}</span>
+                        <span className="font-bold text-slate-900">{t('주식회사 펫에이앤씨')}</span>
                       </div>
                       <div className="flex border-b border-slate-100 py-1">
                         <span className="w-40 font-black text-slate-500">{t('대표자')}</span>
-                        <span className="font-bold text-slate-900">{t('김홍일')}</span>
+                        <span className="font-bold text-slate-900">{t('전기창')}</span>
                       </div>
                       <div className="flex border-b border-slate-100 py-1 col-span-2">
                         <span className="w-40 font-black text-slate-500">{t('사업자등록번호')}</span>
-                        <span className="font-bold text-slate-900">105-12-78126 {t('(통신판매업 신고번호: 제 2023-진접오남-0680호)')}</span>
+                        <span className="font-bold text-slate-900">229-86-03034 {t('(통신판매업 신고번호: 제 2023-진접오남-0680호)')}</span>
                       </div>
                       <div className="flex border-b border-slate-100 py-1 col-span-2">
                         <span className="w-40 font-black text-slate-500">{t('소재지')}</span>
-                        <span className="font-bold text-slate-900">{t('경기도 남양주시 부평로 48번길 140, 107-1102')}</span>
+                        <span className="font-bold text-slate-900">{t('서울특별시 광진구 광나루로 436, 5층(화양동, 에듀킨빌딩)')}</span>
                       </div>
                     </div>
                   </div>
@@ -5872,7 +5872,7 @@ export default function EstimatePage() {
                     <div className="grid grid-cols-2 gap-y-2 pl-4 text-base">
                       <div className="flex border-b border-slate-100 py-1">
                         <span className="w-40 font-black text-slate-500">{t('이용기관명')}</span>
-                        <span className="font-bold text-slate-900">{t('더윤컴퍼니')}</span>
+                        <span className="font-bold text-slate-900">{t('주식회사 펫에이앤씨')}</span>
                       </div>
                       <div className="flex border-b border-slate-100 py-1">
                         <span className="w-40 font-black text-slate-500">{t('출금 대상 계좌')}</span>
@@ -5907,7 +5907,7 @@ export default function EstimatePage() {
                 <div className="space-y-2 pt-4">
                   <h3 className="text-xl font-bold border-b border-slate-200 pb-2 text-slate-900">{t('제6조 (플랫폼의 역할 및 법적 책임 고지)')}</h3>
                   <p>
-                    {t('더윤컴퍼니는 세무 분석 솔루션 프로그램을 제공하는 플랫폼 제공업자(통신판매업)로서, 이용자의 실제 세무 신고 대리 업무는 제휴된 대한민국 국가공인 전문 세무법인 및 세무사와의 협력을 통해 적법하게 대행 처리됩니다.')}
+                    {t('주식회사 펫에이앤씨는 세무 분석 솔루션 프로그램을 제공하는 플랫폼 제공업자(통신판매업)로서, 이용자의 실제 세무 신고 대리 업무는 제휴된 대한민국 국가공인 전문 세무법인 및 세무사와의 협력을 통해 적법하게 대행 처리됩니다.')}
                   </p>
                 </div>
 
@@ -5930,7 +5930,7 @@ export default function EstimatePage() {
                 </div>
 
                 <div className="pt-20 text-center">
-                  <h2 className="text-3xl font-black tracking-widest text-slate-900">{t('더윤컴퍼니 귀하')}</h2>
+                  <h2 className="text-3xl font-black tracking-widest text-slate-900">{t('주식회사 펫에이앤씨 귀하')}</h2>
                 </div>
 
               </div>

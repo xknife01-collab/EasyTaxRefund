@@ -18,7 +18,7 @@ export const portal = {
   "원문": "Original",
   "증빙 서류 제출": "Submit Supporting Documents",
   "인쇄창을 띄우기 위해 브라우저 설정에서 팝업을 허용해주세요.": "Allow popups in browser settings to open the print window.",
-  "김홍일": "Hongil Kim",
+  "전기창": "Jeon Gi-chang",
   "보완 서류 제출이 필요합니다": "Supplementary document submission required",
   "클릭하여 파일 선택": "Click to select file",
   "Real-time Support": "Real-time Support",

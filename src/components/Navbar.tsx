@@ -55,8 +55,10 @@ export function Navbar() {
 
   return (
     <nav className={cn(
-      "fixed top-0 z-50 w-full transition-all duration-500 py-4 print:hidden",
-      scrolled ? "glass-nav py-4" : "bg-transparent py-8"
+      "fixed top-0 z-50 w-full transition-all duration-300 print:hidden",
+      scrolled 
+        ? "bg-white/98 backdrop-blur-md shadow-md py-3 border-b border-slate-200" 
+        : "bg-white/95 backdrop-blur-sm py-4 border-b border-slate-100"
     )}>
       <div className="container mx-auto flex items-center justify-between px-6 lg:px-12">
         <Link href="/" className="flex items-center gap-3 sm:gap-4 group">

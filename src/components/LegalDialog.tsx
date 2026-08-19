@@ -105,7 +105,7 @@ export function LegalDialog({ type, children }: LegalDialogProps) {
                     <Scale className="h-5 w-5 text-primary" /> {t('제 1 조 (목적)')}
                   </h3>
                   <p className="font-medium text-sm text-slate-600">
-                    {t('본 약관은 더윤컴퍼니(이하 "회사")가 운영하는 "Korea Tax Refund Service" 서비스를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.')}
+                    {t('본 약관은 주식회사 펫에이앤씨(이하 "회사")가 운영하는 "Korea Tax Refund Service" 서비스를 이용함에 있어 회사와 이용자의 권리, 의무 및 책임 사항을 규정함을 목적으로 합니다.')}
                   </p>
                 </section>
 

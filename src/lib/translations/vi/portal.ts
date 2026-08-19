@@ -18,7 +18,7 @@ export const portal = {
   "원문": "Bản gốc",
   "증빙 서류 제출": "Nộp tài liệu chứng minh",
   "인쇄창을 띄우기 위해 브라우저 설정에서 팝업을 허용해주세요.": "Vui lòng cho phép pop-up trong cài đặt trình duyệt để mở cửa sổ in.",
-  "김홍일": "Kim Hong-il",
+  "전기창": "Jeon Gi-chang",
   "보완 서류 제출이 필요합니다": "Cần bổ sung hồ sơ",
   "클릭하여 파일 선택": "Nhấp để chọn tệp",
   "Real-time Support": "Hỗ trợ thời gian thực",
