@@ -22,22 +22,50 @@ export async function GET(req: Request) {
 
     // =========================================================================
     // [Section A] Messenger Channels (WhatsApp, Telegram, Facebook)
+    // 15분 후 1차(시간 분기), 1시간 후 2차(금액+링크), 1~3일 차 롱테일 자동 관리
     // =========================================================================
-    const cutoffTime = new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString();
+    const now = Date.now();
+    const kstHour = (new Date().getUTCHours() + 9) % 24;
+    const kstTimeSlot: 'work' | 'evening' | 'night' = 
+      (kstHour >= 8 && kstHour < 18) ? 'work' :
+      (kstHour >= 18 && kstHour < 22) ? 'evening' : 'night';
+
+    // 15분 이상 경과한 대화방 대상 조회
+    const fifteenMinAgo = new Date(now - 15 * 60 * 1000).toISOString();
 
     const { data: eligibleChats, error: fetchErr } = await supabaseAdmin
       .from('support_chats')
-      .select('id, channel, external_chat_id, detected_language, metadata')
+      .select('id, channel, external_chat_id, detected_language, metadata, last_message_at')
       .in('channel', ['telegram', 'whatsapp', 'facebook'])
-      .lt('last_message_at', cutoffTime);
+      .lt('last_message_at', fifteenMinAgo);
 
     if (!fetchErr && eligibleChats && eligibleChats.length > 0) {
       for (const chat of eligibleChats) {
         const isAiActive = chat.metadata?.is_ai_active !== false;
         const followUpCount = chat.metadata?.follow_up_count || 0;
+        const lastMsgTime = chat.last_message_at ? new Date(chat.last_message_at).getTime() : 0;
+        const elapsedMs = now - lastMsgTime;
 
-        if (!isAiActive || followUpCount >= 3) {
+        if (!isAiActive || followUpCount >= 5) {
           continue;
+        }
+
+        // 🎯 단계별 발송 자격 판정
+        let followUpStage: '15min_first' | '1hour_second' | 'long_term' | null = null;
+
+        if (followUpCount === 0 && elapsedMs >= 15 * 60 * 1000) {
+          // 1차 즉시 팔로업: 15분 경과
+          followUpStage = '15min_first';
+        } else if (followUpCount === 1 && elapsedMs >= 60 * 60 * 1000) {
+          // 2차 즉시 팔로업: 1시간 경과
+          followUpStage = '1hour_second';
+        } else if (followUpCount >= 2 && followUpCount < 5 && elapsedMs >= 20 * 60 * 60 * 1000) {
+          // 3일 차 장기 리마인드: 20시간 이상 경과
+          followUpStage = 'long_term';
+        }
+
+        if (!followUpStage) {
+          continue; // 아직 발송 타이밍에 도달하지 않음
         }
 
         try {
@@ -69,6 +97,8 @@ export async function GET(req: Request) {
             previousStep,
             previousFacts,
             resumeUrl: resumeLink,
+            followUpStage,
+            kstTimeSlot,
           });
 
           let deliverySuccess = false;

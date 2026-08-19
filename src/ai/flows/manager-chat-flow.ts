@@ -611,15 +611,17 @@ const managerChatFlow = ai.defineFlow(
 // Daily CS Follow-up Flow: Warm check-in reminders for customers
 // -------------------------------------------------------------
 const FollowUpInputSchema = z.object({
-  language: z.string().describe("사용자의 감지된 언어 (예: 'vi', 'zh', 'ne', 'en' 등)"),
-  chatHistory: z.string().optional().describe("사용자와의 최근 대화 기록"),
+  language: z.string().describe("사용자 언어 코드"),
+  chatHistory: z.string().optional().describe("기존 대화 이력"),
   previousSummary: z.string().optional().describe("이전 대화 요약"),
-  previousStep: z.string().optional().describe("이전 대화 진행 단계"),
-  previousFacts: z.string().optional().describe("이전에 기록된 사용자 프로필/정보 팩트 목록"),
-  isSms: z.boolean().optional().describe("문자메시지(SMS/LMS) 발송 여부"),
+  previousStep: z.string().optional().describe("진행 단계"),
+  previousFacts: z.string().optional().describe("고객 인적 팩트"),
+  isSms: z.boolean().optional().describe("SMS 발송 여부"),
   customerName: z.string().optional().describe("고객 성명"),
   estimatedAmount: z.number().optional().describe("예상 환급액 (원 단위)"),
   resumeUrl: z.string().optional().describe("복구 딥링크 주소"),
+  followUpStage: z.enum(['15min_first', '1hour_second', 'long_term']).optional().describe("팔로업 단계 (15분 1차, 1시간 2차, 장기 3일차)"),
+  kstTimeSlot: z.enum(['work', 'evening', 'night']).optional().describe("한국 시간대 (work: 08-18시, evening: 18-22시, night: 22-08시)"),
 });
 
 const FollowUpOutputSchema = z.object({
@@ -633,6 +635,9 @@ const followUpPrompt = ai.definePrompt({
   output: { schema: FollowUpOutputSchema },
   prompt: `${AI_MANAGER_SYSTEM_PROMPT}
 
+[현재 팔로업 발송 단계]: {{{followUpStage}}}
+[현재 한국 시간대 (KST)]: {{{kstTimeSlot}}}
+
 [고객의 기존 인적 팩트 (User Facts)]:
 {{{previousFacts}}}
 
@@ -643,25 +648,35 @@ const followUpPrompt = ai.definePrompt({
 {{{previousStep}}}
 
 [현재 사용자의 설정 언어]: {{{language}}}
+[복구 링크]: {{{resumeUrl}}}
 
 [사용자와의 최근 대화 기록]:
 {{{chatHistory}}}
 
-[대화 상황 분석 및 작성 지침]:
-주어진 [사용자와의 최근 대화 기록], [이전 대화 전체 요약], [이탈 당시 진행 단계], [고객의 기존 인적 팩트]를 종합적으로 입체 분석하고 사용자의 성격 및 이탈 심리를 파악하여 맞춤형 리마인드 메시지를 작성하십시오:
+[🎯 단계별 & 시간대별 엄격한 작성 지침]:
 
-- **케이스 A (조회 조차 하지 않은 사용자)**: 대화 기록 상 본인인증 번호 입력이나 환급금 계산 단계에 들어가지 않고, 일반 질문만 했거나 인사만 나눈 상태입니다.
-  * **메시지 방향**: 환급금 조회 이력을 언급하지 마십시오. 대신, 아직 1분 무료 환급 조회를 해보지 않았음을 상냥하게 일깨워주고, 모국어로 간편하게 조회해 볼 수 있는 링크("https://ktrs-service.vercel.app/?lang={{{language}}}")를 제공하며 가볍게 조회를 시작해보도록 유도하십시오.
-  * **예시**: "안녕하세요! KTRS 공식 매니저 김준현입니다. 혹시 아직 숨은 환급금 조회를 해보지 않으셨나요? 1분이면 모국어로 간단히 내 환급금을 무료로 확인할 수 있습니다. 링크를 통해 지금 바로 확인해보세요!"
+1. **[15min_first] 1차 즉시 팔로업 (15분 무응답 시 - 시간대별 분기)**:
+   - **kstTimeSlot이 'work' (낮/근무시간 08~18시)인 경우**:
+     * 한국어 뉘앙스: "일하시느라 바쁘시죠~? 😊 혹시 진행하시다가 헷갈리거나 어려운 부분 있으면 언제든 편하게 말씀해 주세요! 제가 1:1로 바로 도와드릴게요~ 👍"
+   - **kstTimeSlot이 'evening' (퇴근/저녁 18~22시)인 경우**:
+     * 한국어 뉘앙스: "오늘 하루도 현장에서 일하시느라 정말 고생 많으셨어요! 👏 혹시 세금 환급 진행하시다가 막히는 부분 있으시면 편하게 말씀해 주세요! 제가 다 챙겨드릴게요~ ^^"
+   - **kstTimeSlot이 'night' (심야/새벽 22~08시)인 경우**:
+     * 한국어 뉘앙스: "늦은 밤이라 피곤하시죠? 푹 쉬시고 내일 편하실 때 언제든 말씀해 주세요~ 😴 좋은 밤 되세요!"
+   - 👉 위 뉘앙스를 바탕으로 **반드시 고객의 모국어({{{language}}})로 정감 있게 1~2문장**으로 작성하십시오.
 
-- **케이스 B (조회/인증을 시도했거나 금액을 확인한 사용자)**: 대화 기록 상 본인인증 번호를 요청/입력했거나, 환급금 조회 결과를 확인하다가 중단한 상태입니다.
-  * **메시지 방향**: 조회하시던 환급금 확인이나 최종 신청 처리를 완료하지 않은 상태임을 언급하십시오. 혹시 인증이나 환급 신청 과정에서 어려운 점이 있었는지 부드럽게 물어보고, 링크("https://ktrs-service.vercel.app/?lang={{{language}}}")를 통해 신청을 안전하게 마저 완료하도록 유도하십시오.
-  * **예시**: "안녕하세요! KTRS 공식 매니저 김준현입니다. 어제 조회하시던 환급금 조회가 아직 완료되지 않았거나 신청이 남아있습니다. 본인인증이나 진행 과정에서 어려운 부분이 있으셨나요? 아래 링크에서 안전하게 마저 완료하실 수 있습니다."
+2. **[1hour_second] 2차 즉시 팔로업 (1시간 무응답 시 - 숨은 세금 무료 조회 훅 + 직행 링크)**:
+   - 🚨 **주의**: 아직 본인 인증이나 국세청 조회를 하지 않은 고객에게 "당신의 환급금이 OO만 원입니다"라고 구체적 금액을 거짓/단정하여 말하지 마십시오! (사기꾼 불신 초래)
+   - 한국어 뉘앙스: "한국에서 일하시면서 매월 냈던 소득세는 신청하지 않으면 정부에서 자동으로 돌려주지 않아요~ 😊 내가 받을 수 있는 숨은 환급금이 얼마인지 1분이면 모국어로 무료 조회가 끝나니 편하실 때 꼭 확인해 보세요! 👉 {{{resumeUrl}}}"
+   - (단, 이전 대화에서 고객이 일한 기간이나 급여를 직접 밝힌 경우에만 "오래 일하신 만큼 환급금이 꽤 클 수 있으니..." 정도로 자연스럽게 언급하십시오.)
+   - 👉 반드시 고객의 모국어({{{language}}})로 작성하고 복구 링크({{{resumeUrl}}})를 포함하십시오.
+
+3. **[long_term] 3일 차 장기 리마인드 (1~3일 차 정기 발송)**:
+   - 고객의 이탈 당시 진행 단계와 인적 팩트를 바탕으로, 모국어로 정중하고 따뜻하게 환급 신청 완료를 격려하고 링크({{{resumeUrl}}})를 제공하십시오.
 
 [작성 수칙]:
 1. 반드시 사용자의 설정 언어({{{language}}})로 대화를 친절하고 상냥하게 작성하십시오.
-2. 영업적이고 강압적인 푸시 느낌이 아닌, 진심으로 돕고 싶어 하는 매니저의 인상을 남기십시오.
-3. 한국인 관리자를 위한 한 줄 한국어 요약(koreanSummary)도 케이스 구분과 언어를 기재하여 작성하십시오. (예: "[케이스 A] 네팔어 안부 리마인드 발송 완료" 또는 "[케이스 B] 베트남어 환급 완료 유도 발송 완료")
+2. 기계적인 스팸 느낌이 아닌, 15년 차 베테랑 매니저가 직접 챙겨주는 따뜻한 사람의 느낌을 전달하십시오.
+3. 관리자용 한 줄 한국어 요약(koreanSummary)도 단계와 언어를 명시하여 작성하십시오.
 `,
 });
 
@@ -675,6 +690,8 @@ export async function askFollowUpAi(input: {
   customerName?: string;
   estimatedAmount?: number;
   resumeUrl?: string;
+  followUpStage?: '15min_first' | '1hour_second' | 'long_term';
+  kstTimeSlot?: 'work' | 'evening' | 'night';
 }) {
   const { output } = await followUpPrompt(input);
   if (!output) {
