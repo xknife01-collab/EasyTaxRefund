@@ -639,15 +639,15 @@ const managerChatFlow = ai.defineFlow(
       }
     }
 
-    // 🛡️ [Language Guard Fail-safe] 외국어 세션인데 한국어가 출력된 경우 강제 모국어 번역
+    // 🛡️ [Language Guard Fail-safe] 외국어 세션인데 한국어가 단 1글자라도 출력된 경우 강제 모국어 번역
     let safeAnswer = output.answer;
     const targetLang = input.language || 'ko';
     if (targetLang !== 'ko' && safeAnswer) {
       const koreanCharCount = (safeAnswer.match(/[가-힣]/g) || []).length;
-      // 한글이 10자 이상 포함되어 있으면 번역 실패로 간주하고 즉시 강제 번역
-      if (koreanCharCount >= 10) {
+      // 한글이 1글자라도 포함되어 있으면 (버튼명, 단어 등) 즉시 모국어로 강제 번역
+      if (koreanCharCount >= 1) {
         try {
-          console.warn(`[Language Guard Triggered] Detected ${koreanCharCount} Korean characters for ${targetLang}. Auto-translating...`);
+          console.warn(`[Language Guard Triggered] Detected ${koreanCharCount} Korean characters for ${targetLang}. Auto-translating whole answer...`);
           const transRes = await forceTranslatePrompt({ text: safeAnswer, targetLang });
           if (transRes && transRes.output?.translatedText) {
             safeAnswer = transRes.output.translatedText;
