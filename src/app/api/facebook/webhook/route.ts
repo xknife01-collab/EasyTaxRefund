@@ -455,7 +455,7 @@ export async function POST(req: Request) {
           {
             recipient: { id: psid },
             message: {
-              text: `👉 바로 인증서 발급/선택 진행하기:\n${step4Url}`
+              text: `👉 ${step4Url}`
             }
           },
           { timeout: 8000 }

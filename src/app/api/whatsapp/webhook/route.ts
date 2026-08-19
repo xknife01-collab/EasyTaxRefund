@@ -463,7 +463,7 @@ export async function POST(req: Request) {
                 type: 'text',
                 text: {
                   preview_url: true,
-                  body: `👉 바로 인증서 발급/선택 진행하기:\n${step4Url}`,
+                  body: `👉 ${step4Url}`,
                 },
               },
               {
