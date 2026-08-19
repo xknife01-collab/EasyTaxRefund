@@ -89,6 +89,10 @@ interface Message {
   room_id: string;
   sender_id: string;
   message: string;
+  original_text?: string;
+  translated_text?: string;
+  source_lang?: string;
+  target_lang?: string;
   created_at: string;
   sender_role: 'guest' | 'planner' | 'bot';
   pos_score?: number;
@@ -378,12 +382,18 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
         const role: Message['sender_role'] = isUser ? 'guest' : (isBot ? 'bot' : 'planner');
 
         const { text } = parseRichCardFromText(displayMessageText);
+        const { text: origText } = parseRichCardFromText(m.original_text || "");
+        const { text: transText } = parseRichCardFromText(m.translated_text || "");
 
         return {
           id: String(m.id),
           room_id: m.chat_id,
           sender_id: isUser ? dummyUserUuid : (isBot ? '00000000-0000-0000-0000-000000000000' : currentUserId),
           message: text || displayMessageText,
+          original_text: origText,
+          translated_text: transText,
+          source_lang: m.source_lang,
+          target_lang: m.target_lang,
           created_at: m.created_at,
           sender_role: role,
           pos_score: m.pos_score,
@@ -436,12 +446,18 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
           );
           const role: Message['sender_role'] = isUser ? 'guest' : (isBot ? 'bot' : 'planner');
           const { text } = parseRichCardFromText(displayMessageText);
+          const { text: origText } = parseRichCardFromText(newM.original_text || "");
+          const { text: transText } = parseRichCardFromText(newM.translated_text || "");
 
           setMessages(prev => [...prev, {
             id: String(newM.id),
             room_id: newM.chat_id,
             sender_id: isUser ? dummyUserUuid : (isBot ? '00000000-0000-0000-0000-000000000000' : currentUserId),
             message: text || displayMessageText,
+            original_text: origText,
+            translated_text: transText,
+            source_lang: newM.source_lang,
+            target_lang: newM.target_lang,
             created_at: newM.created_at,
             sender_role: role
           }]);
@@ -660,22 +676,48 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
     setInputText("");
 
     try {
-      // Double write customer messages as 'admin' in support_messages to keep sync
+      const activeRoom = rooms.find(r => r.id === selectedRoomId);
+      const targetLang = activeRoom?.detected_language || "ko";
+      const channel = activeRoom?.channel || "web";
+
+      // 1. Call translation & channel delivery endpoint (/api/support/send)
+      let translatedMsg = textToSend;
+      try {
+        const res = await fetch("/api/support/send", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chatId: selectedRoomId,
+            channel: channel,
+            externalChatId: (activeRoom as any)?.external_chat_id || selectedRoomId,
+            koreanText: textToSend,
+            targetLang: targetLang,
+          }),
+        });
+        const sendResData = await res.json().catch(() => ({}));
+        if (sendResData.translatedText) {
+          translatedMsg = sendResData.translatedText;
+        }
+      } catch (sendErr) {
+        console.warn("[Manual Send API Error, fallback to direct save]:", sendErr);
+      }
+
+      // 2. Double write customer messages as 'admin' in support_messages
       await supabase.from("support_messages").insert({
         chat_id: selectedRoomId,
         sender_type: "admin",
-        original_text: textToSend,
+        original_text: translatedMsg,
         translated_text: textToSend,
         source_lang: "ko",
-        target_lang: "ko",
+        target_lang: targetLang,
         is_read: true
       });
 
-      // Write message to chat_messages
+      // 3. Write message to chat_messages
       const { error: msgErr } = await supabase.from("chat_messages").insert({
         room_id: selectedRoomId,
         sender_id: currentUserId,
-        message: textToSend,
+        message: translatedMsg,
         is_read: true
       });
 
@@ -1005,13 +1047,35 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
                         <div
                           className={`px-4 py-2.5 rounded-2xl text-xs font-medium leading-relaxed break-keep whitespace-pre-wrap ${
                             isUser
-                              ? "bg-slate-800 text-slate-100 rounded-bl-none"
+                              ? "bg-slate-800 text-slate-100 rounded-bl-none border border-slate-700/50"
                               : isBot
-                                ? "bg-violet-600/30 text-violet-200 border border-violet-500/20 rounded-br-none shadow-md"
+                                ? "bg-violet-600/25 text-violet-200 border border-violet-500/20 rounded-br-none shadow-md"
                                 : "bg-violet-600 text-white rounded-br-none shadow-md shadow-violet-700/10"
                           }`}
                         >
-                          {msg.message}
+                          {/* 1. 메인 텍스트 (원문 / 발송 모국어) */}
+                          <div className="leading-relaxed">{msg.message}</div>
+
+                          {/* 2. 한국어 실시간 번역 자막 (외국어 대화 시 항상 표시) */}
+                          {(() => {
+                            const trans = msg.translated_text?.trim();
+                            const orig = msg.message?.trim();
+                            const hasKoreanTranslation = trans && trans !== orig && (/[가-힣]/.test(trans) || isUser);
+
+                            if (hasKoreanTranslation) {
+                              return (
+                                <div className={`mt-2 pt-2 border-t flex flex-col gap-0.5 ${isUser ? "border-slate-700 text-amber-200/90" : "border-violet-500/30 text-emerald-200/90"}`}>
+                                  <div className="flex items-center gap-1 text-[9px] font-black tracking-tight text-amber-400">
+                                    <span>🇰🇷 한국어 번역</span>
+                                  </div>
+                                  <div className="text-[11px] leading-snug font-normal text-slate-200/90 bg-slate-950/40 p-1.5 rounded-lg">
+                                    {trans}
+                                  </div>
+                                </div>
+                              );
+                            }
+                            return null;
+                          })()}
                         </div>
                         
                         {/* Time & Action Toolbar Line-broken to eliminate horizontal jitter */}
