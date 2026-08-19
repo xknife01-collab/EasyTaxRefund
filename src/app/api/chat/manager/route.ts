@@ -19,48 +19,6 @@ export async function POST(req: NextRequest) {
     // Determine if this is a background system notification (never rendered in chat)
     const isSystemRequest = message.includes("[SYSTEM_NOTIFICATION]") || message.includes("[STUCK_HELPER]") || message.includes("[STUCK_HELPER_SYSTEM_REQUEST]");
 
-    // 0. Auto-detect message language and translate to Korean for admin/DB if real user message
-    let effectiveLanguage = language || "ko";
-    let translatedKoreanText = message.trim();
-
-    if (!isSystemRequest) {
-      try {
-        const translationRes = await translateIncomingTelegramMessage(message.trim());
-        if (translationRes && translationRes.sourceLang) {
-          // If customer message is in a foreign language (e.g. 'ne', 'vi', 'en', 'my', 'km', etc.), prioritize detected language
-          effectiveLanguage = translationRes.sourceLang;
-          translatedKoreanText = translationRes.translatedText || message.trim();
-        }
-      } catch (err) {
-        console.warn("[Web Chat Language Detection Error]:", err);
-      }
-    }
-
-    // Intercept "ai 점수" debug command
-    if (message.trim() === "ai 점수") {
-      let cumPos = 0;
-      let cumNeg = 0;
-      if (chatId) {
-        const { data: chatData } = await supabaseAdmin
-          .from("support_chats")
-          .select("cumulative_pos, cumulative_neg")
-          .eq("channel", "web")
-          .eq("external_chat_id", chatId)
-          .maybeSingle();
-        if (chatData) {
-          cumPos = chatData.cumulative_pos ?? 0;
-          cumNeg = chatData.cumulative_neg ?? 0;
-        }
-      }
-      return NextResponse.json({
-        success: true,
-        answer: `[감정 분석 디버그]\n- 현재 누적 긍정 점수: ${cumPos}점\n- 현재 누적 부정 점수: ${cumNeg}점`,
-        koreanSummary: "디버그용 감정 점수 확인 요청",
-        posScore: 0,
-        negScore: 0,
-      });
-    }
-
     // 1. Retrieve current sentiment scores and metadata memory from database if chatId is provided
     let cumulativePos = 0;
     let cumulativeNeg = 0;
@@ -69,11 +27,12 @@ export async function POST(req: NextRequest) {
     let previousStep = "Step 0: Estimate (신청 준비 단계)";
     let previousFacts = "기록된 사용자 팩트 없음";
     let previousPersonality = "expressive (기본값: 친근감 선호형)";
+    let sessionLanguage = language || "ko";
 
     if (chatId) {
       const { data, error } = await supabaseAdmin
         .from("support_chats")
-        .select("id, metadata, cumulative_pos, cumulative_neg")
+        .select("id, metadata, cumulative_pos, cumulative_neg, detected_language")
         .eq("channel", "web")
         .eq("external_chat_id", chatId)
         .maybeSingle();
@@ -82,6 +41,7 @@ export async function POST(req: NextRequest) {
         existingChat = data;
         cumulativePos = data.cumulative_pos ?? 0;
         cumulativeNeg = data.cumulative_neg ?? 0;
+        sessionLanguage = data.detected_language || language || "ko";
         previousSummary = data.metadata?.summary || "이전 요약 기록 없음";
         previousStep = data.metadata?.current_step || "Step 0: Estimate (신청 준비 단계)";
         previousPersonality = data.metadata?.personality_type || "expressive (기본값: 친근감 선호형)";
@@ -90,6 +50,35 @@ export async function POST(req: NextRequest) {
         previousFacts = Object.entries(previousFactsObj)
           .map(([k, v]) => `- ${k}: ${v}`)
           .join('\n') || "기록된 사용자 팩트 없음";
+      }
+    }
+
+    // 0. Auto-detect message language and translate to Korean for admin/DB if real user message
+    let effectiveLanguage = sessionLanguage;
+    let translatedKoreanText = message.trim();
+
+    if (!isSystemRequest) {
+      try {
+        const hasKoreanChar = /[가-힣]/.test(message.trim());
+        const isNumericOrShort = /^[\d\s.,vVonwon만원$]+$/i.test(message.trim()) || message.trim().length <= 6;
+
+        // If message is just numbers/amount (e.g. "35.000000von") and session is in foreign language, keep session language!
+        if (isNumericOrShort && sessionLanguage && sessionLanguage !== "ko" && !hasKoreanChar) {
+          effectiveLanguage = sessionLanguage;
+        } else {
+          const translationRes = await translateIncomingTelegramMessage(message.trim());
+          if (translationRes && translationRes.sourceLang) {
+            // Only switch to 'ko' if user explicitly wrote Korean characters
+            if (translationRes.sourceLang === 'ko' && !hasKoreanChar && sessionLanguage && sessionLanguage !== 'ko') {
+              effectiveLanguage = sessionLanguage;
+            } else {
+              effectiveLanguage = translationRes.sourceLang;
+            }
+            translatedKoreanText = translationRes.translatedText || message.trim();
+          }
+        }
+      } catch (err) {
+        console.warn("[Web Chat Language Detection Error]:", err);
       }
     }
 
