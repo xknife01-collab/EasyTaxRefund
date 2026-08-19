@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { askManagerAi } from "@/ai/flows/manager-chat-flow";
+import { translateIncomingTelegramMessage } from "@/ai/flows/telegram-translation-flow";
 import { supabaseAdmin } from "@/lib/supabase";
 import { sendTakeoverAlert } from "@/lib/slack";
 
@@ -17,6 +18,23 @@ export async function POST(req: NextRequest) {
 
     // Determine if this is a background system notification (never rendered in chat)
     const isSystemRequest = message.includes("[SYSTEM_NOTIFICATION]") || message.includes("[STUCK_HELPER]") || message.includes("[STUCK_HELPER_SYSTEM_REQUEST]");
+
+    // 0. Auto-detect message language and translate to Korean for admin/DB if real user message
+    let effectiveLanguage = language || "ko";
+    let translatedKoreanText = message.trim();
+
+    if (!isSystemRequest) {
+      try {
+        const translationRes = await translateIncomingTelegramMessage(message.trim());
+        if (translationRes && translationRes.sourceLang) {
+          // If customer message is in a foreign language (e.g. 'ne', 'vi', 'en', 'my', 'km', etc.), prioritize detected language
+          effectiveLanguage = translationRes.sourceLang;
+          translatedKoreanText = translationRes.translatedText || message.trim();
+        }
+      } catch (err) {
+        console.warn("[Web Chat Language Detection Error]:", err);
+      }
+    }
 
     // Intercept "ai 점수" debug command
     if (message.trim() === "ai 점수") {
@@ -106,6 +124,7 @@ export async function POST(req: NextRequest) {
           .from("support_chats")
           .update({
             last_message_at: new Date().toISOString(),
+            detected_language: effectiveLanguage,
             metadata: updatedMetadata
           })
           .eq("id", existingChat.id);
@@ -116,7 +135,7 @@ export async function POST(req: NextRequest) {
             channel: "web",
             external_chat_id: chatId,
             user_name: "Web Client",
-            detected_language: language || "ko",
+            detected_language: effectiveLanguage,
             last_message_at: new Date().toISOString(),
             metadata: updatedMetadata
           })
@@ -132,8 +151,8 @@ export async function POST(req: NextRequest) {
             chat_id: chatSessionId,
             sender_type: "customer",
             original_text: message.trim(),
-            translated_text: message.trim(),
-            source_lang: language || "ko",
+            translated_text: translatedKoreanText,
+            source_lang: effectiveLanguage,
             target_lang: "ko",
             is_read: false
           });
@@ -193,7 +212,7 @@ export async function POST(req: NextRequest) {
     // 2. Call Genkit AI Manager Flow with cumulative scores and memory parameters passed in
     const result = await askManagerAi({
       message: message.trim(),
-      language: language || "ko",
+      language: effectiveLanguage,
       history: history || [],
       channel: "web",
       cumulativePos,
@@ -215,7 +234,7 @@ export async function POST(req: NextRequest) {
         supabaseAdmin.from("ai_learning_logs").insert({
           auth_method: activeGuideContext.method || 'unknown',
           slide_index: activeGuideContext.slideIndex ?? 0,
-          user_language: language || 'ko',
+          user_language: effectiveLanguage,
           user_question: message.trim(),
           ai_answer: result.answer,
           target_coords: activeGuideContext.targetCoords || null,
@@ -281,7 +300,7 @@ export async function POST(req: NextRequest) {
             .update({
               last_message_at: new Date().toISOString(),
               metadata: updatedMetadata,
-              detected_language: language || "ko",
+              detected_language: effectiveLanguage,
               cumulative_pos: updatedCumulativePos,
               cumulative_neg: updatedCumulativeNeg,
             })
@@ -293,7 +312,7 @@ export async function POST(req: NextRequest) {
               channel: "web",
               external_chat_id: chatId,
               user_name: "Web Client",
-              detected_language: language || "ko",
+              detected_language: effectiveLanguage,
               last_message_at: new Date().toISOString(),
               metadata: updatedMetadata,
               cumulative_pos: updatedCumulativePos,
@@ -313,8 +332,8 @@ export async function POST(req: NextRequest) {
               chat_id: chatSessionId,
               sender_type: "customer",
               original_text: message.trim(),
-              translated_text: message.trim(),
-              source_lang: language || "ko",
+              translated_text: translatedKoreanText,
+              source_lang: effectiveLanguage,
               target_lang: "ko",
               is_read: true,
               pos_score: newPosScore,
