@@ -29,11 +29,12 @@ interface ChatWithLastMessage extends SupportChat {
   cumulative_neg?: number;
 }
 
-const CHANNEL_UI: Record<string, { label: string; icon: string; badgeClass: string }> = {
-  telegram: { label: "Telegram", icon: "💬", badgeClass: "bg-sky-50 text-sky-600 border-sky-100" },
-  kakao: { label: "카카오톡", icon: "🟡", badgeClass: "bg-amber-50 text-amber-600 border-amber-100" },
-  whatsapp: { label: "WhatsApp", icon: "🟢", badgeClass: "bg-emerald-50 text-emerald-600 border-emerald-100" },
-  facebook: { label: "Messenger", icon: "🔵", badgeClass: "bg-blue-50 text-blue-600 border-blue-100" },
+const CHANNEL_UI: Record<string, { label: string; icon: string; badgeClass: string; tagBg: string }> = {
+  web: { label: "웹사이트", icon: "🌐", badgeClass: "bg-indigo-50 text-indigo-700 border-indigo-200", tagBg: "bg-indigo-600 text-white" },
+  facebook: { label: "페이스북", icon: "📘", badgeClass: "bg-blue-50 text-blue-700 border-blue-200", tagBg: "bg-blue-600 text-white" },
+  whatsapp: { label: "WhatsApp", icon: "🟢", badgeClass: "bg-emerald-50 text-emerald-700 border-emerald-200", tagBg: "bg-emerald-600 text-white" },
+  telegram: { label: "Telegram", icon: "✈️", badgeClass: "bg-sky-50 text-sky-700 border-sky-200", tagBg: "bg-sky-500 text-white" },
+  kakao: { label: "카카오톡", icon: "🟡", badgeClass: "bg-amber-50 text-amber-800 border-amber-200", tagBg: "bg-amber-400 text-slate-900" },
 };
 
 const LANG_FLAG_MAP: Record<string, { flag: string; label: string }> = {
@@ -352,13 +353,19 @@ export function LiveMessengerFeed({ onOpenChat }: LiveMessengerFeedProps) {
                       {/* 메신저 / 고객 */}
                       <TableCell className="pl-8 py-5">
                         <div className="flex items-center gap-3">
-                          <div className="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg border border-slate-100 shrink-0 relative">
+                          <div className="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center text-lg border border-slate-100 shrink-0 relative shadow-sm">
                             {lang.flag}
-                            <span className="absolute -bottom-1 -right-1 text-[10px]">{channel.icon}</span>
+                            <span className="absolute -bottom-1 -right-1 text-[11px] filter drop-shadow-sm">{channel.icon}</span>
                           </div>
                           <div>
-                            <div className="font-black text-slate-900 text-sm flex items-center gap-1.5">
-                              {chat.user_name || "이름 없음"}
+                            <div className="flex items-center gap-1.5 flex-wrap">
+                              <span className={`text-[10px] font-black px-1.5 py-0.5 rounded-md border flex items-center gap-1 shadow-xs ${channel.badgeClass}`}>
+                                <span>{channel.icon}</span>
+                                <span>{channel.label}</span>
+                              </span>
+                              <span className="font-black text-slate-900 text-sm">
+                                {chat.user_name || "이름 없음"}
+                              </span>
                               {chat.unread_count > 0 && (
                                 <span className="bg-rose-500 text-white text-[9px] font-black h-4 min-w-4 px-1 rounded-full flex items-center justify-center animate-pulse">
                                   {chat.unread_count}
@@ -370,7 +377,7 @@ export function LiveMessengerFeed({ onOpenChat }: LiveMessengerFeedProps) {
                                 </span>
                               )}
                             </div>
-                            <div className="text-[10px] text-slate-400 font-mono">
+                            <div className="text-[10px] text-slate-400 font-mono mt-0.5">
                               ID: {chat.external_chat_id}
                             </div>
                           </div>

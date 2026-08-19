@@ -41,6 +41,8 @@ interface ChatRoom {
   id: string;
   name: string;
   created_at: string;
+  channel?: string;
+  detected_language?: string;
   // Join/Aggregated fields
   last_message?: string;
   last_message_at?: string;
@@ -55,6 +57,32 @@ interface ChatRoom {
   last_action_type?: string;
   typing_text?: string;
 }
+
+const CHANNEL_UI: Record<string, { label: string; icon: string; badgeClass: string }> = {
+  web: { label: "웹사이트", icon: "🌐", badgeClass: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" },
+  facebook: { label: "페이스북", icon: "📘", badgeClass: "bg-blue-500/20 text-blue-300 border-blue-500/30" },
+  whatsapp: { label: "WhatsApp", icon: "🟢", badgeClass: "bg-emerald-500/20 text-emerald-300 border-emerald-500/30" },
+  telegram: { label: "Telegram", icon: "✈️", badgeClass: "bg-sky-500/20 text-sky-300 border-sky-500/30" },
+  kakao: { label: "카카오톡", icon: "🟡", badgeClass: "bg-amber-500/20 text-amber-300 border-amber-500/30" },
+};
+
+const LANG_FLAG_MAP: Record<string, { flag: string; label: string }> = {
+  vi: { flag: "🇻🇳", label: "베트남어" },
+  zh: { flag: "🇨🇳", label: "중국어" },
+  th: { flag: "🇹🇭", label: "태국어" },
+  id: { flag: "🇮🇩", label: "인니" },
+  en: { flag: "🇵🇭", label: "영어" },
+  uz: { flag: "🇺🇿", label: "우즈벡" },
+  my: { flag: "🇲🇲", label: "미얀마" },
+  km: { flag: "🇰🇭", label: "캄보디아" },
+  mn: { flag: "🇲🇳", label: "몽골" },
+  ne: { flag: "🇳🇵", label: "네팔" },
+  si: { flag: "🇱🇰", label: "스리랑카" },
+  bn: { flag: "🇧🇩", label: "벵골" },
+  kk: { flag: "🇰🇿", label: "카자흐" },
+  ur: { flag: "🇵🇰", label: "우르두" },
+  ko: { flag: "🇰🇷", label: "한국어" },
+};
 
 interface Message {
   id: string;
@@ -146,7 +174,7 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
       // Fetch support_chats to get current statuses
       const { data: chatsData, error: chatsErr } = await supabase
         .from("support_chats")
-        .select("id, external_chat_id, user_name, metadata, cumulative_pos, cumulative_neg, last_message_at")
+        .select("id, external_chat_id, user_name, channel, detected_language, metadata, cumulative_pos, cumulative_neg, last_message_at")
         .order("last_message_at", { ascending: false });
 
       if (chatsErr) throw chatsErr;
@@ -166,6 +194,8 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
           id: chat.id,
           name: chat.user_name || roomInfo?.name || `상담방 - ${chat.external_chat_id?.substring(0, 8) || chat.id.substring(0, 8)}`,
           created_at: roomInfo?.created_at || chat.last_message_at || new Date().toISOString(),
+          channel: chat.channel || "web",
+          detected_language: chat.detected_language || "ko",
           is_ai_active: meta.is_ai_active !== false,
           takeover_alert: meta.takeover_alert === true || (chat.cumulative_neg || 0) >= 6,
           cumulative_pos: chat.cumulative_pos || 0,
@@ -807,32 +837,48 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
             {getFilteredRooms().map((room) => {
               const isSelected = room.id === selectedRoomId;
               const hasAlert = room.takeover_alert;
+              const chInfo = CHANNEL_UI[room.channel || "web"] || { label: room.channel || "웹", icon: "🌐", badgeClass: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" };
+              const langInfo = LANG_FLAG_MAP[room.detected_language || "ko"] || { flag: "🌐", label: room.detected_language };
 
               return (
                 <div
                   key={room.id}
                   onClick={() => setSelectedRoomId(room.id)}
-                  className={`w-full flex items-center justify-between p-3.5 rounded-xl border text-left transition-all cursor-pointer group relative ${
+                  className={`w-full flex items-center justify-between p-3 rounded-xl border text-left transition-all cursor-pointer group relative ${
                     isSelected
-                      ? "bg-violet-600/10 border-violet-500/30"
+                      ? "bg-violet-600/15 border-violet-500/40 shadow-sm"
                       : hasAlert
                         ? "bg-rose-500/5 border-rose-500/25 hover:bg-rose-500/10 hover:border-rose-500/40 shadow-[0_0_15px_rgba(239,68,68,0.03)]"
                         : "bg-transparent border-transparent hover:bg-slate-900/60 hover:border-slate-800"
                   }`}
                 >
-                  <div className="flex flex-col gap-1 overflow-hidden">
-                    <span className="text-xs font-black text-slate-100 truncate">
-                      {room.name}
-                    </span>
-                    <span className="text-[10px] text-slate-500">
-                      진행 단계: {room.current_step?.split(":")[0] || "Step 0"}
-                    </span>
+                  <div className="flex items-center gap-2.5 overflow-hidden flex-1">
+                    {/* Channel & Flag Mini Avatar */}
+                    <div className="h-8 w-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 text-xs relative">
+                      <span>{langInfo.flag}</span>
+                      <span className="absolute -bottom-1 -right-1 text-[9px]">{chInfo.icon}</span>
+                    </div>
+
+                    <div className="flex flex-col gap-0.5 overflow-hidden flex-1 min-w-0">
+                      <div className="flex items-center gap-1.5 flex-wrap">
+                        <span className={`text-[9px] font-black px-1.5 py-0.2 rounded border flex items-center gap-0.5 shrink-0 ${chInfo.badgeClass}`}>
+                          <span>{chInfo.icon}</span>
+                          <span>{chInfo.label}</span>
+                        </span>
+                        <span className="text-xs font-black text-slate-100 truncate">
+                          {room.name}
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 truncate">
+                        진행 단계: {room.current_step?.split(":")[0] || "Step 0"}
+                      </span>
+                    </div>
                   </div>
                   
-                  <div className="flex items-center gap-1.5 shrink-0 ml-2">
+                  <div className="flex items-center gap-1.5 shrink-0 ml-1.5">
                     {hasAlert && (
                       <span className="bg-yellow-500 text-slate-950 border border-yellow-400 animate-pulse shadow-[0_0_12px_rgba(234,179,8,0.4)] px-1.5 py-0.5 rounded text-[9px] font-black uppercase flex items-center gap-1 select-none">
-                        🚨 개입필요
+                        🚨 개입
                       </span>
                     )}
 
@@ -865,20 +911,36 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
             <>
               {/* Room Header with dynamic AI toggle switch (Large sticky banner right above the chat stream) */}
               <div className="px-6 py-4 bg-slate-900/80 border-b border-slate-800/80 flex items-center justify-between shrink-0 select-none">
-                <div className="flex flex-col gap-1">
-                  <div className="flex items-center gap-2">
-                    <span className="h-2.5 w-2.5 rounded-full bg-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.6)] animate-pulse" />
-                    <span className="text-white text-sm font-black tracking-tight">
-                      {rooms.find(r => r.id === selectedRoomId)?.name || "실시간 대화 관제 센터"}
-                    </span>
-                  </div>
-                  <span className="text-[10px] text-slate-400 font-bold">
-                    {isAiActive 
-                      ? "🤖 AI 비서가 실시간으로 고객과 대화하며 세일즈를 리드 중입니다." 
-                      : "👤 AI 응답 정지됨: 세무사님이 직접 수동으로 대화를 개입 관리하고 있습니다."
-                    }
-                  </span>
-                </div>
+                {(() => {
+                  const currentRoom = rooms.find(r => r.id === selectedRoomId);
+                  const chInfo = CHANNEL_UI[currentRoom?.channel || "web"] || { label: currentRoom?.channel || "웹", icon: "🌐", badgeClass: "bg-indigo-500/20 text-indigo-300 border-indigo-500/30" };
+                  const langInfo = LANG_FLAG_MAP[currentRoom?.detected_language || "ko"] || { flag: "🌐", label: currentRoom?.detected_language };
+
+                  return (
+                    <div className="flex flex-col gap-1">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span className="h-2.5 w-2.5 rounded-full bg-violet-500 shadow-[0_0_10px_rgba(139,92,246,0.6)] animate-pulse" />
+                        <span className={`text-[10px] font-black px-2 py-0.5 rounded-md border flex items-center gap-1 shadow-sm ${chInfo.badgeClass}`}>
+                          <span>{chInfo.icon}</span>
+                          <span>{chInfo.label}</span>
+                        </span>
+                        <span className="text-[10px] font-bold text-slate-400 bg-slate-800 px-2 py-0.5 rounded-md flex items-center gap-1">
+                          <span>{langInfo.flag}</span>
+                          <span>{langInfo.label}</span>
+                        </span>
+                        <span className="text-white text-sm font-black tracking-tight">
+                          {currentRoom?.name || "실시간 대화 관제 센터"}
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-slate-400 font-bold">
+                        {isAiActive 
+                          ? "🤖 AI 비서가 실시간으로 고객과 대화하며 세일즈를 리드 중입니다." 
+                          : "👤 AI 응답 정지됨: 세무사님이 직접 수동으로 대화를 개입 관리하고 있습니다."
+                        }
+                      </span>
+                    </div>
+                  );
+                })()}
                 
                 {/* Massive direct Toggle Switch Button */}
                 <button
