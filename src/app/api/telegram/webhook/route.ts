@@ -141,7 +141,21 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    // 1. AI Auto language detection & translation to Korean
+    // 1. Load existing chat session to know current language context
+    let chatSession = null;
+    const { data: existingChat, error: fetchErr } = await supabaseAdmin
+      .from('support_chats')
+      .select('id, unread_count, metadata, cumulative_pos, cumulative_neg, detected_language')
+      .eq('channel', 'telegram')
+      .eq('external_chat_id', String(telegramChatId))
+      .maybeSingle();
+
+    if (fetchErr) {
+      console.error('Failed to query existing support chat:', fetchErr);
+      return NextResponse.json({ ok: false, error: fetchErr.message }, { status: 500 });
+    }
+
+    // 2. AI Auto language detection & translation to Korean
     let sourceLang = 'en';
     let translatedText = rawText;
     try {
@@ -152,18 +166,16 @@ export async function POST(req: Request) {
       console.error('[Telegram Webhook] AI Translation failed, falling back to raw text:', err);
     }
 
-    // 2. Load or create the unified Support Chat Session in Supabase
-    let chatSession = null;
-    const { data: existingChat, error: fetchErr } = await supabaseAdmin
-      .from('support_chats')
-      .select('id, unread_count, metadata, cumulative_pos, cumulative_neg')
-      .eq('channel', 'telegram')
-      .eq('external_chat_id', String(telegramChatId))
-      .maybeSingle();
+    const hasKoreanChar = /[가-힣]/.test(rawText.trim());
+    const isNumericOrDate = /^[\d\s.,/\-vVonwon만원$]+$/i.test(rawText.trim()) || rawText.trim().length <= 4;
+    const existingLang = existingChat?.detected_language;
 
-    if (fetchErr) {
-      console.error('Failed to query existing support chat:', fetchErr);
-      return NextResponse.json({ ok: false, error: fetchErr.message }, { status: 500 });
+    // If existing session is already in a foreign language (e.g. 'vi', 'ne', 'uz', etc.):
+    // NEVER switch to 'ko' or 'en' unless user explicitly wrote Korean hangul!
+    if (existingLang && existingLang !== 'ko' && !hasKoreanChar) {
+      if (isNumericOrDate || sourceLang === 'ko' || sourceLang === 'en') {
+        sourceLang = existingLang;
+      }
     }
 
     const isAiActive = !existingChat || existingChat.metadata?.is_ai_active !== false;
@@ -184,7 +196,7 @@ export async function POST(req: Request) {
           }
         })
         .eq('id', existingChat.id)
-        .select('id, metadata, cumulative_pos, cumulative_neg')
+        .select('id, metadata, cumulative_pos, cumulative_neg, detected_language')
         .single();
 
       if (updateErr) {
@@ -247,13 +259,13 @@ export async function POST(req: Request) {
           .select('sender_type, original_text, translated_text')
           .eq('chat_id', chatSession.id)
           .order('created_at', { ascending: true })
-          .limit(10);
+          .limit(20);
 
         const history = (historyMsgs || [])
           .filter((_, idx) => idx < (historyMsgs?.length || 0) - 1)
           .map(m => ({
             role: m.sender_type === 'customer' ? 'user' as const : 'model' as const,
-            text: m.sender_type === 'customer' ? m.original_text : (m.translated_text || m.original_text)
+            text: m.original_text || m.translated_text || ''
           }));
 
         const previousSummary = chatSession.metadata?.summary || "이전 요약 기록 없음";

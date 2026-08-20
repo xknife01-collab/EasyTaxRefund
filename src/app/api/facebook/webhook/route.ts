@@ -197,19 +197,14 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true });
     }
 
-    // 1. Language detection & translation
-    const translationResult = await translateIncomingTelegramMessage(rawText);
-    const sourceLang = translationResult.sourceLang || 'en';
-    const translatedText = translationResult.translatedText || rawText;
-
-    // 2. Load or create chat session in support_chats
+    // 1. Load existing chat session to know current language context
     let chatSession = null;
     let cumulativePos = 0;
     let cumulativeNeg = 0;
 
     const { data: existingChat, error: fetchErr } = await supabaseAdmin
       .from('support_chats')
-      .select('id, unread_count, cumulative_pos, cumulative_neg, metadata')
+      .select('id, unread_count, cumulative_pos, cumulative_neg, metadata, detected_language')
       .eq('channel', 'facebook')
       .eq('external_chat_id', String(psid))
       .maybeSingle();
@@ -217,6 +212,23 @@ export async function POST(req: Request) {
     if (fetchErr) {
       console.error('[Facebook Webhook] Failed to query existing chat:', fetchErr);
       return NextResponse.json({ ok: false, error: fetchErr.message }, { status: 500 });
+    }
+
+    // 2. Language detection & translation
+    const translationResult = await translateIncomingTelegramMessage(rawText);
+    let sourceLang = translationResult.sourceLang || 'en';
+    const translatedText = translationResult.translatedText || rawText;
+
+    const hasKoreanChar = /[가-힣]/.test(rawText.trim());
+    const isNumericOrDate = /^[\d\s.,/\-vVonwon만원$]+$/i.test(rawText.trim()) || rawText.trim().length <= 4;
+    const existingLang = existingChat?.detected_language;
+
+    // If existing session is already in a foreign language (e.g. 'vi', 'ne', 'uz', etc.):
+    // NEVER switch to 'ko' or 'en' unless user explicitly wrote Korean hangul!
+    if (existingLang && existingLang !== 'ko' && !hasKoreanChar) {
+      if (isNumericOrDate || sourceLang === 'ko' || sourceLang === 'en') {
+        sourceLang = existingLang;
+      }
     }
 
     if (existingChat) {
@@ -232,7 +244,7 @@ export async function POST(req: Request) {
           unread_count: (existingChat.unread_count || 0) + 1,
         })
         .eq('id', existingChat.id)
-        .select('id, metadata, cumulative_pos, cumulative_neg')
+        .select('id, metadata, cumulative_pos, cumulative_neg, detected_language')
         .single();
 
       if (updateErr) {
@@ -310,13 +322,13 @@ export async function POST(req: Request) {
       .select('sender_type, original_text, translated_text')
       .eq('chat_id', chatSession.id)
       .order('created_at', { ascending: true })
-      .limit(10);
+      .limit(20);
 
     const history = (historyMsgs || [])
       .filter((_, idx) => idx < (historyMsgs?.length || 0) - 1)
       .map(m => ({
         role: m.sender_type === 'customer' ? 'user' as const : 'model' as const,
-        text: m.sender_type === 'customer' ? m.original_text : (m.translated_text || m.original_text)
+        text: m.original_text || m.translated_text || ''
       }));
 
     const previousSummary = chatSession.metadata?.summary || '이전 요약 기록 없음';
@@ -470,13 +482,25 @@ export async function POST(req: Request) {
       ? `\n[RICH_CARD_JSON: ${JSON.stringify(aiResult.richCardPayload)}]`
       : '';
 
+    let aiKoreanText = aiResult.koreanSummary || aiResult.answer;
+    if (sourceLang && sourceLang !== 'ko' && !/[가-힣]/.test(aiResult.answer)) {
+      try {
+        const transRes = await translateIncomingTelegramMessage(aiResult.answer);
+        if (transRes?.translatedText) {
+          aiKoreanText = transRes.translatedText;
+        }
+      } catch {
+        // fallback
+      }
+    }
+
     await supabaseAdmin.from('support_messages').insert({
       chat_id: chatSession.id,
       sender_type: 'admin',
       original_text: aiResult.answer + richCardStr,
-      translated_text: aiResult.answer + richCardStr,
-      source_lang: 'ko',
-      target_lang: sourceLang,
+      translated_text: aiKoreanText + richCardStr,
+      source_lang: sourceLang || 'en',
+      target_lang: 'ko',
       is_read: true,
       pos_score: newPosScore,
       neg_score: newNegScore,

@@ -122,6 +122,32 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
   const [isTypingScan, setIsTypingScan] = useState(false);
   const [typingScanText, setTypingScanText] = useState("");
 
+  // Real-time Korean translation cache for foreign messages
+  const [autoTranslations, setAutoTranslations] = useState<Record<string, string>>({});
+  const [translatingIds, setTranslatingIds] = useState<Record<string, boolean>>({});
+
+  const handleTranslateMessage = async (msgId: string, text: string) => {
+    if (!msgId || !text || translatingIds[msgId]) return;
+    setTranslatingIds(prev => ({ ...prev, [msgId]: true }));
+    try {
+      const res = await fetch("/api/support/translate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text, messageId: msgId }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.translatedText) {
+          setAutoTranslations(prev => ({ ...prev, [msgId]: data.translatedText }));
+        }
+      }
+    } catch (err) {
+      console.error("Translation error:", err);
+    } finally {
+      setTranslatingIds(prev => ({ ...prev, [msgId]: false }));
+    }
+  };
+
   const chatEndRef = useRef<HTMLDivElement>(null);
   const messageContainerRef = useRef<HTMLDivElement>(null);
   const currentUserId = "88888888-8888-8888-8888-888888888888"; // Planner / Admin Mock UUID
@@ -475,6 +501,27 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
     if (messageContainerRef.current) {
       messageContainerRef.current.scrollTop = messageContainerRef.current.scrollHeight;
     }
+  }, [messages]);
+
+  // Auto-translate untranslated foreign messages (for both AI and Guest) into Korean for Admin
+  useEffect(() => {
+    if (!messages || messages.length === 0) return;
+
+    messages.forEach((m) => {
+      if (autoTranslations[m.id]) return;
+
+      const trans = m.translated_text?.trim() || "";
+      const orig = m.message?.trim() || "";
+
+      const hasKoreanTrans = trans && trans !== orig && /[가-힣]/.test(trans);
+      const isAlreadyKorean = /[가-힣]/.test(orig);
+
+      if (!hasKoreanTrans && !isAlreadyKorean && orig.length >= 2) {
+        if (!translatingIds[m.id]) {
+          handleTranslateMessage(m.id, orig);
+        }
+      }
+    });
   }, [messages]);
 
 
@@ -1058,22 +1105,63 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
 
                           {/* 2. 한국어 실시간 번역 자막 (외국어 대화 시 항상 표시) */}
                           {(() => {
-                            const trans = msg.translated_text?.trim();
-                            const orig = msg.message?.trim();
-                            const hasKoreanTranslation = trans && trans !== orig && (/[가-힣]/.test(trans) || isUser);
+                            const cachedAuto = autoTranslations[msg.id];
+                            const trans = cachedAuto || msg.translated_text?.trim();
+                            const orig = msg.message?.trim() || "";
+                            
+                            // Check if valid Korean translation exists
+                            const hasKoreanTranslation = Boolean(
+                              trans && 
+                              /[가-힣]/.test(trans) && 
+                              (trans !== orig || Boolean(cachedAuto))
+                            );
 
-                            if (hasKoreanTranslation) {
+                            const isForeignWithoutTrans = !hasKoreanTranslation && !/[가-힣]/.test(orig);
+                            const isCurrentlyTranslating = translatingIds[msg.id];
+
+                            if (hasKoreanTranslation && trans) {
                               return (
-                                <div className={`mt-2 pt-2 border-t flex flex-col gap-0.5 ${isUser ? "border-slate-700 text-amber-200/90" : "border-violet-500/30 text-emerald-200/90"}`}>
-                                  <div className="flex items-center gap-1 text-[9px] font-black tracking-tight text-amber-400">
-                                    <span>🇰🇷 한국어 번역</span>
+                                <div className={`mt-2 pt-2 border-t flex flex-col gap-0.5 ${
+                                  isUser 
+                                    ? "border-slate-700 text-amber-200/90" 
+                                    : "border-violet-500/30 text-emerald-200/90"
+                                }`}>
+                                  <div className="flex items-center justify-between gap-1 text-[9px] font-black tracking-tight">
+                                    <span className={isUser ? "text-amber-400" : "text-emerald-400"}>
+                                      🇰🇷 {isUser ? "고객 메시지 한국어 번역" : "AI 답변 한국어 번역"}
+                                    </span>
                                   </div>
-                                  <div className="text-[11px] leading-snug font-normal text-slate-200/90 bg-slate-950/40 p-1.5 rounded-lg">
+                                  <div className={`text-[11px] leading-snug font-normal p-1.5 rounded-lg ${
+                                    isUser 
+                                      ? "text-slate-200 bg-slate-950/60" 
+                                      : "text-violet-100 bg-slate-950/60"
+                                  }`}>
                                     {trans}
                                   </div>
                                 </div>
                               );
                             }
+
+                            if (isCurrentlyTranslating) {
+                              return (
+                                <div className="mt-2 pt-1.5 border-t border-slate-700/40 flex items-center gap-1.5 text-[9px] text-slate-400 font-bold animate-pulse">
+                                  <Sparkles className="h-2.5 w-2.5 text-violet-400 animate-spin" />
+                                  <span>한국어 번역 중...</span>
+                                </div>
+                              );
+                            }
+
+                            if (isForeignWithoutTrans && orig.length >= 2) {
+                              return (
+                                <button
+                                  onClick={() => handleTranslateMessage(msg.id, orig)}
+                                  className="mt-2 pt-1 border-t border-slate-700/40 text-[9px] text-violet-400 hover:text-violet-300 font-black flex items-center gap-1 cursor-pointer"
+                                >
+                                  <span>🇰🇷 한국어 번역 보기</span>
+                                </button>
+                              );
+                            }
+
                             return null;
                           })()}
                         </div>

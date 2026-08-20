@@ -14,6 +14,7 @@ const ChatMessageSchema = z.object({
 export const ManagerChatInputSchema = z.object({
   message: z.string().describe("외국인 사용자가 보낸 질문 메시지"),
   language: z.string().optional().describe("사용자의 현재 설정 언어 (예: 'vi', 'zh', 'uz', 'en' 등)"),
+  languageName: z.string().optional().describe("사용자의 모국어 전체 명칭 (예: 'Vietnamese (Tiếng Việt)')"),
   history: z.array(ChatMessageSchema).optional().describe("이전 대화 내역"),
   channel: z.enum(['web', 'telegram', 'whatsapp', 'facebook']).optional().describe("현재 대화가 진행 중인 채널 구분 ('web', 'telegram', 'whatsapp', 'facebook')"),
   matchedScriptsContext: z.string().optional().describe("RAG로 검색된 성공 점수가 포함된 영업 멘트 목록"),
@@ -138,12 +139,33 @@ Translate the following Korean/mixed text into the EXACT target native language 
 - tl: Tagalog / Filipino
 
 Tone: Warm, polite, and friendly conversational tone as official tax manager Kim Jun-hyun.
-Keep URLs, links (e.g., https://ktrs-service.vercel.app/...), brackets, and numbers intact.
-CRITICAL: Do NOT output English if targetLang is not 'en'. Output MUST be written in the native script of {{targetLang}}.
+Keep URLs, links (e.g., https://ktrs-service.vercel.app/...), and numbers intact.
+Translate all terms, UI words, and bracketed button names (e.g., [알뜰폰] -> translated term in native language) into the target language.
+CRITICAL: ZERO Korean Hangul characters must remain in the final output. Output MUST be 100% written in the native script of {{targetLang}}.
 
 Text to translate:
 {{text}}`,
 });
+
+export const LANGUAGE_NAME_MAP: Record<string, string> = {
+  vi: 'Vietnamese (Tiếng Việt)',
+  ne: 'Nepali (नेपाली)',
+  uz: 'Uzbek (O\'zbek tili, lotin alifbosi)',
+  my: 'Burmese (မြန်မာစာ)',
+  km: 'Khmer (ភាសាខ្មែរ)',
+  mn: 'Mongolian (Монгол хэл)',
+  id: 'Indonesian (Bahasa Indonesia)',
+  th: 'Thai (ภาษาไทย)',
+  si: 'Sinhala (සිංහල)',
+  bn: 'Bengali (বাংলা)',
+  zh: 'Chinese (中文)',
+  en: 'English',
+  tl: 'Tagalog / Filipino',
+  ur: 'Urdu (اردو)',
+  ru: 'Russian (Русский)',
+  kk: 'Kazakh (Қазақша)',
+  ko: 'Korean (한국어)',
+};
 
 const managerChatPrompt = ai.definePrompt({
   name: 'managerChatPrompt',
@@ -174,7 +196,7 @@ const managerChatPrompt = ai.definePrompt({
 [이전 대화 진행 단계 (Current Step State)]:
 {{{previousStep}}}
 
-[현재 사용자의 설정 언어]: {{{language}}}
+[현재 고객과의 지정 대화 언어]: {{{language}}} ({{{languageName}}})
 [현재 대화 채널]: {{{channel}}}
 [고객 접속 단말기 OS]: {{{clientOs}}}
 [고객 인앱 브라우저 접속 여부]: {{{clientIsInApp}}}
@@ -213,9 +235,14 @@ const managerChatPrompt = ai.definePrompt({
 - 만약 본 프롬프트 상단에 **[🚨 긴급 경고: 현재 대화방에서 고객의 불신...]** 지침이 주입되어 있다면, 위의 모든 [채널별 대화 안내 수칙], [우리 서비스의 정말 중요한 핵심 버튼 및 행동 지침], [최종 목적지 리드] 등 일체의 링크/조회/버튼 클릭/신청 제안 행동 지침은 **완전히 정지 및 무시(Override)** 됩니다.
 - 긴급 경고 상태일 때는 사용자의 불안을 해소하고 공감/사과하는 안심 유도 설명 외에는 어떠한 다음 행동 제안(버튼 클릭 권유 포함)도 응답(answer)에 넣지 마십시오.
 
-🚨 **[출력 언어 엄격 준수 규칙]**:
-- **고객이 질문(message)에 사용한 실제 모국어(네팔어, 베트남어, 영어, 미얀마어, 캄보디아어, 몽골어, 우즈베크어, 중국어, 인도네시아어 등)와 100% 동일한 언어로 답변(answer)을 작성하십시오.**
-- 설정 언어({{{language}}})가 'ko'이거나 잘못 설정되었더라도, 고객이 외국어로 질문했다면 절대로 한국어로 답변하지 말고 고객의 모국어로 응답해야 합니다. (한국어 답변은 오직 질문 자체가 한국어일 때만 허용)
+🚨 **[🚨🚨 절대적인 출력 언어 제 1 원칙 (Absolute Native Language Rule) 🚨🚨]**:
+- **현재 고객과의 지정 대화 언어: [{{{languageName}}}] (언어 코드: {{{language}}})**
+- **답변(answer)은 100% 반드시 고객의 모국어인 [{{{languageName}}}] 언어로만 작성하십시오!**
+- **만약 {{{language}}}가 'en'이 아니라면, 절대로 영어(English)나 한국어(Korean)로 답변하지 말고 오직 [{{{languageName}}}] 모국어로만 작성해야 합니다!**
+- 고객이 "1993/08/20", "1993-08-20", "350만", "01012345678", 영문 이름(예: LE TU LINH), 짧은 단어('mai', 'khuya', 'ok', 'yes') 등 숫자, 날짜, 이름, 단답을 보냈더라도 **절대로 한국어나 영어로 바꾸지 말고 100% [{{{languageName}}}] 모국어로만 대답하십시오!**
+- **🚨 절대 금지: answer 필드에 한국어 단어/문장 노출 100% 엄금!**
+  * 한국어는 오직 관리자용 한 줄 요약인 'koreanSummary' 필드에만 작성하십시오.
+  * 고객이 볼 'answer' 필드는 반드시 100% 해당 모국어([{{{languageName}}}])여야 합니다.
 - 친절하고 정확하며 안심을 주는 3~4문장 내외의 풍부하고 세밀한 모국어 구어체 답변(answer)을 작성하십시오.
 답변(answer)을 작성하기 전에, 먼저 세무 영업의 신으로서 [Thinking Process 강화: 3단계 역지사지 시뮬레이션]:
 1) [고객 처지 역지사지]: "내가 지금 타국 공장/현장에서 일하는 외국인 노동자라면 이 질문을 던질 때 어떤 불안과 고단함이 있을까?"
@@ -585,8 +612,11 @@ const managerChatFlow = ai.defineFlow(
     const currentKstTimeContext = `${kstDateStr} (${dayOfWeek}, ${timePeriod}${isWeekend ? ", 주말" : ""})`;
 
     // 4. Call Genkit prompt
+    const languageName = LANGUAGE_NAME_MAP[lang] || lang;
     const { output } = await managerChatPrompt({
       ...input,
+      language: lang,
+      languageName,
       message: cleanedText,
       matchedScriptsContext,
       matchedStepGuideContext,
@@ -639,15 +669,17 @@ const managerChatFlow = ai.defineFlow(
       }
     }
 
-    // 🛡️ [Language Guard Fail-safe] 외국어 세션인데 한국어가 단 1글자라도 출력된 경우 강제 모국어 번역
+    // 🛡️ [Language Guard Fail-safe] 외국어 세션인데 한국어가 단 1글자라도 출력되었거나 비영어 세션에 영어가 출력된 경우 강제 모국어 번역
     let safeAnswer = output.answer;
-    const targetLang = input.language || 'ko';
+    const targetLang = lang || 'ko';
     if (targetLang !== 'ko' && safeAnswer) {
       const koreanCharCount = (safeAnswer.match(/[가-힣]/g) || []).length;
-      // 한글이 1글자라도 포함되어 있으면 (버튼명, 단어 등) 즉시 모국어로 강제 번역
-      if (koreanCharCount >= 1) {
+      // 비영어 타겟인데 영어 단어(Thank you, eligible, refund, hello, salary 등)가 포함된 경우 감지
+      const isEnglishLeak = targetLang !== 'en' && /\b(thank you|eligible|reduction|refund|salary|estimate|awesome|great|hello|hi|please|income tax|based on|year of birth|birth year)\b/i.test(safeAnswer);
+      // 한글이 1글자라도 포함되어 있거나 비영어 세션에 영어가 출력된 경우 모국어로 즉시 강제 번역
+      if (koreanCharCount >= 1 || isEnglishLeak) {
         try {
-          console.warn(`[Language Guard Triggered] Detected ${koreanCharCount} Korean characters for ${targetLang}. Auto-translating whole answer...`);
+          console.warn(`[Language Guard Triggered] Detected ${koreanCharCount} Korean chars / English leak for ${targetLang}. Auto-translating whole answer...`);
           const transRes = await forceTranslatePrompt({ text: safeAnswer, targetLang });
           if (transRes && transRes.output?.translatedText) {
             safeAnswer = transRes.output.translatedText;

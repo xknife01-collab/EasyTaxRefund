@@ -7,7 +7,7 @@ import { sendTakeoverAlert } from "@/lib/slack";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { message, language, history, chatId, clientOs, clientIsInApp, currentPathname, currentStep, activeGuideContext } = body;
+    const { message, language, sessionLanguage: bodySessionLang, history, chatId, clientOs, clientIsInApp, currentPathname, currentStep, activeGuideContext } = body;
 
     if (!message || typeof message !== "string" || !message.trim()) {
       return NextResponse.json(
@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     let previousStep = "Step 0: Estimate (신청 준비 단계)";
     let previousFacts = "기록된 사용자 팩트 없음";
     let previousPersonality = "expressive (기본값: 친근감 선호형)";
-    let sessionLanguage = language || "ko";
+    let sessionLanguage = language || bodySessionLang || "ko";
 
     if (chatId) {
       const { data, error } = await supabaseAdmin
@@ -60,16 +60,16 @@ export async function POST(req: NextRequest) {
     if (!isSystemRequest) {
       try {
         const hasKoreanChar = /[가-힣]/.test(message.trim());
-        const isNumericOrShort = /^[\d\s.,vVonwon만원$]+$/i.test(message.trim()) || message.trim().length <= 6;
+        const isNumericOrShort = /^[\d\s.,/\-vVonwon만원$]+$/i.test(message.trim()) || message.trim().length <= 6;
 
-        // If message is just numbers/amount (e.g. "35.000000von") and session is in foreign language, keep session language!
+        // If message is just numbers/amount/date (e.g. "1993/08/20", "35.000000von") and session is in foreign language, keep session language!
         if (isNumericOrShort && sessionLanguage && sessionLanguage !== "ko" && !hasKoreanChar) {
           effectiveLanguage = sessionLanguage;
         } else {
           const translationRes = await translateIncomingTelegramMessage(message.trim());
           if (translationRes && translationRes.sourceLang) {
             // Only switch to 'ko' if user explicitly wrote Korean characters
-            if (translationRes.sourceLang === 'ko' && !hasKoreanChar && sessionLanguage && sessionLanguage !== 'ko') {
+            if ((translationRes.sourceLang === 'ko' || translationRes.sourceLang === 'en') && !hasKoreanChar && sessionLanguage && sessionLanguage !== 'ko') {
               effectiveLanguage = sessionLanguage;
             } else {
               effectiveLanguage = translationRes.sourceLang;
@@ -338,13 +338,25 @@ export async function POST(req: NextRequest) {
             ? `\n[RICH_CARD_JSON: ${JSON.stringify(result.richCardPayload)}]`
             : '';
 
+          let aiKoreanText = result.koreanSummary || result.answer;
+          if (effectiveLanguage && effectiveLanguage !== 'ko' && !/[가-힣]/.test(result.answer)) {
+            try {
+              const transRes = await translateIncomingTelegramMessage(result.answer);
+              if (transRes?.translatedText) {
+                aiKoreanText = transRes.translatedText;
+              }
+            } catch {
+              // fallback to koreanSummary or raw answer
+            }
+          }
+
           const { error: aiMsgErr } = await supabaseAdmin.from("support_messages").insert({
             chat_id: chatSessionId,
             sender_type: "admin",
             original_text: result.answer + richCardStr,
-            translated_text: result.answer + richCardStr,
-            source_lang: "ko",
-            target_lang: language || "ko",
+            translated_text: aiKoreanText + richCardStr,
+            source_lang: effectiveLanguage || "ko",
+            target_lang: "ko",
             is_read: true
           });
           if (aiMsgErr) {
