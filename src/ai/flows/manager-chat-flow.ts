@@ -670,26 +670,7 @@ const managerChatFlow = ai.defineFlow(
     }
 
     // 🛡️ [Language Guard Fail-safe] 외국어 세션인데 한국어가 단 1글자라도 출력되었거나 비영어 세션에 영어가 출력된 경우 강제 모국어 번역
-    let safeAnswer = output.answer;
-    const targetLang = lang || 'ko';
-    if (targetLang !== 'ko' && safeAnswer) {
-      const koreanCharCount = (safeAnswer.match(/[가-힣]/g) || []).length;
-      // 비영어 타겟인데 영어 단어(Thank you, eligible, refund, hello, salary 등)가 포함된 경우 감지
-      const isEnglishLeak = targetLang !== 'en' && /\b(thank you|eligible|reduction|refund|salary|estimate|awesome|great|hello|hi|please|income tax|based on|year of birth|birth year)\b/i.test(safeAnswer);
-      // 한글이 1글자라도 포함되어 있거나 비영어 세션에 영어가 출력된 경우 모국어로 즉시 강제 번역
-      if (koreanCharCount >= 1 || isEnglishLeak) {
-        try {
-          console.warn(`[Language Guard Triggered] Detected ${koreanCharCount} Korean chars / English leak for ${targetLang}. Auto-translating whole answer...`);
-          const transRes = await forceTranslatePrompt({ text: safeAnswer, targetLang });
-          if (transRes && transRes.output?.translatedText) {
-            safeAnswer = transRes.output.translatedText;
-            console.log(`[Language Guard Resolved] Translated answer to ${targetLang}:`, safeAnswer.substring(0, 60));
-          }
-        } catch (err) {
-          console.error('[Language Guard Translation Failed]:', err);
-        }
-      }
-    }
+    const safeAnswer = await enforceLanguageGuard(output.answer, lang || 'ko');
 
     // Return extended output containing matchedScriptId
     return {
@@ -700,6 +681,29 @@ const managerChatFlow = ai.defineFlow(
     };
   }
 );
+
+// -------------------------------------------------------------
+// Universal Language Guard Helper: Enforces 100% Native Language Output
+// -------------------------------------------------------------
+export async function enforceLanguageGuard(text: string, targetLang: string): Promise<string> {
+  if (!text || !targetLang || targetLang === 'ko') return text;
+  const koreanCharCount = (text.match(/[가-힣]/g) || []).length;
+  const isEnglishLeak = targetLang !== 'en' && /\b(thank you|eligible|reduction|refund|salary|estimate|awesome|great|hello|hi|please|income tax|based on|year of birth|birth year)\b/i.test(text);
+
+  if (koreanCharCount >= 1 || isEnglishLeak) {
+    try {
+      console.warn(`[Language Guard Triggered] Detected ${koreanCharCount} Korean chars / English leak for ${targetLang}. Auto-translating whole answer...`);
+      const transRes = await forceTranslatePrompt({ text, targetLang });
+      if (transRes && transRes.output?.translatedText) {
+        console.log(`[Language Guard Resolved] Translated answer to ${targetLang}:`, transRes.output.translatedText.substring(0, 60));
+        return transRes.output.translatedText;
+      }
+    } catch (err) {
+      console.error('[Language Guard Translation Failed]:', err);
+    }
+  }
+  return text;
+}
 
 // -------------------------------------------------------------
 // Daily CS Follow-up Flow: Warm check-in reminders for customers
@@ -791,5 +795,12 @@ export async function askFollowUpAi(input: {
   if (!output) {
     throw new Error('AI 매니저 안부 인사 생성에 실패했습니다.');
   }
-  return output;
+
+  // 🛡️ [Language Guard Fail-safe] 안부 인사 메시지도 100% 모국어 보장
+  const safeAnswer = await enforceLanguageGuard(output.answer, input.language || 'en');
+
+  return {
+    ...output,
+    answer: safeAnswer
+  };
 }

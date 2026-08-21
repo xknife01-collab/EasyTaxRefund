@@ -5,10 +5,12 @@ import { askManagerAi } from '@/ai/flows/manager-chat-flow';
 import { analyzeScreenshot, downloadTelegramPhoto } from '@/ai/flows/vision-analysis-flow';
 import axios from 'axios';
 import { sendTakeoverAlert } from '@/lib/slack';
+import { isDuplicateMessage, acquireUserLock } from '@/lib/webhook-dedup';
 
 export const maxDuration = 60;
 
 export async function POST(req: Request) {
+  let releaseLock: (() => void) | null = null;
   try {
     const body = await req.json();
 
@@ -136,10 +138,16 @@ export async function POST(req: Request) {
       return NextResponse.json({ ok: true, type: 'image_processing' });
     }
 
-    // Skip empty text messages
-    if (!rawText.trim()) {
-      return NextResponse.json({ ok: true });
+    const tgMsgId = `tg_${message.message_id}_${telegramChatId}`;
+
+    // 🛡️ Deduplication: Skip if message ID was already processed
+    if (isDuplicateMessage(tgMsgId)) {
+      console.log(`[Telegram Webhook] Skipping duplicate tgMsgId=${tgMsgId}`);
+      return NextResponse.json({ ok: true, duplicate: true });
     }
+
+    // 🔒 Sequential Lock: Prevent concurrent webhook race conditions for the same user
+    releaseLock = await acquireUserLock(String(telegramChatId));
 
     // 1. Load existing chat session to know current language context
     let chatSession = null;
@@ -168,14 +176,18 @@ export async function POST(req: Request) {
 
     const hasKoreanChar = /[가-힣]/.test(rawText.trim());
     const isNumericOrDate = /^[\d\s.,/\-vVonwon만원$]+$/i.test(rawText.trim()) || rawText.trim().length <= 4;
+    const isPunctuationOrSymbol = /^[\s\W\d_?!.,:;@#$%^&*()+\-=\[\]{}|\\/<>~`]+$/.test(rawText.trim());
     const existingLang = existingChat?.detected_language;
 
     // If existing session is already in a foreign language (e.g. 'vi', 'ne', 'uz', etc.):
     // NEVER switch to 'ko' or 'en' unless user explicitly wrote Korean hangul!
     if (existingLang && existingLang !== 'ko' && !hasKoreanChar) {
-      if (isNumericOrDate || sourceLang === 'ko' || sourceLang === 'en') {
+      if (isNumericOrDate || isPunctuationOrSymbol || sourceLang === 'ko' || sourceLang === 'en') {
         sourceLang = existingLang;
       }
+    } else if (!existingLang && !hasKoreanChar && (isPunctuationOrSymbol || sourceLang === 'ko')) {
+      // If brand new external channel session and user typed symbols like "???" without Korean characters, default to English
+      sourceLang = 'en';
     }
 
     const isAiActive = !existingChat || existingChat.metadata?.is_ai_active !== false;
@@ -420,6 +432,8 @@ export async function POST(req: Request) {
   } catch (error: any) {
     console.error('Telegram webhook error:', error);
     return NextResponse.json({ ok: false, error: error.message }, { status: 500 });
+  } finally {
+    if (releaseLock) releaseLock();
   }
 }
 

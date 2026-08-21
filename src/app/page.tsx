@@ -40,9 +40,10 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { askFaqQuestion } from "@/ai/flows/ai-powered-faq-flow";
-import { useToast } from "@/hooks/use-toast";
 import { AiChatDialog } from "@/components/AiChatDialog";
 import { useTranslation } from "@/components/LanguageContext";
+import { InAppBrowserBanner } from "@/components/InAppBrowserBanner";
+import { useToast } from "@/hooks/use-toast";
 import { logLanguageVisit } from "@/lib/tracking";
 
 import { useRouter } from "next/navigation";
@@ -348,6 +349,7 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen flex flex-col font-body">
+      <InAppBrowserBanner />
       <Navbar />
       <main className="flex-1">
         

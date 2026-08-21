@@ -42,11 +42,14 @@ export async function GET(req: Request) {
     if (!fetchErr && eligibleChats && eligibleChats.length > 0) {
       for (const chat of eligibleChats) {
         const isAiActive = chat.metadata?.is_ai_active !== false;
+        const isTakeover = chat.metadata?.takeover_alert === true || chat.metadata?.is_human_takeover === true;
+        const currentStep = String(chat.metadata?.current_step || '').toLowerCase();
+        const isCompleted = currentStep.includes('completed') || currentStep.includes('step 10') || currentStep.includes('step 11') || currentStep.includes('step 5');
         const followUpCount = chat.metadata?.follow_up_count || 0;
         const lastMsgTime = chat.last_message_at ? new Date(chat.last_message_at).getTime() : 0;
         const elapsedMs = now - lastMsgTime;
 
-        if (!isAiActive || followUpCount >= 5) {
+        if (!isAiActive || isTakeover || isCompleted || followUpCount >= 5) {
           continue;
         }
 
@@ -70,7 +73,7 @@ export async function GET(req: Request) {
 
         try {
           const lang = chat.detected_language || 'en';
-          const resumeLink = `${appBaseUrl}/?lang=${lang}`;
+          const resumeLink = `${appBaseUrl}/estimate?step=4&lang=${lang}&prefill=1`;
 
           const { data: messages } = await supabaseAdmin
             .from('support_messages')

@@ -1,6 +1,7 @@
 import { ai } from '@/ai/genkit';
 import { z } from 'genkit';
 import axios from 'axios';
+import { enforceLanguageGuard } from '@/ai/flows/manager-chat-flow';
 
 // ─── Schema ────────────────────────────────────────────────────────────────
 const VisionAnalysisInputSchema = z.object({
@@ -88,7 +89,13 @@ const visionAnalysisFlow = ai.defineFlow(
       throw new Error('Vision AI 분석 결과를 생성하지 못했습니다.');
     }
 
-    return output;
+    // 🛡️ [Language Guard Fail-safe] 비전 AI 분석 답변도 100% 모국어 보장
+    const safeGuidance = await enforceLanguageGuard(output.guidanceMessage, lang || 'en');
+
+    return {
+      ...output,
+      guidanceMessage: safeGuidance,
+    };
   }
 );
 

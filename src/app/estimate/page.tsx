@@ -105,6 +105,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 import { Separator } from "@/components/ui/separator";
 import { cn } from "@/lib/utils";
+import { InAppBrowserBanner } from "@/components/InAppBrowserBanner";
 import { useTranslation } from "@/components/LanguageContext";
 const translate = (s: string) => s;
 import { db } from "@/lib/firebase";
@@ -250,18 +251,29 @@ export default function EstimatePage() {
       const isPrefill = urlParams.get('prefill') === '1' || urlParams.get('name') !== null;
       const paramName = urlParams.get('name') || '';
       const paramRegNo = urlParams.get('regNo') || urlParams.get('registrationNumber') || '';
+      const paramBirthDate = urlParams.get('birthDate') || urlParams.get('birth') || '';
       const paramPhone = urlParams.get('phone') || '';
       const paramCarrier = urlParams.get('carrier') || '';
       const paramSalary = urlParams.get('salary');
       const paramWorkMonths = urlParams.get('workMonths');
       const forceStep = urlParams.get('step');
 
+      let resolvedRegNo = paramRegNo;
+      if (!resolvedRegNo && paramBirthDate) {
+        const cleanBirth = paramBirthDate.replace(/\D/g, '');
+        if (cleanBirth.length === 8) {
+          resolvedRegNo = cleanBirth.substring(2);
+        } else if (cleanBirth.length === 6) {
+          resolvedRegNo = cleanBirth;
+        }
+      }
+
       if (isPrefill) {
         setFormData(prev => ({
           ...prev,
           officialName: paramName || prev.officialName,
           authName: paramName || prev.authName,
-          registrationNumber: paramRegNo || prev.registrationNumber,
+          registrationNumber: resolvedRegNo || prev.registrationNumber,
           phone: paramPhone || prev.phone,
           carrier: paramCarrier || prev.carrier,
         }));
@@ -280,8 +292,32 @@ export default function EstimatePage() {
         if (!isNaN(targetStep) && targetStep !== step) {
           setStep(targetStep);
         }
-      } else if (isPrefill && (paramName || paramRegNo)) {
+      } else if (isPrefill && (paramName || resolvedRegNo || paramPhone)) {
         setStep(4);
+      }
+
+      // 📱 In-App Browser (WebView) Auto-Detection and Android Chrome Escape
+      const ua = navigator.userAgent || navigator.vendor || (window as any).opera || "";
+      const isFb = /FBAV|FBAN|FB_IAB|FB4A/i.test(ua);
+      const isInsta = /Instagram/i.test(ua);
+      const isKakao = /KAKAOTALK/i.test(ua);
+      const isLine = /Line\//i.test(ua);
+      const isGeneralInApp = /wv|WebView/i.test(ua) && !/Chrome\/[.0-9]* Mobile/i.test(ua);
+
+      if (isFb || isInsta || isKakao || isLine || isGeneralInApp) {
+        setIsInAppBrowser(true);
+        if (/Android/i.test(ua)) {
+          try {
+            const currentUrl = window.location.href.replace(/^https?:\/\//, "");
+            const hasTried = sessionStorage.getItem("has_tried_intent_escape");
+            if (!hasTried) {
+              sessionStorage.setItem("has_tried_intent_escape", "true");
+              window.location.href = `intent://${currentUrl}#Intent;scheme=https;package=com.android.chrome;end`;
+            }
+          } catch (e) {
+            console.warn("[InAppBrowser Auto Escape Failed]:", e);
+          }
+        }
       }
     }
   }, []);
@@ -2929,6 +2965,7 @@ export default function EstimatePage() {
       id="estimate-scroll-container" 
       className={`min-h-screen flex flex-col font-body bg-slate-50/50 ${isSimulation ? 'h-screen overflow-y-auto' : ''}`}
     >
+      <InAppBrowserBanner />
       {isInAppBrowser && (
         <div className="fixed inset-0 z-[10000] bg-white flex flex-col items-center justify-center p-8 text-center animate-in fade-in duration-500">
           <div className="w-24 h-24 bg-primary/10 rounded-[2.5rem] flex items-center justify-center mb-10 relative">
