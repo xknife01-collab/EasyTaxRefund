@@ -104,6 +104,11 @@ import { Step3ContactInfoView } from "@/components/estimate/steps/Step3ContactIn
 import { Step4AuthMethodView } from "@/components/estimate/steps/Step4AuthMethodView";
 import { Step5AuthWaitingView } from "@/components/estimate/steps/Step5AuthWaitingView";
 import { Step6AnalysisLoadingView } from "@/components/estimate/steps/Step6AnalysisLoadingView";
+import { Step7ResultView } from "@/components/estimate/steps/Step7ResultView";
+import { Step8HometaxSignupView } from "@/components/estimate/steps/Step8HometaxSignupView";
+import { Step9AccountInputView } from "@/components/estimate/steps/Step9AccountInputView";
+import { Step10ContractSignatureView } from "@/components/estimate/steps/Step10ContractSignatureView";
+import { Step11SuccessView } from "@/components/estimate/steps/Step11SuccessView";
 import {
   Dialog,
   DialogContent,
@@ -3201,673 +3206,93 @@ export default function EstimatePage() {
             )}
 
 
-            {step === 7 && !result && (
-              <Card className="rounded-[3rem] border-none shadow-2xl overflow-hidden bg-[#0b192c] p-8 sm:p-16 text-center flex flex-col items-center justify-center min-h-[300px]">
-                <Loader2 className="h-12 w-12 text-[#b88c30] animate-spin mb-6" />
-                <h3 className="text-xl font-bold text-white">{t('환급 결과를 복구하는 중입니다...')}</h3>
-                <p className="text-sm text-slate-400 mt-2">{t('잠시만 기다려 주세요.')}</p>
-              </Card>
-            )}
-
-            {step === 7 && result && (
-              <Card className="rounded-2xl sm:rounded-[3rem] border-none shadow-2xl overflow-hidden bg-[#0b192c]">
-                <CardHeader className="text-center py-8 sm:py-16 bg-[#0b192c] border-b border-[#b88c30]/20 relative overflow-hidden">
-                  {/* 배경 패턴 */}
-                  <div className="absolute inset-0 opacity-[0.03]"
-                    style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => { setStep(4); saveProgress(4); }}
-                    className="absolute top-6 left-6 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    {t('이전')}
-                  </Button>
-                  <div className="relative mx-auto w-24 h-24 sm:w-28 sm:h-28 flex items-center justify-center mb-8 relative z-10">
-                    <div className="absolute -inset-4 bg-[#b88c30]/15 rounded-full blur-xl opacity-60 animate-pulse" />
-                    <div className="relative h-20 w-20 sm:h-24 sm:w-24 bg-white rounded-3xl p-3 overflow-hidden shadow-2xl border border-[#b88c30]/30 flex items-center justify-center">
-                      <Image
-                        src="/nts-logo.jpg"
-                        alt="Official NTS Logo"
-                        width={96}
-                        height={96}
-                        className="w-full h-full object-contain"
-                      />
-                    </div>
-                  </div>
-                  <CardTitle className="text-2xl sm:text-4xl lg:text-[2.5rem] font-black font-headline text-white leading-tight relative z-10">
-                    {t(result.message, { amount: `₩${result.refundEstimate?.toLocaleString()}` })}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-8 sm:space-y-16 py-8 sm:py-16 px-4 sm:px-10 bg-[#0d1e30]">
-                  {result.caseType === 'A' && (
-                    <div className="text-center space-y-10">
-                      <div className="space-y-4">
-                        <p className="text-slate-400 font-black uppercase tracking-widest text-sm">{t('최종 예상 환급액')}</p>
-                        <h2 className="text-5xl sm:text-7xl font-black text-[#b88c30] font-headline">₩ {result.refundEstimate?.toLocaleString()}</h2>
-                      </div>
-                      <div className="max-w-md mx-auto space-y-4 text-left p-8 bg-white/5 rounded-3xl border border-white/10 shadow-inner">
-                        <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">{t('연도별 상세 내역 (적격 여부 검증 완료)')}</p>
-                        <div className="space-y-3">
-                          {result.details?.map((detail: any, i: number) => (
-                            <div key={i} className="flex justify-between items-center group">
-                              <span className="text-lg font-black text-slate-200">{detail.year}: ₩{detail.amount.toLocaleString()}</span>
-                              <span className="text-[11px] font-bold text-[#b88c30]/80">{detail.company}</span>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-
-                      {/* ★ 김준현 매니저의 100% 후불 정산 & 지금 0원 안심 배너 */}
-                      <div className="max-w-md mx-auto p-5 sm:p-6 bg-gradient-to-r from-[#0f1e36] to-[#152a45] rounded-3xl border-2 border-[#b88c30]/50 shadow-2xl relative overflow-hidden text-left">
-                        <div className="flex items-start gap-4">
-                          <div className="relative shrink-0 mt-1">
-                            <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
-                              <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
-                            </div>
-                            <span className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
-                          </div>
-                          <div className="space-y-2.5 flex-1">
-                            <div className="flex items-center gap-2">
-                              <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
-                                {t('김준현 공식 매니저 안심 약속')}
-                              </span>
-                              <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
-                                {t('지금 결제 0원 · 100% 후불제')}
-                              </Badge>
-                            </div>
-                            <p className="text-xs font-bold text-slate-200 leading-relaxed">
-                              🎉 {t('축하드립니다! 지금 신청하실 때 미리 입금하실 수수료는 전혀 없습니다 (0원!).')}
-                            </p>
-                            <div className="p-3.5 bg-[#0a1523]/90 rounded-2xl border border-[#b88c30]/30 space-y-2 text-left">
-                              <div className="space-y-1">
-                                <p className="text-[11.5px] font-black text-emerald-400 flex items-center gap-1.5">
-                                  <span>1️⃣</span>
-                                  <span>{t('선입금 0원! 통장에 돈 들어온 뒤에 정산')}</span>
-                                </p>
-                                <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
-                                  {t('국세청에서 고객님 통장으로 환급금이 완전히 입금된 후에만 수수료가 정산됩니다.')}
-                                </p>
-                              </div>
-                              <div className="space-y-1">
-                                <p className="text-[11.5px] font-black text-[#e2b659] flex items-center gap-1.5">
-                                  <span>2️⃣</span>
-                                  <span>{t('환급금 없으면 수수료 0원 (완전 무료)')}</span>
-                                </p>
-                                <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
-                                  {t('만약 국세청에서 환급금이 승인되지 않으면 비용은 1원도 발생하지 않습니다.')}
-                                </p>
-                              </div>
-                              <p className="text-[11px] font-bold text-[#e2b659] pt-1 border-t border-slate-800">
-                                👉 {t('안심하시고 아래 버튼을 눌러 환급금을 입금받으실 통장 계좌를 등록해 주세요! 👍')}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  {result.refundEstimate === 0 ? (
-                    <div className="space-y-6 text-center">
-                      <p className="text-lg lg:text-xl font-bold text-slate-300 py-8 px-4 bg-white/5 rounded-3xl border border-white/10 leading-relaxed shadow-sm">
-                        {t('올해 한국에서 근로하며 세금을 더 납부하신 후, 내년에 Korea Tax Refund Service를 통해 다시 조회해 보세요.')}
-                      </p>
-                      <Button onClick={() => {
-                        if (draftAppId) {
-                          supabase.from('tax_applications').update({ status: 'ZeroRefund', step: 7 }).eq('id', draftAppId);
-                        }
-                        router.push('/');
-                      }} className="w-full min-h-[5rem] h-auto py-4 px-6 bg-white/10 hover:bg-white/15 text-white text-xl lg:text-2xl font-black rounded-[2rem] shadow-sm flex items-center justify-center flex-wrap gap-4 text-center leading-tight whitespace-normal break-words transition-all hover:scale-[1.02]">
-                        <ArrowLeft className="h-6 w-6 text-slate-400" /> {t('홈으로 돌아가기')}
-                      </Button>
-                    </div>
-                  ) : (
-                    <Button
-                      id="step7-submit-btn"
-                      onClick={async () => {
-                        setIsIdGenerating(true);
-                        const idRes = await handleAutoGenerateAndCheckHometaxId();
-                        setIsIdGenerating(false);
-                        if (idRes && idRes.success) {
-                          setStep(8);
-                          saveProgress(8);
-                        }
-                      }}
-                      disabled={isIdGenerating}
-                      className="w-full min-h-[5rem] h-auto py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl lg:text-2xl font-black rounded-[2rem] shadow-2xl flex items-center justify-center flex-wrap gap-4 text-center leading-tight whitespace-normal break-words transition-transform active:scale-95 disabled:opacity-50"
-                    >
-                      {isIdGenerating ? (
-                        <>
-                          <Loader2 className="animate-spin h-8 w-8 text-[#0b192c]" />
-                          <span>{t('보안 계정 생성 중...')}</span>
-                        </>
-                      ) : (
-                        <>
-                          {t('지금 환급 신청하기')} <ArrowRight className="h-8 w-8 text-[#0b192c]" />
-                        </>
-                      )}
-                    </Button>
-                  )}
-                </CardContent>
-              </Card>
+            {step === 7 && (
+              <Step7ResultView
+                result={result}
+                onPrev={() => { setStep(4); saveProgress(4); }}
+                onHome={() => {
+                  if (draftAppId) {
+                    supabase.from('tax_applications').update({ status: 'ZeroRefund', step: 7 }).eq('id', draftAppId);
+                  }
+                  router.push('/');
+                }}
+                onNext={async () => {
+                  setIsIdGenerating(true);
+                  const idRes = await handleAutoGenerateAndCheckHometaxId();
+                  setIsIdGenerating(false);
+                  if (idRes && idRes.success) {
+                    setStep(8);
+                    saveProgress(8);
+                  }
+                }}
+                isIdGenerating={isIdGenerating}
+              />
             )}
 
             {step === 8 && (
-              <Card className="rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-[#0b192c] animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <CardHeader className="text-center py-6 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/20 relative overflow-hidden">
-                  {/* 배경 패턴 */}
-                  <div className="absolute inset-0 opacity-[0.03]"
-                    style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => { setStep(7); saveProgress(7); }}
-                    className="absolute top-6 left-6 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    {t('이전')}
-                  </Button>
-                  <CardTitle className="text-3xl font-black font-headline text-white relative z-10">{t('Step 8: 대한민국 국세청 회원가입 대행')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-8 p-4 sm:p-10 bg-[#0d1e30]">
-                  {/* ★ 김준현 매니저의 8단계 국세청 정식 접수 & 1분 SMS 인증 가이드 */}
-                  <div className="p-5 sm:p-6 bg-gradient-to-r from-[#0f1e36] to-[#152a45] rounded-3xl border-2 border-[#b88c30]/50 shadow-2xl relative overflow-hidden text-left">
-                    <div className="flex items-start gap-4">
-                      <div className="relative shrink-0 mt-1">
-                        <div className="h-12 w-12 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
-                          <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
-                        </div>
-                        <span className="absolute bottom-0 right-0 h-3.5 w-3.5 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
-                      </div>
-                      <div className="space-y-2.5 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
-                            {t('김준현 공식 매니저 1분 가이드')}
-                          </span>
-                          <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
-                            {t('국세청 정식 접수 마지막 단계')}
-                          </Badge>
-                        </div>
-                        <p className="text-xs font-bold text-slate-200 leading-relaxed">
-                          🏛️ {t('국세청에 환급 신청서를 정식 접수하고 입금 현황을 실시간 추적하기 위해 국세청 보안 계정을 자동으로 생성해 드립니다. 🔒')}
-                        </p>
-                        <div className="p-3.5 bg-[#0a1523]/90 rounded-2xl border border-[#b88c30]/30 space-y-2 text-left">
-                          <div className="space-y-1">
-                            <p className="text-[11.5px] font-black text-emerald-400 flex items-center gap-1.5">
-                              <span>1️⃣</span>
-                              <span>{t('아이디 자동 생성 완료')}</span>
-                            </p>
-                            <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
-                              {t('복잡한 회원가입 절차는 시스템이 안전하게 알아서 자동으로 처리해 드립니다.')}
-                            </p>
-                          </div>
-                          <div className="space-y-1">
-                            <p className="text-[11.5px] font-black text-[#e2b659] flex items-center gap-1.5">
-                              <span>2️⃣</span>
-                              <span>{t('문자로 온 6자리 인증번호만 입력하면 끝!')}</span>
-                            </p>
-                            <p className="text-[11px] font-medium text-slate-300 pl-5 leading-relaxed">
-                              {t('아래 [인증문자 발송하기]를 누르신 후, 휴대폰 문자로 도착한 6자리 번호만 넣어주세요.')}
-                            </p>
-                          </div>
-                          <p className="text-[11px] font-bold text-[#e2b659] pt-1 border-t border-slate-800">
-                            👉 {t('문자 6자리 입력 즉시 환급금을 입금받으실 통장 계좌 등록(9단계)으로 넘어갑니다! 👍')}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="p-6 bg-white/5 rounded-2xl border border-white/10 space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-slate-400">{t('국세청 자동 생성 ID')}</span>
-                      {isIdChecking ? (
-                        <div className="flex items-center gap-2">
-                          <Loader2 className="animate-spin h-4 w-4 text-[#b88c30]" />
-                          <span className="text-xs font-bold text-[#b88c30]">{t('중복 확인 중...')}</span>
-                        </div>
-                      ) : isIdDuplicateChecked ? (
-                        <Badge className="bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 font-bold px-3 py-1 text-sm rounded-lg flex items-center gap-1">
-                          <BadgeCheck className="h-4 w-4" /> {hometaxId}
-                        </Badge>
-                      ) : (
-                        <span className="text-sm font-bold text-red-400">{t('ID 미생성')}</span>
-                      )}
-                    </div>
-                    <p className="text-xs font-semibold text-slate-500">
-                      {t('* 국세청 가입 정보는 당사 이용약관 및 개인정보 처리방침의 \'국세청 가입 대행 및 계정 관리\' 조항에 따라 안전하게 암호화 관리됩니다.')}
-                    </p>
-                  </div>
-
-                  {!isSmsRequested ? (
-                    <div className="space-y-6">
-                      <div className="p-4 bg-amber-950/20 border border-amber-800/30 rounded-2xl text-amber-400 text-sm font-semibold">
-                        {t('휴대폰 본인인증(SMS) 문자를 발송하여 회원가입을 완료합니다. 본인 명의의 휴대폰 번호로 인증을 시도해 주세요.')}
-                      </div>
-                      <Button
-                        id="step8-signup-request-btn"
-                        onClick={handleRequestSignupSms}
-                        disabled={loading || isIdChecking || !isIdDuplicateChecked}
-                        className="w-full h-20 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-[2rem] shadow-xl hover:scale-[1.01] transition-all disabled:opacity-50"
-                      >
-                        {loading ? <Loader2 className="animate-spin h-8 w-8 text-[#0b192c]" /> : t('인증문자 발송하기')}
-                      </Button>
-                    </div>
-                  ) : (
-                    <div className="space-y-6">
-                      <div className="space-y-3">
-                        <div className="flex justify-between items-center">
-                          <Label className="text-sm font-black text-slate-300 ml-1">{t('인증번호 6자리 입력')}</Label>
-                          <span className="text-sm font-black text-[#b88c30] mr-1">
-                            {formatTimer(smsTimer)}
-                          </span>
-                        </div>
-                        <input
-                          id="step8-sms-code-input"
-                          placeholder={t('인증번호 6자리를 입력하세요')}
-                          maxLength={6}
-                          value={smsCode}
-                          onChange={(e) => setSmsCode(e.target.value)}
-                          className="h-16 rounded-2xl font-black bg-white/5 border border-white/10 text-white px-6 text-lg w-full text-center tracking-widest outline-none focus:border-[#b88c30] focus:ring-1 focus:ring-[#b88c30]"
-                        />
-                      </div>
-
-                      <Button
-                        id="step8-signup-complete-btn"
-                        onClick={handleCompleteSignup}
-                        disabled={isVerifyingSms || smsCode.length !== 6}
-                        className="w-full h-20 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-[2rem] shadow-xl shadow-[#b88c30]/20 hover:scale-[1.01] transition-all disabled:opacity-50"
-                      >
-                        {isVerifyingSms ? <Loader2 className="animate-spin h-8 w-8 text-[#0b192c]" /> : t('인증 완료 및 가입 대행')}
-                      </Button>
-
-                      <div className="text-center">
-                        <button
-                          type="button"
-                          onClick={handleRequestSignupSms}
-                          disabled={loading}
-                          className="text-sm font-bold text-slate-400 hover:text-[#b88c30] hover:underline"
-                        >
-                          {t('인증문자 다시 받기')}
-                        </button>
-                      </div>
-                    </div>
-                  )}
-                </CardContent>
-              </Card>
+              <Step8HometaxSignupView
+                onPrev={() => { setStep(7); saveProgress(7); }}
+                hometaxId={hometaxId}
+                isIdChecking={isIdChecking}
+                isIdDuplicateChecked={isIdDuplicateChecked}
+                isSmsRequested={isSmsRequested}
+                loading={loading}
+                handleRequestSignupSms={handleRequestSignupSms}
+                smsTimer={smsTimer}
+                formatTimer={formatTimer}
+                smsCode={smsCode}
+                setSmsCode={setSmsCode}
+                handleCompleteSignup={handleCompleteSignup}
+                isVerifyingSms={isVerifyingSms}
+              />
             )}
 
             {step === 9 && (
-              <Card className="rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-[#0b192c] animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <CardHeader className="text-center py-6 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/20 relative overflow-hidden">
-                  {/* 배경 패턴 */}
-                  <div className="absolute inset-0 opacity-[0.03]"
-                    style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => { setStep(8); saveProgress(8); }}
-                    className="absolute top-6 left-6 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    {t('이전')}
-                  </Button>
-                  <CardTitle className="text-3xl font-black font-headline text-white relative z-10">{t('Step 9: 환급 계좌 등록 및 1원 인증')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6 sm:space-y-10 p-4 sm:p-10 bg-[#0d1e30]">
-                  {/* 환급 예정액 요약 */}
-                  <div className="p-8 bg-white/5 rounded-[2.5rem] border border-[#b88c30]/20 shadow-inner space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span className="font-bold text-slate-400">{t('총 환급 예정액')}</span>
-                      <span className="text-2xl font-black text-white">₩ {result?.refundEstimate?.toLocaleString() || 0}</span>
-                    </div>
-                    <Separator className="bg-white/10" />
-                    <div className="flex justify-between items-center">
-                      <span className="font-black text-slate-300 text-xl">{t('환급액 입금후 수수료(성과보수 22%)')}</span>
-                      <span className="text-3xl font-black text-[#b88c30]">₩ {(Math.floor((result?.refundEstimate || 0) * 0.22)).toLocaleString()}</span>
-                    </div>
-                  </div>
-
-                  {/* 법적 안내 */}
-                  <Alert className="bg-amber-950/20 border-amber-800/30 rounded-3xl p-8 shadow-sm">
-                    <AlertCircle className="h-6 w-6 text-amber-400 shrink-0" />
-                    <div className="ml-4">
-                      <AlertTitle className="text-amber-400 font-black text-lg mb-2">{t('Legal Policy (후불 정산 및 CMS 자동 출금 동의)')}</AlertTitle>
-                      <AlertDescription className="text-amber-500/80 font-bold text-base leading-relaxed">
-                        {t("지금 결제되는 금액은 0원입니다. 22% 이용료는 고객님 통장으로 국세청 환급금이 입금된 것이 확인된 이후에만 등록하신 이 계좌에서 출금(정산)됩니다. 환급금이 없거나 거절되는 경우 청구 금액은 0원이며 수수료는 발생하지 않습니다. 국세청 환급계좌 유효성 검증 및 CMS 출금 동의를 위해 본인 계좌 1원 송금 인증이 필요합니다.")}
-                      </AlertDescription>
-                    </div>
-                  </Alert>
-
-                  {/* 계좌 정보 입력 */}
-                  <div className="space-y-8">
-                    <Label className="text-xl font-black text-white">{t('계좌 정보 입력')}</Label>
-                    
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="space-y-3">
-                        <Label className="text-xs font-black text-[#b88c30] uppercase tracking-widest ml-1">{t('은행명')}</Label>
-                        <Select open={bankSelectOpen} onOpenChange={setBankSelectOpen} onValueChange={(v) => setFormData({ ...formData, bankName: v })} value={formData.bankName}>
-                          <SelectTrigger id="step9-bank-select" className="h-16 rounded-2xl font-bold bg-white/5 border border-white/10 text-white px-6 text-lg w-full outline-none focus:border-[#b88c30] focus:ring-1 focus:ring-[#b88c30]">
-                            <SelectValue placeholder={t("은행 선택")} />
-                          </SelectTrigger>
-                          <SelectContent>
-                            {Object.keys(BANK_LOGOS).map((bank) => (
-                              <SelectItem key={bank} value={bank}>
-                                <div className="flex items-center gap-3">
-                                  {BANK_LOGOS[bank]}
-                                  <span className="font-bold">{t(bank)}</span>
-                                </div>
-                              </SelectItem>
-                            ))}
-                          </SelectContent>
-                        </Select>
-                      </div>
-                      
-                      <div className="space-y-3">
-                        <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('계좌번호')}</Label>
-                        <input
-                          id="step9-account-input"
-                          placeholder={t('계좌번호를 입력하세요')}
-                          value={formData.accountNumber}
-                          onChange={(e) => setFormData({ ...formData, accountNumber: e.target.value })}
-                          disabled={is1WonSent}
-                          className="h-16 rounded-2xl font-bold bg-white/5 border border-white/10 text-white px-6 text-lg w-full outline-none focus:border-[#b88c30] focus:ring-1 focus:ring-[#b88c30] disabled:opacity-50 placeholder:text-slate-500"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="space-y-3">
-                      <div className="flex justify-between items-center">
-                        <Label className="text-xs font-bold text-slate-400 uppercase tracking-widest ml-1">{t('예금주명')}</Label>
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setStep(4);
-                          }}
-                          className="text-xs font-bold text-[#b88c30] hover:underline"
-                        >
-                          {t('본인인증 다시 하기')} &rarr;
-                        </button>
-                      </div>
-                      <input
-                        id="step9-holder-input"
-                        placeholder={t('계좌의 예금주 성함을 입력하세요')}
-                        value={formData.accountHolder}
-                        readOnly
-                        disabled={is1WonSent}
-                        className="h-16 rounded-2xl font-bold bg-white/5 border border-white/10 text-slate-400 px-6 text-lg w-full outline-none cursor-not-allowed opacity-80"
-                      />
-                      <p className="text-xs font-bold text-slate-500 ml-1">
-                        {t('* 타인 계좌 무단 도용 방지를 위해 본인인증 성명({name})과 동일한 예금주의 계좌만 등록 가능합니다.', { name: formData.authName || formData.officialName || '' })}
-                      </p>
-                    </div>
-                  </div>
-
-                  <Button
-                    id="step9-next-btn"
-                    onClick={handleGoToStep10}
-                    disabled={!formData.bankName || !formData.accountNumber.trim()}
-                    className="w-full h-20 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl font-black rounded-[2rem] shadow-xl shadow-[#b88c30]/20 transition-all hover:scale-[1.02] disabled:opacity-50 disabled:pointer-events-none"
-                  >
-                    {t('확인 완료 및 다음 단계')}
-                  </Button>
-                </CardContent>
-              </Card>
+              <Step9AccountInputView
+                onPrev={() => { setStep(8); saveProgress(8); }}
+                result={result}
+                formData={formData}
+                setFormData={setFormData}
+                bankSelectOpen={bankSelectOpen}
+                setBankSelectOpen={setBankSelectOpen}
+                BANK_LOGOS={BANK_LOGOS}
+                is1WonSent={is1WonSent}
+                onNext={handleGoToStep10}
+                onReAuth={() => setStep(4)}
+              />
             )}
 
             {step === 10 && (
-              <Card className="rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-[#0b192c] animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <CardHeader className="text-center py-6 sm:py-12 bg-[#0b192c] border-b border-[#b88c30]/20 relative overflow-hidden">
-                  {/* 배경 패턴 */}
-                  <div className="absolute inset-0 opacity-[0.03]"
-                    style={{ backgroundImage: "repeating-linear-gradient(45deg, #b88c30 0px, #b88c30 1px, transparent 1px, transparent 50%)", backgroundSize: "40px 40px" }}
-                  />
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => { setStep(9); saveProgress(9); }}
-                    className="absolute top-6 left-6 text-[#b88c30]/60 hover:text-[#b88c30] font-bold flex items-center z-10"
-                  >
-                    <ChevronLeft className="h-4 w-4 mr-1" />
-                    {t('이전')}
-                  </Button>
-                  <CardTitle className="text-2xl sm:text-3xl font-black font-headline text-white relative z-10">{t('Step 10: 최종 수임 동의')}</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-6 sm:space-y-10 p-4 sm:p-10 bg-[#0d1e30]">
-                  {/* ★ 김준현 매니저의 10단계 따뜻한 감사와 마무리 안심 배너 */}
-                  <div className="p-6 sm:p-8 bg-gradient-to-r from-[#0f1e36] via-[#152a45] to-[#0f1e36] rounded-3xl border-2 border-[#b88c30]/50 shadow-2xl relative overflow-hidden text-left">
-                    <div className="flex items-start gap-4">
-                      <div className="relative shrink-0 mt-1">
-                        <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
-                          <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
-                        </div>
-                        <span className="absolute bottom-0 right-0 h-4 w-4 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
-                      </div>
-                      <div className="space-y-3 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
-                            {t('김준현 공식 매니저의 진심 어린 약속')}
-                          </span>
-                          <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
-                            {t('1:1 평생 전담 케어')}
-                          </Badge>
-                        </div>
-                        <p className="text-sm font-bold text-white leading-relaxed">
-                          🌟 {t('한국에서 땀 흘려 열심히 일하시느라 정말 고생 많으셨습니다!')}
-                        </p>
-                        <div className="p-4 bg-[#0a1523]/90 rounded-2xl border border-[#b88c30]/30 space-y-2 text-left">
-                          <p className="text-xs font-medium text-slate-200 leading-relaxed">
-                            {t('고객님의 소중한 땀방울이 헛되지 않도록, 국세청 환급 신청 접수부터 통장 입금 확인까지 제가 끝까지 곁에서 책임지고 안전하게 챙겨드리겠습니다.')}
-                          </p>
-                          <p className="text-xs font-bold text-[#e2b659] leading-relaxed pt-1 border-t border-slate-800">
-                            👉 {t('아래 서명 상자에 손가락으로 서명해 주시면 모든 신청이 안전하게 완료됩니다. 대단히 감사합니다! 😊')}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 환급 신청 안내 배너 */}
-                  <Alert className="bg-[#b88c30]/10 border-[#b88c30]/30 rounded-[2rem] p-8 shadow-sm">
-                    <div className="flex gap-4">
-                      <div className="h-12 w-12 bg-[#b88c30]/20 rounded-2xl flex items-center justify-center shrink-0">
-                        <BadgeCheck className="h-6 w-6 text-[#b88c30]" />
-                      </div>
-                      <div className="space-y-3">
-                        <AlertTitle className="text-xl font-black text-white">{t('환급 신청 완료 안내')}</AlertTitle>
-                        <AlertDescription className="text-slate-300 font-bold text-base leading-relaxed">
-                          {t('환급 신청 후 대한민국 국세청에 환급되기 까지는 45일에서 60일 정도 소요 될 수 있습니다.')} <span className="text-[#b88c30] font-black">{t('환급 과정은 나의 환급 진행사항에서 실시간으로 확인하실 수 있으며, 필요에 따라 추가 증빙 서류가 필요할 수 있습니다.')}</span>
-                        </AlertDescription>
-                      </div>
-                    </div>
-                  </Alert>
-
-                  {/* 등록된 계좌 */}
-                  <div className="p-8 bg-white/5 rounded-3xl border border-white/10 space-y-4 shadow-inner">
-                    <h3 className="font-black text-white text-lg">{t('등록된 환급 및 정산 계좌')}</h3>
-                    <div className="flex items-center gap-3 bg-white/5 p-6 rounded-2xl border border-white/10 shadow-sm">
-                      {BANK_LOGOS[formData.bankName] || <CreditCard className="h-8 w-8 text-slate-400" />}
-                      <div>
-                        <p className="font-black text-white text-lg">{t(formData.bankName || '등록된 은행 없음')}</p>
-                        <p className="text-base font-bold text-slate-400">{formData.accountNumber} ({t("예금주")}: {formData.accountHolder})</p>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* 공식 수임 동의서 및 PDF */}
-                  <div className="flex flex-col sm:flex-row justify-between items-center bg-[#b88c30]/10 border border-[#b88c30]/30 p-6 rounded-3xl gap-4">
-                    <div>
-                      <h4 className="font-black text-white text-base">{t('공식 세무대리 수임 동의서 및 위임장')}</h4>
-                      <p className="text-xs text-slate-400 font-bold mt-1">{t('국세청 제출용 공식 양식으로, 기재된 정보와 서명이 자동으로 기입됩니다.')}</p>
-                    </div>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={handleOpenDocument}
-                      className="w-full sm:w-auto border-[#b88c30] text-[#b88c30] hover:bg-[#b88c30]/10 font-black rounded-2xl h-14 px-6 flex items-center justify-center gap-2 whitespace-nowrap"
-                    >
-                      <FileText className="h-5 w-5" />
-                      {t('계약서 확인 및 PDF 다운로드')}
-                    </Button>
-                  </div>
-
-                  <form onSubmit={handleFinalSubmit} className="space-y-10">
-                    {/* CMS 동의 체크박스 (숨김) */}
-                    <div className="hidden">
-                      <Checkbox id="cms-consent-all" checked={cmsConsentAll} onCheckedChange={() => {}} />
-                      <Checkbox id="cms-consent-1" checked={cmsConsent1} onCheckedChange={() => {}} />
-                      <Checkbox id="cms-consent-2" checked={cmsConsent2} onCheckedChange={() => {}} />
-                      <Checkbox id="cms-consent-3" checked={cmsConsent3} onCheckedChange={() => {}} />
-                    </div>
-
-                    {/* 동의 안내 */}
-                    <div className="p-6 bg-white/5 border border-white/10 rounded-3xl text-sm font-bold text-slate-400 leading-relaxed space-y-3 shadow-inner">
-                      <div className="flex items-start gap-3">
-                        <div className="h-6 w-6 rounded-full bg-[#b88c30]/20 flex items-center justify-center shrink-0 mt-0.5">
-                          <CheckCircle2 className="h-4 w-4 text-[#b88c30]" />
-                        </div>
-                        <p className="text-slate-300 font-bold">
-                          {t('아래 [서명 적용 및 환급 신청하기] 버튼을 누르시면, 개인정보 수집 및 이용 동의, 제3자 제공 동의, 금융거래정보 제공 및 CMS 자동이체 출금동의 약관에 모두 명시적으로 동의하시는 것으로 간주됩니다.')}
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap gap-x-4 gap-y-1 pl-9 pt-1 text-xs">
-                        <button type="button" onClick={() => setCmsModalOpen1(true)} className="text-[#b88c30] hover:underline font-bold">{t('개인정보 수집/이용 약관 보기')} &rarr;</button>
-                        <button type="button" onClick={() => setCmsModalOpen2(true)} className="text-[#b88c30] hover:underline font-bold">{t('제3자 제공 동의 약관 보기')} &rarr;</button>
-                        <button type="button" onClick={() => setCmsModalOpen3(true)} className="text-[#b88c30] hover:underline font-bold">{t('CMS 출금동의 약관 보기')} &rarr;</button>
-                      </div>
-                    </div>
-
-                    {/* 전자 서명 */}
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center">
-                        <Label className="text-xl font-black text-white">{t('전자서명 (세무 대리 수임 동의)')}</Label>
-                        {isSigned && (
-                          <button
-                            type="button"
-                            onClick={clearSignature}
-                            className="text-xs font-bold text-red-400 hover:underline flex items-center gap-1"
-                          >
-                            {t('다시 그리기')}
-                          </button>
-                        )}
-                      </div>
-                      <div
-                        id="step10-signature-canvas"
-                        className="border-2 border-dashed border-[#b88c30]/30 rounded-[2rem] p-4 bg-white shadow-inner relative overflow-hidden h-[200px]"
-                      >
-                        <canvas
-                          ref={signatureCanvasRef}
-                          width={500}
-                          height={200}
-                          onMouseDown={startDrawing}
-                          onMouseMove={draw}
-                          onMouseUp={stopDrawing}
-                          onTouchStart={startDrawing}
-                          onTouchMove={draw}
-                          onTouchEnd={stopDrawing}
-                          className="w-full h-full bg-white cursor-crosshair touch-none"
-                        />
-                        {!isSigned && (
-                          <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none opacity-[0.15]">
-                            <span className="text-3xl font-serif italic text-slate-400 tracking-wider font-semibold">
-                              {formData.authName || formData.officialName || 'GILDONG HONG'}
-                            </span>
-                            <span className="text-xs font-bold text-slate-300 mt-2">{t('여기에 손가락으로 서명을 그려주세요')}</span>
-                          </div>
-                        )}
-                      </div>
-                      {!isSigned && (
-                        <p className="text-xs font-bold text-red-400 animate-pulse ml-1">
-                          {t('위 상자에 직접 서명을 완료해야 신청이 가능합니다.')}
-                        </p>
-                      )}
-                    </div>
-
-                    {/* 법적 고지 */}
-                    <div className="p-6 bg-white/5 border border-white/10 rounded-2xl text-xs font-bold text-slate-500 leading-relaxed space-y-2">
-                      <p>{t('본 서비스는 세무 분석 솔루션 프로그램을 제공하는 플랫폼으로, 실제 세무 신고 및 대행 업무는 제휴된 대한민국 국가공인 전문 세무법인/세무사를 통해 적법하게 처리됩니다.')}</p>
-                      <p>{t('Korea Tax Refund Service(Korea Tax Refund Service)은 세무대리 신고를 직접 수행하지 않으며, 본 플랫폼에서 작성된 신청 서류는 제휴 세무사를 통해 최종 검토 및 제출됩니다.')}</p>
-                    </div>
-
-                    <Button id="step10-submit-btn" type="submit" className="w-full min-h-[5rem] h-auto py-4 px-6 bg-[#b88c30] hover:bg-[#cfa54c] text-[#0b192c] text-xl lg:text-2xl font-black rounded-[2rem] shadow-2xl shadow-[#b88c30]/20 whitespace-normal break-words flex items-center justify-center text-center leading-tight transition-all hover:scale-[1.02]" disabled={loading}>
-                      {loading ? <Loader2 className="animate-spin h-8 w-8 text-[#0b192c]" /> : t('서명 적용 및 환급 신청하기')}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
+              <Step10ContractSignatureView
+                onPrev={() => { setStep(9); saveProgress(9); }}
+                formData={formData}
+                BANK_LOGOS={BANK_LOGOS}
+                handleOpenDocument={handleOpenDocument}
+                cmsConsentAll={cmsConsentAll}
+                cmsConsent1={cmsConsent1}
+                cmsConsent2={cmsConsent2}
+                cmsConsent3={cmsConsent3}
+                setCmsModalOpen1={setCmsModalOpen1}
+                setCmsModalOpen2={setCmsModalOpen2}
+                setCmsModalOpen3={setCmsModalOpen3}
+                isSigned={isSigned}
+                clearSignature={clearSignature}
+                signatureCanvasRef={signatureCanvasRef}
+                startDrawing={startDrawing}
+                draw={draw}
+                stopDrawing={stopDrawing}
+                handleFinalSubmit={handleFinalSubmit}
+                loading={loading}
+              />
             )}
 
             {step === 11 && (
-              <Card className="premium-card rounded-2xl sm:rounded-[2.5rem] border-none shadow-2xl overflow-hidden bg-white animate-in fade-in slide-in-from-bottom-8 duration-700">
-                <CardHeader className="text-center py-6 sm:py-12 bg-slate-900 text-white relative">
-                  <div className="absolute top-0 right-0 p-12 opacity-10"><ShieldCheck className="h-64 w-64 text-primary" /></div>
-                  <div className="mx-auto h-16 w-16 bg-emerald-500 rounded-2xl flex items-center justify-center mb-6 shadow-xl shadow-emerald-500/20">
-                    <CheckCircle2 className="h-10 w-10 text-white" />
-                  </div>
-                  <CardTitle className="text-3xl sm:text-4xl font-black font-headline tracking-tight px-4 leading-tight">
-                    {t('신청이 성공적으로 접수되었습니다')}
-                  </CardTitle>
-                  <CardDescription className="text-slate-400 font-bold text-sm mt-3">
-                    {t('전문 세무사가 검토를 시작합니다. 1~2개월 이내에 환급금이 지급됩니다.')}
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="p-4 sm:p-12 text-center space-y-4 sm:space-y-6">
-                  {/* 김준현 매니저의 감사 마무리 카드 */}
-                  <div className="p-6 bg-gradient-to-r from-[#0f1e36] to-[#152a45] rounded-3xl border border-[#b88c30]/40 text-left text-white shadow-xl flex items-start gap-4">
-                    <div className="relative shrink-0 mt-1">
-                      <div className="h-14 w-14 rounded-full overflow-hidden border-2 border-[#b88c30] bg-slate-800 shadow-md">
-                        <img src="/images/manager.png" alt="Kim Jun-hyun Manager" className="h-full w-full object-cover" />
-                      </div>
-                      <span className="absolute bottom-0 right-0 h-4 w-4 bg-green-500 rounded-full border-2 border-[#0f1e36]" />
-                    </div>
-                    <div className="space-y-2 flex-1">
-                      <div className="flex items-center gap-2">
-                        <span className="text-[#b88c30] font-black text-xs uppercase tracking-wider">
-                          {t('김준현 공식 매니저의 감사 인사')}
-                        </span>
-                        <Badge className="bg-emerald-950 text-emerald-400 border border-emerald-800/40 text-[9px] font-black">
-                          {t('신청 접수 성공')}
-                        </Badge>
-                      </div>
-                      <p className="text-sm font-bold text-white leading-relaxed">
-                        🎉 {t('소중한 환급 신청이 안전하게 국세청에 접수되었습니다!')}
-                      </p>
-                      <p className="text-xs text-slate-300 font-medium leading-relaxed">
-                        {t('타국에서 성실히 일하시느라 고생 많으셨습니다. 국세청에서 통장으로 입금되는 마지막 순간까지 제가 꼼꼼하게 챙겨드리겠습니다. 궁금하신 점이 있으시면 언제든지 1:1 상담을 찾아주세요! 감사합니다. 😊')}
-                      </p>
-                    </div>
-                  </div>
-
-                  <div className="p-6 bg-slate-50 rounded-2xl border border-slate-100">
-                    <p className="text-lg font-black text-slate-800">{t('환급금 신청 내역 확인')}</p>
-                    <div className="mt-4 space-y-2 text-left text-sm text-slate-600 font-bold">
-                      <div className="flex justify-between">
-                        <span>{t('신청인')}</span>
-                        <span>{formData.officialName}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>{t('지급 은행')}</span>
-                        <span>{formData.bankName}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>{t('계좌 번호')}</span>
-                        <span>{formData.accountNumber}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span>{t('예상 환급금')}</span>
-                        <span className="text-primary font-black">₩ {result?.refundEstimate?.toLocaleString() || preFilterEstimate.toLocaleString()}</span>
-                      </div>
-                    </div>
-                  </div>
-                  <Button onClick={() => setStep(0)} className="w-full min-h-[4rem] h-auto py-4 px-6 bg-slate-900 text-white font-black rounded-2xl whitespace-normal break-words flex items-center justify-center text-center leading-tight">
-                    {t('시뮬레이션 다시 하기')}
-                  </Button>
-                </CardContent>
-              </Card>
+              <Step11SuccessView
+                formData={formData}
+                result={result}
+                preFilterEstimate={preFilterEstimate}
+                onRestart={() => setStep(0)}
+              />
             )}
 
           </div>
