@@ -9,6 +9,33 @@ export default function GoogleTagManager() {
     return null;
   }
 
+  // If it's a GA4 / Google Tag (starts with G- or GT- or AW-)
+  if (gtmId.startsWith('G-') || gtmId.startsWith('GT-') || gtmId.startsWith('AW-')) {
+    return (
+      <>
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=${gtmId}`}
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', '${gtmId}', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
+      </>
+    );
+  }
+
+  // Standard Google Tag Manager (GTM-XXXXXXX)
   return (
     <>
       {/* Google Tag Manager - Script */}
