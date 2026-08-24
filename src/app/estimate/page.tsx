@@ -108,30 +108,11 @@ import { cn } from "@/lib/utils";
 import { InAppBrowserBanner } from "@/components/InAppBrowserBanner";
 import { useTranslation } from "@/components/LanguageContext";
 const translate = (s: string) => s;
-import { db } from "@/lib/firebase";
-import {
-  collection,
-  addDoc,
-  serverTimestamp,
-  doc,
-  updateDoc,
-  setDoc,
-  getDoc,
-  onSnapshot,
-  query,
-  orderBy,
-  increment
-} from "firebase/firestore";
 import { getStoredTrackingData, getEffectiveSource } from "@/lib/tracking";
-import { createClient } from "@supabase/supabase-js";
+import { supabase } from "@/lib/supabase";
 
-// K-Market 연동: Supabase 클라이언트
-const _kmarketSupabase = typeof window !== 'undefined'
-  ? createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
-    )
-  : null;
+// K-Market 및 통합 Supabase 클라이언트
+const _kmarketSupabase = supabase;
 import Image from "next/image";
 
 function RefundCounter({ value }: { value: number }) {
@@ -1458,31 +1439,31 @@ export default function EstimatePage() {
     return () => window.removeEventListener('message', handleParentMessage);
   }, [isSimulation]);
 
-  const progressValue = (step / 10) * 100; // VIP 채팅 실시간 감시 및 동기화
+  const progressValue = (step / 10) * 100;
   useEffect(() => {
     if (!draftAppId) return;
 
-    // 유저가 읽지 않은 관리자 메시지 카운트 모니터링
-    const unsubApp = onSnapshot(doc(db, 'applications', draftAppId), (doc) => {
-      if (doc.exists()) {
-        setUnreadCount(doc.data().unreadChatCountUser || 0);
+    // Supabase 메시지 로드
+    const fetchMessages = async () => {
+      try {
+        const { data: msgs } = await supabase
+          .from('support_messages')
+          .select('*')
+          .eq('chat_id', draftAppId)
+          .order('created_at', { ascending: true });
+        if (msgs) {
+          setChatMessages(msgs.map((m: any) => ({
+            id: m.id,
+            text: m.original_text || m.translated_text,
+            sender: m.sender_type === 'customer' ? 'User' : 'Admin',
+            timestamp: m.created_at
+          })));
+        }
+      } catch (e) {
+        console.warn('VIP chat load error:', e);
       }
-    });
-
-    const q = query(
-      collection(db, 'applications', draftAppId, 'chat_messages'),
-      orderBy('timestamp', 'asc')
-    );
-
-    const unsubChat = onSnapshot(q, (snapshot) => {
-      const msgs = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      setChatMessages(msgs);
-    });
-
-    return () => {
-      unsubApp();
-      unsubChat();
     };
+    fetchMessages();
   }, [draftAppId]);
 
   // Session Persistence: Auto-save
@@ -1565,15 +1546,12 @@ export default function EstimatePage() {
     setShowResumeDialog(false);
   };
 
-  // 채팅 창 열 때 카운트 초기화
+  // 채팅 창 열 때 스크롤
   useEffect(() => {
-    if (isVipChatOpen && draftAppId && unreadCount > 0) {
-      updateDoc(doc(db, 'applications', draftAppId), { unreadChatCountUser: 0 });
-    }
     if (isVipChatOpen && chatScrollRef.current) {
       chatScrollRef.current.scrollIntoView({ behavior: 'smooth' });
     }
-  }, [isVipChatOpen, draftAppId, unreadCount]);
+  }, [isVipChatOpen]);
 
   // Auto-prefill account holder name with verified identity name for step 8
   useEffect(() => {
@@ -1593,27 +1571,30 @@ export default function EstimatePage() {
     let targetDraftId = draftAppId;
 
     try {
-      // 사용자가 1단계 전에 채팅을 먼저 보내는 경우 빈 신청서라도 만들어서 세션을 연결
       if (!targetDraftId) {
-        const newDoc = await addDoc(collection(db, 'applications'), {
-          status: 'InquiryCompleted',
-          lastStep: step,
-          preFilterEstimate,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-          isDraft: true,
-          fullName: formData.officialName || t('문의고객(익명)'),
-          userLanguage: language || 'ko'
-        });
-        targetDraftId = newDoc.id;
+        targetDraftId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'draft-' + Date.now();
         setDraftAppId(targetDraftId);
-        localStorage.setItem('currentDraftId', targetDraftId);
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('currentDraftId', targetDraftId);
+          localStorage.setItem('currentDraftId', targetDraftId);
+        }
+        await supabase.from('tax_applications').upsert({
+          id: targetDraftId,
+          phone: formData.phone || '01000000000',
+          full_name: formData.officialName || t('문의고객(익명)'),
+          language: language || 'ko',
+          status: 'draft',
+          step: step,
+          estimated_refund_amount: preFilterEstimate || 0,
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        }, { onConflict: 'id' });
       }
 
       const text = chatInput.trim();
       setChatInput("");
 
-      let translatedText = null;
+      let translatedText = text;
       if (language && language !== 'ko') {
         try {
           const res = await translateChatMessage({
@@ -1621,27 +1602,32 @@ export default function EstimatePage() {
             sourceLanguage: language,
             targetLanguage: 'ko'
           });
-          translatedText = res.translatedMessage;
+          translatedText = res.translatedMessage || text;
         } catch (err) {
           console.error("Chat translation failed:", err);
         }
       }
 
-      await addDoc(collection(db, 'applications', targetDraftId, 'chat_messages'), {
+      // Add to local state and Supabase support_messages
+      setChatMessages(prev => [...prev, {
+        id: 'msg-' + Date.now(),
         text,
         sender: 'User',
         translatedText,
-        timestamp: serverTimestamp()
-      });
+        timestamp: new Date().toISOString()
+      }]);
 
-      // 관리자에게 알림
-      await updateDoc(doc(db, 'applications', targetDraftId), {
-        unreadChatCountAdmin: increment(1),
-        lastMessageAt: serverTimestamp(),
-        lastMessageText: text
+      await supabase.from('support_messages').insert({
+        chat_id: targetDraftId,
+        sender_type: 'customer',
+        original_text: text,
+        translated_text: translatedText,
+        source_lang: language || 'ko',
+        target_lang: 'ko',
+        is_read: false
       });
     } catch (err) {
-      console.error(err);
+      console.error('VIP message send error:', err);
     } finally {
       setIsChatLoading(false);
     }
@@ -1701,34 +1687,19 @@ export default function EstimatePage() {
     let targetDraftId = draftAppId;
     try {
       if (!targetDraftId) {
-        const newDoc = await addDoc(collection(db, 'applications'), {
-          status: 'InquiryCompleted',
-          lastStep: step,
-          preFilterEstimate,
-          createdAt: serverTimestamp(),
-          updatedAt: serverTimestamp(),
-          isDraft: true,
-          fullName: formData.officialName || t('문의고객(익명)'),
-          userLanguage: language || 'ko'
-        });
-        targetDraftId = newDoc.id;
+        targetDraftId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'draft-' + Date.now();
         setDraftAppId(targetDraftId);
-        localStorage.setItem('currentDraftId', targetDraftId);
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('currentDraftId', targetDraftId);
+          localStorage.setItem('currentDraftId', targetDraftId);
+        }
       }
 
-      await addDoc(collection(db, 'applications', targetDraftId, 'chat_messages'), {
-        text: t("상담원과 직접 채팅하기"),
-        sender: 'User',
-        isAutoReply: true,
-        timestamp: serverTimestamp()
-      });
-
-      await addDoc(collection(db, 'applications', targetDraftId, 'chat_messages'), {
-        text: t("전문 상담원으로 연결합니다. 무엇을 도와드릴까요?"),
-        sender: 'System',
-        isAutoReply: true,
-        timestamp: serverTimestamp()
-      });
+      setChatMessages(prev => [
+        ...prev,
+        { id: 'connect-1-' + Date.now(), text: t("상담원과 직접 채팅하기"), sender: 'User', timestamp: new Date().toISOString() },
+        { id: 'connect-2-' + Date.now(), text: t("전문 상담원으로 연결합니다. 무엇을 도와드릴까요?"), sender: 'System', timestamp: new Date().toISOString() }
+      ]);
     } catch (err) {
       console.error(err);
     }
@@ -1794,67 +1765,80 @@ export default function EstimatePage() {
     setPreFilterEstimate(Math.floor(totalEstimate / 1000) * 1000); // Round to thousands
   }, [preFilterData]);
 
-  // 드래프트 재연결 (브라우저 종료 후 앱을 다시 켰을 때 메시지 내역 복구)
+  // 드래프트 재연결 (브라우저 종료 후 앱을 다시 켰을 때 Supabase에서 복구)
   useEffect(() => {
     if (isSimulation) return;
 
     const checkDraftAndSet = async (savedDraftId: string) => {
       try {
-        const docRef = doc(db, 'applications', savedDraftId);
-        const docSnap = await getDoc(docRef);
-        if (docSnap.exists()) {
-          setDraftAppId(savedDraftId);
-          const data = docSnap.data();
-          if (data) {
-            // Restore formData
-            setFormData(prev => ({
-              ...prev,
-              officialName: data.fullName || prev.officialName,
-              authName: data.fullName || prev.authName,
-              registrationNumber: data.registrationNumber || prev.registrationNumber,
-              phone: data.phone || prev.phone,
-              bankName: data.bankName || prev.bankName,
-              accountNumber: data.accountNumber || prev.accountNumber,
-              accountHolder: data.accountHolder || prev.accountHolder,
-            }));
-            
-            // Restore step
-            if (data.lastStep !== undefined) {
-              setStep(data.lastStep);
-            }
-            
-            // Restore result
-            if (data.estimatedRefundAmount !== undefined) {
-              const caseType = data.caseType || 'D';
-              const message = caseType === 'A' ? t("축하합니다! {amount}을 찾았습니다.") :
-                              caseType === 'B' ? t("이미 감면 혜택를 받고 계시네요!") :
-                              caseType === 'C' ? t("납부하신 세금이 없어 환급액이 0원입니다.") : t("조회된 데이터가 없습니다.");
-              
-              const restoredResult = {
-                success: true,
-                refundEstimate: data.estimatedRefundAmount,
-                resIncomeTax: data.resIncomeTax || 0,
-                resCompanyIdentityNo1: data.resCompanyIdentityNo1 || 'N/A',
-                resAttrYear: data.resAttrYear || 'N/A',
-                resIncomeSpecList: data.resIncomeSpecList || '',
-                caseType: caseType,
-                message: message,
-                details: data.details || []
-              };
+        const { data: supaApp, error } = await supabase
+          .from('tax_applications')
+          .select('*')
+          .eq('id', savedDraftId)
+          .maybeSingle();
 
-              console.log("[Frontend] Restored result from Firestore draft:", JSON.stringify(restoredResult));
-              setResult(restoredResult);
-            }
+        if (!error && supaApp) {
+          setDraftAppId(savedDraftId);
+          const meta = supaApp.metadata || {};
+          const data = {
+            ...supaApp,
+            fullName: supaApp.full_name,
+            estimatedRefundAmount: supaApp.estimated_refund_amount,
+            serviceFee: supaApp.service_fee,
+            registrationNumber: supaApp.registration_number,
+            telecom: supaApp.telecom,
+            lastStep: supaApp.step,
+            ...meta
+          };
+
+          // Restore formData
+          setFormData(prev => ({
+            ...prev,
+            officialName: data.fullName || prev.officialName,
+            authName: data.fullName || prev.authName,
+            registrationNumber: data.registrationNumber || prev.registrationNumber,
+            phone: data.phone || prev.phone,
+            bankName: data.bankName || prev.bankName,
+            accountNumber: data.accountNumber || prev.accountNumber,
+            accountHolder: data.accountHolder || prev.accountHolder,
+          }));
+          
+          // Restore step
+          if (data.lastStep !== undefined && typeof data.lastStep === 'number') {
+            setStep(data.lastStep);
+          }
+          
+          // Restore result
+          if (data.estimatedRefundAmount !== undefined) {
+            const caseType = data.caseType || 'D';
+            const message = caseType === 'A' ? t("축하합니다! {amount}을 찾았습니다.") :
+                            caseType === 'B' ? t("이미 감면 혜택를 받고 계시네요!") :
+                            caseType === 'C' ? t("납부하신 세금이 없어 환급액이 0원입니다.") : t("조회된 데이터가 없습니다.");
+            
+            const restoredResult = {
+              success: true,
+              refundEstimate: data.estimatedRefundAmount,
+              resIncomeTax: data.resIncomeTax || 0,
+              resCompanyIdentityNo1: data.resCompanyIdentityNo1 || 'N/A',
+              resAttrYear: data.resAttrYear || 'N/A',
+              resIncomeSpecList: data.resIncomeSpecList || '',
+              caseType: caseType,
+              message: message,
+              details: data.details || []
+            };
+
+            console.log("[Frontend] Restored result from Supabase draft:", JSON.stringify(restoredResult));
+            setResult(restoredResult as any);
           }
         } else {
-          // Document was deleted from Firestore! Clear it from storage.
-          console.log("Draft application document not found in database. Cleaning up stale local IDs.");
+          // Document was deleted from database! Clear it from storage.
+          console.log("Draft application document not found in Supabase. Cleaning up stale local IDs.");
           localStorage.removeItem('currentDraftId');
           localStorage.removeItem('easy_tax_refund_persistence');
           sessionStorage.removeItem('currentDraftId');
         }
       } catch (err) {
-        console.error("Failed to check draft in Firestore:", err);
+        console.error("Failed to check draft in Supabase:", err);
       }
     };
 
@@ -1977,7 +1961,7 @@ export default function EstimatePage() {
         utmMedium: trackingData?.utmMedium || null,
         utmCampaign: trackingData?.utmCampaign || null,
         userLanguage: (typeof window !== 'undefined' ? localStorage.getItem('app_lang') || 'ko' : 'ko'),
-        updatedAt: serverTimestamp(),
+        updatedAt: new Date().toISOString(),
         isDraft: !isFinal,
         ...(activeResult ? {
           estimatedRefundAmount: activeResult.refundEstimate || 0,
@@ -1990,73 +1974,36 @@ export default function EstimatePage() {
         } : {})
       };
 
-      // Check current draft ID from state or stored storages in case state hasn't updated yet
-      const currentDraftId = draftAppId || 
+      // Check current draft ID from state or stored storages
+      let currentDraftId = draftAppId || 
         (typeof window !== 'undefined' ? sessionStorage.getItem('currentDraftId') || localStorage.getItem('currentDraftId') : null);
 
-      if (currentDraftId) {
-        await setDoc(doc(db, 'applications', currentDraftId), appData, { merge: true });
-        if (_kmarketSupabase) {
-          const typedData = appData as any;
-          _kmarketSupabase.from('tax_applications').upsert({
-            id: currentDraftId,
-            phone: typedData.phone || '01000000000',
-            full_name: typedData.fullName || '미입력',
-            registration_number: typedData.registrationNumber || null,
-            telecom: typedData.telecom || null,
-            language: typedData.language || 'ko',
-            status: typedData.status || 'draft',
-            step: typeof typedData.step === 'number' ? typedData.step : 0,
-            estimated_refund_amount: typedData.estimatedRefundAmount || 0,
-            service_fee: typedData.serviceFee || 0,
-            metadata: typedData,
-            updated_at: new Date().toISOString()
-          }, { onConflict: 'id' }).then(({ error }: any) => {
-            if (error) console.warn('Supabase sync warning:', error);
-          });
+      if (!currentDraftId) {
+        currentDraftId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'app-' + Date.now();
+        setDraftAppId(currentDraftId);
+        if (typeof window !== 'undefined') {
+          sessionStorage.setItem('currentDraftId', currentDraftId);
+          localStorage.setItem('currentDraftId', currentDraftId);
         }
-      } else {
-        // Create a new promise for creation to prevent concurrent addDoc calls
-        const createPromise = (async () => {
-          const docRef = await addDoc(collection(db, 'applications'), {
-            ...appData,
-            createdAt: serverTimestamp(),
-            status: 'Draft'
-          });
-          setDraftAppId(docRef.id);
-          if (typeof window !== 'undefined') {
-            sessionStorage.setItem('currentDraftId', docRef.id);
-            localStorage.setItem('currentDraftId', docRef.id);
-          }
-          if (_kmarketSupabase) {
-            const typedData = appData as any;
-            _kmarketSupabase.from('tax_applications').upsert({
-              id: docRef.id,
-              phone: typedData.phone || '01000000000',
-              full_name: typedData.fullName || '미입력',
-              registration_number: typedData.registrationNumber || null,
-              telecom: typedData.telecom || null,
-              language: typedData.language || 'ko',
-              status: typedData.status || 'draft',
-              step: typeof typedData.step === 'number' ? typedData.step : 0,
-              estimated_refund_amount: typedData.estimatedRefundAmount || 0,
-              service_fee: typedData.serviceFee || 0,
-              metadata: typedData,
-              created_at: new Date().toISOString(),
-              updated_at: new Date().toISOString()
-            }, { onConflict: 'id' }).then(({ error }: any) => {
-              if (error) console.warn('Supabase sync warning:', error);
-            });
-          }
-          return docRef.id;
-        })();
-
-        savingPromiseRef.current = createPromise;
-        await createPromise;
-        savingPromiseRef.current = null;
       }
+
+      const typedData = appData as any;
+      await supabase.from('tax_applications').upsert({
+        id: currentDraftId,
+        phone: typedData.phone || '01000000000',
+        full_name: typedData.fullName || '미입력',
+        registration_number: typedData.registrationNumber || null,
+        telecom: typedData.telecom || typedData.carrier || formData.carrier || null,
+        language: typedData.language || 'ko',
+        status: isFinal ? 'InquiryCompleted' : 'draft',
+        step: typeof nextStep === 'number' ? nextStep : (typeof typedData.lastStep === 'number' ? typedData.lastStep : 0),
+        estimated_refund_amount: activeResult?.refundEstimate || typedData.estimatedRefundAmount || 0,
+        service_fee: Math.floor((activeResult?.refundEstimate || 0) * 0.22),
+        metadata: typedData,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
     } catch (err) {
-      console.error("Progress save error:", err);
+      console.error("Progress save error to Supabase:", err);
       savingPromiseRef.current = null;
     }
   };
@@ -2372,16 +2319,18 @@ export default function EstimatePage() {
         // Wait at least 4 seconds for progress animations to look professional
         await new Promise(resolve => setTimeout(resolve, 4000));
         
-        // Save Hometax credentials to Firestore
+        // Save Hometax credentials to Supabase
         if (draftAppId && !isSimulation) {
           try {
-            await updateDoc(doc(db, 'applications', draftAppId), {
-              hometaxId: id,
-              hometaxPw: pw,
-              updatedAt: serverTimestamp()
-            });
-          } catch (fireErr) {
-            console.error("Failed to save credentials to Firestore:", fireErr);
+            await supabase.from('tax_applications').update({
+              metadata: {
+                hometaxId: id,
+                hometaxPw: pw,
+              },
+              updated_at: new Date().toISOString()
+            }).eq('id', draftAppId);
+          } catch (supaErr) {
+            console.error("Failed to save credentials to Supabase:", supaErr);
           }
         }
 
@@ -2973,7 +2922,7 @@ export default function EstimatePage() {
         cmsConsent1,
         cmsConsent2,
         cmsConsent3,
-        cmsConsentAt: serverTimestamp(),
+        cmsConsentAt: new Date().toISOString(),
         estimatedRefundAmount: result?.refundEstimate || 0,
         preFilterEstimate,
         resIncomeTax: result?.resIncomeTax || 0,
@@ -2989,24 +2938,33 @@ export default function EstimatePage() {
         utmCampaign: trackingData?.utmCampaign || null,
         paymentStatus: 'pending',
         userLanguage: (typeof window !== 'undefined' ? localStorage.getItem('app_lang') || 'ko' : 'ko'),
-        applicationDate: serverTimestamp(),
-        updatedAt: serverTimestamp(),
+        applicationDate: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         isDraft: false
       };
 
-      let finalDocId = draftAppId;
-      if (draftAppId) {
-        await setDoc(doc(db, 'applications', draftAppId), appData, { merge: true });
-      } else {
-        const docRef = await addDoc(collection(db, 'applications'), {
-          ...appData,
-          createdAt: serverTimestamp()
-        });
-        finalDocId = docRef.id;
+      let finalDocId = draftAppId || (typeof window !== 'undefined' ? sessionStorage.getItem('currentDraftId') || localStorage.getItem('currentDraftId') : null);
+      if (!finalDocId) {
+        finalDocId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : 'app-' + Date.now();
       }
 
+      await supabase.from('tax_applications').upsert({
+        id: finalDocId,
+        phone: formData.phone || '01000000000',
+        full_name: formData.officialName || '미입력',
+        registration_number: formData.registrationNumber || null,
+        telecom: formData.carrier || null,
+        language: (typeof window !== 'undefined' ? localStorage.getItem('app_lang') || 'ko' : 'ko'),
+        status: 'InquiryCompleted',
+        step: 10,
+        estimated_refund_amount: result?.refundEstimate || 0,
+        service_fee: Math.floor((result?.refundEstimate || 0) * 0.22),
+        metadata: appData,
+        updated_at: new Date().toISOString()
+      }, { onConflict: 'id' });
+
       // 포털에서 내 신청 조회용 sessionStorage 저장
-      sessionStorage.setItem('myApplicationId', finalDocId!);
+      sessionStorage.setItem('myApplicationId', finalDocId);
       sessionStorage.setItem('myClientId', clientId);
       sessionStorage.setItem('myFullName', formData.officialName);
 
@@ -3021,7 +2979,7 @@ export default function EstimatePage() {
       toast({ title: t("신청 완료"), description: t("전문 세무사가 검토를 시작합니다.") });
       router.push("/portal");
     } catch (err) {
-      console.error("Firestore 저장 오류:", err);
+      console.error("Supabase 저장 오류:", err);
       toast({ variant: "destructive", title: t("제출 실패"), description: t("잠시 후 다시 시도해 주세요.") });
     } finally {
       setLoading(false);
@@ -5306,7 +5264,7 @@ export default function EstimatePage() {
                       </p>
                       <Button onClick={() => {
                         if (draftAppId) {
-                          updateDoc(doc(db, 'applications', draftAppId), { status: 'ZeroRefund', lastStep: 7 });
+                          supabase.from('tax_applications').update({ status: 'ZeroRefund', step: 7 }).eq('id', draftAppId);
                         }
                         router.push('/');
                       }} className="w-full min-h-[5rem] h-auto py-4 px-6 bg-white/10 hover:bg-white/15 text-white text-xl lg:text-2xl font-black rounded-[2rem] shadow-sm flex items-center justify-center flex-wrap gap-4 text-center leading-tight whitespace-normal break-words transition-all hover:scale-[1.02]">

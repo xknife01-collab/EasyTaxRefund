@@ -814,7 +814,7 @@ export default function RefundChatTab({ defaultRoomId }: { defaultRoomId?: strin
             refund_step: 'step5_auth',
             target_psychology: 'trust_safety',
             script_text: textToSend,
-            detected_language: 'ko',
+            detected_language: targetLang || 'ko',
             success_weight: 25,
             success_count: 1,
             script_type: 'planner_manual'

@@ -4,10 +4,31 @@ import { translateIncomingTelegramMessage } from "@/ai/flows/telegram-translatio
 import { supabaseAdmin } from "@/lib/supabase";
 import { sendTakeoverAlert } from "@/lib/slack";
 
+const FALLBACK_MAINTENANCE_MESSAGES: Record<string, string> = {
+  ko: "안녕하세요! 김준현 공식 매니저입니다. 현재 국세청 시스템 및 상담 서버가 잠시 점검 중입니다. 급하신 문의는 아래 [왓츠앱] 또는 [텔레그램] 실시간 상담 버튼을 눌러주시면 즉시 답변해 드리겠습니다! 🛡️",
+  en: "Hello! This is Manager Kim Jun-hyun. Our consultation and tax system server is currently undergoing temporary maintenance. For urgent inquiries, please click the [WhatsApp] or [Telegram] button below to connect with us immediately! 🛡️",
+  vi: "Xin chào! Tôi là quản lý chính thức Kim Jun-hyun. Hiện tại hệ thống và máy chủ tư vấn đang được bảo trì tạm thời. Nếu có thắc mắc gấp, vui lòng bấm nút [WhatsApp] hoặc [Telegram] bên dưới để được hỗ trợ ngay lập tức! 🛡️",
+  zh: "您好！我是金俊贤官方经理。目前国税厅系统及咨询服务器正在进行临时维护。如有紧急咨询，请点击下方的 [WhatsApp] 或 [Telegram] 按钮，我们将立即为您解答！🛡️",
+  mn: "Сайн байна уу! Би менежер Ким Жүн Хён байна. Одоогоор татварын систем болон зөвлөгөө өгөх серверт түр хугацааны засвар үйлчилгээ хийгдэж байна. Яаралтай асуух зүйл байвал доорх [WhatsApp] эсвэл [Telegram] товчийг дарж холбогдоно уу! 🛡️",
+  th: "สวัสดีครับ! ผมผู้จัดการคิมจุนฮยอน ขณะนี้ระบบสรรพากรและเซิร์ฟเวอร์ให้คำปรึกษากำลังปิดปรับปรุงชั่วคราว หากมีข้อสงสัยเร่งด่วน กรุณากดปุ่ม [WhatsApp] หรือ [Telegram] ด้านล่างเพื่อรับคำตอบทันทีครับ! 🛡️",
+  ne: "नमस्ते! म आधिकारिक प्रबन्धक किम जुन-ह्युन हुँ। हाल कर प्रणाली र परामर्श सर्भरमा अस्थायी मर्मत भइरहेको छ। तुरुन्त सोधपुछका लागि तलको [WhatsApp] वा [Telegram] बटनमा क्लिक गरी सम्पर्क गर्नुहोला! 🛡️",
+  uz: "Assalomu alaykum! Men rasmiy menejer Kim Jun-hyunman. Hozirda soliq tizimi va maslahat serverida vaqtinchalik profilaktika ishlari olib borilmoqda. Shoshilinch savollaringiz bo'lsa, quyidagi [WhatsApp] yoki [Telegram] tugmasini bosib darhol javob olishingiz mumkin! 🛡️",
+  my: "မင်္ဂလာပါ! ကျွန်တော်သည် တရားဝင်မန်နေဂျာ ကင်မ်ဂျွန်းဟျွန် ဖြစ်ပါသည်။ လက်ရှိတွင် အခွန်စနစ်နှင့် တိုင်ပင်ဆွေးနွေးမှု ဆာဗာကို ခေတ္တထိန်းသိမ်းမှု ပြုလုပ်နေပါသည်။ အရေးပေါ်မေးမြန်းလိုပါက အောက်ပါ [WhatsApp] သို့မဟုတ် [Telegram] ခလုတ်ကိုနှိပ်၍ ချက်ချင်း ဆက်သွယ်မေးမြန်းနိုင်ပါသည်! 🛡️",
+  id: "Halo! Saya manajer resmi Kim Jun-hyun. Saat ini sistem perpajakan dan server konsultasi kami sedang dalam pemeliharaan sementara. Untuk pertanyaan mendesak, silakan klik tombol [WhatsApp] atau [Telegram] di bawah ini untuk segera terhubung! 🛡️",
+  km: "សួស្តី! ខ្ញុំជាអ្នកគ្រប់គ្រងផ្លូវការ Kim Jun-hyun។ បច្ចុប្បន្ន ប្រព័ន្ធពន្ធដារ និងម៉ាស៊ីនមេពិគ្រោះយោបល់កំពុងស្ថិតក្រោមការថែទាំបណ្តោះអាសន្ន។ សម្រាប់ចម្ងល់បន្ទាន់ សូមចុចប៊ូតុង [WhatsApp] ឬ [Telegram] ខាងក្រោមដើម្បីទទួលបានការឆ្លើយតបភ្លាមៗ! 🛡️",
+  si: "ආයුබෝවන්! මම නිල කළමනාකරු කිම් ජුන්-හ්යුන්. දැනට බදු පද්ධතිය සහ උපදේශන සේවාදායකය තාවකාලික නඩත්තුවක පවතී. හදිසි විමසීම් සඳහා කරුණාකර පහත [WhatsApp] හෝ [Telegram] බොත්තම ක්ලික් කරන්න! 🛡️",
+  bn: "হ্যালো! আমি অফিসিয়াল ম্যানেজার কিম জুন-হিউন। বর্তমানে কর সিস্টেম এবং পরামর্শ সার্ভার সাময়িক রক্ষণাবেক্ষণে রয়েছে। জরুরি তথ্যের জন্য দয়া করে নিচের [WhatsApp] বা [Telegram] বোতামে ক্লিক করুন! 🛡️",
+  kk: "Сәлеметсіз бе! Мен ресми менеджер Ким Джун Хёнмын. Қазіргі уақытта салық жүйесі мен кеңес беру серверінде уақытша техникалық жұмыстар жүргізілуде. Шұғыл сұрақтар бойынша төмендегі [WhatsApp] немесе [Telegram] батырмасын басыңыз! 🛡️",
+  ur: "ہیلو! میں آفیشل مینیجر کم جون ہیون ہوں۔ اس وقت ٹیکس سسٹم اور مشاورتی سرور کی عارضی دیکھ بھال جاری ہے۔ فوری معلومات کے لیے نیچے دیے گئے [WhatsApp] یا [Telegram] بٹن پر کلک کریں! 🛡️",
+};
+
 export async function POST(req: NextRequest) {
+  let userLang = "ko";
   try {
-    const body = await req.json();
+    const body = await req.json().catch(() => ({}));
     const { message, language, sessionLanguage: bodySessionLang, history, chatId, clientOs, clientIsInApp, currentPathname, currentStep, activeGuideContext, referralSource, referralContext } = body;
+
+    userLang = language || bodySessionLang || "ko";
 
     if (!message || typeof message !== "string" || !message.trim()) {
       return NextResponse.json(
@@ -42,6 +63,7 @@ export async function POST(req: NextRequest) {
         cumulativePos = data.cumulative_pos ?? 0;
         cumulativeNeg = data.cumulative_neg ?? 0;
         sessionLanguage = data.detected_language || language || "ko";
+        userLang = sessionLanguage;
         previousSummary = data.metadata?.summary || "이전 요약 기록 없음";
         previousStep = data.metadata?.current_step || "Step 0: Estimate (신청 준비 단계)";
         previousPersonality = data.metadata?.personality_type || "expressive (기본값: 친근감 선호형)";
@@ -81,6 +103,7 @@ export async function POST(req: NextRequest) {
         console.warn("[Web Chat Language Detection Error]:", err);
       }
     }
+    userLang = effectiveLanguage || userLang;
 
     // 1. Check Global System AI Switch status (Global AI Master)
     const { data: globalSettings } = await supabaseAdmin
@@ -471,12 +494,12 @@ export async function POST(req: NextRequest) {
                     refund_step: currentStep,
                     target_psychology: 'trust_safety',
                     script_text: result.answer,
-                    detected_language: 'ko',
+                    detected_language: effectiveLanguage || userLang || 'ko',
                     success_weight: 25,
                     success_count: 1,
                     script_type: 'ai_auto'
                   });
-                  console.log(`[Self-Learning RAG] Newly registered dynamically generated high scoring script into RAG database.`);
+                  console.log(`[Self-Learning RAG] Newly registered dynamically generated high scoring script into RAG database (${effectiveLanguage || userLang || 'ko'}).`);
                 }
               }
             }
@@ -516,11 +539,14 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error("AI Manager Chat API Error:", error);
 
-    // Fallback reassuring response in case of system offline or API key error
+    const fallbackLang = (userLang || "ko").toLowerCase();
+    const fallbackAnswer = FALLBACK_MAINTENANCE_MESSAGES[fallbackLang] || FALLBACK_MAINTENANCE_MESSAGES["en"] || FALLBACK_MAINTENANCE_MESSAGES["ko"];
+
+    // Fallback reassuring response in user's native language in case of system offline or API key error
     return NextResponse.json({
       success: true,
-      answer: "안녕하세요! 김준현 공식 매니저입니다. 현재 국세청 시스템 및 상담 서버가 잠시 점검 중입니다. 급하신 문의는 아래 [왓츠앱] 또는 [텔레그램] 실시간 상담 버튼을 눌러주시면 즉시 답변해 드리겠습니다! 🛡️",
-      koreanSummary: "시스템 서버 점검에 따른 비상 안내 발송",
+      answer: fallbackAnswer,
+      koreanSummary: "시스템 서버 점검에 따른 비상 안내 발송 (다국어 안내)",
     });
   }
 }
