@@ -4,8 +4,6 @@ import { askFollowUpAi } from '@/ai/flows/manager-chat-flow';
 import { sendAligoSms } from '@/ai/flows/aligo-sms';
 import axios from 'axios';
 import { getFacebookPageToken } from '@/lib/facebook';
-import { db } from '@/lib/firebase';
-import { collection, query, getDocs, doc, updateDoc, serverTimestamp } from 'firebase/firestore';
 
 export async function GET(req: Request) {
   try {
@@ -83,7 +81,7 @@ export async function GET(req: Request) {
             .limit(20);
 
           const chatHistoryStr = messages
-            ? messages.map(m => `[${m.sender_type === 'user' ? '사용자' : 'AI매니저'}]: ${m.original_text}`).join('\n')
+            ? messages.map(m => `[${m.sender_type === 'customer' ? '사용자' : 'AI매니저'}]: ${m.original_text}`).join('\n')
             : '대화 기록 없음';
 
           const previousSummary = chat.metadata?.summary || "이전 요약 기록 없음";
@@ -208,89 +206,80 @@ export async function GET(req: Request) {
     }
 
     // =========================================================================
-    // [Section B] Web Abandoned Applications Recovery via Aligo SMS
+    // [Section B] Web Abandoned Applications Recovery via Supabase & Aligo SMS
+    // Indexed High-Speed Query (avoiding full table scans)
     // =========================================================================
     try {
-      const qApps = query(collection(db, 'applications'));
-      const querySnapshot = await getDocs(qApps);
+      const fourHoursAgo = new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString();
+      const seventyTwoHoursAgo = new Date(Date.now() - 72 * 60 * 60 * 1000).toISOString();
 
-      const fourHoursAgo = Date.now() - 4 * 60 * 60 * 1000;
-      const seventyTwoHoursAgo = Date.now() - 72 * 60 * 60 * 1000;
+      const { data: eligibleApps, error: appFetchErr } = await supabaseAdmin
+        .from('tax_applications')
+        .select('*')
+        .not('status', 'in', '("signed","completed","success")')
+        .lt('follow_up_sms_count', 2)
+        .gte('updated_at', seventyTwoHoursAgo)
+        .lte('updated_at', fourHoursAgo)
+        .limit(100);
 
-      for (const docSnap of querySnapshot.docs) {
-        const appData = docSnap.data();
-        const phone = appData.phone || appData.phoneNo;
-        const status = String(appData.status || '').toLowerCase();
-        const followUpSmsCount = appData.follow_up_sms_count || 0;
+      if (appFetchErr) {
+        console.error('[Cron Recovery SMS Supabase Fetch Error]:', appFetchErr.message);
+      } else if (eligibleApps && eligibleApps.length > 0) {
+        for (const appData of eligibleApps) {
+          const phone = appData.phone;
+          const followUpSmsCount = appData.follow_up_sms_count || 0;
 
-        // Skip if already signed or completed
-        if (
-          status.includes('signed') || 
-          status.includes('completed') || 
-          status.includes('success') ||
-          appData.isDeleted === true ||
-          followUpSmsCount >= 2 // Max 2 SMS recovery attempts
-        ) {
-          continue;
-        }
+          // Must have valid phone number
+          if (!phone || String(phone).replace(/[^0-9]/g, '').length < 10) {
+            continue;
+          }
 
-        // Must have valid phone number
-        if (!phone || String(phone).replace(/[^0-9]/g, '').length < 10) {
-          continue;
-        }
+          const lang = appData.language || 'vi';
+          const customerName = appData.full_name || '고객';
+          const estimatedAmount = appData.estimated_refund_amount || 1850000;
+          
+          // 🚀 Generate Direct App Recovery URL
+          const resumeUrl = `${appBaseUrl}/estimate?resumeId=${appData.id}&lang=${lang}&prefill=1`;
 
-        // Check timestamp (drop-off between 4h and 72h)
-        let appTime = 0;
-        if (appData.updatedAt?.toDate) appTime = appData.updatedAt.toDate().getTime();
-        else if (appData.createdAt?.toDate) appTime = appData.createdAt.toDate().getTime();
-        else if (appData.createdAt?.seconds) appTime = appData.createdAt.seconds * 1000;
-
-        if (appTime > fourHoursAgo || (appTime > 0 && appTime < seventyTwoHoursAgo)) {
-          // Outside the ideal 4h~72h recovery window
-          continue;
-        }
-
-        const lang = appData.language || appData.lang || 'vi';
-        const customerName = appData.fullName || '고객';
-        const estimatedAmount = appData.estimatedRefundAmount || appData.preFilterEstimate || 1850000;
-        
-        // 🚀 Generate Direct App Recovery URL
-        const resumeUrl = `${appBaseUrl}/estimate?resumeId=${docSnap.id}&lang=${lang}&prefill=1`;
-
-        // Generate customized recovery SMS text via Kim Jun-hyun AI
-        const smsAiResult = await askFollowUpAi({
-          language: lang,
-          isSms: true,
-          customerName,
-          estimatedAmount,
-          resumeUrl,
-          previousStep: `Step ${appData.step || 4}: 인증 단계`,
-          previousSummary: `환급 신청 중단 (예상 환급액: ${estimatedAmount.toLocaleString()}원, 고객명: ${customerName})`,
-        });
-
-        // Send via Aligo SMS / LMS
-        const smsRes = await sendAligoSms({
-          phone: String(phone),
-          title: '[이지텍스] 숨은 환급금 조회 안내',
-          message: smsAiResult.answer,
-        });
-
-        if (smsRes.success) {
-          // Update Firestore application with follow-up metadata
-          await updateDoc(doc(db, 'applications', docSnap.id), {
-            follow_up_sms_count: followUpSmsCount + 1,
-            last_follow_up_sms_at: serverTimestamp(),
-          });
-
-          processedSms.push({
-            appId: docSnap.id,
-            phone: String(phone).substring(0, 7) + '****',
+          // Generate customized recovery SMS text via Kim Jun-hyun AI
+          const smsAiResult = await askFollowUpAi({
+            language: lang,
+            isSms: true,
             customerName,
-            lang,
-            followUpSmsCount: followUpSmsCount + 1,
+            estimatedAmount,
             resumeUrl,
+            previousStep: `Step ${appData.step || 4}: 인증 단계`,
+            previousSummary: `환급 신청 중단 (예상 환급액: ${estimatedAmount.toLocaleString()}원, 고객명: ${customerName})`,
           });
-          console.log(`[Cron Recovery SMS] Successfully sent follow-up SMS to ${customerName} (${phone})`);
+
+          // Send via Aligo SMS / LMS
+          const smsRes = await sendAligoSms({
+            phone: String(phone),
+            title: '[이지텍스] 숨은 환급금 조회 안내',
+            message: smsAiResult.answer,
+          });
+
+          if (smsRes.success) {
+            // Update Supabase tax_applications with follow-up metadata
+            await supabaseAdmin
+              .from('tax_applications')
+              .update({
+                follow_up_sms_count: followUpSmsCount + 1,
+                last_follow_up_sms_at: new Date().toISOString(),
+                updated_at: new Date().toISOString()
+              })
+              .eq('id', appData.id);
+
+            processedSms.push({
+              appId: appData.id,
+              phone: String(phone).substring(0, 7) + '****',
+              customerName,
+              lang,
+              followUpSmsCount: followUpSmsCount + 1,
+              resumeUrl,
+            });
+            console.log(`[Cron Recovery SMS] Successfully sent follow-up SMS to ${customerName} (${phone})`);
+          }
         }
       }
     } catch (smsCronErr: any) {

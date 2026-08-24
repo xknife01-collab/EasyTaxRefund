@@ -51,8 +51,7 @@ import {
 import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/hooks/use-toast";
 import { useTranslation } from "@/components/LanguageContext";
-import { db } from "@/lib/firebase";
-import { doc, onSnapshot, collection, query, orderBy, addDoc, serverTimestamp, updateDoc, increment } from "firebase/firestore";
+import { supabase } from "@/lib/supabase";
 
 export default function ClientPortal() {
   const { t, language } = useTranslation();
@@ -78,7 +77,7 @@ export default function ClientPortal() {
   const [currentApp, setCurrentApp] = useState<any>(null);
   const [appsLoading, setAppsLoading] = useState(true);
 
-  // sessionStorage에서 신청 ID를 읽어 Firestore에서 실시간으로 내 신청 조회
+  // sessionStorage에서 신청 ID를 읽어 Supabase에서 내 신청 조회
   useEffect(() => {
     if (typeof window !== 'undefined') {
       const appId = sessionStorage.getItem('myApplicationId');
@@ -86,47 +85,73 @@ export default function ClientPortal() {
         setAppsLoading(false);
         return;
       }
-      const unsubscribe = onSnapshot(doc(db, 'applications', appId), (docSnapshot) => {
-        if (docSnapshot.exists()) {
-          const data = { id: docSnapshot.id, ...docSnapshot.data() };
-          setCurrentApp(data);
-          
-          // 알림 센터가 보이면 카운트 초기화 (여기서는 단순하게 데이터 로드 시 초기화 시도)
-          if ((data as any).unreadNotificationCountUser > 0) {
-              updateDoc(docSnapshot.ref, { unreadNotificationCountUser: 0 });
+      
+      const fetchApp = async () => {
+        try {
+          const { data, error } = await supabase
+            .from('tax_applications')
+            .select('*')
+            .eq('id', appId)
+            .maybeSingle();
+
+          if (!error && data) {
+            const formatted = {
+              ...data,
+              fullName: data.full_name,
+              estimatedRefundAmount: data.estimated_refund_amount,
+              serviceFee: data.service_fee,
+              registrationNumber: data.registration_number,
+              ...(data.metadata || {})
+            };
+            setCurrentApp(formatted);
           }
+        } catch (error) {
+          console.error('Supabase tax_applications 조회 오류:', error);
+        } finally {
+          setAppsLoading(false);
         }
-        setAppsLoading(false);
-      }, (error) => {
-        console.error('Firestore 오류:', error);
-        setAppsLoading(false);
-      });
-      return () => unsubscribe();
+      };
+
+      fetchApp();
+      const interval = setInterval(fetchApp, 5000);
+      return () => clearInterval(interval);
     } else {
-        setAppsLoading(false);
+      setAppsLoading(false);
     }
   }, []);
 
-  // Chat Real-time Listener
+  // Chat Real-time Listener via Supabase
   useEffect(() => {
     if (!currentApp?.id || !isChatOpen) {
       setChatMessages([]);
       return;
     }
     
-    const chatQuery = query(
-      collection(db, 'applications', currentApp.id, 'chat_messages'),
-      orderBy('timestamp', 'asc')
-    );
-    
-    const unsubscribe = onSnapshot(chatQuery, (snapshot) => {
-      const msgs = snapshot.docs.map(d => ({ id: d.id, ...d.data() }));
-      setChatMessages(msgs);
-    }, (error) => {
-      console.error('채팅 Firestore 오류:', error);
-    });
-    
-    return () => unsubscribe();
+    const fetchChatMessages = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('chat_messages')
+          .select('*')
+          .eq('room_id', currentApp.id)
+          .order('created_at', { ascending: true });
+
+        if (!error && data) {
+          const formatted = data.map(m => ({
+            id: m.id,
+            sender: m.sender_id === '11111111-1111-1111-1111-111111111111' ? 'User' : 'Admin',
+            text: m.message,
+            timestamp: m.created_at
+          }));
+          setChatMessages(formatted);
+        }
+      } catch (err) {
+        console.error('채팅 Supabase 오류:', err);
+      }
+    };
+
+    fetchChatMessages();
+    const interval = setInterval(fetchChatMessages, 3000);
+    return () => clearInterval(interval);
   }, [currentApp?.id, isChatOpen]);
 
   // 자동 스크롤
@@ -145,7 +170,6 @@ export default function ClientPortal() {
 
     try {
       let translatedText = null;
-      // 사용자 메시지는 항상 관리자를 위해 한국어로 번역 요청
       const userLanguage = currentApp?.userLanguage || language || 'ko';
       if (userLanguage !== 'ko') {
         try {
@@ -160,16 +184,11 @@ export default function ClientPortal() {
         }
       }
 
-      await addDoc(collection(db, 'applications', currentApp.id, 'chat_messages'), {
-        sender: 'User',
-        text: messageToSend,
-        translatedText,
-        timestamp: serverTimestamp()
-      });
-
-      // 관리자용 읽지 않은 메시지 카운트 증가
-      await updateDoc(doc(db, 'applications', currentApp.id), {
-        unreadChatCountAdmin: increment(1)
+      await supabase.from('chat_messages').insert({
+        room_id: currentApp.id,
+        sender_id: '11111111-1111-1111-1111-111111111111',
+        message: messageToSend,
+        is_read: false
       });
     } catch (error) {
       toast({ variant: "destructive", title: t("발송 실패"), description: t("메시지를 보내지 못했습니다.") });
@@ -295,7 +314,6 @@ export default function ClientPortal() {
           }
         }
 
-        const appRef = doc(db, 'applications', currentApp.id);
         const newDoc = {
           id: Math.random().toString(36).substring(7),
           name: selectedRequestForUpload ? selectedRequestForUpload.name : file.name,
@@ -315,10 +333,18 @@ export default function ClientPortal() {
           );
         }
 
-        await updateDoc(appRef, {
-          uploadedDocs: updatedDocs,
-          pendingDocRequests: updatedRequests
-        });
+        const currentMetadata = currentApp.metadata || {};
+        await supabase
+          .from('tax_applications')
+          .update({
+            metadata: {
+              ...currentMetadata,
+              uploadedDocs: updatedDocs,
+              pendingDocRequests: updatedRequests
+            },
+            updated_at: new Date().toISOString()
+          })
+          .eq('id', currentApp.id);
 
         toast({ 
           title: t("문서 업로드 성공"), 
@@ -955,11 +981,14 @@ export default function ClientPortal() {
         <Button 
           onClick={async () => {
               setIsChatOpen(true);
-              // 카드 오픈 시 읽지 않은 카운트 초기화
               if (currentApp.unreadChatCountUser > 0) {
-                  await updateDoc(doc(db, 'applications', currentApp.id), {
-                      unreadChatCountUser: 0
-                  });
+                  const currentMetadata = currentApp.metadata || {};
+                  await supabase.from('tax_applications').update({
+                      metadata: {
+                          ...currentMetadata,
+                          unreadChatCountUser: 0
+                      }
+                  }).eq('id', currentApp.id);
               }
           }}
           className="fixed bottom-8 right-8 h-20 w-20 rounded-full bg-slate-900 text-white shadow-2xl hover:scale-110 transition-all z-50 p-0 border-4 border-white group"

@@ -1996,6 +1996,25 @@ export default function EstimatePage() {
 
       if (currentDraftId) {
         await setDoc(doc(db, 'applications', currentDraftId), appData, { merge: true });
+        if (_kmarketSupabase) {
+          const typedData = appData as any;
+          _kmarketSupabase.from('tax_applications').upsert({
+            id: currentDraftId,
+            phone: typedData.phone || '01000000000',
+            full_name: typedData.fullName || '미입력',
+            registration_number: typedData.registrationNumber || null,
+            telecom: typedData.telecom || null,
+            language: typedData.language || 'ko',
+            status: typedData.status || 'draft',
+            step: typeof typedData.step === 'number' ? typedData.step : 0,
+            estimated_refund_amount: typedData.estimatedRefundAmount || 0,
+            service_fee: typedData.serviceFee || 0,
+            metadata: typedData,
+            updated_at: new Date().toISOString()
+          }, { onConflict: 'id' }).then(({ error }: any) => {
+            if (error) console.warn('Supabase sync warning:', error);
+          });
+        }
       } else {
         // Create a new promise for creation to prevent concurrent addDoc calls
         const createPromise = (async () => {
@@ -2008,6 +2027,26 @@ export default function EstimatePage() {
           if (typeof window !== 'undefined') {
             sessionStorage.setItem('currentDraftId', docRef.id);
             localStorage.setItem('currentDraftId', docRef.id);
+          }
+          if (_kmarketSupabase) {
+            const typedData = appData as any;
+            _kmarketSupabase.from('tax_applications').upsert({
+              id: docRef.id,
+              phone: typedData.phone || '01000000000',
+              full_name: typedData.fullName || '미입력',
+              registration_number: typedData.registrationNumber || null,
+              telecom: typedData.telecom || null,
+              language: typedData.language || 'ko',
+              status: typedData.status || 'draft',
+              step: typeof typedData.step === 'number' ? typedData.step : 0,
+              estimated_refund_amount: typedData.estimatedRefundAmount || 0,
+              service_fee: typedData.serviceFee || 0,
+              metadata: typedData,
+              created_at: new Date().toISOString(),
+              updated_at: new Date().toISOString()
+            }, { onConflict: 'id' }).then(({ error }: any) => {
+              if (error) console.warn('Supabase sync warning:', error);
+            });
           }
           return docRef.id;
         })();

@@ -53,6 +53,7 @@ import { OmniChatDrawer } from "@/components/admin/chat/OmniChatDrawer";
 import { LiveMessengerFeed } from "@/components/admin/LiveMessengerFeed";
 import RefundChatTab from "@/components/admin/chat/RefundChatTab";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 import { db } from "@/lib/firebase";
 import { collection, onSnapshot, query, orderBy, doc, updateDoc, addDoc, serverTimestamp, deleteDoc, increment, writeBatch } from "firebase/firestore";
 import {
@@ -151,33 +152,40 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   }, []);
 
   useEffect(() => {
-    const todayStr = getKstDateString();
-    const visitUnsubscribe = onSnapshot(doc(db, 'daily_stats', todayStr), (doc) => {
-      if (doc.exists()) {
-        setTodayVisits(doc.data().visitCount || 0);
-        setTodayInstalls(doc.data().pwaInstallCount || 0);
-      }
-    });
+    const fetchSupabaseApps = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('tax_applications')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-    const q = query(collection(db, 'applications'));
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      console.log("Snapshot Received! Count:", snapshot.size);
-      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() as any }));
-      data.sort((a, b) => {
-        const timeA = a.createdAt?.seconds || a.updatedAt?.seconds || 0;
-        const timeB = b.createdAt?.seconds || b.updatedAt?.seconds || 0;
-        return timeB - timeA;
-      });
-      setApps(data);
-      setAppsLoading(false);
-    }, (error) => {
-      console.error('Firestore 오류:', error);
-      setAppsLoading(false);
-    });
-    return () => {
-      unsubscribe();
-      visitUnsubscribe();
+        if (!error && data) {
+          const formatted = data.map(d => ({
+            id: d.id,
+            fullName: d.full_name,
+            phone: d.phone,
+            registrationNumber: d.registration_number,
+            telecom: d.telecom,
+            language: d.language,
+            status: d.status,
+            step: d.step,
+            estimatedRefundAmount: d.estimated_refund_amount,
+            serviceFee: d.service_fee,
+            createdAt: { seconds: Math.floor(new Date(d.created_at).getTime() / 1000) },
+            updatedAt: { seconds: Math.floor(new Date(d.updated_at).getTime() / 1000) },
+            ...(d.metadata || {})
+          }));
+          setApps(formatted);
+          setAppsLoading(false);
+        }
+      } catch (err) {
+        console.error('Supabase tax_applications 조회 오류:', err);
+      }
     };
+
+    fetchSupabaseApps();
+    const interval = setInterval(fetchSupabaseApps, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   const filteredApps = useMemo(() => {
