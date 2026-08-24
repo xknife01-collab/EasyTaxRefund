@@ -380,7 +380,23 @@ const getStepProactiveMessage = (step: number, lang: string = 'ko', isKmarket: b
       };
     case 4:
       return {
-        text: lang === 'vi' ? 'Bước 4: Chọn chứng chỉ tiện lợi nhất (Hana Bank, PASS, KakaoTalk). Nếu gặp khó khăn, hãy nhắn cho tôi để nhận ảnh hướng dẫn 1:1 nhé 🛡️'
+        text: isKmarket
+          ? (lang === 'vi' ? 'K-Market đã liên kết thành công! 1~3 bước đầu đã được tự động hoàn tất. Vui lòng chọn chứng chỉ xác thực ở Bước 4 để tính ngay tiền hoàn thuế 5 năm qua nhé 🛡️'
+            : lang === 'zh' ? 'K-Market 信息已安全关联！前1~3步已自动完成。请在第4步选择认证方式，即可立即精确计算过去5年的退税金额 🛡️'
+            : lang === 'ne' ? 'K-Market बाट तपाईंको विवरण सुरक्षित रूपमा जोडिएको छ! अघिल्ला १~३ चरणहरू स्वतः पूरा भइसकेका छन्। ५ वर्षको कर फिर्ता रकम हेर्न चरण ४ मा प्रमाणीकरण छनोट गर्नुहोस् 🛡️'
+            : lang === 'th' ? 'เชื่อมต่อข้อมูลจาก K-Market เรียบร้อยแล้ว! ข้าม 3 ขั้นตอนแรกให้โดยอัตโนมัติ กรุณายืนยันตัวตนในขั้นตอนที่ 4 เพื่อคำนวณเงินคืนภาษีย้อนหลัง 5 ปี 🛡️'
+            : lang === 'km' ? 'ព័ត៌មានពី K-Market ត្រូវបានភ្ជាប់ដោយជោគជ័យ! ជំហានទី ១~३ ត្រូវបានបញ្ចប់ដោយស្វ័យប្រវត្តិ។ សូមជ្រើសរើសការផ្ទៀងផ្ទាត់ក្នុងជំហានទី ៤ ដើម្បីគណនាប្រាក់ពន្ធ ៥ ឆ្នាំ 🛡️'
+            : lang === 'my' ? 'K-Market မှ အချက်အလက်များကို ချိတ်ဆက်ထားပြီးပါပြီ။ ပထမ ၁~၃ အဆင့်ကို အလိုအလျောက် ပြီးမြောက်ပြီးဖြစ်၍ ၅ နှစ်စာ အခွန်ပြန်အမ်းငွေတွက်ချက်ရန် အဆင့် ၄ တွင် အတည်ပြုပါ 🛡️'
+            : lang === 'uz' ? "K-Market ma'lumotlari xavfsiz ulandi! Dastlabki 1-3 bosqichlar avtomatik yakunlandi. 5 yillik soliq qaytarish summasini hisoblash uchun 4-bosqichda sertifikatni tanlang 🛡️"
+            : lang === 'id' ? 'Informasi dari K-Market berhasil terhubung! Langkah 1~3 telah selesai otomatis. Silakan selesaikan verifikasi di Langkah 4 untuk menghitung pengembalian pajak 5 tahun 🛡️'
+            : lang === 'mn' ? 'K-Market-ын мэдээлэл амжилттай холбогдлоо! Эхний 1~3 алхам автоматаар дууссан тул 4-р алхамд баталгаажуулалтаа хийж 5 жилийн татвараа тооцуулна уу 🛡️'
+            : lang === 'bn' ? 'K-Market-এর তথ্য সফলভাবে সংযুক্ত হয়েছে! ধাপ ১~৩ স্বয়ংক্রিয়ভাবে সম্পন্ন হয়েছে। ৫ বছরের ট্যাক্স ফেরতের হিসাব পেতে ধাপ ৪-এ প্রমাণীকরণ সম্পন্ন করুন 🛡️'
+            : lang === 'kk' ? 'K-Market ақпараты сәтті жалғанды! Алғашқы 1~3 қадам автоматты түрде аяқталды. 5 жылдық салықты қайтару сомасын есептеу үшін 4-қадамды таңдаңыз 🛡️'
+            : lang === 'si' ? 'K-Market වෙතින් තොරතුරු සාර්ථකව සම්බන්ධ විය! 1~3 පියවර ස්වයංක්‍රීයව සම්පූර්ණ විය. පසුගිය වසර 5 ක බදු මුදල් ආපසු ගණනය කිරීමට පියවර 4 හි සත්‍යාපනය තෝරන්න 🛡️'
+            : lang === 'ur' ? 'K-Market کی معلومات کامیابی سے منسلک ہو گئیں! ابتدائی 1~3 مراحل خودکار مکمل ہو گئے۔ 5 سالہ ٹیکس ریفنڈ کے حساب کے لیے مرحلہ 4 منتخب کریں 🛡️'
+            : lang === 'en' ? 'Your K-Market application data has been safely connected! Steps 1–3 were automatically completed. Please select an authentication method in Step 4 to instantly calculate your 5-year tax refund 🛡️'
+            : 'K-Market에서 신청하신 정보가 안전하게 연동되었습니다! 앞선 1~3단계는 자동 생략되었으니, 4단계 본인인증(하나은행/PASS/카카오)을 완료하시면 즉시 5년 치 환급금이 정밀 계산됩니다 🛡️')
+          : (lang === 'vi' ? 'Bước 4: Chọn chứng chỉ tiện lợi nhất (Hana Bank, PASS, KakaoTalk). Nếu gặp khó khăn, hãy nhắn cho tôi để nhận ảnh hướng dẫn 1:1 nhé 🛡️'
             : lang === 'zh' ? '第4步：请选择最方便的认证方式（韩亚银行、PASS、KakaoTalk）。如果遇到困难，请告诉我，我将提供1:1图片引导 🛡️'
             : lang === 'ne' ? 'चरण ४: सबैभन्दा सजिलो प्रमाणीकरण (Hana Bank, PASS, KakaoTalk) छनोट गर्नुहोस्। गाह्रो भए मलाई भन्नुहोस्, म १:१ फोटो गाइड दिनेछु 🛡️'
             : lang === 'th' ? 'ขั้นตอนที่ 4: เลือกวิธียืนยันตัวตนที่สะดวกที่สุด (Hana Bank, PASS, KakaoTalk) หากพบปัญหา บอกผมได้เลยครับ 🛡️'
@@ -394,7 +410,7 @@ const getStepProactiveMessage = (step: number, lang: string = 'ko', isKmarket: b
             : lang === 'si' ? 'පියවර 4: වඩාත් පහසු සහතිකය තෝරන්න (Hana Bank, PASS, KakaoTalk) 🛡️'
             : lang === 'ur' ? 'مرحلہ 4: سب سے آسان تصدیقی طریقہ (Hana Bank, PASS, KakaoTalk) منتخب کریں 🛡️'
             : lang === 'en' ? 'Step 4: Select your preferred authentication certificate (Hana Bank, PASS, KakaoTalk). Ask me if you need a step-by-step photo guide 🛡️'
-            : '4단계: 하나은행, PASS, 카카오톡 중 가장 편하신 인증서를 선택해 주세요! 인증서 발급이 어려우시면 저한테 말씀해 주시면 1:1 사진으로 하나씩 안내해 드릴게요 🛡️',
+            : '4단계: 하나은행, PASS, 카카오톡 중 가장 편하신 인증서를 선택해 주세요! 인증서 발급이 어려우시면 저한테 말씀해 주시면 1:1 사진으로 하나씩 안내해 드릴게요 🛡️'),
         richCard: {
           cardType: 'guide'
         }
