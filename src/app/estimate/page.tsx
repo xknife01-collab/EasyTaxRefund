@@ -123,6 +123,15 @@ import {
   increment
 } from "firebase/firestore";
 import { getStoredTrackingData, getEffectiveSource } from "@/lib/tracking";
+import { createClient } from "@supabase/supabase-js";
+
+// K-Market 연동: Supabase 클라이언트
+const _kmarketSupabase = typeof window !== 'undefined'
+  ? createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL || '',
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+    )
+  : null;
 import Image from "next/image";
 
 function RefundCounter({ value }: { value: number }) {
@@ -294,6 +303,31 @@ export default function EstimatePage() {
         }
       } else if (isPrefill && (paramName || resolvedRegNo || paramPhone)) {
         setStep(4);
+      }
+
+      // ✅ K-Market 연동: lead_id 파라미터로 Supabase에서 고객 정보 자동 로드
+      const kmarketLeadId = urlParams.get('lead_id');
+      const fromKmarket = urlParams.get('source') === 'kmarket';
+      if (fromKmarket && kmarketLeadId && _kmarketSupabase) {
+        _kmarketSupabase
+          .from('kmarket_tax_refund_leads')
+          .select('user_name, phone, country, visa_type, work_period_years, monthly_salary, estimated_refund')
+          .eq('id', kmarketLeadId)
+          .single()
+          .then(({ data, error }) => {
+            if (!error && data) {
+              setFormData(prev => ({
+                ...prev,
+                officialName: data.user_name || prev.officialName,
+                authName: data.user_name || prev.authName,
+                phone: data.phone || prev.phone,
+              }));
+              console.log('[KTRS] ✅ K-Market 리드 자동 로드 완료:', data.user_name, '→ step 4 직행');
+              if (!forceStep) setStep(4);
+            } else {
+              console.warn('[KTRS] K-Market 리드 로드 실패:', error?.message);
+            }
+          });
       }
 
       // 📱 In-App Browser (WebView) Auto-Detection and Android Chrome Escape
