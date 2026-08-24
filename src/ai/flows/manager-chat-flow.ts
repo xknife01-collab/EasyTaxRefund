@@ -5,6 +5,7 @@ import { retrieveMatchedScripts, retrieveLearnedKnowledge, ingestSelfLearnedKnow
 import { searchGoogleKnowledgeTool, scanAppCodeGuideTool } from '@/ai/tools/knowledge-ingestion-tools';
 import { supabaseAdmin } from '@/lib/supabase';
 import { getGuideStepKnowledge } from '@/lib/guide-knowledge-db';
+import { translateOutgoingTelegramMessage } from '@/ai/flows/telegram-translation-flow';
 
 const ChatMessageSchema = z.object({
   role: z.enum(['user', 'model']),
@@ -708,22 +709,42 @@ const managerChatFlow = ai.defineFlow(
 
 // -------------------------------------------------------------
 // Universal Language Guard Helper: Enforces 100% Native Language Output
+// 🚨 한국어가 1글자라도 섞이면 고객 모국어로 100% 강제 재번역
 // -------------------------------------------------------------
 export async function enforceLanguageGuard(text: string, targetLang: string): Promise<string> {
   if (!text || !targetLang || targetLang === 'ko') return text;
   const koreanCharCount = (text.match(/[가-힣]/g) || []).length;
-  const isEnglishLeak = targetLang !== 'en' && /\b(thank you|eligible|reduction|refund|salary|estimate|awesome|great|hello|hi|please|income tax|based on|year of birth|birth year)\b/i.test(text);
+  const isEnglishLeak = targetLang !== 'en' && /\b(thank you|eligible|reduction|refund|salary|estimate|awesome|great|hello|hi|please|income tax|based on|year of birth|birth year|verification|certificate|authentication|identity|resident|registration)\b/i.test(text);
 
   if (koreanCharCount >= 1 || isEnglishLeak) {
     try {
       console.warn(`[Language Guard Triggered] Detected ${koreanCharCount} Korean chars / English leak for ${targetLang}. Auto-translating whole answer...`);
-      const transRes = await forceTranslatePrompt({ text, targetLang });
-      if (transRes && transRes.output?.translatedText) {
-        console.log(`[Language Guard Resolved] Translated answer to ${targetLang}:`, transRes.output.translatedText.substring(0, 60));
-        return transRes.output.translatedText;
+      const transResult = await translateOutgoingTelegramMessage(text, targetLang);
+      if (transResult?.translatedText) {
+        console.log(`[Language Guard Resolved] Translated answer to ${targetLang}:`, transResult.translatedText.substring(0, 60));
+        return transResult.translatedText;
       }
     } catch (err) {
       console.error('[Language Guard Translation Failed]:', err);
+      // 🛡️ 최후의 안전망: 번역 실패 시에도 한국어를 절대 내보내지 않음
+      // 에러가 나면 간단한 사과 메시지라도 모국어로 반환
+      const fallbackMessages: Record<string, string> = {
+        vi: 'Xin lỗi, tôi gặp lỗi kỹ thuật. Vui lòng thử lại sau ít phút nhé! 🙏',
+        zh: '抱歉，系统出现技术问题。请稍后再试！🙏',
+        ne: 'माफ गर्नुहोस्, प्राविधिक समस्या भयो। कृपया केही मिनेट पछि पुनः प्रयास गर्नुहोस्! 🙏',
+        th: 'ขออภัย พบข้อผิดพลาดทางเทคนิค กรุณาลองใหม่อีกครั้งในอีกสักครู่ 🙏',
+        km: 'សូមអភ័យទោស មានបញ្ហាបច្ចេកទេស។ សូមព្យាយាមម្តងទៀតក្រោយពីរបីនាទី! 🙏',
+        my: 'တောင်းပန်ပါတယ်၊ နည်းပညာပြဿနာရှိနေပါတယ်။ ခဏနေပြီး ထပ်ကြိုးစားပေးပါ! 🙏',
+        uz: "Kechirasiz, texnik xatolik yuz berdi. Iltimos, bir necha daqiqadan so'ng qayta urinib ko'ring! 🙏",
+        id: 'Maaf, terjadi masalah teknis. Silakan coba lagi dalam beberapa menit! 🙏',
+        mn: 'Уучлаарай, техникийн алдаа гарлаа. Хэдэн минутын дараа дахин оролдоно уу! 🙏',
+        bn: 'দুঃখিত, প্রযুক্তিগত সমস্যা হয়েছে। কিছুক্ষণ পরে আবার চেষ্টা করুন! 🙏',
+        kk: 'Кешіріңіз, техникалық қате орын алды. Бірнеше минуттан кейін қайталап көріңіз! 🙏',
+        si: 'සමාවන්න, තාක්ෂණික දෝෂයක් ඇති විය. කරුණාකර මිනිත්තු කිහිපයකින් නැවත උත්සාහ කරන්න! 🙏',
+        ur: 'معذرت، تکنیکی خرابی ہو گئی۔ براہ کرم چند منٹ بعد دوبارہ کوشش کریں! 🙏',
+        en: 'Sorry, a technical error occurred. Please try again in a few minutes! 🙏',
+      };
+      return fallbackMessages[targetLang] || fallbackMessages['en'];
     }
   }
   return text;
