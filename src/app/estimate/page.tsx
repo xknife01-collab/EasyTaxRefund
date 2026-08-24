@@ -8,11 +8,6 @@ import { useRouter } from "next/navigation";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-
-const TaxRefundSimulator = dynamic(
-  () => import("@/components/TaxRefundSimulator"),
-  { ssr: false }
-);
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -97,6 +92,10 @@ import { TermsConsentModal } from "@/components/estimate/modals/TermsConsentModa
 import { FindHometaxIdModal } from "@/components/estimate/modals/FindHometaxIdModal";
 import { ResetHometaxPwModal } from "@/components/estimate/modals/ResetHometaxPwModal";
 import { ResumeApplicationModal } from "@/components/estimate/modals/ResumeApplicationModal";
+import { MockPasswordPad } from "@/components/estimate/simulation/MockPasswordPad";
+import { DevSimulatorPanel } from "@/components/estimate/simulation/DevSimulatorPanel";
+import { StepGuideModal } from "@/components/estimate/simulation/StepGuideModal";
+import { CarrierNameGuideModal } from "@/components/estimate/simulation/CarrierNameGuideModal";
 import {
   Dialog,
   DialogContent,
@@ -5874,140 +5873,70 @@ export default function EstimatePage() {
       />
 
       {/* Floating Developer Control Panel */}
-      {isLocal && (
-        <div className="fixed bottom-2 right-3 sm:right-6 z-[190] font-sans">
-          {!devPanelOpen ? (
-            <button
-              onClick={() => setDevPanelOpen(true)}
-              className="flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs sm:text-sm px-4 py-3 rounded-full shadow-2xl border border-slate-700/50 hover:scale-105 active:scale-95 transition-all duration-200"
-            >
-              <Sliders className="h-4 w-4 text-emerald-400 animate-pulse" />
-              <span>{t("🛠️ 시뮬레이션 제어판")}</span>
-            </button>
-          ) : (
-            <div className="bg-slate-900/95 backdrop-blur-md border border-slate-700/50 w-[360px] sm:w-[380px] rounded-3xl p-6 shadow-2xl text-slate-100 flex flex-col gap-4 animate-in slide-in-from-bottom-5 duration-300">
-              <div className="flex items-center justify-between border-b border-slate-800 pb-3">
-                <div className="flex items-center gap-2">
-                  <Sliders className="h-5 w-5 text-emerald-400" />
-                  <span className="font-black text-sm tracking-wide text-slate-200">DEV SIMULATOR PANEL</span>
-                </div>
-                <button
-                  onClick={() => setDevPanelOpen(false)}
-                  className="text-slate-400 hover:text-white transition-colors"
-                >
-                  <X className="h-5 w-5" />
-                </button>
-              </div>
-
-              <div className="space-y-4">
-                {/* Force Jump to Step 9 */}
-                <div>
-                  <Button
-                    onClick={() => {
-                      setFormData({
-                        officialName: translate("홍길동 (GILDONG HONG)"),
-                        authName: translate("홍길동"),
-                        registrationNumber: "900101-5123456",
-                        issueDate: "2020-01-01",
-                        phone: "010-1234-5678",
-                        carrier: "SKT",
-                        otpCode: "123456",
-                        bankName: translate("KB국민은행"),
-                        accountNumber: "123-456789-01-012",
-                        cardNumber: "1234-5678-1234-5678",
-                        expiryDate: "12/28",
-                        cvc: "123",
-                        depositorName: translate("홍길동"),
-                        accountHolder: translate("홍길동")
-                      });
-                      setResult({
-                        refundEstimate: 2350000,
-                        resIncomeTax: 2136363,
-                        resCompanyIdentityNo1: "123-45-67890",
-                        resAttrYear: "2024",
-                        resIncomeSpecList: "[]",
-                        caseType: "D",
-                        details: [
-                          { year: "2024", companyName: t("(주)가상상사"), incomeAmount: 30000000, taxAmount: 1500000, deductedAmount: 1500000, isEligible: true }
-                        ]
-                      });
-                      setIs1WonVerified(true);
-                      setIsSimulation(true);
-                      setCmsConsent1(true);
-                      setCmsConsent2(true);
-                      setCmsConsent3(true);
-                      setCmsConsentAll(true);
-                      setStep(9);
-                      saveProgress(9);
-                      toast({
-                        title: t("9단계 강제 이동 완료"),
-                        description: t("0.1초 만에 모크 데이터 주입 및 CMS 동의 테스트 화면으로 이동했습니다.")
-                      });
-                    }}
-                    className="w-full h-12 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-black rounded-2xl flex items-center justify-center gap-2 transition-all active:scale-95 shadow-lg shadow-emerald-500/20"
-                  >
-                    <Sparkles className="h-4 w-4" />
-                    <span>{t("환급 9단계 즉시 이동 (CMS 테스트)")}</span>
-                  </Button>
-                </div>
-
-                {/* Step pills */}
-                <div className="space-y-2">
-                  <label className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">{t('단계별 빠른 이동')}</label>
-                  <div className="grid grid-cols-6 gap-1.5 text-center">
-                    {[0, 0.5, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((s) => (
-                      <button
-                        key={s}
-                        onClick={() => {
-                          setIsSimulation(true);
-                          setStep(s);
-                          saveProgress(s);
-                          toast({
-                            title: t("Step {s} 이동", { s: String(s) }),
-                            description: t("수동으로 {s}단계 화면으로 변경되었습니다.", { s: String(s) })
-                          });
-                        }}
-                        className={cn(
-                          "h-8 text-xs font-black rounded-lg transition-colors",
-                          step === s
-                            ? "bg-primary text-white"
-                            : "bg-slate-800 hover:bg-slate-700 text-slate-300"
-                        )}
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {/* isSimulation Toggle */}
-                <div className="flex items-center justify-between bg-slate-800/50 p-3 rounded-2xl border border-slate-800">
-                  <div className="flex flex-col">
-                    <span className="text-xs font-black text-slate-200">{t("시뮬레이션 모드 (isSimulation)")}</span>
-                    <span className="text-[10px] text-slate-400">{t("활성화 시 실명/본인인증을 모킹합니다.")}</span>
-                  </div>
-                  <Checkbox
-                    id="dev-sim-toggle"
-                    checked={isSimulation}
-                    onCheckedChange={(val) => {
-                      setIsSimulation(!!val);
-                      toast({
-                        title: t("시뮬레이션 모드 {status}", { status: !!val ? t("활성화") : t("비활성화") }),
-                        description: t("인증 및 API 호출이 {mode}으로 동작합니다.", { mode: !!val ? t("가상 시뮬레이션") : t("실제 API") })
-                      });
-                    }}
-                    className="h-5 w-5 border-slate-600 data-[state=checked]:bg-emerald-500 data-[state=checked]:border-emerald-500"
-                  />
-                </div>
-
-                <div className="text-[10px] text-slate-500 leading-normal text-center pt-2 border-t border-slate-800">
-                  {t("인증 프로세스 우회 및 최종 9단계 CMS 서명 동의서 규제 준수(보기 팝업, 서명 가두기 및 전송 기능) 테스트용 도구입니다.")}
-                </div>
-              </div>
-            </div>
-          )}
-        </div>
-      )}
+      <DevSimulatorPanel
+        isLocal={isLocal}
+        devPanelOpen={devPanelOpen}
+        setDevPanelOpen={setDevPanelOpen}
+        step={step}
+        isSimulation={isSimulation}
+        setIsSimulation={(sim) => {
+          setIsSimulation(sim);
+          toast({
+            title: t("시뮬레이션 모드 {status}", { status: sim ? t("활성화") : t("비활성화") }),
+            description: t("인증 및 API 호출이 {mode}으로 동작합니다.", { mode: sim ? t("가상 시뮬레이션") : t("실제 API") })
+          });
+        }}
+        onForceStep9={() => {
+          setFormData({
+            officialName: translate("홍길동 (GILDONG HONG)"),
+            authName: translate("홍길동"),
+            registrationNumber: "900101-5123456",
+            issueDate: "2020-01-01",
+            phone: "010-1234-5678",
+            carrier: "SKT",
+            otpCode: "123456",
+            bankName: translate("KB국민은행"),
+            accountNumber: "123-456789-01-012",
+            cardNumber: "1234-5678-1234-5678",
+            expiryDate: "12/28",
+            cvc: "123",
+            depositorName: translate("홍길동"),
+            accountHolder: translate("홍길동")
+          });
+          setResult({
+            refundEstimate: 2350000,
+            resIncomeTax: 2136363,
+            resCompanyIdentityNo1: "123-45-67890",
+            resAttrYear: "2024",
+            resIncomeSpecList: "[]",
+            caseType: "D",
+            details: [
+              { year: "2024", companyName: t("(주)가상상사"), incomeAmount: 30000000, taxAmount: 1500000, deductedAmount: 1500000, isEligible: true }
+            ]
+          });
+          setIs1WonVerified(true);
+          setIsSimulation(true);
+          setCmsConsent1(true);
+          setCmsConsent2(true);
+          setCmsConsent3(true);
+          setCmsConsentAll(true);
+          setStep(9);
+          saveProgress(9);
+          toast({
+            title: t("9단계 강제 이동 완료"),
+            description: t("0.1초 만에 모크 데이터 주입 및 CMS 동의 테스트 화면으로 이동했습니다.")
+          });
+        }}
+        onStepJump={(s) => {
+          setIsSimulation(true);
+          setStep(s);
+          saveProgress(s);
+          toast({
+            title: t("Step {s} 이동", { s: String(s) }),
+            description: t("수동으로 {s}단계 화면으로 변경되었습니다.", { s: String(s) })
+          });
+        }}
+      />
 
       {/* Hometax Find ID Modal */}
       <FindHometaxIdModal
@@ -6042,85 +5971,10 @@ export default function EstimatePage() {
       />
 
       {/* 성함 확인 가이드 모달 */}
-      {isNameHelpOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm animate-in fade-in duration-300">
-          <div className="bg-white rounded-[3rem] shadow-2xl max-w-lg w-full overflow-hidden animate-in zoom-in-95 duration-300 max-h-[90vh] flex flex-col">
-            <div className="p-8 sm:p-10 space-y-8 overflow-y-auto">
-              <div className="flex justify-between items-start">
-                <div className="space-y-2">
-                  <h2 className="text-2xl font-black text-slate-900 leading-tight">
-                    {t('내 이름이 통신사에 어떻게 등록되어 있나요?')}
-                  </h2>
-                  <p className="text-sm font-bold text-amber-600">
-                    {t('대부분의 외국인 이름 오류는 띄어쓰기 한 칸 차이로 발생합니다.')}
-                  </p>
-                </div>
-                <Button variant="ghost" size="icon" onClick={() => setIsNameHelpOpen(false)} className="rounded-full shrink-0">
-                  <X className="h-6 w-6" />
-                </Button>
-              </div>
-
-              <div className="space-y-8">
-                {/* Visual Guide Screenshot Placeholder */}
-                <div className="rounded-3xl border border-slate-100 overflow-hidden shadow-inner bg-slate-50 aspect-[4/3] relative group">
-                  <img
-                    src="/images/guide/name_check_guide.png"
-                    alt="Carrier App Name Check Guide"
-                    className="w-full h-full object-cover"
-                  />
-                  {/* Tooltip Overlay */}
-                  <div className="absolute top-[30%] right-[12%] animate-in slide-in-from-right-10 fade-in duration-1000">
-                    <div className="bg-emerald-500 text-white text-[10px] sm:text-xs font-black px-3 py-2 rounded-2xl shadow-2xl flex items-center gap-1.5 whitespace-nowrap">
-                      <div className="bg-white/20 p-1 rounded-full">
-                        <Smartphone className="h-3 w-3" />
-                      </div>
-                      <div className="flex flex-col text-left">
-                        <span className="opacity-70 text-[8px] uppercase tracking-tighter">{t('확인됨')}</span>
-                        <span>{t('영어 이름 (English Name)')}</span>
-                      </div>
-                    </div>
-                    <div className="w-0 h-0 border-l-[6px] border-l-transparent border-r-[6px] border-r-transparent border-t-[10px] border-t-emerald-500 ml-4 shadow-xl" />
-                  </div>
-
-                  {/* Highlight Ring */}
-                  <div className="absolute top-[40%] right-[35%] w-16 h-16 border-4 border-emerald-500/40 rounded-full animate-pulse blur-[1px]" />
-                  <div className="absolute top-[40%] right-[35%] w-16 h-16 border border-emerald-500/60 rounded-full animate-ping" />
-
-                  <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-slate-900/40 to-transparent p-4">
-                    <p className="text-[10px] text-white font-bold opacity-80 uppercase tracking-widest">{t('통신사 앱(T world 등) 마이페이지 예시')}</p>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <div className="p-6 bg-blue-50 rounded-3xl border border-blue-100 space-y-3">
-                    <div className="flex items-center gap-2 text-blue-700">
-                      <Building2 className="h-5 w-5" />
-                      <h3 className="font-black italic">{t('은행 앱에서 확인하기')} (Pro Tip)</h3>
-                    </div>
-                    <p className="text-sm font-medium text-blue-600 leading-relaxed">
-                      {t("카카오뱅크나 토스 등 은행 앱의 '내 정보'에 표시된 영문 성함이 통신사 등록 성함과 같을 확률이 매우 높습니다.")}
-                    </p>
-                  </div>
-
-                  <div className="p-6 bg-emerald-50 rounded-3xl border border-emerald-100 space-y-3">
-                    <div className="flex items-center gap-2 text-emerald-700">
-                      <Smartphone className="h-5 w-5" />
-                      <h3 className="font-black">{t('통신사 앱에서 확인하기')}</h3>
-                    </div>
-                    <p className="text-sm font-medium text-emerald-600 leading-relaxed">
-                      {t("통신사 고객센터 앱(T world, My KT, U+)의 마이페이지에서 정확한 성함(띄어쓰기 포함)을 확인하실 수 있습니다.")}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <Button onClick={() => setIsNameHelpOpen(false)} className="w-full h-18 bg-slate-900 text-xl font-black rounded-[1.5rem] shadow-xl hover:scale-[1.02] transition-all">
-                {t('확인했습니다')}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      <CarrierNameGuideModal
+        isOpen={isNameHelpOpen}
+        onClose={() => setIsNameHelpOpen(false)}
+      />
 
       {/* Resume Application Dialog */}
       <ResumeApplicationModal
@@ -6131,143 +5985,20 @@ export default function EstimatePage() {
       />
 
       {/* Simulated Mobile PIN/Password Keypad Overlay */}
-      {showMockPasswordPad && (
-        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[150] flex flex-col justify-end sm:justify-center items-center p-0 sm:p-4">
-          <div className="bg-white w-full max-w-[420px] rounded-t-3xl sm:rounded-3xl shadow-2xl overflow-hidden animate-in slide-in-from-bottom-8 duration-300 flex flex-col h-[550px]">
-            {/* Header */}
-            <div className={cn(
-              "p-6 text-white text-center flex flex-col items-center justify-center relative shrink-0",
-              authMethod === 'hana' ? "bg-[#008485]" : authMethod === 'app' ? "bg-[#E1000E]" : "bg-[#FEE500] text-slate-900"
-            )}>
-              <div className="h-14 w-14 rounded-2xl bg-white p-2 flex items-center justify-center shadow-md mb-3">
-                <Image
-                  src={authMethod === 'hana' ? "/images/logo/hana_1q.png" : authMethod === 'app' ? "/images/logo/pass.png" : "/images/logo/kakao.png"}
-                  alt="Bank Logo"
-                  width={40}
-                  height={40}
-                  className="object-contain"
-                />
-              </div>
-              <h3 className="text-xl font-black">
-                {authMethod === 'hana' ? t('하나인증서 승인') : authMethod === 'app' ? t('PASS 인증 승인') : t('카카오톡 인증 승인')}
-              </h3>
-              <p className="text-xs opacity-80 mt-1 font-bold">
-                {t('비밀번호 6자리를 입력하여 인증을 완료해 주세요.')}
-              </p>
-            </div>
-
-            {/* Password Dot Indicators */}
-            <div className="flex-1 flex flex-col items-center justify-center py-6 bg-slate-50">
-              <div className="flex justify-center gap-4">
-                {[0, 1, 2, 3, 4, 5].map((idx) => (
-                  <div
-                    key={idx}
-                    className={cn(
-                      "h-5 w-5 rounded-full border-2 transition-all duration-150",
-                      idx < pinCode.length
-                        ? (authMethod === 'hana' ? "bg-[#008485] border-[#008485] scale-110" : authMethod === 'app' ? "bg-[#E1000E] border-[#E1000E] scale-110" : "bg-slate-900 border-slate-900 scale-110")
-                        : "border-slate-300 bg-white"
-                    )}
-                  />
-                ))}
-              </div>
-              {pinCode.length === 6 && (
-                <p className="text-emerald-500 font-black text-sm mt-6 flex items-center gap-1.5 animate-bounce">
-                  <CheckCircle2 className="h-5 w-5" /> {t('인증 성공! 잠시만 기다려 주세요.')}
-                </p>
-              )}
-            </div>
-
-            {/* Numeric Keypad Grid */}
-            <div className="bg-white p-4 border-t border-slate-100 shrink-0">
-              <div className="grid grid-cols-3 gap-2">
-                {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
-                  <Button
-                    key={num}
-                    id={`mock-keypad-${num}`}
-                    variant="ghost"
-                    onClick={() => {
-                      if (pinCode.length < 6) setPinCode((prev) => prev + num);
-                    }}
-                    className="h-16 text-2xl font-black rounded-2xl hover:bg-slate-50 active:bg-slate-100 text-slate-800 transition-colors"
-                  >
-                    {num}
-                  </Button>
-                ))}
-                {/* Empty spacer / Cancel */}
-                <Button
-                  variant="ghost"
-                  onClick={() => setShowMockPasswordPad(false)}
-                  className="h-16 text-base font-bold text-slate-400 rounded-2xl hover:bg-slate-50 active:bg-slate-100"
-                >
-                  {t('취소')}
-                </Button>
-                {/* 0 Key */}
-                <Button
-                  id="mock-keypad-0"
-                  variant="ghost"
-                  onClick={() => {
-                    if (pinCode.length < 6) setPinCode((prev) => prev + "0");
-                  }}
-                  className="h-16 text-2xl font-black rounded-2xl hover:bg-slate-50 active:bg-slate-100 text-slate-800"
-                >
-                  0
-                </Button>
-                {/* Backspace Key */}
-                <Button
-                  variant="ghost"
-                  onClick={() => {
-                    setPinCode((prev) => prev.slice(0, -1));
-                  }}
-                  className="h-16 text-base font-bold text-slate-400 rounded-2xl hover:bg-slate-50 active:bg-slate-100 flex items-center justify-center"
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-
+      <MockPasswordPad
+        isOpen={showMockPasswordPad}
+        onClose={() => setShowMockPasswordPad(false)}
+        authMethod={authMethod}
+        pinCode={pinCode}
+        setPinCode={setPinCode}
+      />
 
       {/* 🌟 온디맨드 시뮬레이션 제어판 및 자국어 가이드 모달 */}
-      <Dialog open={isStepGuideModalOpen} onOpenChange={setIsStepGuideModalOpen}>
-        <DialogContent className="max-w-5xl bg-[#0b192c] text-white border-2 border-[#e2b659]/50 rounded-3xl p-6 max-h-[92vh] overflow-y-auto shadow-2xl">
-          <DialogHeader className="flex flex-row items-center justify-between pb-3 border-b border-white/10">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#e2b659] text-slate-950 font-black flex items-center justify-center text-sm shadow-md">
-                {t('김준현')}
-              </div>
-              <div>
-                <DialogTitle className="text-xl font-black text-white flex items-center gap-2">
-                  <span>🛠️ {t('15개국어 시뮬레이션 제어판')} (Step {typeof step === 'number' ? Math.floor(step) : step})</span>
-                  <Badge className="bg-[#e2b659] text-slate-950 hover:bg-[#e2b659] font-bold">{t('1:1 AI 매니저 가이드')}</Badge>
-                </DialogTitle>
-                <DialogDescription className="text-xs text-amber-200/90 font-medium">
-                  {t('환급 단계에서 어느 부분을 눌러야 하는지 보여주는 가상 화면입니다.')}
-                </DialogDescription>
-              </div>
-            </div>
-          </DialogHeader>
-
-          <div className="py-2">
-            <TaxRefundSimulator initialStep={step} />
-          </div>
-
-          <DialogFooter className="pt-3 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-3">
-            <p className="text-xs text-slate-300 font-medium">
-              💡 {t('가이드를 모두 확인하셨으면 아래 버튼을 눌러 바로 신청을 재개해 주세요.')}
-            </p>
-            <Button
-              onClick={() => setIsStepGuideModalOpen(false)}
-              className="bg-[#e2b659] text-slate-950 font-black hover:bg-[#f0c870] px-6 rounded-xl text-sm h-11 shadow-lg"
-            >
-              {t('이어서 신청 진행하기')} <ArrowRight className="ml-2 h-4 w-4" />
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <StepGuideModal
+        isOpen={isStepGuideModalOpen}
+        onOpenChange={setIsStepGuideModalOpen}
+        step={step}
+      />
     </div>
   );
 }
