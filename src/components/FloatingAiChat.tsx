@@ -302,7 +302,7 @@ function parseRichCardFromText(rawText: string): { text: string; richCard?: Chat
 
 
 // 🌟 0단계 ~ 10단계 매니저 실시간 선제적 맞춤형 안내 가이드 (15개 다국어 완벽 지원)
-const getStepProactiveMessage = (step: number, lang: string = 'ko'): { text: string; richCard?: ChatMessage['richCard'] } => {
+const getStepProactiveMessage = (step: number, lang: string = 'ko', isKmarket: boolean = false): { text: string; richCard?: ChatMessage['richCard'] } => {
   const dummyTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   
   switch (step) {
@@ -730,6 +730,7 @@ function FloatingConsultingPanelInner() {
   const [activeGuide, setActiveGuide] = useState<{ method: 'hana' | 'pass' | 'kakao'; slideIndex: number; total: number } | null>(null);
 
   const [chatId, setChatId] = useState<string>("");
+  const [referralSource, setReferralSource] = useState<string | null>(null);
   const [isTyping, setIsTyping] = useState(false);
   const [isLoadingHistory, setIsLoadingHistory] = useState(false);
   const [hasCheckedHistory, setHasCheckedHistory] = useState(false);
@@ -749,6 +750,15 @@ function FloatingConsultingPanelInner() {
   useEffect(() => {
     if (typeof window !== "undefined") {
       const searchParams = new URLSearchParams(window.location.search);
+const sourceParam = searchParams.get("source");
+      if (sourceParam) {
+        setReferralSource(sourceParam);
+        sessionStorage.setItem("ktrs_referral_source", sourceParam);
+      } else {
+        const storedSource = sessionStorage.getItem("ktrs_referral_source");
+        if (storedSource) setReferralSource(storedSource);
+      }
+
       const refChatId = searchParams.get("ref_chat_id");
       
       let id = refChatId;
@@ -947,7 +957,8 @@ function FloatingConsultingPanelInner() {
         setCurrentStep(newStep);
         
         // 채팅창이 열려있을 때 단계별 맞춤 선제 안내 메시지 자동 추가
-        const stepMsgData = getStepProactiveMessage(newStep, language || 'ko');
+        const isFromKmarket = referralSource === 'kmarket' || (typeof window !== 'undefined' && sessionStorage.getItem('ktrs_referral_source') === 'kmarket');
+        const stepMsgData = getStepProactiveMessage(newStep, language || 'ko', isFromKmarket);
         setCurrentBubbleText(stepMsgData.text);
         setShowSpeechBubble(true);
         const dummyTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -1218,7 +1229,8 @@ function FloatingConsultingPanelInner() {
           clientIsInApp: device.isInApp,
           currentPathname: pathname,
           currentStep: typeof forcedStep === 'number' ? forcedStep : currentStep,
-          activeGuideContext: activeGuide ? getGuideStepKnowledge(activeGuide.method, activeGuide.slideIndex) : undefined
+          activeGuideContext: activeGuide ? getGuideStepKnowledge(activeGuide.method, activeGuide.slideIndex) : undefined,
+          referralSource: referralSource || (typeof window !== 'undefined' ? sessionStorage.getItem('ktrs_referral_source') : null) || undefined
         }),
       });
 

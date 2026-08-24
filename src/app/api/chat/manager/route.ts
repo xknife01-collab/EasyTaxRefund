@@ -7,7 +7,7 @@ import { sendTakeoverAlert } from "@/lib/slack";
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
-    const { message, language, sessionLanguage: bodySessionLang, history, chatId, clientOs, clientIsInApp, currentPathname, currentStep, activeGuideContext } = body;
+    const { message, language, sessionLanguage: bodySessionLang, history, chatId, clientOs, clientIsInApp, currentPathname, currentStep, activeGuideContext, referralSource, referralContext } = body;
 
     if (!message || typeof message !== "string" || !message.trim()) {
       return NextResponse.json(
@@ -214,7 +214,9 @@ export async function POST(req: NextRequest) {
       clientIsInApp,
       currentPathname,
       currentStep: typeof currentStep === 'number' ? currentStep : undefined,
-      activeGuideContext: activeGuideContext || undefined
+      activeGuideContext: activeGuideContext || undefined,
+      referralSource: referralSource || undefined,
+      referralContext: referralContext || undefined
     });
 
     // 🚀 자가 학습 로그 비동기 수집 (ai_learning_logs)

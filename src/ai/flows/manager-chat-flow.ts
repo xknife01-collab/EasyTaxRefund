@@ -33,6 +33,8 @@ export const ManagerChatInputSchema = z.object({
   currentStep: z.number().optional().describe("고객이 현재 화면상에 머물러 있는 실제 환급 단계 번호"),
   currentKstTimeContext: z.string().optional().describe("현재 한국 표준시 접속 시간 및 요일 정보"),
   matchedLearnedKnowledgeContext: z.string().optional().describe("Supabase ai_knowledge_base에 이전에 자율 적재된 캐시 지식"),
+  referralSource: z.string().optional().describe("외부 제휴 플랫폼 연계 유입 경로 (예: 'kmarket')"),
+  referralContext: z.string().optional().describe("외부 제휴사 연계 유입 고객에 대한 상세 컨텍스트 정보 및 응대 지침"),
   activeGuideContext: z.object({
     method: z.string().optional(),
     slideIndex: z.number().optional(),
@@ -178,6 +180,9 @@ const managerChatPrompt = ai.definePrompt({
 
 [Supabase에 이전에 자율 수집/적재된 캐시 지식 (Learned Knowledge Cache)]:
 {{{matchedLearnedKnowledgeContext}}}
+
+[외부 제휴사 및 연계 유입 경로 특별 응대 지침 (Referral Handoff Context)]:
+{{{referralContext}}}
 
 [현재 고객이 보고 있는 인증서 화면 및 시각 가이드 지식 (In-App Visual Slide Memory)]:
 {{{matchedStepGuideContext}}}
@@ -611,6 +616,24 @@ const managerChatFlow = ai.defineFlow(
     }
     const currentKstTimeContext = `${kstDateStr} (${dayOfWeek}, ${timePeriod}${isWeekend ? ", 주말" : ""})`;
 
+    // 3-C. 외부 제휴 플랫폼 (K-Market 등) 유입 컨텍스트 조립
+    let referralContext = input.referralContext || '';
+    const isFromKmarket = input.referralSource === 'kmarket' || 
+      (!referralContext && (cleanedText.toLowerCase().includes('kmarket') || cleanedText.includes('케이마켓') || cleanedText.includes('k-market') || cleanedText.includes('k마켓')));
+
+    if (isFromKmarket) {
+      referralContext = `[📌 제휴 플랫폼 'K-Market(케이마켓)' 연계 유입 고객 전용 특별 응대 지침]:
+1. **유입 배경 및 현재 상황**:
+   - 이 고객은 당사 공식 제휴 생활/중고 마켓인 'K-Market'의 세금 환급 계산기에서 비자 종류, 한국 근무 기간, 월 급여, 성함, 연락처 입력을 마치고 신청한 후, 4단계(인증서 선택 및 본인인증)를 즉시 이어서 진행하기 위해 KTRS로 자동 연동되어 들어온 고객입니다.
+   - 고객의 성함과 연락처 등의 기본 정보는 이미 폼에 안전하게 자동 입력된 상태입니다.
+2. **핵심 응대 원칙 (고객 질문에 따른 맞춤 답변)**:
+   - 고객이 "K-Market에서 왔어요", "왜 4단계부터 시작해요?", "이름 이미 썼는데 왜 또 해야 돼요?"라고 묻거나 의아해하면 다음과 같이 친절하게 안내하십시오:
+     1) "K-Market에서 신청해 주셔서 감사합니다! K-Market에서 입력해 주신 기본 정보가 시스템에 안전하게 반영되어 있습니다."
+     2) "고객님의 소중한 시간을 아껴드리기 위해 앞선 1~3단계를 자동 생략하고 바로 4단계 본인인증(하나은행/PASS/카카오톡)으로 연결해 드렸습니다."
+     3) "안심하시고 편하신 인증서(하나은행, PASS, 카카오톡)를 선택하여 인증을 완료해 주시면, 국세청 홈택스와 안전하게 연동되어 지난 5년 치의 숨은 세금 환급액을 0.1초 만에 정밀 계산해 드립니다!"
+   - 🚨 절대 금지: 이미 K-Market에서 받은 정보(이름, 비자 등)를 1단계부터 다시 처음부터 입력하라고 번복 안내하지 마십시오!`;
+    }
+
     // 4. Call Genkit prompt
     const languageName = LANGUAGE_NAME_MAP[lang] || lang;
     const { output } = await managerChatPrompt({
@@ -621,6 +644,7 @@ const managerChatFlow = ai.defineFlow(
       matchedScriptsContext,
       matchedStepGuideContext,
       matchedLearnedKnowledgeContext,
+      referralContext,
       historyContext,
       sentimentAlertContext,
       previousSummary,
