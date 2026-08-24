@@ -841,7 +841,15 @@ const sourceParam = searchParams.get("source");
   useEffect(() => {
     if (typeof window === "undefined") return;
     if (isEstimatePage) {
+const isKmarketDirect = new URLSearchParams(window.location.search).get("source") === "kmarket" || sessionStorage.getItem("ktrs_referral_source") === "kmarket";
       const alreadyOpened = sessionStorage.getItem("ktrs_chat_auto_opened");
+      if (isKmarketDirect) {
+        const timer = setTimeout(() => {
+          setIsOpen(true);
+          setViewMode("live_chat");
+        }, 400);
+        return () => clearTimeout(timer);
+      }
       if (!alreadyOpened) {
         const timer = setTimeout(() => {
           setIsOpen(true);
@@ -869,6 +877,41 @@ const sourceParam = searchParams.get("source");
 
   // Helper to generate initial welcome & card messages
   const getDefaultWelcomeMessages = (): ChatMessage[] => {
+    const getKMarketWelcomeMessage = () => {
+      switch (language) {
+        case "vi":
+          return "Xin chào! Mình là Kim Jun-hyun, Quản lý chính thức KTRS. 👋 Cảm ơn bạn đã đăng ký từ K-Market! Thông tin bạn vừa nhập đã được hệ thống lưu trữ an toàn. Để tra cứu chính xác số tiền hoàn thuế 5 năm qua từ Cơ quan Thuế, bạn chỉ cần chọn một chứng chỉ tiện lợi nhất (Ngân hàng Hana, PASS, hoặc KakaoTalk). Mình sẽ luôn ở đây đồng hành và hướng dẫn bạn từng bước một nhé! 🤝";
+        case "zh":
+          return "您好！我是 KTRS 官方经理金俊贤。👋 感谢您从 K-Market 前来！您刚刚填写的信息已安全同步至系统。为了从国税厅精准查询过去5年的隐藏退税金，只需在下方选择最方便的认证方式（韩亚银行、PASS 或 KakaoTalk）。我会一直在您身边协助您完成每一步！🤝";
+        case "ne":
+          return "नमस्कार! म KTRS आधिकारिक प्रबन्धक किम जुन-ह्युन हुँ। 👋 K-Market बाट आउनुभएकोमा धन्यवाद! तपाईंले भर्खरै भर्नुभएको विवरण प्रणालीमा सुरक्षित छ। ५ वर्षको कर फिर्ता रकम हेर्नको लागि हाना बैंक, PASS वा KakaoTalk मध्ये सहज प्रमाणीकरण छनोट गर्नुहोस्। म तपाईंलाई अन्त्यसम्म मद्दत गर्नेछु! 🤝";
+        case "th":
+          return "สวัสดีครับ! ผมคือผู้จัดการอย่างเป็นทางการ คิม จุนฮยอน 👋 ขอบคุณที่มาจาก K-Market ข้อมูลของคุณเชื่อมต่อเรียบร้อยแล้ว เพื่อตรวจสอบเงินคืนภาษีย้อนหลัง 5 ปีจากสรรพากร โปรดเลือกวิธียืนยันตัวตน (Hana Bank, PASS, KakaoTalk) ผมพร้อมช่วยเหลือคุณทุกขั้นตอนครับ! 🤝";
+        case "km":
+          return "សួស្តី! ខ្ញុំគឺ គីម ជុនហ្យុន អ្នកគ្រប់គ្រងផ្លូវការ KTRS។ 👋 អរគុណដែលបានមកពី K-Market! ព័ត៌មានរបស់អ្នកត្រូវបានភ្ជាប់ដោយសុវត្ថិភាព។ ដើម្បីពិនិត្យមើលប្រាក់ពន្ធបង្វិលសង ៥ ឆ្នាំ សូមជ្រើសរើសការផ្ទៀងផ្ទាត់ (Hana Bank, PASS, KakaoTalk)។ ខ្ញុំនឹងនៅក្បែរជួយអ្នកគ្រប់ជំហាន! 🤝";
+        case "my":
+          return "မင်္ဂလာပါ။ ကျွန်တော်က KTRS တရားဝင်မန်နေဂျာ Kim Jun-hyun ပါ။ 👋 K-Market မှ လာရောက်ပေးသည့်အတွက် ကျေးဇူးတင်ပါသည်။ သင့်အချက်အလက်များကို လုံခြုံစွာ ချိတ်ဆက်ထားပြီးပါပြီ။ လွန်ခဲ့သော ၅ နှစ်စာ အခွန်ပြန်အမ်းငွေစစ်ဆေးရန် အဆင်ပြေဆုံး အတည်ပြုချက် (Hana Bank, PASS, KakaoTalk) ကို ရွေးချယ်ပါ။ အစအဆုံး ကူညီပေးပါမည်! 🤝";
+        case "uz":
+          return "Salom! Men KTRS rasmiy menejeri Kim Jun-hyunman. 👋 K-Market'dan kelganingiz uchun rahmat! Kiritgan ma'lumotlaringiz xavfsiz saqlandi. Soliq idorasidan so'nggi 5 yillik qaytariladigan soliqni aniq tekshirish uchun Hana Bank, PASS yoki KakaoTalk sertifikatlaridan birini tanlang. Men sizga oxirigacha yordam beraman! 🤝";
+        case "id":
+          return "Halo! Saya Kim Jun-hyun, Manajer Resmi KTRS. 👋 Terima kasih telah datang dari K-Market! Informasi yang Anda masukkan telah aman tersimpan. Untuk memeriksa pengembalian pajak 5 tahun dari Kantor Pajak, silakan pilih sertifikat (Hana Bank, PASS, KakaoTalk). Saya akan membantu Anda langkah demi langkah! 🤝";
+        case "mn":
+          return "Сайн байна уу! Би KTRS-ийн албан ёсны менежер Ким Жүн-хён байна. 👋 K-Market-аас ирсэнд баярлалаа! Таны оруулсан мэдээлэл найдвартай хадгалагдсан. Сүүлийн 5 жилийн татварын буцаан олголтоо шалгахын тулд Hana Bank, PASS эсвэл KakaoTalk баталгаажуулалтыг сонгоно уу. Би танд туслах болно! 🤝";
+        case "bn":
+          return "হ্যালো! আমি KTRS অফিসিয়াল ম্যানেজার কিম জুন-হিউন। 👋 K-Market থেকে আসার জন্য ধন্যবাদ! আপনার তথ্য নিরাপদে সংরক্ষিত আছে। বিগত ৫ বছরের ট্যাক্স ফেরত যাচাই করার জন্য Hana Bank, PASS বা KakaoTalk নির্বাচন করুন। আমি আপনাকে শুরু থেকে শেষ পর্যন্ত সাহায্য করব! 🤝";
+        case "kk":
+          return "Сәлеметсіз бе! Мен KTRS ресми менеджері Ким Джун Хенмін. 👋 K-Market-тен келгеніңізге рахмет! Мәліметтеріңіз қауіпсіз сақталды. Салықты қайтару сомасын көру үшін Hana Bank, PASS немесе KakaoTalk таңдаңыз. Мен сізге әр қадамда көмектесемін! 🤝";
+        case "si":
+          return "ආයුබෝවන්! මම KTRS නිල කළමනාකරු කිම් ජුන්-හ්යුන්. 👋 K-Market වෙතින් පැමිණීම ගැන ස්තූතියි! ඔබගේ තොරතුරු ආරක්ෂිතව සුරකින ලදී. පසුගිය වසර 5 ක බදු ආපසු පරීක්ෂා කිරීමට Hana Bank, PASS හෝ KakaoTalk තෝරන්න. මම ඔබට සහාය වන්නෙමි! 🤝";
+        case "ur":
+          return "ہیلو! میں KTRS آفیشل مینیجر کم جون ہیون ہوں۔ 👋 K-Market سے تشریف لانے کا شکریہ! آپ کی معلومات محفوظ ہیں۔ 5 سالہ ٹیکس ریفنڈ چیک کرنے کے لیے Hana Bank، PASS یا KakaoTalk کا انتخاب کریں۔ میں آپ کی مدد کروں گا! 🤝";
+        case "en":
+          return "Hello! I'm Official Manager Kim Jun-hyun. 👋 Welcome from K-Market! The details you provided have been securely saved to our system. To calculate your hidden 5-year refund with the National Tax Service, simply choose your most convenient authentication certificate (Hana Bank, PASS, or KakaoTalk). I will be right by your side to guide you through every step! 🤝";
+        default:
+          return "안녕하세요! KTRS 공식 매니저 김준현입니다. 👋 K-Market에서 신청해 주셔서 진심으로 감사드립니다! 케이마켓에서 입력해 주신 소중한 정보는 저희 시스템에 안전하게 잘 전달되어 있습니다. 국세청에서 지난 5년 치의 숨은 세금 환급금을 정확하게 조회하기 위해서는 안전한 본인 인증이 필요한데요, 화면에 보이는 하나은행, PASS, 카카오톡 인증서 중 가장 편하신 것을 발급받아 진행해 주시면 됩니다. 제가 옆에서 끝까지 1:1로 도와드릴게요! 🤝";
+      }
+    };
+
     const dummyTimestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
     const getWelcomeMessage = () => {
