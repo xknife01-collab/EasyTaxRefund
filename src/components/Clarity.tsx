@@ -3,7 +3,7 @@
 import Script from 'next/script';
 
 export default function Clarity() {
-  const clarityId = process.env.NEXT_PUBLIC_CLARITY_ID;
+  const clarityId = process.env.NEXT_PUBLIC_CLARITY_ID || 'xsao6cr2vn';
 
   if (!clarityId) {
     return null;
