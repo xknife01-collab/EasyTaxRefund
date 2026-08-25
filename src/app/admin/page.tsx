@@ -36,7 +36,8 @@ import {
   LayoutDashboard,
   Download,
   Printer,
-  BellRing
+  BellRing,
+  ShoppingBag
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { translateNotification } from "@/ai/flows/notification-translation-flow";
@@ -103,6 +104,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
   const [docRequestInput, setDocRequestInput] = useState("");
   const [isRequestingDoc, setIsRequestingDoc] = useState(false);
   const [isSavingMemo, setIsSavingMemo] = useState(false);
+  const [kmarketFilter, setKmarketFilter] = useState<'all' | 'kmarket' | 'general'>('all');
   const [searchId, setSearchId] = useState("");
   const [searchName, setSearchName] = useState("");
   const [searchPhone, setSearchPhone] = useState("");
@@ -160,21 +162,29 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
           .order('created_at', { ascending: false });
 
         if (!error && data) {
-          const formatted = data.map(d => ({
-            id: d.id,
-            fullName: d.full_name,
-            phone: d.phone,
-            registrationNumber: d.registration_number,
-            telecom: d.telecom,
-            language: d.language,
-            status: d.status,
-            step: d.step,
-            estimatedRefundAmount: d.estimated_refund_amount,
-            serviceFee: d.service_fee,
-            createdAt: { seconds: Math.floor(new Date(d.created_at).getTime() / 1000) },
-            updatedAt: { seconds: Math.floor(new Date(d.updated_at).getTime() / 1000) },
-            ...(d.metadata || {})
-          }));
+          const formatted = data.map(d => {
+            const isFromKmarket = d.metadata?.utmSource === 'kmarket' || 
+                                  d.metadata?.referralSource === 'kmarket' || 
+                                  d.metadata?.source === 'kmarket' || 
+                                  d.metadata?.detectedSource === 'kmarket' || 
+                                  !!d.metadata?.kmarketLeadId;
+            return {
+              id: d.id,
+              fullName: d.full_name,
+              phone: d.phone,
+              registrationNumber: d.registration_number,
+              telecom: d.telecom,
+              language: d.language,
+              status: d.status,
+              step: d.step,
+              estimatedRefundAmount: d.estimated_refund_amount,
+              serviceFee: d.service_fee,
+              isFromKmarket,
+              createdAt: { seconds: Math.floor(new Date(d.created_at).getTime() / 1000) },
+              updatedAt: { seconds: Math.floor(new Date(d.updated_at).getTime() / 1000) },
+              ...(d.metadata || {})
+            };
+          });
           setApps(formatted);
           setAppsLoading(false);
         }
@@ -197,6 +207,11 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
         const hasHometax = !!(credentialsMap[app.id]?.hometaxId || app.hometaxId);
         return hasHometax;
       });
+    }
+    if (kmarketFilter === 'kmarket') {
+      result = result.filter(app => app.isFromKmarket);
+    } else if (kmarketFilter === 'general') {
+      result = result.filter(app => !app.isFromKmarket);
     }
     if (searchId.trim()) {
       const low = searchId.toLowerCase();
@@ -385,10 +400,15 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
 
     const successRate = apps.length > 0 ? ((completedApps / apps.length) * 100).toFixed(1) : "0.0";
 
+    const kmarketAppsList = apps.filter(a => a.isFromKmarket);
+    const kmarketCount = kmarketAppsList.length;
+    const kmarketRefundTotal = kmarketAppsList.reduce((acc, a) => acc + (a.estimatedRefundAmount || 0), 0);
+
     return [
       { label: "오늘 방문자", value: `${todayVisits}명`, icon: <RotateCcw className="h-5 w-5" /> },
       { label: "오늘 PWA 설치", value: `${todayInstalls}건`, icon: <Download className="h-5 w-5 text-indigo-500" /> },
       { label: "오늘 신청 수", value: `${todayApps}건`, icon: <FileText className="h-5 w-5" /> },
+      { label: "🛍️ 케이마켓 연계", value: `${kmarketCount}건 (₩${kmarketRefundTotal.toLocaleString()})`, icon: <ShoppingBag className="h-5 w-5 text-amber-500" /> },
       { label: "누적 예상 수수료", value: `₩ ${expectedRevenue.toLocaleString()}`, icon: <Wallet className="h-5 w-5" /> },
       { label: "결제 완료 수익", value: `₩ ${paidRevenue.toLocaleString()}`, icon: <ShieldCheck className="h-5 w-5 text-green-500" /> },
       { label: "미결제 예정액", value: `₩ ${unpaidRevenue > 0 ? unpaidRevenue.toLocaleString() : 0}`, icon: <Clock className="h-5 w-5 text-amber-500" /> },
@@ -426,7 +446,16 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
       }
 
       // UTM 채널별 통계
-      const source = app.utmSource || '직접유입 (Direct)';
+      let source = app.utmSource;
+      if (app.isFromKmarket) {
+        source = '🛍️ 케이마켓 (K-Market)';
+      } else if (!source || source === 'direct' || source === 'null' || source === 'undefined') {
+        source = '직접유입 (Direct)';
+      } else if (source === 'facebook' || source === 'fb') {
+        source = '페이스북 (Facebook)';
+      } else if (source === 'instagram' || source === 'ig') {
+        source = '인스타그램 (Instagram)';
+      }
       if (!byUtm[source]) byUtm[source] = { total: 0, paid: 0, revenue: 0 };
       byUtm[source].total++;
       if (app.paymentStatus === 'paid') {
@@ -947,13 +976,13 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
               
               {/* Search & Filter Bar - Directly above the table */}
               <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-slate-100 mb-[-1.5rem] relative z-10 transition-all hover:shadow-md">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
                   <div className="relative group">
                     <ShieldCheck className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-slate-300 group-focus-within:text-primary transition-colors" />
                     <input 
                       type="text" 
                       placeholder="고객번호 (ID) 검색" 
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all text-sm"
                       value={searchId}
                       onChange={(e) => setSearchId(e.target.value)}
                     />
@@ -963,7 +992,7 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                     <input 
                       type="text" 
                       placeholder="고객 이름 검색" 
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all text-sm"
                       value={searchName}
                       onChange={(e) => setSearchName(e.target.value)}
                     />
@@ -973,17 +1002,35 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                     <input 
                       type="text" 
                       placeholder="연락처 검색" 
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-4 h-14 font-bold text-slate-900 placeholder:text-slate-300 focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 outline-none transition-all text-sm"
                       value={searchPhone}
                       onChange={(e) => setSearchPhone(e.target.value)}
                     />
                   </div>
                   <div className="relative group">
-                    <span className="absolute left-5 top-1/2 -translate-y-1/2 text-slate-400 font-bold pointer-events-none text-xs">정렬</span>
+                    <select
+                      value={kmarketFilter}
+                      onChange={(e) => setKmarketFilter(e.target.value as any)}
+                      className={cn(
+                        "w-full border rounded-2xl px-4 h-14 font-black outline-none focus:ring-4 transition-all appearance-none cursor-pointer text-sm",
+                        kmarketFilter === 'kmarket' 
+                          ? "bg-amber-100 border-amber-300 text-amber-900 focus:ring-amber-500/20" 
+                          : "bg-slate-50 border-slate-100 text-slate-900 focus:bg-white focus:ring-primary/5"
+                      )}
+                    >
+                      <option value="all">🌐 전체 유입 채널</option>
+                      <option value="kmarket">🛍️ 케이마켓 유입만</option>
+                      <option value="general">📱 일반/직접 유입만</option>
+                    </select>
+                    <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400">
+                      <ChevronRight className="h-4 w-4 rotate-90" />
+                    </div>
+                  </div>
+                  <div className="relative group">
                     <select
                       value={sortBy}
                       onChange={(e) => setSortBy(e.target.value as any)}
-                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl pl-14 pr-10 h-14 font-black text-slate-900 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all appearance-none cursor-pointer text-sm"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-2xl px-4 h-14 font-black text-slate-900 outline-none focus:bg-white focus:ring-4 focus:ring-primary/5 focus:border-primary/20 transition-all appearance-none cursor-pointer text-sm"
                     >
                       <option value="dateDesc">📅 최신 등록순</option>
                       <option value="dateAsc">📅 과거 등록순</option>
@@ -1060,7 +1107,14 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                                 {app.id.substring(0, 8)}...
                                 <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0" />
                               </div>
-                              <div className="text-xs text-slate-400 font-bold">{app.fullName || "이름 없음"}</div>
+                              <div className="text-xs text-slate-400 font-bold flex items-center gap-1.5 mt-0.5">
+                                <span>{app.fullName || "이름 없음"}</span>
+                                {app.isFromKmarket && (
+                                  <Badge className="bg-amber-100 text-amber-900 border-amber-300 text-[9px] font-black px-1.5 py-0 rounded inline-flex items-center gap-0.5 shadow-none">
+                                    <ShoppingBag className="h-2.5 w-2.5 text-amber-600" /> 케이마켓
+                                  </Badge>
+                                )}
+                              </div>
                             </TableCell>
 
                             {/* 신청 일자 */}
@@ -1373,7 +1427,12 @@ function AdminDashboardContent({ isAdmin }: { isAdmin: boolean }) {
                               onClick={() => openAppDetail(app)}
                             >
                               <div className="font-black text-slate-900 group-hover:text-primary flex items-center gap-2 transition-colors">
-                                {app.fullName || "이름 없음"}
+                                <span>{app.fullName || "이름 없음"}</span>
+                                {app.isFromKmarket && (
+                                  <Badge className="bg-amber-100 text-amber-900 border-amber-300 text-[9px] font-black px-1.5 py-0 rounded inline-flex items-center gap-0.5 shadow-none">
+                                    <ShoppingBag className="h-2.5 w-2.5 text-amber-600" /> 케이마켓
+                                  </Badge>
+                                )}
                                 <ChevronRight className="h-3 w-3 opacity-0 group-hover:opacity-100 transition-all -translate-x-1 group-hover:translate-x-0" />
                               </div>
                               <div className="text-[10px] text-slate-400 font-bold uppercase">{app.id.substring(0, 8)}...</div>

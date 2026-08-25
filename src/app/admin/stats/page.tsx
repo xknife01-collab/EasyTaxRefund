@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { supabase } from "@/lib/supabase";
 import { db } from "@/lib/firebase";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import { useRouter } from "next/navigation";
@@ -37,7 +38,8 @@ import {
   LayoutDashboard,
   ShieldCheck,
   Bot,
-  BrainCircuit
+  BrainCircuit,
+  ShoppingBag
 } from "lucide-react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -75,6 +77,7 @@ const LANGUAGE_TO_COUNTRY: Record<string, string> = {
 
 const normalizeChannel = (src: string): string => {
   const s = String(src).toLowerCase().trim();
+  if (s === 'kmarket' || s === 'k-market' || s === 'k_market' || s === '케이마켓') return 'K-Market';
   if (s === 'fb' || s === 'facebook') return 'Facebook';
   if (s === 'ig' || s === 'instagram') return 'Instagram';
   if (s === 'direct' || s === 'undefined' || !s || s === 'null') return 'Direct';
@@ -83,6 +86,7 @@ const normalizeChannel = (src: string): string => {
 };
 
 const CHANNEL_LABELS: Record<string, string> = {
+  'K-Market': '🛍️ 케이마켓 (K-Market 제휴)',
   'Facebook': '페이스북 (Facebook)',
   'Instagram': '인스타그램 (Instagram)',
   'Direct': '직접 유입 (Direct / 개발)',
@@ -230,30 +234,52 @@ export default function AdminStatsPage() {
   }, [isMounted, router]);
 
   useEffect(() => {
-    const qApps = query(collection(db, 'applications'));
-    const unsubApps = onSnapshot(qApps, (snapshot) => {
-      const data = snapshot.docs.map(d => ({ id: d.id, ...d.data() as any }));
-      data.sort((a, b) => {
-        const timeA = a.createdAt?.seconds || a.updatedAt?.seconds || 0;
-        const timeB = b.createdAt?.seconds || b.updatedAt?.seconds || 0;
-        return timeB - timeA;
-      });
-      setApps(data);
-    }, (err) => console.error("Apps listener error:", err));
+    const fetchSupabaseData = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('tax_applications')
+          .select('*')
+          .order('created_at', { ascending: false });
 
-    const qStats = query(collection(db, 'daily_stats'));
-    const unsubStats = onSnapshot(qStats, (snapshot) => {
-      setDailyStats(snapshot.docs.map(d => ({ id: d.id, ...d.data() })));
-      setLoading(false);
-    }, (err) => {
-      console.error("Stats listener error:", err);
-      setLoading(false);
-    });
-
-    return () => {
-      unsubApps();
-      unsubStats();
+        if (!error && data) {
+          const formatted = data.map(d => {
+            const isFromKmarket = d.metadata?.utmSource === 'kmarket' || 
+                                  d.metadata?.referralSource === 'kmarket' || 
+                                  d.metadata?.source === 'kmarket' || 
+                                  d.metadata?.detectedSource === 'kmarket' || 
+                                  !!d.metadata?.kmarketLeadId;
+            return {
+              id: d.id,
+              fullName: d.full_name,
+              phone: d.phone,
+              registrationNumber: d.registration_number,
+              telecom: d.telecom,
+              userLanguage: d.language || 'ko',
+              status: d.status,
+              step: d.step,
+              lastStep: d.step || d.metadata?.lastStep || 1,
+              estimatedRefundAmount: d.estimated_refund_amount || 0,
+              serviceFee: d.service_fee || Math.floor((d.estimated_refund_amount || 0) * 0.22),
+              utmSource: isFromKmarket ? 'kmarket' : (d.metadata?.utmSource || d.metadata?.detectedSource || 'direct'),
+              isFromKmarket,
+              paymentStatus: d.metadata?.paymentStatus || (d.status === 'RefundCompleted' ? 'paid' : 'pending'),
+              createdAt: d.created_at,
+              updatedAt: d.updated_at,
+              ...(d.metadata || {})
+            };
+          });
+          setApps(formatted);
+          setLoading(false);
+        }
+      } catch (err) {
+        console.error("Stats Supabase load error:", err);
+        setLoading(false);
+      }
     };
+
+    fetchSupabaseData();
+    const interval = setInterval(fetchSupabaseData, 5000);
+    return () => clearInterval(interval);
   }, []);
 
   useEffect(() => {
@@ -307,7 +333,6 @@ export default function AdminStatsPage() {
     const totalVisits = dateFilteredDaily.reduce((acc, s) => {
       if (selectedCountry === 'all') return acc + (s.visitCount || 0);
       
-      // 선택된 국가 이름에 해당하는 언어 코드를 찾음 (예: '베트남' -> 'vi')
       const langCode = Object.keys(LANGUAGE_TO_COUNTRY).find(key => LANGUAGE_TO_COUNTRY[key] === selectedCountry);
       if (langCode) {
         return acc + (s.languageVisits?.[langCode] || 0);
@@ -318,22 +343,28 @@ export default function AdminStatsPage() {
     const countryPaid = countryFilteredApps.filter(a => a.paymentStatus === 'paid').length;
     const countryRevenue = countryFilteredApps.filter(a => a.paymentStatus === 'paid').reduce((acc, a) => acc + Math.floor((a.estimatedRefundAmount || 0) * 0.22), 0);
 
+    // K-Market Specific Stats
+    const kmarketFilteredApps = countryFilteredApps.filter(a => a.isFromKmarket);
+    const kmarketTotalCount = kmarketFilteredApps.length;
+    const kmarketPaidCount = kmarketFilteredApps.filter(a => a.paymentStatus === 'paid').length;
+    const kmarketEstimatedRefundTotal = kmarketFilteredApps.reduce((acc, a) => acc + (a.estimatedRefundAmount || 0), 0);
+    const kmarketRevenueTotal = Math.floor(kmarketEstimatedRefundTotal * 0.22);
+    const kmarketConversionRate = kmarketTotalCount > 0 ? ((kmarketPaidCount / kmarketTotalCount) * 100).toFixed(1) : "0.0";
+
     // Channel Stats (UTM)
     const channelStats: Record<string, { visits: number, applicants: number, paid: number, revenue: number }> = {};
     
     // 1. Aggregate visits by channel from daily_stats
     dateFilteredDaily.forEach(s => {
-      // 파이어스토어에서 sourceVisits가 평탄화된 키("sourceVisits.ig" 등)로 저장되어 있는 경우 처리
       Object.entries(s).forEach(([key, count]) => {
         if (key.startsWith('sourceVisits.')) {
-          const rawSrc = key.split('.')[1]; // 'ig', 'fb' 등 추출
+          const rawSrc = key.split('.')[1];
           const cleanSrc = normalizeChannel(rawSrc);
           if (!channelStats[cleanSrc]) channelStats[cleanSrc] = { visits: 0, applicants: 0, paid: 0, revenue: 0 };
           channelStats[cleanSrc].visits += (count as number);
         }
       });
       
-      // 혹시라도 중첩 객체 구조로 저장되어 있는 경우를 위한 폴백
       if (s.sourceVisits && typeof s.sourceVisits === 'object') {
         Object.entries(s.sourceVisits).forEach(([src, count]) => {
           const cleanSrc = normalizeChannel(src);
@@ -354,14 +385,12 @@ export default function AdminStatsPage() {
       }
     });
 
-    const sortedChannels = Object.entries(channelStats).sort((a, b) => b[1].visits - a[1].visits);
+    const sortedChannels = Object.entries(channelStats).sort((a, b) => b[1].applicants - a[1].applicants);
 
     // Detailed 10-Step Funnel
     const funnel: Record<number, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
     
-    // Step 0 is effectively the total visits for the estimate page in this context, 
-    // but for application funneling we start from the applications created.
-    funnel[0] = totalVisits;
+    funnel[0] = Math.max(totalVisits, countryApps);
 
     countryFilteredApps.forEach(app => {
       let statusInferredStep = 1;
@@ -411,6 +440,11 @@ export default function AdminStatsPage() {
       countryApps,
       countryPaid,
       countryRevenue,
+      kmarketTotalCount,
+      kmarketPaidCount,
+      kmarketEstimatedRefundTotal,
+      kmarketRevenueTotal,
+      kmarketConversionRate,
       byUtm: sortedChannels,
       funnel,
       topVolumeChannel: sortedChannels[0]?.[0] || 'direct',
@@ -590,6 +624,51 @@ export default function AdminStatsPage() {
                   </div>
                 </Card>
               </div>
+
+              {/* K-Market Dedicated Analytics Hero Card */}
+              <Card className="premium-card rounded-[2.5rem] border-2 border-amber-300 shadow-md bg-gradient-to-br from-amber-50/80 via-white to-amber-50/40 p-8 space-y-6">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-amber-200/60 pb-5">
+                  <div className="flex items-center gap-3">
+                    <div className="h-12 w-12 bg-amber-500 text-white rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/20">
+                      <ShoppingBag className="h-6 w-6" />
+                    </div>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Badge className="bg-amber-500 text-white border-none font-black text-[10px] px-2 py-0.5">
+                          제휴 연계 실시간 성과
+                        </Badge>
+                      </div>
+                      <h3 className="text-xl font-black text-slate-900 mt-1">🛍️ 케이마켓(K-Market) 유입 및 환급 성과</h3>
+                    </div>
+                  </div>
+                  <div className="text-xs font-bold text-amber-800 bg-amber-100/80 px-3.5 py-1.5 rounded-xl">
+                    K-Market 앱/웹 경유 신청자 전용 집계
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div className="bg-white p-5 rounded-2xl border border-amber-200/60 shadow-sm space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">케이마켓 유입 신청자</p>
+                    <p className="text-2xl font-black text-amber-600">{filteredData.kmarketTotalCount.toLocaleString()}명</p>
+                    <p className="text-[11px] font-bold text-slate-400">전체 신청의 {((filteredData.kmarketTotalCount / (filteredData.countryApps || 1)) * 100).toFixed(1)}%</p>
+                  </div>
+                  <div className="bg-white p-5 rounded-2xl border border-amber-200/60 shadow-sm space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">케이마켓 계약 완료</p>
+                    <p className="text-2xl font-black text-emerald-600">{filteredData.kmarketPaidCount.toLocaleString()}건</p>
+                    <p className="text-[11px] font-bold text-emerald-600">전환율 {filteredData.kmarketConversionRate}%</p>
+                  </div>
+                  <div className="bg-white p-5 rounded-2xl border border-amber-200/60 shadow-sm space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">케이마켓 예상 환급액</p>
+                    <p className="text-2xl font-black text-slate-900">₩ {filteredData.kmarketEstimatedRefundTotal.toLocaleString()}</p>
+                    <p className="text-[11px] font-bold text-slate-400">국세청 조회 확정액</p>
+                  </div>
+                  <div className="bg-white p-5 rounded-2xl border border-amber-200/60 shadow-sm space-y-1">
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-wider">케이마켓 예상 수익(22%)</p>
+                    <p className="text-2xl font-black text-indigo-600">₩ {filteredData.kmarketRevenueTotal.toLocaleString()}</p>
+                    <p className="text-[11px] font-bold text-indigo-600">제휴 기여 매출</p>
+                  </div>
+                </div>
+              </Card>
 
               {/* Ranking & Regional Charts */}
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
