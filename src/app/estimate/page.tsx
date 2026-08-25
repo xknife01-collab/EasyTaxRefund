@@ -2926,7 +2926,7 @@ export default function EstimatePage() {
 
       const trackingData = getStoredTrackingData();
 
-      // Firestore에 신청 데이터 저장 (기존 드래프트 업데이트)
+      // Supabase에 신청 데이터 저장 (기존 드래프트 업데이트)
       const appData = {
         clientId,
         fullName: formData.officialName,
