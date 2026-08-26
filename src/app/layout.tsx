@@ -13,7 +13,7 @@ import MetaPixel from '@/components/MetaPixel';
 export const metadata: Metadata = {
   metadataBase: new URL('https://ktrs-service.vercel.app'),
   verification: {
-    google: 'C7rvrHCQoAz2tQfJvpwPVa3w-UNOYByv-IGpHc-fBfc',
+    google: 'TvaXpCHCi5EKQ7Ix6i6BYvf9pSzSDDXPD8diyMKtJAg',
   },
   manifest: '/manifest.json',
   appleWebApp: {
@@ -60,7 +60,6 @@ export default function RootLayout({
   return (
     <html lang="ko" suppressHydrationWarning>
       <head>
-        <meta name="google-site-verification" content="C7rvrHCQoAz2tQfJvpwPVa3w-UNOYByv-IGpHc-fBfc" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
