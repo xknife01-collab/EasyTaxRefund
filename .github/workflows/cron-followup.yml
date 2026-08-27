@@ -1,0 +1,42 @@
+name: Follow-up & Abandoned Recovery Cron
+
+on:
+  schedule:
+    # 매 1시간마다 정각에 실행 (필요에 따라 주기 변경 가능)
+    # cron: '0 * * * *'
+    - cron: '0 * * * *'
+  # GitHub 대시보드(Actions 탭)에서 언제든지 수동 실행(테스트) 가능
+  workflow_dispatch:
+
+jobs:
+  trigger-followup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call Follow-up Cron Endpoint
+        run: |
+          # 1. Target URL 설정 (GitHub Secret이 없으면 기본 배포 도메인 사용)
+          TARGET_URL="${{ secrets.APP_URL }}"
+          if [ -z "$TARGET_URL" ]; then
+            TARGET_URL="https://ktrs-service.vercel.app"
+          fi
+
+          echo "Triggering Cron Endpoint: ${TARGET_URL}/api/cron/follow-up"
+
+          # 2. Vercel 배포 서버의 팔로업 엔드포인트 호출
+          RESPONSE=$(curl -s -w "\nHTTP_STATUS:%{http_code}" -X GET "${TARGET_URL}/api/cron/follow-up" \
+            -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
+            -H "Content-Type: application/json")
+
+          HTTP_BODY=$(echo "$RESPONSE" | sed -e '$d')
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1 | cut -d':' -f2)
+
+          echo "Response Body: $HTTP_BODY"
+          echo "HTTP Status: $HTTP_STATUS"
+
+          # 3. 상태 코드가 200이 아니면 워크플로우 실패 처리
+          if [ "$HTTP_STATUS" -ne 200 ]; then
+            echo "Error: Cron API returned non-200 status ($HTTP_STATUS)"
+            exit 1
+          fi
+
+          echo "Cron executed successfully!"
