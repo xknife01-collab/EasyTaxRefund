@@ -4,7 +4,7 @@
 
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-import { Globe, Calculator, HelpCircle, Menu, CreditCard, User, RotateCcw, Headphones, Percent } from "lucide-react";
+import { Globe, Calculator, HelpCircle, Menu, CreditCard, User, RotateCcw, Headphones, Percent, BookOpen } from "lucide-react";
 import { useState, useEffect } from "react";
 import { cn } from "@/lib/utils";
 import { useTranslation } from "@/components/LanguageContext";
@@ -49,6 +49,7 @@ export function Navbar() {
 
   const navLinksPart2 = [
     { href: user ? "/portal" : "/login", label: t('나의 실시간 환급 현황'), icon: <User className="h-4 w-4 text-[#b88c30]" /> },
+    { href: `/${language}/blog`, label: t('세무 가이드 & 칼럼'), icon: <BookOpen className="h-4 w-4 text-[#b88c30]" /> },
   ];
 
   const TOP_LANGS = ['ko', 'en', 'vi', 'km', 'mn'];
@@ -152,7 +153,7 @@ export function Navbar() {
                 <SheetTitle className="text-2xl font-black font-headline">Korea Tax Refund Service</SheetTitle>
               </SheetHeader>
               <div className="flex flex-col gap-6">
-                {navLinksPart1.map((link) => (
+                {[...navLinksPart1, ...navLinksPart2].map((link) => (
                   <Link 
                     key={link.href} 
                     href={link.href} 
@@ -186,20 +187,6 @@ export function Navbar() {
                     ))}
                   </div>
                 </div>
-
-                <div className="h-px bg-slate-100 my-2" />
-                {navLinksPart2.map((link) => (
-                  <Link 
-                    key={link.href} 
-                    href={link.href} 
-                    className="flex items-center gap-4 text-lg font-bold text-slate-600 hover:text-primary transition-colors"
-                  >
-                    <div className="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center">
-                      {link.icon}
-                    </div>
-                    {link.label}
-                  </Link>
-                ))}
 
                 <div className="h-px bg-slate-100 my-2" />
                 {user && (

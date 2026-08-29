@@ -8,7 +8,7 @@ import { useTranslation } from "@/components/LanguageContext";
 import { LegalDialog } from "@/components/LegalDialog";
 
 export function Footer() {
-  const { t } = useTranslation();
+  const { t, language } = useTranslation();
 
   return (
     <footer className="bg-[#0B192C] text-slate-300 border-t border-slate-800 print:hidden">
@@ -94,6 +94,11 @@ export function Footer() {
           <div>
             <h4 className="font-black text-white mb-6 uppercase tracking-widest text-xs border-l-2 border-[#b88c30] pl-3">{t('고객 지원')}</h4>
             <ul className="space-y-4 text-sm font-bold text-slate-400">
+              <li>
+                <Link href={`/${language}/blog`} className="hover:text-white transition-colors flex items-center gap-1">
+                  <span className="text-[#b88c30]">›</span> {t('세무 가이드 & 칼럼')}
+                </Link>
+              </li>
               <li>
                 <Link href="/faq" className="hover:text-white transition-colors flex items-center gap-1">
                   <span className="text-[#b88c30]">›</span> {t('자주 묻는 질문')}

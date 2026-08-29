@@ -9,7 +9,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback } from 'react';
 import { Language, languages } from '@/lib/translations/config';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
+import { getBlogTranslation } from '@/lib/translations/blogTranslations';
 
 interface LanguageContextType {
   language: Language;
@@ -26,6 +27,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const [isReady, setIsReady] = useState(false);
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
 
   const fetchTranslations = useCallback(async (lang: Language) => {
     const controller = new AbortController();
@@ -66,27 +68,35 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       try {
         let lang: Language = 'ko';
         
-        // 1. URL Query Parameter 우선 확인 (?lang=vi 등)
         if (typeof window !== 'undefined') {
-          const params = new URLSearchParams(window.location.search);
-          const urlLang = params.get('lang') as Language;
-          if (urlLang) {
-            lang = urlLang;
+          // 0. URL Pathname 서브경로 우선 확인 (예: /vi/blog, /zh/blog, /id/blog 등)
+          const pathSegments = window.location.pathname.split('/').filter(Boolean);
+          const pathLang = pathSegments[0] as Language;
+          if (pathLang && languages.some(l => l.code === pathLang)) {
+            lang = pathLang;
             localStorage.setItem('app_lang', lang);
           } else {
-            // 2. LocalStorage 확인
-            const savedLang = localStorage.getItem('app_lang') as Language;
-            if (savedLang) {
-              lang = savedLang;
+            // 1. URL Query Parameter 확인 (?lang=vi 등)
+            const params = new URLSearchParams(window.location.search);
+            const urlLang = params.get('lang') as Language;
+            if (urlLang && languages.some(l => l.code === urlLang)) {
+              lang = urlLang;
+              localStorage.setItem('app_lang', lang);
             } else {
-              // 3. 브라우저 설정 언어 감지 (첫 방문 시)
-              const browserLang = (navigator.language || (navigator as any).userLanguage || '').toLowerCase();
-              const matchedLang = languages.find(l => {
-                if (l.code === 'ko') return false; // 한국어 외의 모국어 설정 매칭
-                return browserLang.startsWith(l.code);
-              });
-              if (matchedLang) {
-                lang = matchedLang.code;
+              // 2. LocalStorage 확인
+              const savedLang = localStorage.getItem('app_lang') as Language;
+              if (savedLang && languages.some(l => l.code === savedLang)) {
+                lang = savedLang;
+              } else {
+                // 3. 브라우저 설정 언어 감지 (첫 방문 시)
+                const browserLang = (navigator.language || (navigator as any).userLanguage || '').toLowerCase();
+                const matchedLang = languages.find(l => {
+                  if (l.code === 'ko') return false; // 한국어 외의 모국어 설정 매칭
+                  return browserLang.startsWith(l.code);
+                });
+                if (matchedLang) {
+                  lang = matchedLang.code;
+                }
               }
             }
           }
@@ -114,6 +124,18 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(safetyTimeout);
   }, [fetchTranslations]);
 
+  // URL 경로 변경 시 언어 동기화 (예: /vi/blog 이동 시 자동으로 vi 언어 로드)
+  useEffect(() => {
+    if (!pathname) return;
+    const pathSegments = pathname.split('/').filter(Boolean);
+    const pathLang = pathSegments[0] as Language;
+    if (pathLang && languages.some(l => l.code === pathLang) && pathLang !== language) {
+      setLanguageState(pathLang);
+      localStorage.setItem('app_lang', pathLang);
+      fetchTranslations(pathLang);
+    }
+  }, [pathname, language, fetchTranslations]);
+
 
   const setLanguage = useCallback(async (lang: Language, shouldRedirect = true) => {
     setLanguageState(lang);
@@ -136,7 +158,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const t = React.useCallback((key: string, variables?: Record<string, string | number>): string => {
     if (!key || typeof key !== 'string') return '';
     const trimmedKey = key.trim().replace(/\r\n/g, '\n');
-    let text = translationMap[trimmedKey] || key;
+    let text = translationMap[trimmedKey];
+
+    if (!text) {
+      if (trimmedKey === '세무 가이드 & 칼럼' || trimmedKey === '세무 가이드') {
+        text = getBlogTranslation(language).breadcrumbBlog;
+      } else {
+        text = key;
+      }
+    }
     
     if (variables) {
       Object.entries(variables).forEach(([k, v]) => {
@@ -145,7 +175,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     }
     
     return text;
-  }, [translationMap]);
+  }, [translationMap, language]);
 
   useEffect(() => {
     document.documentElement.lang = language;
